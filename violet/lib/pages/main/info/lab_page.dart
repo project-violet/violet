@@ -35,7 +35,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 
 class LaboratoryPage extends StatefulWidget {
-  const LaboratoryPage({Key? key}) : super(key: key);
+  const LaboratoryPage({super.key});
 
   @override
   State<LaboratoryPage> createState() => _LaboratoryPageState();
@@ -96,13 +96,13 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       .then((value) => value.getUserLog());
                   final articleCount = <String, int>{};
 
-                  userLog.forEach((element) {
+                  for (var element in userLog) {
                     if (!articleCount.containsKey(element.articleId())) {
                       articleCount[element.articleId()] = 0;
                     }
                     articleCount[element.articleId()] =
                         articleCount[element.articleId()]! + 1;
-                  });
+                  }
 
                   final ll = articleCount.entries.toList();
                   ll.sort((x, y) => y.value.compareTo(x.value));
@@ -124,11 +124,11 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       .then((value) => value.getUserLog());
                   final articleCount = <String, int>{};
 
-                  userLog.forEach((element) {
+                  for (var element in userLog) {
                     if (!articleCount.containsKey(element.articleId())) {
                       articleCount[element.articleId()] = 0;
                     }
-                  });
+                  }
 
                   final ll = articleCount.entries.toList();
                   ll.sort((x, y) => y.value.compareTo(x.value));

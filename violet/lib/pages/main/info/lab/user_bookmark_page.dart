@@ -11,7 +11,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 
 class LabUserBookmarkPage extends StatefulWidget {
-  const LabUserBookmarkPage({Key? key}) : super(key: key);
+  const LabUserBookmarkPage({super.key});
 
   @override
   State<LabUserBookmarkPage> createState() => _LabUserBookmarkPageState();

@@ -13,7 +13,7 @@ import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class RecordViewPage extends StatelessWidget {
-  const RecordViewPage({Key? key}) : super(key: key);
+  const RecordViewPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +33,11 @@ class RecordViewPage extends StatelessWidget {
                 var overap = HashSet<String>();
                 var rr = <ArticleReadLog>[];
 
-                value.forEach((element) {
-                  if (overap.contains(element.articleId())) return;
+                for (var element in value) {
+                  if (overap.contains(element.articleId())) continue;
                   rr.add(element);
                   overap.add(element.articleId());
-                });
+                }
 
                 return await QueryManager.queryIds(
                     rr.map((e) => e.articleId()).toList());

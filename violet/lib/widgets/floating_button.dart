@@ -36,11 +36,11 @@ class AnimatedFloatingActionButton extends StatefulWidget {
   final VoidCallback exitCallback;
 
   const AnimatedFloatingActionButton({
-    Key? key,
+    super.key,
     required this.fabButtons,
     required this.animatedIconData,
     required this.exitCallback,
-  }) : super(key: key);
+  });
 
   @override
   State<AnimatedFloatingActionButton> createState() =>

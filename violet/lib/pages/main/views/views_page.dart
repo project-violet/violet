@@ -18,7 +18,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class ViewsPage extends StatefulWidget {
-  const ViewsPage({Key? key}) : super(key: key);
+  const ViewsPage({super.key});
 
   @override
   State<ViewsPage> createState() => _ViewsPageState();
@@ -155,9 +155,9 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
         if (query.results!.isEmpty) return 901;
 
         var qr = <String, QueryResult>{};
-        query.results!.forEach((element) {
+        for (var element in query.results!) {
           qr[element.id().toString()] = element;
-        });
+        }
 
         var result = <Tuple2<QueryResult, int>>[];
         value.forEach((element) {

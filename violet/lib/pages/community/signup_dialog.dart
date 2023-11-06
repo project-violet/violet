@@ -7,7 +7,7 @@ import 'package:violet/server/community/session.dart';
 import 'package:violet/settings/settings.dart';
 
 class SignUpDialog extends StatefulWidget {
-  const SignUpDialog({Key? key}) : super(key: key);
+  const SignUpDialog({super.key});
 
   @override
   State<SignUpDialog> createState() => _SignUpDialogState();

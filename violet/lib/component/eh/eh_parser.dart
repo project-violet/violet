@@ -135,7 +135,7 @@ class EHParser {
         doc.querySelectorAll("div[id='gmid'] div[id='taglist'] table tr");
     var info = <String, List<String>>{};
 
-    nodesData.forEach((element) {
+    for (var element in nodesData) {
       try {
         info[element.querySelector('td')!.text.trim()] = element
             .querySelectorAll('td')[1]
@@ -146,7 +146,7 @@ class EHParser {
         Logger.error('[eh-parser] E: $e\n'
             '$st');
       }
-    });
+    }
 
     if (info.containsKey('language:')) article.languages = info['language:'];
     if (info.containsKey('group:')) article.group = info['group:'];
@@ -162,7 +162,7 @@ class EHParser {
 
     var hu = HtmlUnescape();
     var df = DateFormat('dd MMMM yyyy, H:m');
-    nodeComments.forEach((element) {
+    for (var element in nodeComments) {
       var date =
           hu.convert(element.querySelector('div.c2 div.c3')!.text.trim());
       var author =
@@ -179,7 +179,7 @@ class EHParser {
               true),
           author,
           contents));
-    });
+    }
 
     comments.sort((x, y) => x.item1.compareTo(y.item1));
     article.comment = comments;
@@ -193,7 +193,7 @@ class EHParser {
 
     var nodes = parse(html).querySelectorAll('div.itg > div.id1');
 
-    nodes.forEach((element) {
+    for (var element in nodes) {
       try {
         var article = EHResultArticle();
 
@@ -210,7 +210,7 @@ class EHParser {
 
         result.add(article);
       } catch (_) {}
-    });
+    }
 
     return result;
   }
@@ -223,7 +223,7 @@ class EHParser {
 
     if (nodes.length > 1) nodes.removeAt(0);
 
-    nodes.forEach((element) {
+    for (var element in nodes) {
       try {
         var article = EHResultArticle();
         var tds = element.querySelectorAll('td');
@@ -242,7 +242,7 @@ class EHParser {
 
         result.add(article);
       } catch (_) {}
-    });
+    }
 
     return result;
   }
@@ -325,7 +325,7 @@ class EHParser {
 
     if (nodes.length > 1) nodes.removeAt(0);
 
-    nodes.forEach((element) {
+    for (var element in nodes) {
       var article = EHResultArticle();
 
       article.type =
@@ -365,7 +365,7 @@ class EHParser {
           element.querySelectorAll('td')[5].querySelector('div a')!.text.trim();
 
       result.add(article);
-    });
+    }
 
     return result;
   }

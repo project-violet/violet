@@ -21,9 +21,9 @@ typedef StringCallback = Future Function(String);
 class VerticalViewerPage extends StatefulWidget {
   final String getxId;
   const VerticalViewerPage({
-    Key? key,
+    super.key,
     required this.getxId,
-  }) : super(key: key);
+  });
 
   @override
   State<VerticalViewerPage> createState() => _VerticalViewerPageState();

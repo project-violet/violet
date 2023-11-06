@@ -56,13 +56,13 @@ class DownloadItemWidget extends StatefulWidget {
   final VoidCallback refeshCallback;
 
   const DownloadItemWidget({
-    Key? key,
+    super.key,
     // this.width,
     required this.item,
     required this.initialStyle,
     required this.download,
     required this.refeshCallback,
-  }) : super(key: key);
+  });
 
   @override
   State<DownloadItemWidget> createState() => DownloadItemWidgetState();
@@ -764,9 +764,9 @@ class _ThumbnailWidget extends StatelessWidget {
       Map<String, String> headers = {};
       if (thumbnailHeader != null) {
         var hh = jsonDecode(thumbnailHeader!) as Map<String, dynamic>;
-        hh.entries.forEach((element) {
+        for (var element in hh.entries) {
           headers[element.key] = element.value as String;
-        });
+        }
       }
       return Hero(
         tag: thumbnailTag!,

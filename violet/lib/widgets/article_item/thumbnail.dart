@@ -15,9 +15,9 @@ class ThumbnailWidget extends StatelessWidget {
   final String getxId;
 
   ThumbnailWidget({
-    Key? key,
+    super.key,
     required this.getxId,
-  }) : super(key: key) {
+  }) {
     c = Get.find(tag: getxId);
   }
 
@@ -111,13 +111,13 @@ class ThumbnailImageWidget extends StatelessWidget {
   final _rebuildValueNotifier = ValueNotifier('');
 
   ThumbnailImageWidget({
-    Key? key,
+    super.key,
     required this.thumbnail,
     required this.thumbnailTag,
     required this.headers,
     required this.showUltra,
     required this.greyScale,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -194,10 +194,10 @@ class BookmarkIndicatorWidget extends StatelessWidget {
   final bool greyScale;
 
   BookmarkIndicatorWidget({
-    Key? key,
+    super.key,
     required String getxId,
     required this.greyScale,
-  }) : super(key: key) {
+  }) {
     c = Get.find(tag: getxId);
   }
 
@@ -245,12 +245,12 @@ class ReadProgressOverlayWidget extends StatelessWidget {
   final bool greyScale;
 
   const ReadProgressOverlayWidget({
-    Key? key,
+    super.key,
     required this.isLastestRead,
     required this.latestReadPage,
     required this.imageCount,
     required this.greyScale,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -286,10 +286,10 @@ class PagesOverlayWidget extends StatelessWidget {
   final int imageCount;
 
   const PagesOverlayWidget({
-    Key? key,
+    super.key,
     required this.showDetail,
     required this.imageCount,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

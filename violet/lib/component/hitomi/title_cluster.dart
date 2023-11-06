@@ -64,17 +64,17 @@ class HitomiTitleCluster {
     if (maxnode > 100) maxnode = 100;
 
     var groups = <List<int>>[];
-    ctitles.forEach((element) {
+    for (var element in ctitles) {
       var near = tree.nearest(element, maxnode, 8);
 
       var rr = <int>[];
-      near.forEach((element) {
+      for (var element in near) {
         rr.add(element[0]['t'].index);
-      });
+      }
 
       rr.sort();
       groups.add(rr);
-    });
+    }
 
     // Group By Same Lists
     var gg = groupBy(groups, (group) => group.join(','));
@@ -82,10 +82,10 @@ class HitomiTitleCluster {
 
     // Join groups
     gg.forEach((key, value) {
-      value[0].forEach((element) {
-        if (value[0][0] == element) return;
+      for (var element in value[0]) {
+        if (value[0][0] == element) continue;
         ds.union(value[0][0], element);
-      });
+      }
     });
 
     var join = <int, List<int>>{};

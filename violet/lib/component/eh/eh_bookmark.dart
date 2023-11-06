@@ -23,9 +23,9 @@ class EHBookmark {
               'https://exhentai.org/favorites.php?page=$j&favcat=$i');
           var matched = rr.allMatches(html).map((e) => e.group(0));
           if (matched.isEmpty) break;
-          matched.forEach((element) {
+          for (var element in matched) {
             hh.add(int.parse(element!.split('/')[4]));
-          });
+          }
         }
       } catch (_) {}
       result.add(hh);
@@ -39,9 +39,9 @@ class EHBookmark {
               'https://e-hentai.org/favorites.php?page=$j&favcat=$i');
           var matched = r2.allMatches(html).map((e) => e.group(0));
           if (matched.isEmpty) break;
-          matched.forEach((element) {
+          for (var element in matched) {
             result[i].add(int.parse(element!.split('/')[4]));
-          });
+          }
         }
       } catch (_) {}
     }

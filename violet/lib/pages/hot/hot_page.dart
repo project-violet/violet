@@ -20,7 +20,7 @@ import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 
 class HotPage extends StatefulWidget {
-  const HotPage({Key? key}) : super(key: key);
+  const HotPage({super.key});
 
   @override
   State<HotPage> createState() => _HotPageState();
@@ -72,15 +72,15 @@ class _HotPageState extends ThemeSwitchableState<HotPage>
             );
           } else if (snapshot.data!.item1 != 200) {
             final errmsg = {
-              '400': 'Bad Request',
-              '403': 'Forbidden',
-              '429': 'Too Many Requests',
-              '500': 'Internal Server Error',
-              '502': 'Bad Gateway',
-              '521': 'Web server is down',
+              400: 'Bad Request',
+              403: 'Forbidden',
+              429: 'Too Many Requests',
+              500: 'Internal Server Error',
+              502: 'Bad Gateway',
+              521: 'Web server is down',
               //
-              '900': 'Nothing To Display',
-              '901': 'No Query Results.',
+              900: 'Nothing To Display',
+              901: 'No Query Results.',
             };
 
             sliverList = SliverToBoxAdapter(
@@ -108,7 +108,10 @@ class _HotPageState extends ThemeSwitchableState<HotPage>
                       style: TextStyle(fontSize: 16),
                     ),
                     Text(
-                        'Error${errmsg[snapshot.data!.item1] != null ? ': ${errmsg[snapshot.data!.item1]!}' : ' Code: ${snapshot.data!.item1}'}')
+                      errmsg[snapshot.data!.item1] != null
+                          ? 'Error: ${errmsg[snapshot.data!.item1]!}'
+                          : 'Error Code: ${snapshot.data!.item1}',
+                    )
                   ],
                 ),
               ),
@@ -200,9 +203,9 @@ class _HotPageState extends ThemeSwitchableState<HotPage>
       }
 
       final qr = <String, QueryResult>{};
-      query.results!.forEach((element) {
+      for (var element in query.results!) {
         qr[element.id().toString()] = element;
-      });
+      }
 
       final result = <Tuple2<QueryResult, int>>[];
       value.forEach((element) {

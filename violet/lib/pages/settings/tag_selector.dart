@@ -12,8 +12,7 @@ class TagSelectorDialog extends StatefulWidget {
   final String what;
   final bool onlyFMT;
 
-  const TagSelectorDialog({Key? key, required this.what, this.onlyFMT = false})
-      : super(key: key);
+  const TagSelectorDialog({super.key, required this.what, this.onlyFMT = false});
 
   @override
   State<TagSelectorDialog> createState() => _TagSelectorDialogState();

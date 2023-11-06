@@ -196,7 +196,7 @@ class VCachedNetworkImage extends StatelessWidget {
   /// loaded image. Next to that it supports most features of a default Image
   /// widget.
   VCachedNetworkImage({
-    Key? key,
+    super.key,
     required this.imageUrl,
     this.httpHeaders,
     this.imageBuilder,
@@ -231,8 +231,7 @@ class VCachedNetworkImage extends StatelessWidget {
           cacheKey: cacheKey,
           maxWidth: maxWidthDiskCache,
           maxHeight: maxHeightDiskCache,
-        ),
-        super(key: key);
+        );
 
   @override
   Widget build(BuildContext context) {

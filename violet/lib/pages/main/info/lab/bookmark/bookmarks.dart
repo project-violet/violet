@@ -19,10 +19,10 @@ class LabBookmarkPage extends StatefulWidget {
   final String? version;
 
   const LabBookmarkPage({
-    Key? key,
+    super.key,
     required this.userAppId,
     this.version,
-  }) : super(key: key);
+  });
 
   @override
   State<LabBookmarkPage> createState() => _BookmarkPageState();

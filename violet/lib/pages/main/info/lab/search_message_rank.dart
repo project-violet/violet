@@ -16,7 +16,7 @@ class SearchMessageRankPageMemory {
 }
 
 class SearchMessageRankPage extends StatefulWidget {
-  const SearchMessageRankPage({Key? key}) : super(key: key);
+  const SearchMessageRankPage({super.key});
 
   @override
   State<SearchMessageRankPage> createState() => _SearchMessageRankPageState();

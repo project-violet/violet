@@ -44,7 +44,7 @@ bool blurred = false;
 class SearchPage extends StatefulWidget {
   final String? searchKeyWord;
 
-  const SearchPage({Key? key, this.searchKeyWord}) : super(key: key);
+  const SearchPage({super.key, this.searchKeyWord});
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -559,12 +559,12 @@ class ResultPanelWidget extends StatelessWidget {
   final Map<String, GlobalKey> itemKeys;
 
   const ResultPanelWidget({
-    Key? key,
+    super.key,
     required this.resultList,
     required this.dateTime,
     required this.sliverKey,
     required this.itemKeys,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

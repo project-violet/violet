@@ -7,7 +7,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 
 class DownloadImageMenu extends StatelessWidget {
-  const DownloadImageMenu({Key? key}) : super(key: key);
+  const DownloadImageMenu({super.key});
 
   Color getColor(int i) {
     return Settings.themeWhat ? Colors.grey.shade200 : Colors.grey.shade900;

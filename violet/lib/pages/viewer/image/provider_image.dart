@@ -34,14 +34,14 @@ class ProviderImage extends StatefulWidget {
   final int index;
 
   const ProviderImage({
-    Key? key,
+    super.key,
     required this.getxId,
     required this.imgKey,
     required this.imgUrl,
     required this.imgHeader,
     required this.imageWidgetBuilder,
     required this.index,
-  }) : super(key: key);
+  });
 
   @override
   State<ProviderImage> createState() => _ProviderImageState();

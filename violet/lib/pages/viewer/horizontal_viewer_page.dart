@@ -16,9 +16,9 @@ import 'package:violet/settings/settings_wrapper.dart';
 class HorizontalViewerPage extends StatefulWidget {
   final String getxId;
   const HorizontalViewerPage({
-    Key? key,
+    super.key,
     required this.getxId,
-  }) : super(key: key);
+  });
 
   @override
   State<HorizontalViewerPage> createState() => _HorizontalViewerPageState();

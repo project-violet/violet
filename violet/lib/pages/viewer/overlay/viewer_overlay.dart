@@ -40,9 +40,9 @@ class ViewerOverlay extends StatefulWidget {
   final String getxId;
 
   const ViewerOverlay({
-    Key? key,
+    super.key,
     required this.getxId,
-  }) : super(key: key);
+  });
 
   @override
   State<ViewerOverlay> createState() => _ViewerOverlayState();

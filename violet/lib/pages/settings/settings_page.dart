@@ -146,7 +146,7 @@ class ExCountry extends Country {
 }
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({super.key});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -2044,9 +2044,9 @@ class _SettingsPageState extends State<SettingsPage>
               }
 
               int count = 0;
-              EHBookmark.bookmarkInfo!.forEach((element) {
+              for (var element in EHBookmark.bookmarkInfo!) {
                 count += element.length;
-              });
+              }
 
               var qqq = await showYesNoDialog(
                   context,

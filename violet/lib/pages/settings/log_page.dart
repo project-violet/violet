@@ -6,7 +6,7 @@ import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 
 class LogPage extends StatefulWidget {
-  const LogPage({Key? key}) : super(key: key);
+  const LogPage({super.key});
 
   @override
   State<LogPage> createState() => _LogPageState();

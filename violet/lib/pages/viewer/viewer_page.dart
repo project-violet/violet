@@ -4,7 +4,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -27,10 +26,11 @@ import 'package:violet/script/script_manager.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/util/call_once.dart';
+import 'package:violet/util/evict_image_urls.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class ViewerPage extends StatefulWidget {
-  const ViewerPage({Key? key}) : super(key: key);
+  const ViewerPage({super.key});
 
   @override
   State<ViewerPage> createState() => _ViewerPageState();
@@ -166,9 +166,7 @@ class _ViewerPageState extends State<ViewerPage> {
   _dispose() {
     PaintingBinding.instance.imageCache.clear();
     if (_pageInfo.useWeb) {
-      _pageInfo.uris.forEach((element) async {
-        await CachedNetworkImageProvider(element).evict();
-      });
+      evictImageUrls(_pageInfo.uris);
     }
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
       SystemUiOverlay.top,

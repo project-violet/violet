@@ -22,7 +22,7 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 class ViewerThumbnail extends StatefulWidget {
   final int viewedPage;
 
-  const ViewerThumbnail({Key? key, required this.viewedPage}) : super(key: key);
+  const ViewerThumbnail({super.key, required this.viewedPage});
 
   @override
   State<ViewerThumbnail> createState() => _ViewerThumbnailState();
@@ -38,9 +38,9 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
     super.didChangeDependencies();
 
     _pageInfo = Provider.of<ViewerPageProvider>(context);
-    List.generate(_pageInfo.uris.length, (index) => index).forEach((element) {
-      itemKeys.add(GlobalKey());
-    });
+    itemKeys.addAll(
+      Iterable.generate(_pageInfo.uris.length, (index) => GlobalKey()),
+    );
 
     if (_pageInfo.useFileSystem) _jumpToViewedPage();
   }

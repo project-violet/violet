@@ -58,7 +58,7 @@ final _contactUri = Uri(
 final _gitHubUri = Uri.tryParse('https://github.com/project-violet/');
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+  const MainPage({super.key});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -309,7 +309,7 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
 }
 
 class _VersionAreaWidget extends StatefulWidget {
-  const _VersionAreaWidget({Key? key}) : super(key: key);
+  const _VersionAreaWidget();
 
   @override
   State<_VersionAreaWidget> createState() => _VersionAreaWidgetState();
@@ -531,7 +531,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
 }
 
 class _StatAreaWidget extends StatelessWidget {
-  const _StatAreaWidget({Key? key}) : super(key: key);
+  const _StatAreaWidget();
 
   String numberWithComma(int param) {
     return NumberFormat('###,###,###,###').format(param).replaceAll(' ', '');
@@ -616,9 +616,7 @@ class _StatAreaWidget extends StatelessWidget {
 }
 
 class _ServiceAreaWidget extends StatelessWidget {
-  const _ServiceAreaWidget({
-    Key? key,
-  }) : super(key: key);
+  const _ServiceAreaWidget();
 
   @override
   Widget build(BuildContext context) {
@@ -729,10 +727,9 @@ class _BuildGroupWidget extends StatelessWidget {
   final Widget content;
 
   const _BuildGroupWidget({
-    Key? key,
     required this.name,
     required this.content,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

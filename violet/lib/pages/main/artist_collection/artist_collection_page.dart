@@ -10,7 +10,7 @@ import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 
 class ArtistCollectionPage extends StatefulWidget {
-  const ArtistCollectionPage({Key? key}) : super(key: key);
+  const ArtistCollectionPage({super.key});
 
   @override
   State<ArtistCollectionPage> createState() => _ArtistCollectionPageState();

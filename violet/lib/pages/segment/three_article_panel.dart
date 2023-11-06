@@ -17,12 +17,12 @@ class ThreeArticlePanel extends StatelessWidget {
   final List<QueryResult> articles;
 
   const ThreeArticlePanel({
-    Key? key,
+    super.key,
     required this.tappedRoute,
     required this.title,
     required this.count,
     required this.articles,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

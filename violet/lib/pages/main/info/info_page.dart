@@ -14,7 +14,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 
 class InfoPage extends StatefulWidget {
-  const InfoPage({Key? key}) : super(key: key);
+  const InfoPage({super.key});
 
   @override
   State<InfoPage> createState() => _InfoPageState();

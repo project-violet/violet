@@ -32,10 +32,10 @@ class DataBaseDownloadPage extends StatefulWidget {
   final bool isSync;
 
   const DataBaseDownloadPage({
-    Key? key,
+    super.key,
     this.dbType,
     this.isSync = false,
-  }) : super(key: key);
+  });
 
   @override
   State<DataBaseDownloadPage> createState() => DataBaseDownloadPageState();

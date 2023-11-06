@@ -7,7 +7,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 
 class ImportFromEHPage extends StatefulWidget {
-  const ImportFromEHPage({Key? key}) : super(key: key);
+  const ImportFromEHPage({super.key});
 
   @override
   State<ImportFromEHPage> createState() => _ImportFromEHPageState();
