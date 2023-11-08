@@ -22,7 +22,6 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:mdi/mdi.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:saf/saf.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -1631,7 +1630,7 @@ class _SettingsPageState extends State<SettingsPage>
                     );
                     if (dialog != null && dialog == true) {
                       try {
-                        if (await Permission.storage.isGranted) {
+                        if (await Permission.manageExternalStorage.isGranted) {
                           var prevDir = Directory(Settings.downloadBasePath);
                           if (await prevDir.exists()) {
                             await prevDir.rename(text.text);
@@ -1921,35 +1920,6 @@ class _SettingsPageState extends State<SettingsPage>
             title: Text(Translations.of(context).trans('importingbookmark')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
-              if (!await Permission.storage.isGranted) {
-                if (await Permission.storage.request() ==
-                    PermissionStatus.denied) {
-                  flutterToast.showToast(
-                    child: ToastWrapper(
-                      isCheck: false,
-                      msg: Translations.of(context).trans('noauth'),
-                    ),
-                    gravity: ToastGravity.BOTTOM,
-                    toastDuration: const Duration(seconds: 4),
-                  );
-                  return;
-                }
-              }
-
-              if (Platform.isAndroid) {
-                final ext = await getExternalStorageDirectory();
-
-                final saf = Saf(ext!.path);
-                bool? isGranted =
-                    await saf.getDirectoryPermission(isDynamic: false);
-
-                if (isGranted != null && isGranted) {
-                  // Perform some file operations
-                } else {
-                  // failed to get the permission
-                }
-              }
-
               await FilePicker.platform.clearTemporaryFiles();
               final filePickerResult = await FilePicker.platform.pickFiles();
               final pickedFilePath = filePickerResult?.files.singleOrNull?.path;
@@ -2007,22 +1977,6 @@ class _SettingsPageState extends State<SettingsPage>
                   fileNameToSaveAs: 'violet-bookmarks.db',
                 );
               } else {
-                if (!await Permission.storage.isGranted) {
-                  if (await Permission.storage.request() ==
-                      PermissionStatus.denied) {
-                    flutterToast.showToast(
-                      child: ToastWrapper(
-                        isCheck: false,
-                        msg: Translations.of(context).trans('noauth'),
-                      ),
-                      gravity: ToastGravity.BOTTOM,
-                      toastDuration: const Duration(seconds: 4),
-                    );
-
-                    return;
-                  }
-                }
-
                 final selectedPath =
                     await FilePicker.platform.getDirectoryPath();
 

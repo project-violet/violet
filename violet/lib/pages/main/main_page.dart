@@ -231,8 +231,9 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
         return;
       }
 
-      if (!await Permission.storage.isGranted) {
-        if (await Permission.storage.request() == PermissionStatus.denied) {
+      if (!await Permission.manageExternalStorage.isGranted) {
+        if (await Permission.manageExternalStorage.request() ==
+            PermissionStatus.denied) {
           await showOkDialog(context,
               'If you do not allow file permissions, you cannot continue :(');
           return;
