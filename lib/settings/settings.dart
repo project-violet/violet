@@ -261,7 +261,7 @@ class Settings {
         await prefs.setBool('downloadbasepathcc1', true);
 
         try {
-          if (await Permission.storage.isGranted) {
+          if (await Permission.manageExternalStorage.isGranted) {
             var prevDir = Directory(join(path, 'Violet'));
             if (await prevDir.exists()) {
               await prevDir.rename(join(path, '.violet'));
