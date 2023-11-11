@@ -19,6 +19,7 @@ import 'package:violet/pages/main/main_page.dart';
 import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/segment/double_tap_to_top.dart';
 import 'package:violet/pages/settings/settings_page.dart';
+import 'package:violet/platform/misc.dart';
 import 'package:violet/script/script_webview.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/update/update_manager.dart';
@@ -299,6 +300,10 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
 
         if (_lastPopAt != null &&
             now.difference(_lastPopAt!) <= const Duration(seconds: 2)) {
+          if (Platform.isAndroid) {
+            await PlatformMiscMethods.instance.finishMainActivity();
+          }
+
           return true;
         }
 
