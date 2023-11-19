@@ -9,7 +9,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 
 class SearchType extends StatelessWidget {
-  const SearchType({Key? key}) : super(key: key);
+  const SearchType({super.key});
 
   Color getColor(int i) {
     return Settings.themeWhat

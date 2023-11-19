@@ -7,7 +7,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 
 class DownloadFeaturesMenu extends StatelessWidget {
-  const DownloadFeaturesMenu({Key? key}) : super(key: key);
+  const DownloadFeaturesMenu({super.key});
 
   @override
   Widget build(BuildContext context) {

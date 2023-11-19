@@ -14,7 +14,7 @@ class ScriptWebViewProxy {
 }
 
 class ScriptWebView extends StatefulWidget {
-  const ScriptWebView({Key? key}) : super(key: key);
+  const ScriptWebView({super.key});
 
   @override
   State<ScriptWebView> createState() => _ScriptWebViewState();

@@ -44,13 +44,13 @@ class ArtistInfoPage extends StatefulWidget {
   final bool isCharacter;
 
   const ArtistInfoPage({
-    Key? key,
+    super.key,
     required this.artist,
     this.isGroup = false,
     this.isUploader = false,
     this.isSeries = false,
     this.isCharacter = false,
-  }) : super(key: key);
+  });
 
   @override
   State<ArtistInfoPage> createState() => _ArtistInfoPageState();
@@ -135,8 +135,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       //
       var ffstat = <String, int>{};
 
-      cc.forEach((element) {
-        if (element.tags() == null) return;
+      for (var element in cc) {
+        if (element.tags() == null) continue;
         (element.tags() as String)
             .split('|')
             .where((element) => element != '')
@@ -152,7 +152,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           if (!ffstat.containsKey(element)) ffstat[element] = 0;
           ffstat[element] = ffstat[element]! + 1;
         });
-      });
+      }
 
       ffstat.forEach((key, value) {
         lff.add(Tuple2<String, int>(key, value));

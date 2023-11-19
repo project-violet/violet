@@ -11,7 +11,7 @@ import 'package:violet/pages/lock/lock_screen.dart';
 import 'package:violet/settings/settings.dart';
 
 class LockSettingPage extends StatefulWidget {
-  const LockSettingPage({Key? key}) : super(key: key);
+  const LockSettingPage({super.key});
 
   @override
   State<LockSettingPage> createState() => _LockSettingPageState();

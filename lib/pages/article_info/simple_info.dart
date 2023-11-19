@@ -16,7 +16,7 @@ class SimpleInfoWidget extends StatelessWidget {
   final FlareControls _flareController = FlareControls();
   static final DateFormat _dateFormat = DateFormat(' yyyy/MM/dd HH:mm');
 
-  SimpleInfoWidget({Key? key}) : super(key: key);
+  SimpleInfoWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

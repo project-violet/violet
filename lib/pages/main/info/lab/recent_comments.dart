@@ -10,7 +10,7 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/server/community/anon.dart';
 
 class LabRecentComments extends StatefulWidget {
-  const LabRecentComments({Key? key}) : super(key: key);
+  const LabRecentComments({super.key});
 
   @override
   State<LabRecentComments> createState() => _LabRecentCommentsState();

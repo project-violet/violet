@@ -22,11 +22,12 @@ import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/server/violet.dart';
+import 'package:violet/util/evict_image_urls.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/v_cached_network_image.dart';
 
 class LabSearchMessage extends StatefulWidget {
-  const LabSearchMessage({Key? key}) : super(key: key);
+  const LabSearchMessage({super.key});
 
   @override
   State<LabSearchMessage> createState() => _LabSearchMessageState();
@@ -91,11 +92,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
     PaintingBinding.instance.imageCache.clear();
     imageCache.clearLiveImages();
     imageCache.clear();
-    if (_urls != null) {
-      _urls!.forEach((element) async {
-        await CachedNetworkImageProvider(element).evict();
-      });
-    }
+    evictImageUrls(_urls);
     super.dispose();
   }
 
@@ -314,9 +311,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                     .toList()))
                         .toList();
 
-                    _urls!.forEach((element) async {
-                      await CachedNetworkImageProvider(element).evict();
-                    });
+                    evictImageUrls(_urls);
 
                     _height = List<double>.filled(messages.length, 0);
                     _keys = List<GlobalKey>.generate(
@@ -435,9 +430,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                 .toList()))
         .toList();
 
-    _urls!.forEach((element) async {
-      await CachedNetworkImageProvider(element).evict();
-    });
+    evictImageUrls(_urls);
 
     _height = List<double>.filled(messages.length, 0);
     _keys = List<GlobalKey>.generate(messages.length, (index) => GlobalKey());

@@ -71,9 +71,9 @@ class SeriesFinder {
     }
 
     seriesList.sort((x, y) => x.length.compareTo(y.length));
-    seriesList.forEach((element) {
+    for (var element in seriesList) {
       print('[${element.length}] ${element.first.artists()}');
-    });
+    }
   }
 
   static Future<void> doFind2() async {
@@ -150,8 +150,8 @@ class SeriesFinder {
     }
 
     seriesList.sort((x, y) => x.item2.length.compareTo(y.item2.length));
-    seriesList.forEach((element) {
+    for (var element in seriesList) {
       print('[${element.item2.length}] ${element.item1}');
-    });
+    }
   }
 }

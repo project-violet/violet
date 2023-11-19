@@ -6,7 +6,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/version/update_sync.dart';
 
 class VioletPage extends StatelessWidget {
-  const VioletPage({Key? key}) : super(key: key);
+  const VioletPage({super.key});
 
   @override
   Widget build(BuildContext context) {

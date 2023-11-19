@@ -16,7 +16,7 @@ import 'package:violet/widgets/search_bar.dart';
 class ViewerGallery extends StatefulWidget {
   final int viewedPage;
 
-  const ViewerGallery({Key? key, required this.viewedPage}) : super(key: key);
+  const ViewerGallery({super.key, required this.viewedPage});
 
   @override
   State<ViewerGallery> createState() => _ViewerGalleryState();
@@ -30,10 +30,11 @@ class _ViewerGalleryState extends State<ViewerGallery> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
     _pageInfo = Provider.of<ViewerPageProvider>(context);
-    List.generate(_pageInfo.uris.length, (index) => index).forEach((element) {
-      itemKeys.add(GlobalKey());
-    });
+    itemKeys.addAll(
+      Iterable.generate(_pageInfo.uris.length, (index) => GlobalKey()),
+    );
 
     Future.value(1).then((value) {
       var row = widget.viewedPage ~/ 4;

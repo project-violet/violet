@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 
 class DoubleViewerPage extends StatefulWidget {
-  const DoubleViewerPage({Key? key}) : super(key: key);
+  const DoubleViewerPage({super.key});
 
   @override
   State<DoubleViewerPage> createState() => _DoubleViewerPageState();

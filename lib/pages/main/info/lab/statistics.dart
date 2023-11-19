@@ -21,7 +21,7 @@ import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/settings/settings.dart';
 
 class Statistics extends StatefulWidget {
-  const Statistics({Key? key}) : super(key: key);
+  const Statistics({super.key});
 
   @override
   State<Statistics> createState() => _StatisticsState();
@@ -62,11 +62,11 @@ class _StatisticsState extends State<Statistics> {
                 totalRead = value.length;
                 var overap = HashSet<String>();
                 var rr = <ArticleReadLog>[];
-                value.forEach((element) {
-                  if (overap.contains(element.articleId())) return;
+                for (var element in value) {
+                  if (overap.contains(element.articleId())) continue;
                   rr.add(element);
                   overap.add(element.articleId());
-                });
+                }
                 pureRead = rr.length;
                 return rr;
               }));
@@ -90,8 +90,8 @@ class _StatisticsState extends State<Statistics> {
       var ffstat = <String, int>{};
 
       if (!_allowOverlap) {
-        query.results!.forEach((element) {
-          if (element.tags() == null) return;
+        for (var element in query.results!) {
+          if (element.tags() == null) continue;
           (element.tags() as String)
               .split('|')
               .where((element) => element != '')
@@ -107,18 +107,18 @@ class _StatisticsState extends State<Statistics> {
             if (!ffstat.containsKey(element)) ffstat[element] = 0;
             ffstat[element] = ffstat[element]! + 1;
           });
-        });
+        }
       } else {
         final log =
             await User.getInstance().then((value) => value.getUserLog());
         final idMap = <String, QueryResult>{};
-        query.results!.forEach((element) {
+        for (var element in query.results!) {
           idMap[element.id().toString()] = element;
-        });
-        log.forEach((element) {
-          if (!idMap.containsKey(element.articleId())) return;
+        }
+        for (var element in log) {
+          if (!idMap.containsKey(element.articleId())) continue;
           final qr = idMap[element.articleId()]!;
-          if (qr.tags() == null) return;
+          if (qr.tags() == null) continue;
           (qr.tags() as String)
               .split('|')
               .where((element) => element != '')
@@ -134,7 +134,7 @@ class _StatisticsState extends State<Statistics> {
             if (!ffstat.containsKey(element)) ffstat[element] = 0;
             ffstat[element] = ffstat[element]! + 1;
           });
-        });
+        }
       }
 
       ffstat.forEach((key, value) {
@@ -272,7 +272,7 @@ class _StatisticsState extends State<Statistics> {
     }
 
     totalPureSeconds = 0;
-    events.entries.forEach((element) {
+    for (var element in events.entries) {
       var accSeconds = 0;
 
       bool stopAcc = false;
@@ -307,7 +307,7 @@ class _StatisticsState extends State<Statistics> {
       }
 
       totalPureSeconds += accSeconds;
-    });
+    }
   }
 
   bool _alreadyCacheAnalysis = false;

@@ -17,10 +17,10 @@ class RestoreBookmarkPage extends StatefulWidget {
   final bool restoreWithRecord;
 
   const RestoreBookmarkPage({
-    Key? key,
+    super.key,
     required this.source,
     required this.restoreWithRecord,
-  }) : super(key: key);
+  });
 
   @override
   State<RestoreBookmarkPage> createState() => _RestoreBookmarkPageState();

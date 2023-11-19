@@ -24,11 +24,11 @@ class LabGroupArtistList extends StatefulWidget {
   final int groupId;
 
   const LabGroupArtistList({
-    Key? key,
+    super.key,
     required this.artists,
     required this.name,
     required this.groupId,
-  }) : super(key: key);
+  });
 
   @override
   State<LabGroupArtistList> createState() => _GroupArtistListState();

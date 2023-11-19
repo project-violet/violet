@@ -27,8 +27,7 @@ class GroupArtistList extends StatefulWidget {
   final String name;
   final int groupId;
 
-  const GroupArtistList({Key? key, required this.name, required this.groupId})
-      : super(key: key);
+  const GroupArtistList({super.key, required this.name, required this.groupId});
 
   @override
   State<GroupArtistList> createState() => _GroupArtistListState();
@@ -347,10 +346,10 @@ class _GroupArtistListState extends State<GroupArtistList>
       fabButtons: <Widget>[
         FloatingActionButton(
           onPressed: () {
-            artists.forEach((element) {
+            for (var element in artists) {
               checked
                   .add(Tuple2<int, String>(element.type(), element.artist()));
-            });
+            }
             setState(() {});
           },
           elevation: 4,
@@ -366,9 +365,9 @@ class _GroupArtistListState extends State<GroupArtistList>
                     .replaceAll('%s', checked.length.toString()),
                 Translations.of(context).trans('bookmark'))) {
               var bookmark = await Bookmark.getInstance();
-              checked.forEach((element) async {
-                bookmark.unbookmarkArtist(element.item2, element.item1);
-              });
+              for (var element in checked) {
+                await bookmark.unbookmarkArtist(element.item2, element.item1);
+              }
               checked.clear();
               refresh();
               setState(() {

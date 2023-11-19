@@ -17,7 +17,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class LabTopRecent extends StatefulWidget {
-  const LabTopRecent({Key? key}) : super(key: key);
+  const LabTopRecent({super.key});
 
   @override
   State<LabTopRecent> createState() => _LabTopRecentState();
@@ -70,18 +70,18 @@ class _LabTopRecentState extends State<LabTopRecent> {
       if (query.results!.isEmpty) return;
 
       var qr = <String, QueryResult>{};
-      query.results!.forEach((element) {
+      for (var element in query.results!) {
         qr[element.id().toString()] = element;
-      });
+      }
 
       var result = <Tuple2<QueryResult, int>>[];
-      xrecords.forEach((element) {
+      for (var element in xrecords) {
         if (qr[element.item1.toString()] == null) {
-          return;
+          continue;
         }
         result.add(Tuple2<QueryResult, int>(
             qr[element.item1.toString()]!, element.item2));
-      });
+      }
 
       records = result;
 

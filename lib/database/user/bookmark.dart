@@ -290,9 +290,9 @@ class Bookmark {
       groups[y] = tmp;
     }
 
-    groups.forEach((element) {
+    for (var element in groups) {
       print(element.gorder());
-    });
+    }
 
     if (from < to) {
       for (; from < to; from++) {
@@ -306,9 +306,9 @@ class Bookmark {
       }
     }
 
-    groups.forEach((element) {
+    for (var element in groups) {
       print(element.gorder());
-    });
+    }
   }
 
   Future<List<BookmarkArticle>> getArticle() async {
@@ -354,9 +354,9 @@ class Bookmark {
     if (bookmarkSet == null) {
       var article = await getArticle();
       bookmarkSet = HashSet<int>();
-      article.forEach((element) {
+      for (var element in article) {
         bookmarkSet!.add(int.parse(element.article()));
-      });
+      }
     }
 
     return bookmarkSet!.contains(id);
@@ -385,9 +385,9 @@ class Bookmark {
       bookmarkArtistSet![2] = HashSet<String>();
       bookmarkArtistSet![3] = HashSet<String>();
       bookmarkArtistSet![4] = HashSet<String>();
-      artist.forEach((element) {
+      for (var element in artist) {
         bookmarkArtistSet![element.type()]!.add(element.artist());
-      });
+      }
     }
 
     return bookmarkArtistSet![type]!.contains(name);
@@ -398,9 +398,9 @@ class Bookmark {
     if (bookmarkUserSet == null) {
       var user = await getUser();
       bookmarkUserSet = HashSet<String>();
-      user.forEach((element) {
+      for (var element in user) {
         bookmarkUserSet!.add(element.user());
-      });
+      }
     }
 
     return bookmarkUserSet!.contains(user);
@@ -411,9 +411,9 @@ class Bookmark {
     if (historyUserSet == null) {
       var user = await getHistoryUser();
       historyUserSet = HashSet<String>();
-      user.forEach((element) {
+      for (var element in user) {
         historyUserSet!.add(element.user());
-      });
+      }
     }
 
     return historyUserSet!.contains(user);

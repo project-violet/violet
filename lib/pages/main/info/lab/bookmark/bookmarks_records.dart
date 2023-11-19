@@ -15,7 +15,7 @@ import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 class LabRecordViewPage extends StatelessWidget {
   final List<dynamic> records;
 
-  const LabRecordViewPage({Key? key, required this.records}) : super(key: key);
+  const LabRecordViewPage({super.key, required this.records});
 
   @override
   Widget build(BuildContext context) {

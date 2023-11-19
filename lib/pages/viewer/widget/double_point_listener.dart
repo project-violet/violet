@@ -10,10 +10,10 @@ class DoublePointListener extends StatefulWidget {
   final BoolCallback onStateChanged;
 
   const DoublePointListener({
-    Key? key,
+    super.key,
     required this.child,
     required this.onStateChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<DoublePointListener> createState() => __DoublePointListener();

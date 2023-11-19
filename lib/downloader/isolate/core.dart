@@ -55,9 +55,9 @@ class IsolateDownloaderTask {
     if (task.accept != null) header['accept'] = task.accept!;
     if (task.userAgent != null) header['user-agent'] = task.userAgent!;
     if (task.headers != null) {
-      task.headers!.entries.forEach((element) {
+      for (var element in task.headers!.entries) {
         header[element.key.toLowerCase()] = element.value;
-      });
+      }
     }
     return IsolateDownloaderTask(
       id: taskId,
@@ -282,7 +282,9 @@ void _cancelTask(int taskId) {
 /// cancel all tasks and remove dqueue
 void _terminate() {
   _dqueue.clear();
-  _workingMap.entries.forEach((element) => element.value.cancelToken!.cancel());
+  for (var value in _workingMap.values) {
+    value.cancelToken!.cancel();
+  }
 }
 
 void _modifyTaskPoolSize(int sz) {

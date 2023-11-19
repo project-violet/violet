@@ -14,12 +14,12 @@ class CustomDoubleTapGestureDectector extends StatefulWidget {
   final Duration doubleTapMaxDelay;
 
   const CustomDoubleTapGestureDectector({
-    Key? key,
+    super.key,
     required this.onTap,
     required this.onDoubleTap,
     // ignore: unused_element
     this.doubleTapMaxDelay = const Duration(milliseconds: 200),
-  }) : super(key: key);
+  });
 
   @override
   State<CustomDoubleTapGestureDectector> createState() =>
