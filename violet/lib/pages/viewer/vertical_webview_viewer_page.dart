@@ -13,9 +13,9 @@ import 'package:violet/pages/viewer/viewer_controller.dart';
 class VerticalWebviewViewerPage extends StatefulWidget {
   final String getxId;
   const VerticalWebviewViewerPage({
-    Key? key,
+    super.key,
     required this.getxId,
-  }) : super(key: key);
+  });
 
   @override
   State<VerticalWebviewViewerPage> createState() =>

@@ -54,7 +54,7 @@ class _ArtistSearchState extends State<ArtistSearch> {
       'uploader': HitomiIndexs.tagUploader,
     };
 
-    this.tagGroup.entries.forEach((element) {
+    for (var element in this.tagGroup.entries) {
       var key = element.key;
 
       if (key.startsWith('tag:')) {
@@ -67,7 +67,7 @@ class _ArtistSearchState extends State<ArtistSearch> {
         tagGroup[HitomiIndexs.tagIndex[key.replaceAll('_', ' ')].toString()] =
             element.value;
       }
-    });
+    }
 
     print(tagGroup);
 

@@ -31,12 +31,12 @@ class LabGroupArticleListPage extends StatefulWidget {
   final int groupId;
 
   const LabGroupArticleListPage({
-    Key? key,
+    super.key,
     required this.articles,
     required this.artists,
     required this.name,
     required this.groupId,
-  }) : super(key: key);
+  });
 
   @override
   State<LabGroupArticleListPage> createState() => _GroupArticleListPageState();
@@ -88,14 +88,14 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
               queryRaw + (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''))
           .then((value) async {
         var qr = <String, QueryResult>{};
-        value.results!.forEach((element) {
+        for (var element in value.results!) {
           qr[element.id().toString()] = element;
-        });
+        }
 
         var result = <QueryResult>[];
-        cc.forEach((element) async {
+        for (var element in cc) {
           if (qr[element.article()] == null) {
-            // TODO: Handle qurey not found
+            // TODO: Handle query not found
             var headers = await ScriptManager.runHitomiGetHeaderContent(
                 element.article());
             var hh = await http.get(
@@ -113,10 +113,10 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
             setState(() {
               _shouldRebuild = true;
             });
-            return;
+          } else {
+            result.add(qr[element.article()]!);
           }
-          result.add(qr[element.article()]!);
-        });
+        }
 
         queryResult = result;
         _applyFilter();
@@ -307,7 +307,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
   void _applyFilter() {
     var result = <QueryResult>[];
     var isOr = _filterController.isOr;
-    queryResult.forEach((element) {
+    for (var element in queryResult) {
       // key := <group>:<name>
       var succ = !_filterController.isOr;
       _filterController.tagStates.forEach((key, value) {
@@ -343,7 +343,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
         }
       });
       if (succ) result.add(element);
-    });
+    }
 
     filterResult = result;
     isFilterUsed = true;

@@ -25,7 +25,7 @@ import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 class LabUserRecentRecords extends StatefulWidget {
   final String userAppId;
 
-  const LabUserRecentRecords(this.userAppId, {Key? key}) : super(key: key);
+  const LabUserRecentRecords(this.userAppId, {super.key});
 
   @override
   State<LabUserRecentRecords> createState() => _LabUserRecentRecordsState();
@@ -75,8 +75,8 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
 
       var ffstat = <String, int>{};
 
-      query.results!.forEach((element) {
-        if (element.tags() == null) return;
+      for (var element in query.results!) {
+        if (element.tags() == null) continue;
         (element.tags() as String)
             .split('|')
             .where((element) => element != '')
@@ -92,7 +92,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
           if (!ffstat.containsKey(element)) ffstat[element] = 0;
           ffstat[element] = ffstat[element]! + 1;
         });
-      });
+      }
 
       ffstat.forEach((key, value) {
         lff.add(Tuple2<String, int>(key, value));
@@ -107,18 +107,18 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
       /* -- Statistics */
 
       var qr = <String, QueryResult>{};
-      query.results!.forEach((element) {
+      for (var element in query.results!) {
         qr[element.id().toString()] = element;
-      });
+      }
 
       var result = <Tuple2<QueryResult, int>>[];
-      xrecords.forEach((element) {
+      for (var element in xrecords) {
         if (qr[element.item2.toString()] == null) {
-          return;
+          continue;
         }
         result.add(Tuple2<QueryResult, int>(
             qr[element.item2.toString()]!, element.item3));
-      });
+      }
 
       records.insertAll(0, result);
 

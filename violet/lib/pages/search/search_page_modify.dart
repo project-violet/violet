@@ -12,10 +12,10 @@ class SearchPageModifyPage extends StatefulWidget {
   final int maxPage;
 
   const SearchPageModifyPage({
-    Key? key,
+    super.key,
     required this.curPage,
     required this.maxPage,
-  }) : super(key: key);
+  });
 
   @override
   State<SearchPageModifyPage> createState() => _SearchPageModifyPageState();

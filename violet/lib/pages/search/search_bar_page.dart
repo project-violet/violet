@@ -26,11 +26,11 @@ class SearchBarPage extends StatefulWidget {
   final String initText;
 
   const SearchBarPage({
-    Key? key,
+    super.key,
     required this.assetProvider,
     required this.initText,
     required this.heroController,
-  }) : super(key: key);
+  });
 
   @override
   State<SearchBarPage> createState() => _SearchBarPageState();
@@ -102,12 +102,12 @@ class _SearchBarPageState extends State<SearchBarPage>
         'page',
       ];
 
-      prefixList.forEach(
-        (element) => _searchLists.add(
+      for (var element in prefixList) {
+        _searchLists.add(
           Tuple2<DisplayedTag, int>(
               DisplayedTag(group: 'prefix', name: element), 0),
-        ),
-      );
+        );
+      }
     }
 
     _initBottomPadding ??= (mediaQuery.padding + mediaQuery.viewInsets).bottom;

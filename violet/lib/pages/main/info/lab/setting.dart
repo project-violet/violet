@@ -7,7 +7,7 @@ import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/settings/settings.dart';
 
 class LabSetting extends StatefulWidget {
-  const LabSetting({Key? key}) : super(key: key);
+  const LabSetting({super.key});
 
   @override
   State<LabSetting> createState() => _LabSettingState();

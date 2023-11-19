@@ -8,7 +8,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 
 class DBRebuildPage extends StatefulWidget {
-  const DBRebuildPage({Key? key}) : super(key: key);
+  const DBRebuildPage({super.key});
 
   @override
   State<DBRebuildPage> createState() => _DBRebuildPagePageState();

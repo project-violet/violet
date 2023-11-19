@@ -87,8 +87,8 @@ class SyncManager {
 
         와 같은 형식으로 아래쪽이 항상 최신 청크다. 따라서 reversed 탐색을 시도한다.
        */
-      lines.reversed.forEach((element) {
-        if (element.startsWith('#')) return;
+      for (var element in lines.reversed) {
+        if (element.startsWith('#')) continue;
 
         var split = element.split(' ');
         var type = split[0];
@@ -98,12 +98,12 @@ class SyncManager {
         if (type == 'chunk') size = int.parse(split[3]);
 
         // We require only json files when synchronize with chunk.
-        if (type == 'chunk' && !url.endsWith('.json')) return;
+        if (type == 'chunk' && !url.endsWith('.json')) continue;
 
         //
         // 마지막으로 동기화한 시간보다 작은 경우 해당 청크는 무시한다.
         //
-        if (type == 'chunk' && timestamp <= latest!) return;
+        if (type == 'chunk' && timestamp <= latest) continue;
 
         requestSize += size;
         _rows!.add(SyncInfoRecord(
@@ -112,7 +112,7 @@ class SyncManager {
           url: url,
           size: size,
         ));
-      });
+      }
 
       /*
          너무 많은 청크를 다운로드해야하는 경우 동기화를 추천한다.

@@ -10,7 +10,7 @@ import 'package:violet/pages/viewer/viewer_controller.dart';
 class PageLabel extends StatelessWidget {
   late final ViewerController c;
 
-  PageLabel({Key? key, required String getxId}) : super(key: key) {
+  PageLabel({super.key, required String getxId}) {
     c = Get.find(tag: getxId);
   }
 

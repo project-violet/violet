@@ -18,12 +18,12 @@ class FileImage extends StatefulWidget {
   final DoubleCallback? heightCallback;
 
   const FileImage({
-    Key? key,
+    super.key,
     required this.getxId,
     required this.path,
     this.heightCallback,
     this.cachedHeight,
-  }) : super(key: key);
+  });
 
   @override
   State<FileImage> createState() => _FileImageState();
