@@ -234,6 +234,7 @@ class _HotPageState extends ThemeSwitchableState<HotPage>
             : Colors.grey.shade50,
         icon: Theme(
           data: ThemeData(
+              useMaterial3: false,
               iconTheme: IconThemeData(
                   color: !Settings.themeWhat ? Colors.black : Colors.white)),
           child: const Icon(MdiIcons.finance),
@@ -262,6 +263,7 @@ class _HotPageState extends ThemeSwitchableState<HotPage>
         children: [
           Theme(
             data: ThemeData(
+                useMaterial3: false,
                 iconTheme: IconThemeData(
                     color: !Settings.themeWhat ? Colors.black : Colors.white)),
             child: Icon(

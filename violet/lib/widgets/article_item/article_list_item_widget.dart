@@ -502,6 +502,7 @@ class _DetailWidget extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(8, 4, 4, 4),
       child: Theme(
         data: ThemeData(
+            useMaterial3: false,
             iconTheme: IconThemeData(
                 color: !Settings.themeWhat ? Colors.black : Colors.white)),
         child: Column(

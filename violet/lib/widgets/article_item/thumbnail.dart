@@ -300,7 +300,10 @@ class PagesOverlayWidget extends StatelessWidget {
         child: Transform(
           transform: Matrix4.identity()..scale(0.9),
           child: Theme(
-            data: ThemeData(canvasColor: Colors.transparent),
+            data: ThemeData(
+              useMaterial3: false,
+              canvasColor: Colors.transparent,
+            ),
             child: RawChip(
               labelPadding: const EdgeInsets.all(0.0),
               label: Text(

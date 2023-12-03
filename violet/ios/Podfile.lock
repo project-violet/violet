@@ -109,7 +109,7 @@ PODS:
   - Flutter (1.0.0)
   - flutter_downloader (0.0.1):
     - Flutter
-  - flutter_image_compress (1.0.0):
+  - flutter_image_compress_common (1.0.0):
     - Flutter
     - Mantle
     - SDWebImage
@@ -211,7 +211,7 @@ PODS:
   - SDWebImage (5.18.3):
     - SDWebImage/Core (= 5.18.3)
   - SDWebImage/Core (5.18.3)
-  - SDWebImageWebPCoder (0.14.0):
+  - SDWebImageWebPCoder (0.14.2):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - shared_preferences_foundation (0.0.1):
@@ -236,7 +236,7 @@ DEPENDENCIES:
   - firebase_crashlytics (from `.symlinks/plugins/firebase_crashlytics/ios`)
   - Flutter (from `Flutter`)
   - flutter_downloader (from `.symlinks/plugins/flutter_downloader/ios`)
-  - flutter_image_compress (from `.symlinks/plugins/flutter_image_compress/ios`)
+  - flutter_image_compress_common (from `.symlinks/plugins/flutter_image_compress_common/ios`)
   - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
   - flutter_js (from `.symlinks/plugins/flutter_js/ios`)
   - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
@@ -295,8 +295,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_downloader:
     :path: ".symlinks/plugins/flutter_downloader/ios"
-  flutter_image_compress:
-    :path: ".symlinks/plugins/flutter_image_compress/ios"
+  flutter_image_compress_common:
+    :path: ".symlinks/plugins/flutter_image_compress_common/ios"
   flutter_inappwebview:
     :path: ".symlinks/plugins/flutter_inappwebview/ios"
   flutter_js:
@@ -341,7 +341,7 @@ SPEC CHECKSUMS:
   FirebaseSessions: 96e7781e545929cde06dd91088ddbb0841391b43
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_downloader: b7301ae057deadd4b1650dc7c05375f10ff12c39
-  flutter_image_compress: 5a5e9aee05b6553048b8df1c3bc456d0afaac433
+  flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
   flutter_inappwebview: 3d32228f1304635e7c028b0d4252937730bbc6cf
   flutter_js: 95929d4e146e8ceb1c8e1889d8c2065c5d840076
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
@@ -362,7 +362,7 @@ SPEC CHECKSUMS:
   PromisesSwift: 28dca69a9c40779916ac2d6985a0192a5cb4a265
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 96e0c18ef14010b7485210e92fac888587ebb958
-  SDWebImageWebPCoder: 3027af94522d94df79c21c070894c8a2128927ff
+  SDWebImageWebPCoder: 633b813fca24f1de5e076bcd7f720c038b23892b
   shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
   sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
   SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
@@ -372,4 +372,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 3d2608411ef731a5e331f61617c828db1f3917b7
 
-COCOAPODS: 1.13.0
+COCOAPODS: 1.14.2
