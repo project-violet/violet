@@ -93,6 +93,7 @@ class MyApp extends StatelessWidget {
     return DynamicTheme(
       defaultBrightness: Brightness.light,
       data: (brightness) => ThemeData(
+        useMaterial3: false,
         brightness: brightness,
         bottomSheetTheme:
             BottomSheetThemeData(backgroundColor: Colors.black.withOpacity(0)),

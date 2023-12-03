@@ -89,7 +89,7 @@ dependencies:
   flutter_windowmanager: ^0.2.0
   fluttertoast: ^8.0.9
   freezed_annotation:
-  get: ^4.1.4
+  get: ^4.6.6
   gradient_widgets: ^0.6.0
   html: ^0.15.0
   html_unescape: ^2.0.0

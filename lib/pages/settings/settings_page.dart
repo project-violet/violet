@@ -371,6 +371,7 @@ class _SettingsPageState extends State<SettingsPage>
                   await Settings.setThemeBlack(!Settings.themeBlack);
                   DynamicTheme.of(context)!.setThemeData(
                     ThemeData(
+                      useMaterial3: false,
                       brightness: Theme.of(context).brightness,
                       bottomSheetTheme: BottomSheetThemeData(
                           backgroundColor: Colors.black.withOpacity(0)),
@@ -417,6 +418,7 @@ class _SettingsPageState extends State<SettingsPage>
                       await Settings.setThemeFlat(newValue);
                       DynamicTheme.of(context)!.setThemeData(
                         ThemeData(
+                          useMaterial3: false,
                           brightness: Theme.of(context).brightness,
                           bottomSheetTheme: BottomSheetThemeData(
                               backgroundColor: Colors.black.withOpacity(0)),
