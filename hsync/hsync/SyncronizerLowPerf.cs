@@ -220,12 +220,12 @@ namespace hsync
             {
                 try
                 {
-                    var url = $"https://exhentai.org/?next={next}&f_doujinshi=on&f_manga=on&f_artistcg=on&f_gamecg=on&&f_cats=0&f_sname=on&f_stags=on&advsearch=1&f_srdd=2&f_sname=on&f_stags=on&f_sdesc=on";
+                    var url = $"https://exhentai.org/?next={next}&f_doujinshi=on&f_manga=on&f_artistcg=on&f_gamecg=on&f_cats=0&f_sname=on&f_stags=on&advsearch=1&f_sname=on&f_stags=on&f_sdesc=on";
                     var wc = new WebClient();
                     wc.Encoding = Encoding.UTF8;
                     wc.Headers.Add(HttpRequestHeader.Accept, "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
-                    wc.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36");
-                    wc.Headers.Add(HttpRequestHeader.Cookie, "igneous=30e0c0a66;ipb_member_id=2742770;ipb_pass_hash=6042be35e994fed920ee7dd11180b65f;sl=dm_2");
+                    wc.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36");
+                    wc.Headers.Add(HttpRequestHeader.Cookie, "igneous=30e0c0a66;sk=t8inbzaqn45ttyn9f78eanzuqizh;ipb_member_id=2742770;ipb_pass_hash=6042be35e994fed920ee7dd11180b65f;sl=dm_2");
                     var html = wc.DownloadString(url);
 
                     try
@@ -263,12 +263,12 @@ namespace hsync
             {
                 try
                 {
-                    var url = $"https://exhentai.org/?next={next}&f_doujinshi=on&f_manga=on&f_artistcg=on&f_gamecg=on&&f_cats=0&f_sname=on&f_stags=on&f_sh=on&advsearch=1&f_srdd=2&f_sname=on&f_stags=on&f_sdesc=on&f_sh=on";
+                    var url = $"https://exhentai.org/?next={next}&f_doujinshi=on&f_manga=on&f_artistcg=on&f_gamecg=on&f_cats=0&f_sname=on&f_stags=on&f_sh=on&advsearch=1&f_sname=on&f_stags=on&f_sdesc=on&f_sh=on";
                     var wc = new WebClient();
                     wc.Encoding = Encoding.UTF8;
                     wc.Headers.Add(HttpRequestHeader.Accept, "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
                     wc.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36");
-                    wc.Headers.Add(HttpRequestHeader.Cookie, "igneous=30e0c0a66;ipb_member_id=2742770;ipb_pass_hash=6042be35e994fed920ee7dd11180b65f;sl=dm_2");
+                    wc.Headers.Add(HttpRequestHeader.Cookie, "igneous=30e0c0a66;sk=t8inbzaqn45ttyn9f78eanzuqizh;ipb_member_id=2742770;ipb_pass_hash=6042be35e994fed920ee7dd11180b65f;sl=dm_2");
                     var html = wc.DownloadString(url);
 
                     try
