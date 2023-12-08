@@ -85,6 +85,21 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
   }
 
   Future<void> downloadFileAndroid() async {
+    try {
+      await downloadFileAndroidWith('latest', true);
+    } catch(e){
+      await downloadFileAndroidWith('old', false);
+    }
+  }
+  Future<void> downloadFileIOS() async {
+    try {
+      await downloadFileIOSWith('latest', true);
+    } catch(e){
+      await downloadFileIOSWith('old', false);
+    }
+  }
+
+  Future<void> downloadFileAndroidWith(String target, bool _throw) async {
     Dio dio = Dio();
     int oneMega = 1024 * 1024;
     int nu = 0;
@@ -97,6 +112,18 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       if (await File('${dir.path}/db.sql.7z').exists()) {
         await File('${dir.path}/db.sql.7z').delete();
       }
+      switch(target){
+        case 'latest': await SyncManager.checkSyncLatest(_throw); break;
+        case 'old': await SyncManager.checkSyncOld(_throw); break;
+        default: {
+          try {
+            await downloadFileAndroidWith('latest', true);
+          } catch(e){
+            await downloadFileAndroidWith('old', false);
+          }
+          return;
+        }
+      }
       Timer timer = Timer.periodic(
           const Duration(seconds: 1),
           (Timer timer) => setState(() {
@@ -105,7 +132,6 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
                 tlatest = tnu;
                 tnu = 0;
               }));
-      await SyncManager.checkSync();
       await dio.download(
           SyncManager.getLatestDB().getDBDownloadUrl(widget.dbType!),
           '${dir.path}/db.sql.7z', onReceiveProgress: (rec, total) {
@@ -163,9 +189,18 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       await DataBaseManager.reloadInstance();
 
       if (Settings.useOptimizeDatabase) {
-        await deleteUnused();
-
-        await indexing();
+        try {
+          await deleteUnused();
+        } catch(e1,st1){
+          Logger.error('[deleteUnused] E: $e1\n'
+              '$st1');
+        }
+        try {
+          await indexing();
+        } catch(e1,st1){
+          Logger.error('[indexing] E: $e1\n'
+              '$st1');
+        }
       }
 
       if (widget.isSync == true) {
@@ -181,6 +216,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     } catch (e, st) {
       Logger.error('[DBDownload] E: $e\n'
           '$st');
+      if(_throw) throw e;
     }
 
     setState(() {
@@ -189,7 +225,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     });
   }
 
-  Future<void> downloadFileIOS() async {
+  Future<void> downloadFileIOSWith(String target, bool _throw) async {
     Dio dio = Dio();
     int oneMega = 1024 * 1024;
     int nu = 0;
@@ -202,6 +238,19 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       if (await File('$dir/data.db').exists()) {
         await File('$dir/data.db').delete();
       }
+      switch(target){
+        case 'latest': await SyncManager.checkSyncLatest(_throw); break;
+        case 'old': await SyncManager.checkSyncOld(_throw); break;
+        default: {
+          try {
+            await downloadFileIOSWith('latest', true);
+          } catch(e){
+            await downloadFileIOSWith('old', false);
+          }
+          return;
+        }
+      }
+
       Timer timer = Timer.periodic(
           const Duration(seconds: 1),
           (Timer timer) => setState(() {
@@ -210,7 +259,6 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
                 tlatest = tnu;
                 tnu = 0;
               }));
-      await SyncManager.checkSync();
       await dio.download(
           SyncManager.getLatestDB().getDBDownloadUrliOS(widget.dbType!),
           '$dir/data.db', onReceiveProgress: (rec, total) {
@@ -246,9 +294,18 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
 
       await DataBaseManager.reloadInstance();
 
-      if (Settings.useOptimizeDatabase) await deleteUnused();
-
-      await indexing();
+      try {
+        if (Settings.useOptimizeDatabase) await deleteUnused();
+      } catch(e1,st1){
+        Logger.error('[deleteUnused] E: $e1\n'
+            '$st1');
+      }
+      try {
+        await indexing();
+      } catch(e1,st1){
+        Logger.error('[indexing] E: $e1\n'
+            '$st1');
+      }
 
       if (widget.isSync == true) {
         Navigator.pop(context);
@@ -263,6 +320,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     } catch (e, st) {
       Logger.error('[DBDownload] E: $e\n'
           '$st');
+      if(_throw) throw e;
     }
 
     setState(() {
@@ -275,7 +333,6 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     var sql = HitomiManager.translate2query(
             '${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim().isNotEmpty).map((e) => '-$e').join(' ')}')
         .replaceAll(' AND ExistOnHitomi=1', '');
-
     await (await DataBaseManager.getInstance()).delete('HitomiColumnModel',
         'NOT (${sql.substring(sql.indexOf('WHERE') + 6)})', []);
   }
