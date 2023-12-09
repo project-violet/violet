@@ -86,6 +86,9 @@ class P7zip {
 
     final tempDir = await getTemporaryDirectory();
     final libraryFile = File('${tempDir.path}/lib7zr.so');
+    if(await libraryFile.exists()){
+      await libraryFile.delete();
+    }
     final createdFile = await libraryFile.create();
     final openFile = await createdFile.open(mode: FileMode.write);
     final writtenFile =
