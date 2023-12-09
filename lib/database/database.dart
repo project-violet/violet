@@ -48,7 +48,11 @@ class DataBaseManager {
   }
 
   Future checkOpen() async {
-    if (!db!.isOpen) db = await openDatabase(dbPath!);
+    if(db != null){
+      if (!db!.isOpen) db = await openDatabase(dbPath!);
+    } else if(db == null){
+      db = await openDatabase(dbPath!);
+    }
   }
 
   Future<List<Map<String, dynamic>>> query(String str) async {
