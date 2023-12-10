@@ -1713,6 +1713,8 @@ class _SettingsPageState extends State<SettingsPage>
                       text.text = '%(extractor)s/%(id)s/%(file)s.%(ext)s');
                 },
               );
+              // Widget manual = TextButton(onPressed: onPressed, child: child)
+              // TODO: Check download rule is accurately
               var dialog = await showDialog(
                 useRootNavigator: false,
                 context: context,

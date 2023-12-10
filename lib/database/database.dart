@@ -4,6 +4,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -28,9 +29,14 @@ class DataBaseManager {
 
   static Future<DataBaseManager> getInstance() async {
     if (_instance == null) {
-      var dbPath = Platform.isAndroid
-          ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
-          : '${await getDatabasesPath()}/data.db';
+      late final String dbPath;
+      if (Platform.environment.containsKey('FLUTTER_TEST')) {
+        dbPath = join(Directory.current.path, 'test/db/data.db');
+      } else {
+        dbPath = Platform.isAndroid
+            ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
+            : '${await getDatabasesPath()}/data.db';
+      }
       _instance = create(dbPath);
       await _instance!.open();
     }
