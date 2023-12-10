@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/services.dart';
+import 'package:path/path.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/displayed_tag.dart';
@@ -18,11 +19,12 @@ class TagTranslate {
   // <Translated-Andro, Origin>
   static late Map<String, String> _reverseAndroMap;
 
-  static Future<void> init() async {
+  static Future<void> init({String? dir}) async {
     String data;
 
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
-      final file = File('/home/ubuntu/violet/assets/locale/tag/korean.json');
+      final file =
+          File(join(Directory.current.path, 'assets/locale/tag/korean.json'));
       data = await file.readAsString();
     } else {
       data = await rootBundle
