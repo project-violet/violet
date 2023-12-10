@@ -27,7 +27,7 @@ class PageLabel extends StatelessWidget {
               style: TextStyle(
                 foreground: Paint()
                   ..style = PaintingStyle.stroke
-                  ..strokeWidth = Platform.isIOS ? 2.3 : 2.0
+                  ..strokeWidth = 2.0
                   ..color = Colors.black,
               ),
             ),
