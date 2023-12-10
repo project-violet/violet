@@ -103,33 +103,36 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     final bookmark = await Bookmark.getInstance();
     final articles = await bookmark.getArticle();
 
-    var cc = articles
+    final articleList = articles
         .where((e) => e.group() == widget.groupId)
         .toList()
         .reversed
         .toList();
 
-    if (cc.isEmpty) {
+    if (articleList.isEmpty) {
       queryResult = <QueryResult>[];
       filterResult = queryResult;
       _rebuild();
       return;
     }
 
-    final value = await QueryManager.queryIds(
-        cc.map((e) => int.parse(e.article())).toList());
+    final queryIds = await QueryManager.queryIds(
+        articleList.map((e) => int.parse(e.article())).toList());
 
     var qr = <String, QueryResult>{};
-    for (var element in value) {
+    for (var element in queryIds) {
       qr[element.id().toString()] = element;
     }
 
     var result = <QueryResult>[];
-    for (var element in cc) {
+
+    // TODO: fix this hack
+    // ignore: avoid_function_literals_in_foreach_calls
+    articleList.forEach((element) async {
       var article = qr[element.article()];
       article ??= await _tryGetArticleFromHitomi(element.article());
       result.add(article);
-    }
+    });
 
     queryResult = result;
     _applyFilter();
