@@ -40,7 +40,7 @@ class ViewerController extends GetxController {
   var animation = Settings.animation.obs;
   var rightToLeft = Settings.rightToLeft.obs;
   var imgQuality = Settings.imageQuality.obs;
-  var fullscreen = (!Settings.disableFullScreen).obs;
+  var fullscreen = (!Settings.disableFullScreen || Platform.isIOS).obs;
 
   /// horizontal viewer option
   var viewScrollType =
