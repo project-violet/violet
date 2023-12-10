@@ -243,7 +243,7 @@ class _SplashPageState extends State<SplashPage> {
       if (connectivityResult != ConnectivityResult.none) {
         try {
           _changeMessage('check sync...');
-          await SyncManager.checkSync();
+          await SyncManager.checkSyncLatest(true);
 
           if (!SyncManager.firstSync && SyncManager.chunkRequire) {
             setState(() {
