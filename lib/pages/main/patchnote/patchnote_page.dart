@@ -22,10 +22,10 @@ class PatchModel {
 
 final patches = [
   PatchModel(
-    dateTime: DateTime(2023, 12, 4),
-    version: '1.29.1 Patch (HotFix)',
+    dateTime: DateTime(2023, 12, 10),
+    version: '1.29.2 Patch (HotFix)',
     contents: [
-      'fix database locking error',
+      'fix large bookmark group loading error',
     ],
   ),
   PatchModel(
