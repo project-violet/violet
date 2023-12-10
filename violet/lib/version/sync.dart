@@ -41,8 +41,9 @@ class SyncInfoRecord {
 }
 
 class SyncManager {
-  static const String syncInfoURL =
-      'https://raw.githubusercontent.com/violet-dev/sync-data/master/syncversion.txt';
+  static String syncInfoURL(String branch){
+    return 'https://raw.githubusercontent.com/violet-dev/sync-data/'+(branch)+'/syncversion.txt';
+  }
 
   static bool firstSync = false;
   static bool syncRequire = false; // database sync require
@@ -50,11 +51,20 @@ class SyncManager {
   static const ignoreUserAcceptThreshold = 1024 * 1024 * 10; // 10MB
   static List<SyncInfoRecord>? _rows;
   static int requestSize = 0;
+  
+  static Future<void> checkSyncLatest(bool _throw) async {
+    await checkSync('master', _throw);
+  }
+  
+  static Future<void> checkSyncOld(bool _throw) async {
+    await checkSync('d2bd5ae068efb26eb4689e5d6281a590e59fc4e2', _throw);
+  }
 
-  static Future<void> checkSync() async {
+
+  static Future<void> checkSync(String branch, bool _throw) async {
     try {
       var ls = const LineSplitter();
-      var infoRaw = (await http.get(syncInfoURL)).body;
+      var infoRaw = (await http.get(syncInfoURL(branch))).body;
       var lines = ls.convert(infoRaw);
 
       final prefs = await SharedPreferences.getInstance();
@@ -66,7 +76,7 @@ class SyncManager {
         latest = 0;
       } else if (lastDB != null &&
           DateTime.now().difference(DateTime.parse(lastDB)).inDays > 7) {
-        syncRequire = true;
+          syncRequire = true;
       }
 
       // lines: [old ... latest]
@@ -86,7 +96,7 @@ class SyncManager {
         ...
 
         와 같은 형식으로 아래쪽이 항상 최신 청크다. 따라서 reversed 탐색을 시도한다.
-       */
+      */
       for (var element in lines.reversed) {
         if (element.startsWith('#')) continue;
 
@@ -115,15 +125,16 @@ class SyncManager {
       }
 
       /*
-         너무 많은 청크를 다운로드해야하는 경우 동기화를 추천한다.
-         그 이유는 다운로드해야하는 파일이 너무 많아지기 때문이며, 
-         또한 데이터베이스의 무결성이 훼손될 가능성이 있기 때문이다.
+        너무 많은 청크를 다운로드해야하는 경우 동기화를 추천한다.
+        그 이유는 다운로드해야하는 파일이 너무 많아지기 때문이며, 
+        또한 데이터베이스의 무결성이 훼손될 가능성이 있기 때문이다.
       */
       if (requestSize > ignoreUserAcceptThreshold) syncRequire = true;
       if (_rows!.any((element) => element.type == 'chunk')) chunkRequire = true;
     } catch (e, st) {
       Logger.error('[Sync-check] E: $e\n'
           '$st');
+      if(_throw) throw e;
     }
   }
 

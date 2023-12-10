@@ -21,10 +21,9 @@ class DataBaseManager {
 
   @protected
   @mustCallSuper
-  Future<void> dispose() async {
+  void dispose() async {
     print('close: ${dbPath!}');
-    await db?.close();
-    db = null;
+    if (db != null) db!.close();
   }
 
   static Future<DataBaseManager> getInstance() async {
@@ -44,17 +43,20 @@ class DataBaseManager {
   }
 
   static Future<void> reloadInstance() async {
-    final db = _instance?.db;
-    _instance?.db = null;
-    await db?.close();
+    var dbPath = Platform.isAndroid
+        ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
+        : '${await getDatabasesPath()}/data.db';
+    _instance = create(dbPath);
   }
 
-  Future<void> open() async {
+  Future open() async {
     db ??= await openDatabase(dbPath!);
   }
 
-  Future<void> checkOpen() async {
-    if (!(db?.isOpen ?? false)) {
+  Future checkOpen() async {
+    if(db != null){
+      if (!db!.isOpen) db = await openDatabase(dbPath!);
+    } else if(db == null){
       db = await openDatabase(dbPath!);
     }
   }
