@@ -28,9 +28,19 @@ import 'package:violet/pages/lock/lock_screen.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite/sqflite.dart';
 
 Future<void> main() async {
   runZonedGuarded<Future<void>>(() async {
+    // https://stackoverflow.com/questions/66971604/sqlite-with-flutter-desktop-windows
+    if (Platform.isWindows || Platform.isLinux) {
+        // Initialize FFI
+        sqfliteFfiInit();
+        // Change the default factory
+        databaseFactory = databaseFactoryFfi;
+    }
+
     WidgetsFlutterBinding.ensureInitialized();
 
     await FlutterDownloader.initialize(); // @dependent: android
