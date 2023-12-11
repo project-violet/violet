@@ -569,11 +569,23 @@ class _SplashPageState extends State<SplashPage> {
       }
     }
     if (widget.switching) {
-      var dir = await getApplicationDocumentsDirectory();
+      var dir;
+      if(Platform.isAndroid || Platform.isIOS){
+        var d = await getApplicationDocumentsDirectory();
+        dir = d.path;
+      } else if(Platform.isLinux){
+        var home = '';
+        Platform.environment.forEach((key, value) {
+          if(key == 'HOME'){
+            home = value;
+          }
+        });
+        dir = '${home}/.violet';
+      }
       try {
-        await ((await openDatabase('${dir.path}/data/data.db')).close());
-        await deleteDatabase('${dir.path}/data/data.db');
-        await Directory('${dir.path}/data').delete(recursive: true);
+        await ((await openDatabase('${dir}/data/data.db')).close());
+        await deleteDatabase('${dir}/data/data.db');
+        await Directory('${dir}/data').delete(recursive: true);
       } catch (_) {}
     }
     print(Translations.of(context).dbLanguageCode);

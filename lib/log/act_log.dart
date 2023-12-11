@@ -109,8 +109,20 @@ class ActLogger {
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       logFile = File('act-log.txt');
     } else {
-      final dir = await getApplicationDocumentsDirectory();
-      logFile = File(join(dir.path, 'act-log.txt'));
+      late final dir;
+      if(Platform.isAndroid || Platform.isIOS){
+        var d = await getApplicationDocumentsDirectory();
+        dir = d.path;
+      } else if(Platform.isLinux){
+        var home = '';
+        Platform.environment.forEach((key, value) {
+          if(key == 'HOME'){
+            home = value;
+          }
+        });
+        dir = '${home}/.violet';
+      }
+      logFile = File(join(dir, 'act-log.txt'));
     }
 
     if (!await logFile.exists()) {
@@ -138,10 +150,22 @@ class ActLogger {
   }
 
   static Future<void> exportLog() async {
-    final ext = Platform.isIOS
+    late final ext;
+    if(Platform.isAndroid || Platform.isIOS){
+      var d = Platform.isIOS
         ? await getApplicationSupportDirectory()
         : await getExternalStorageDirectory();
-    final extpath = '${ext!.path}/act-log.txt';
+      ext = d!.path;
+    } else if(Platform.isLinux){
+      var home = '';
+      Platform.environment.forEach((key, value) {
+        if(key == 'HOME'){
+          key = value;
+        }
+      });
+      ext = '${home}/.violet';
+    }
+    final extpath = '${ext}/act-log.txt';
     await logFile.copy(extpath);
   }
 }

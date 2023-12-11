@@ -40,32 +40,44 @@ class HitomiIndexs {
   static late Map<String, dynamic> relatedTag;
 
   static Future<void> init() async {
-    final directory = await getApplicationDocumentsDirectory();
+    late final directory;
+    if(Platform.isAndroid || Platform.isIOS){
+      var d = await getApplicationDocumentsDirectory();
+      directory = d.path;
+    } else if(Platform.isLinux){
+      var home = '';
+      Platform.environment.forEach((key, value) {
+        if(key == 'HOME'){
+          home = value;
+        }
+      });
+      directory = '${home}/.violet';
+    }
     final subdir = Platform.isAndroid ? '/data' : '';
 
     // No data on first run.
-    final path2 = File('${directory.path}$subdir/tag-artist.json');
+    final path2 = File('${directory}$subdir/tag-artist.json');
     if (!await path2.exists()) return;
     tagArtist = jsonDecode(await path2.readAsString());
-    final path3 = File('${directory.path}$subdir/tag-group.json');
+    final path3 = File('${directory}$subdir/tag-group.json');
     tagGroup = jsonDecode(await path3.readAsString());
-    final path4 = File('${directory.path}$subdir/tag-index.json');
+    final path4 = File('${directory}$subdir/tag-index.json');
     tagIndex = jsonDecode(await path4.readAsString());
-    final path5 = File('${directory.path}$subdir/tag-uploader.json');
+    final path5 = File('${directory}$subdir/tag-uploader.json');
     tagUploader = jsonDecode(await path5.readAsString());
     try {
-      final path6 = File('${directory.path}$subdir/tag-series.json');
+      final path6 = File('${directory}$subdir/tag-series.json');
       tagSeries = jsonDecode(await path6.readAsString());
-      final path7 = File('${directory.path}$subdir/tag-character.json');
+      final path7 = File('${directory}$subdir/tag-character.json');
       tagCharacter = jsonDecode(await path7.readAsString());
-      final path8 = File('${directory.path}$subdir/character-series.json');
+      final path8 = File('${directory}$subdir/character-series.json');
       characterSeries = jsonDecode(await path8.readAsString());
-      final path9 = File('${directory.path}$subdir/series-character.json');
+      final path9 = File('${directory}$subdir/series-character.json');
       seriesCharacter = jsonDecode(await path9.readAsString());
 
-      final path10 = File('${directory.path}$subdir/character-character.json');
+      final path10 = File('${directory}$subdir/character-character.json');
       characterCharacter = jsonDecode(await path10.readAsString());
-      final path11 = File('${directory.path}$subdir/series-series.json');
+      final path11 = File('${directory}$subdir/series-series.json');
       seriesSeries = jsonDecode(await path11.readAsString());
     } catch (e, st) {
       Logger.error('[Hitomi-Indexs] E: $e\n'

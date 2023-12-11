@@ -48,8 +48,19 @@ class Logger {
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       logFile = File('log.txt');
     } else {
-      final dir = await getApplicationDocumentsDirectory();
-      logFile = File(join(dir.path, 'log.txt'));
+      if(Platform.isAndroid || Platform.isIOS){
+        final dir = await getApplicationDocumentsDirectory();
+        logFile = File(join(dir.path, 'log.txt'));
+      } else if(Platform.isLinux){
+        var home = '';
+        Platform.environment.forEach((key, value) {
+          if(key == 'HOME'){
+            home = value;
+          }
+        });
+        final dir = '${home}/.violet';
+        logFile = File(join(dir, 'log.txt'));
+      }
     }
 
     if (!await logFile.exists()) {
@@ -62,6 +73,7 @@ class Logger {
 
     if (!Platform.environment.containsKey('FLUTTER_TEST')) {
       await lock.synchronized(() async {
+        await init();
         await logFile.writeAsString('[${DateTime.now().toUtc()}] $msg\n',
             mode: FileMode.append);
       });

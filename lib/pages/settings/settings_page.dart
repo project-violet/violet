@@ -1233,12 +1233,24 @@ class _SettingsPageState extends State<SettingsPage>
                       return;
                     }
 
-                    var dir = await getApplicationDocumentsDirectory();
+                    var dir;
+                    if(Platform.isAndroid || Platform.isIOS){
+                      var d = await getApplicationDocumentsDirectory();
+                      dir = d.path;
+                    } else if(Platform.isLinux){
+                      var home = '';
+                      Platform.environment.forEach((key, value) {
+                        if(key == 'HOME'){
+                          home = value;
+                        }
+                      });
+                      dir = '${home}/.violet';
+                    }
                     try {
-                      await ((await openDatabase('${dir.path}/data/data.db'))
+                      await ((await openDatabase('${dir}/data/data.db'))
                           .close());
-                      await deleteDatabase('${dir.path}/data/data.db');
-                      await Directory('${dir.path}/data')
+                      await deleteDatabase('${dir}/data/data.db');
+                      await Directory('${dir}/data')
                           .delete(recursive: true);
                     } catch (_) {}
 
@@ -1251,8 +1263,19 @@ class _SettingsPageState extends State<SettingsPage>
                         .then(
                       (value) async {
                         HitomiIndexs.init();
-                        final directory =
-                            await getApplicationDocumentsDirectory();
+                        late final directory;
+                        if(Platform.isAndroid || Platform.isIOS){
+                          var d = await getApplicationDocumentsDirectory();
+                          directory = d.path;
+                        } else if(Platform.isLinux){
+                          var home = '';
+                          Platform.environment.forEach((key, value) {
+                            if(key == 'HOME'){
+                              home = value;
+                            }
+                          });
+                          directory = '${home}/.violet';
+                        }
                         final path = File('${directory.path}/data/index.json');
                         final text = path.readAsStringSync();
                         HitomiManager.tagmap = jsonDecode(text);

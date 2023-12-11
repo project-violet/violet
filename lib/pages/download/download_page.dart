@@ -124,7 +124,18 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     /// to
     /// /var/mobile/Containers/Data/Application/<new-app-code>/Documents
 
-    final newPath = (await getApplicationDocumentsDirectory()).path;
+    late final newPath;
+    if(Platform.isAndroid || Platform.isIOS){
+      newPath = (await getApplicationDocumentsDirectory()).path;
+    } else if(Platform.isLinux){
+      var home = '';
+      Platform.environment.forEach((key, value) {
+        if(key == 'HOME'){
+          home = value;
+        }
+      });
+      newPath = '${home}/.violet';
+    } else { newPath = ''; }
 
     for (var item in items) {
       if (item.files() == null) continue;

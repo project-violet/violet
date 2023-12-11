@@ -534,12 +534,24 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
       return;
     }
 
-    var dir = await getApplicationDocumentsDirectory();
+    var dir;
+    if(Platform.isAndroid || Platform.isIOS){
+      var d = await getApplicationDocumentsDirectory();
+      dir = d.path;
+    } else if(Platform.isLinux){
+      var home = '';
+      Platform.environment.forEach((key, value) {
+        if(key == 'HOME'){
+          home = value;
+        }
+      });
+      dir = '${home}/.violet';
+    }
 
     try {
-      await ((await openDatabase('${dir.path}/data/data.db')).close());
-      await deleteDatabase('${dir.path}/data/data.db');
-      await Directory('${dir.path}/data').delete(recursive: true);
+      await ((await openDatabase('${dir}/data/data.db')).close());
+      await deleteDatabase('${dir}/data/data.db');
+      await Directory('${dir}/data').delete(recursive: true);
     } catch (_) {}
 
     setState(() {
@@ -554,8 +566,21 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
                 )))
         .then((value) async {
       HitomiIndexs.init();
-      final directory = await getApplicationDocumentsDirectory();
-      final path = File('${directory.path}/data/index.json');
+      late final directory;
+      late final path;
+      if(Platform.isAndroid || Platform.isIOS){
+        directory = await getApplicationDocumentsDirectory();
+        path = File('${directory.path}/data/index.json');
+      } else if(Platform.isLinux){
+        var home = '';
+        Platform.environment.forEach((key, value) {
+          if(key == 'HOME'){
+            home = value;
+          }
+        });
+        directory = '${home}/.violet';
+        path = File('${directory}/index.json');
+      }
       final text = path.readAsStringSync();
       HitomiManager.tagmap = jsonDecode(text);
       await DataBaseManager.reloadInstance();

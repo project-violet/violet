@@ -74,9 +74,22 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
           dbPath = '${home}/.violet/data.db';
         }
         if (await File(dbPath).exists()) await File(dbPath).delete();
-        var dir = await getApplicationDocumentsDirectory();
-        if (await Directory('${dir.path}/data').exists()) {
-          await Directory('${dir.path}/data').delete(recursive: true);
+        var dir;
+        if(Platform.isAndroid || Platform.isIOS){
+          var d = await getApplicationDocumentsDirectory();
+          dir = d.path;
+        }
+        if(Platform.isLinux){
+          var home = '';
+          Platform.environment.forEach((key, value) {
+            if(key == 'HOME'){
+              home = value;
+            }
+          });
+          dir = '${home}/.violet';
+        }
+        if (await Directory('${dir}/data').exists()) {
+          await Directory('${dir}/data').delete(recursive: true);
         }
       }
     } catch (e, st) {
@@ -662,30 +675,42 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
           'class': classes,
         };
 
-        final directory = await getApplicationDocumentsDirectory();
-        final path1 = File('${directory.path}/index.json');
+        late final directory;
+        if(Platform.isAndroid || Platform.isIOS){
+          var d = await getApplicationDocumentsDirectory();
+          directory = d.path;
+        } else if(Platform.isLinux){
+          var home = '';
+          Platform.environment.forEach((key, value) {
+            if(key == 'HOME'){
+              home = value;
+            }
+          });
+          directory = '${home}/.violet';
+        }
+        final path1 = File('${directory}/index.json');
         path1.writeAsString(jsonEncode(index));
 
-        final path2 = File('${directory.path}/tag-artist.json');
+        final path2 = File('${directory}/tag-artist.json');
         path2.writeAsString(jsonEncode(tagArtist));
-        final path3 = File('${directory.path}/tag-group.json');
+        final path3 = File('${directory}/tag-group.json');
         path3.writeAsString(jsonEncode(tagGroup));
-        final path4 = File('${directory.path}/tag-index.json');
+        final path4 = File('${directory}/tag-index.json');
         path4.writeAsString(jsonEncode(tagIndex));
-        final path5 = File('${directory.path}/tag-uploader.json');
+        final path5 = File('${directory}/tag-uploader.json');
         path5.writeAsString(jsonEncode(tagUploader));
-        final path6 = File('${directory.path}/tag-series.json');
+        final path6 = File('${directory}/tag-series.json');
         path6.writeAsString(jsonEncode(tagSeries));
-        final path7 = File('${directory.path}/tag-character.json');
+        final path7 = File('${directory}/tag-character.json');
         path7.writeAsString(jsonEncode(tagCharacter));
 
-        final path8 = File('${directory.path}/character-series.json');
+        final path8 = File('${directory}/character-series.json');
         path8.writeAsString(jsonEncode(characterSeries));
-        final path9 = File('${directory.path}/series-character.json');
+        final path9 = File('${directory}/series-character.json');
         path9.writeAsString(jsonEncode(seriesCharacter));
-        final path10 = File('${directory.path}/character-character.json');
+        final path10 = File('${directory}/character-character.json');
         path10.writeAsString(jsonEncode(characterCharacter));
-        final path11 = File('${directory.path}/series-series.json');
+        final path11 = File('${directory}/series-series.json');
         path11.writeAsString(jsonEncode(seriesSeries));
 
         setState(() {

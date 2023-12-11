@@ -119,6 +119,9 @@ class ScriptManager {
     if (_scriptCache == null) return null;
 
     try {
+      if(_runtime == null){
+        _initRuntime();
+      }
       var downloadUrl =
           _runtime.evaluate("create_download_url('$id')").stringResult;
       var headers = await runHitomiGetHeaderContent(id.toString());
