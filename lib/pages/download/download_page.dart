@@ -433,9 +433,9 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                   type: MaterialType.transparency,
                   child: InkWell(
                     onTap: () async {
-                      final prefs = await SharedPreferences.getInstance();
+                      final prefs = await MultiPreferences.getInstance();
                       if (!Settings.useInnerStorage &&
-                          prefs.getBool('checkauthalready') == null) {
+                          (await prefs.getBool('checkauthalready')) == null) {
                         await prefs.setBool('checkauthalready', true);
                         if (await Permission.manageExternalStorage.request() ==
                             PermissionStatus.denied) {

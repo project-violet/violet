@@ -37,7 +37,7 @@ class _RouteDialogState extends State<RouteDialog> {
               Settings.searchRule[newIndex - 1] = old;
             }
 
-            final prefs = await SharedPreferences.getInstance();
+            final prefs = await MultiPreferences.getInstance();
             await prefs.setString('searchrule', Settings.searchRule.join('|'));
             setState(() {});
           },
@@ -102,7 +102,7 @@ class _ImageRouteDialogState extends State<ImageRouteDialog> {
               Settings.routingRule[newIndex - 1] = old;
             }
 
-            final prefs = await SharedPreferences.getInstance();
+            final prefs = await MultiPreferences.getInstance();
             await prefs.setString(
                 'routingrule', Settings.routingRule.join('|'));
             setState(() {});

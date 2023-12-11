@@ -42,11 +42,11 @@ class _UserStatusCardState extends State<UserStatusCard>
 
     // load boards
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
-      final prefs = await SharedPreferences.getInstance();
-      var id = prefs.getString('saved_community_id');
-      var pw = prefs.getString('saved_community_pw');
+      final prefs = await MultiPreferences.getInstance();
+      var id = await prefs.getString('saved_community_id');
+      var pw = await prefs.getString('saved_community_pw');
 
-      _userAppId = prefs.getString('fa_userid')!;
+      _userAppId = (await prefs.getString('fa_userid'))!;
       setState(() {});
 
       if (id != null && pw != null) {
@@ -71,12 +71,12 @@ class _UserStatusCardState extends State<UserStatusCard>
   }
 
   Future<void> _trylogin() async {
-    final prefs = await SharedPreferences.getInstance();
-    var id = prefs.getString('saved_community_id');
-    var pw = prefs.getString('saved_community_pw');
+    final prefs = await MultiPreferences.getInstance();
+    var id = await prefs.getString('saved_community_id');
+    var pw = await prefs.getString('saved_community_pw');
 
     _userId = id ?? 'None';
-    _userAppId = prefs.getString('fa_userid')!;
+    _userAppId = (await prefs.getString('fa_userid'))!;
     setState(() {});
 
     if (id != null && pw != null) {
@@ -325,7 +325,7 @@ class _UserStatusCardState extends State<UserStatusCard>
                       }
                     }
 
-                    final prefs = await SharedPreferences.getInstance();
+                    final prefs = await MultiPreferences.getInstance();
                     await prefs.setString('saved_community_id', id);
                     await prefs.setString('saved_community_pw', pw);
 

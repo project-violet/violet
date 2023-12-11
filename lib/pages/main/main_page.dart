@@ -284,8 +284,8 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
     }).then((value) async {
       if (updateContinued) return;
 
-      final prefs = await SharedPreferences.getInstance();
-      if (prefs.getBool('usevioletserver_check') != null) return;
+      final prefs = await MultiPreferences.getInstance();
+      if ((await prefs.getBool('usevioletserver_check')) != null) return;
 
       var bb = await showYesNoDialog(
           context, Translations.of(context).trans('violetservermsg'));
@@ -395,17 +395,59 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
               children: [
                 Text(Translations.of(context).trans('local'),
                     style: const TextStyle(color: Colors.grey)),
-                FutureBuilder(
-                    future: SharedPreferences.getInstance(),
-                    builder:
-                        (context, AsyncSnapshot<SharedPreferences> snapshot) {
-                      if (!snapshot.hasData) {
-                        return const Text(' ??');
-                      }
-                      return Text(
-                        ' ${DateFormat('yyyy.MM.dd').format(DateTime.parse(snapshot.data!.getString('databasesync')!))}',
-                      );
-                    }),
+                ((){
+                  if(Platform.isAndroid || Platform.isIOS){
+                    return FutureBuilder(
+                      future: SharedPreferences.getInstance(),
+                      builder: ((context, AsyncSnapshot<SharedPreferences> snapshot){
+                        if (!snapshot.hasData) {
+                          return const Text(' ??');
+                        }
+                        return Text(
+                          ' ${DateFormat('yyyy.MM.dd').format(DateTime.parse(snapshot.data!.getString('databasesync')!))}',
+                        );
+                      })
+                    );
+                  } else if(Platform.isLinux) {
+                    return FutureBuilder(
+                      future: MultiPreferences.getInstance(),
+                      builder:((context, AsyncSnapshot<MultiPreferences> snapshot) {
+                        var dbsync;
+                        if (!(snapshot).hasData) {
+                          return const Text(' ??');
+                        }
+                        (snapshot).data!.getString('databasesync')
+                          .then((value) {
+                            setState(() {
+                              dbsync = value ?? '';
+                            });
+                          });
+                        return Text(
+                          ' ${DateFormat('yyyy.MM.dd').format(DateTime.parse(dbsync!))}',
+                        );
+                      })
+                    );
+                  } else {
+                    return FutureBuilder(
+                      future: MultiPreferences.getInstance(),
+                      builder:((context, AsyncSnapshot<MultiPreferences> snapshot) {
+                        var dbsync;
+                        if (!(snapshot).hasData) {
+                          return const Text(' ??');
+                        }
+                        (snapshot).data!.getString('databasesync')
+                          .then((value) {
+                            setState(() {
+                              dbsync = value ?? '';
+                            });
+                          });
+                        return Text(
+                          ' ${DateFormat('yyyy.MM.dd').format(DateTime.parse(dbsync!))}',
+                        );
+                      })
+                    );
+                  }
+                })(),
               ],
             ),
             Row(
@@ -475,9 +517,9 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
   }
 
   _onSyncPressed() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await MultiPreferences.getInstance();
     var latestDB = SyncManager.getLatestDB().getDateTime();
-    var lastDB = prefs.getString('databasesync');
+    var lastDB = await prefs.getString('databasesync');
 
     if (lastDB != null &&
         latestDB.difference(DateTime.parse(lastDB)).inHours < 1) {

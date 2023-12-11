@@ -166,8 +166,8 @@ class _SplashPageState extends State<SplashPage> {
   };
 
   Future<void> checkAuth() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool('checkauthalready') == null) {
+    final prefs = await MultiPreferences.getInstance();
+    if ((await prefs.getBool('checkauthalready')) == null) {
       await prefs.setBool('checkauthalready', true);
       if (await Permission.manageExternalStorage.request() ==
           PermissionStatus.denied) {
@@ -238,8 +238,8 @@ class _SplashPageState extends State<SplashPage> {
     //     await Logger.exportLog();
     //   } catch (_) {}
 
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getInt('db_exists') == 1 && !widget.switching) {
+    final prefs = await MultiPreferences.getInstance();
+    if (((await prefs.getInt('db_exists')) == 1) && !widget.switching) {
       if (connectivityResult != ConnectivityResult.none) {
         try {
           _changeMessage('check sync...');

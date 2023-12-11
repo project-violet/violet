@@ -324,7 +324,7 @@ class HentaiManager {
         'https://e${exh ? 'x' : '-'}hentai.org/?page=$page&f_cats=993&f_search=$search&advsearch=1&f_sname=on&f_stags=on&f_sh=on&f_spf=&f_spt=';
 
     final cookie =
-        (await SharedPreferences.getInstance()).getString('eh_cookies') ?? '';
+        (await (await MultiPreferences.getInstance()).getString('eh_cookies')) ?? '';
     final html =
         (await http.get(url, headers: {'Cookie': '$cookie;sl=dm_2'})).body;
 

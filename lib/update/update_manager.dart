@@ -92,8 +92,8 @@ class UpdateManager {
     }).then((value) async {
       if (updateContinued) return;
 
-      final prefs = await SharedPreferences.getInstance();
-      if (prefs.getBool('usevioletserver_check') != null) return;
+      final prefs = await MultiPreferences.getInstance();
+      if ((await prefs.getBool('usevioletserver_check')) != null) return;
 
       final bb = await showYesNoDialog(
           context, Translations.of(context).trans('violetservermsg'));

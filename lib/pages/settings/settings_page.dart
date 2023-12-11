@@ -1214,9 +1214,9 @@ class _SettingsPageState extends State<SettingsPage>
             onTap: Variables.databaseDecompressed
                 ? null
                 : () async {
-                    final prefs = await SharedPreferences.getInstance();
+                    final prefs = await MultiPreferences.getInstance();
                     var latestDB = SyncManager.getLatestDB().getDateTime();
-                    var lastDB = prefs.getString('databasesync');
+                    var lastDB = await prefs.getString('databasesync');
 
                     if (lastDB != null &&
                         latestDB.difference(DateTime.parse(lastDB)).inHours <
@@ -1505,9 +1505,9 @@ class _SettingsPageState extends State<SettingsPage>
             ),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
-              final prefs = await SharedPreferences.getInstance();
+              final prefs = await MultiPreferences.getInstance();
               // 32개 => 50mb/s
-              var tc = prefs.getInt('thread_count');
+              var tc = await prefs.getInt('thread_count');
 
               TextEditingController text =
                   TextEditingController(text: tc.toString());
@@ -1799,8 +1799,8 @@ class _SettingsPageState extends State<SettingsPage>
                     Translations.of(context).trans('restorebookmarkmsg'),
                     Translations.of(context).trans('warning'));
 
-                final prefs = await SharedPreferences.getInstance();
-                var myappid = prefs.getString('fa_userid');
+                final prefs = await MultiPreferences.getInstance();
+                var myappid = await prefs.getString('fa_userid');
 
                 // 1. 북마크 유저 아이디 선택
                 TextEditingController text =
@@ -1945,10 +1945,10 @@ class _SettingsPageState extends State<SettingsPage>
 
               final pickedFile = File(pickedFilePath);
               final db = Platform.isIOS
-                  ? await getApplicationSupportDirectory()
-                  : (await getApplicationDocumentsDirectory());
+                    ? await getApplicationSupportDirectory()
+                    : (await getApplicationDocumentsDirectory());
 
-              await pickedFile.copy('${db.path}/user.db');
+                await pickedFile.copy('${db.path}/user.db');
 
               await Bookmark.getInstance();
 
@@ -2016,7 +2016,7 @@ class _SettingsPageState extends State<SettingsPage>
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
-              final prefs = await SharedPreferences.getInstance();
+              final prefs = await MultiPreferences.getInstance();
               var ehc = prefs.getString('eh_cookies');
 
               if (ehc == null || ehc == '') {
@@ -2253,7 +2253,7 @@ class _SettingsPageState extends State<SettingsPage>
 
               if (dialog == null) return;
 
-              final prefs = await SharedPreferences.getInstance();
+              final prefs = await MultiPreferences.getInstance();
               if (dialog == 1) {
                 var result = await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const LoginScreen()));
@@ -2290,7 +2290,7 @@ class _SettingsPageState extends State<SettingsPage>
                   );
                 }
               } else if (dialog == 2) {
-                var cookie = prefs.getString('eh_cookies');
+                var cookie = await prefs.getString('eh_cookies');
 
                 var sController = TextEditingController(
                     text:
