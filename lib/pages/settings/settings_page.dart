@@ -1926,7 +1926,8 @@ class _SettingsPageState extends State<SettingsPage>
             title: Text(Translations.of(context).trans('importingbookmark')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
-              await FilePicker.platform.clearTemporaryFiles();
+              // clearTemporaryFiles() has not been implemented.
+              if(Platform.isAndroid || Platform.isIOS) await FilePicker.platform.clearTemporaryFiles();
               final filePickerResult = await FilePicker.platform.pickFiles();
               final pickedFilePath = filePickerResult?.files.singleOrNull?.path;
 
