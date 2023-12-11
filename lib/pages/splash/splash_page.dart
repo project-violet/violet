@@ -217,8 +217,10 @@ class _SplashPageState extends State<SplashPage> {
 
     // this may be slow down to loading
     _changeMessage('check network...');
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult != ConnectivityResult.none) {
+    var connectivityResult;
+    // flutter: [Error] [async-error] E: MissingPluginException(No implementation found for method check on channel plugins.flutter.io/connectivity)
+    if (!Platform.isLinux) connectivityResult = await (Connectivity().checkConnectivity());
+    if (Platform.isLinux || connectivityResult != ConnectivityResult.none) {
       _changeMessage('loading script...');
       await ScriptManager.init();
     }
