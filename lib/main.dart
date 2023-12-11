@@ -43,7 +43,7 @@ Future<void> main() async {
 
     WidgetsFlutterBinding.ensureInitialized();
 
-    await FlutterDownloader.initialize(); // @dependent: android
+    if(Platform.isAndroid || Platform.isIOS) await FlutterDownloader.initialize(); // @dependent: android
     FlareCache.doesPrune = false;
     FlutterError.onError = recordFlutterError;
 
