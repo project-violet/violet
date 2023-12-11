@@ -59,8 +59,8 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
 
   Future checkDownload() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      if (prefs.getInt('db_exists') == 1) {
+      final prefs = await MultiPreferences.getInstance();
+      if ((await prefs.getInt('db_exists')) == 1) {
         var dbPath = Platform.isAndroid
             ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
             : '${await getDatabasesPath()}/data.db';

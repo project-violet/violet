@@ -84,8 +84,8 @@ Future<void> initFirebase() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // check user-id is set
-  final prefs = await SharedPreferences.getInstance();
-  var id = prefs.getString('fa_userid');
+  final prefs = await MultiPreferences.getInstance();
+  var id = await prefs.getString('fa_userid');
   if (id == null) {
     id = sha1.convert(utf8.encode(DateTime.now().toString())).toString();
     prefs.setString('fa_userid', id);

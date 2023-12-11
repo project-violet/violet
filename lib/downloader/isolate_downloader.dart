@@ -10,6 +10,7 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/downloadable.dart';
 import 'package:violet/log/log.dart';
+import 'package:violet/settings/settings.dart';
 
 part './isolate/core.dart';
 
@@ -84,8 +85,8 @@ class IsolateDownloader {
   }
 
   Future<void> _initThreadCount() async {
-    final prefs = await SharedPreferences.getInstance();
-    var tc = prefs.getInt('thread_count');
+    final prefs = await MultiPreferences.getInstance();
+    var tc = await prefs.getInt('thread_count');
     if (tc == null) {
       tc = 4;
       await prefs.setInt('thread_count', 4);

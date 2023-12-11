@@ -45,8 +45,8 @@ class _UserStatusCardState extends ThemeSwitchableState<UserStatusCard>
 
     // load boards
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
-      final prefs = await SharedPreferences.getInstance();
-      _userAppId = prefs.getString('fa_userid')!;
+      final prefs = await MultiPreferences.getInstance();
+      _userAppId = (await prefs.getString('fa_userid'))!;
       setState(() {});
 
       // if (id != null && pw != null) {

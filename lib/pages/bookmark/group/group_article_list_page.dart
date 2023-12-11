@@ -93,8 +93,8 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   Future<void> _loadBookmarkAlignType() async {
-    final prefs = await SharedPreferences.getInstance();
-    nowType = prefs.getInt('bookmark_${widget.groupId}') ?? 3;
+    final prefs = await MultiPreferences.getInstance();
+    nowType = await prefs.getInt('bookmark_${widget.groupId}') ?? 3;
   }
 
   Future<void> _refreshAsync() async {
@@ -355,7 +355,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 nowType = value;
                 itemKeys.clear();
 
-                final prefs = await SharedPreferences.getInstance();
+                final prefs = await MultiPreferences.getInstance();
                 await prefs.setInt('bookmark_${widget.groupId}', value);
                 await Future.delayed(const Duration(milliseconds: 50), () {
                   _shouldRebuild = true;

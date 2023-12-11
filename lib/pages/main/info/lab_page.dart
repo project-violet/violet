@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -221,7 +222,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                     if (getValid('${text.text}saltff') == '605f372') {
                       await showOkDialog(context, 'Successful!');
 
-                      final prefs = await SharedPreferences.getInstance();
+                      final prefs = await MultiPreferences.getInstance();
                       await prefs.setString('labmasterkey', text.text);
                     } else {
                       await showOkDialog(context, 'Fail!');
@@ -330,19 +331,22 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                     return;
                   }
 
-                  final SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
+                  final MultiPreferences prefs =
+                      await MultiPreferences.getInstance();
 
+                  var keys = (await prefs.getKeys())
+                    !.where((String key) => 
+                      key != 'lib_cached_image_data' &&
+                      key != 'lib_cached_image_data');
+                  var values_arr = [];
+                  var values_itr;
+                  for(var key in keys){
+                    values_arr.add(MapEntry(key, await prefs.get(key).toString()));
+                    values_itr = values_arr.iterator;
+                  }
                   VioletServer.uploadString(
                       'prefs.json',
-                      jsonEncode(Map.fromEntries(prefs
-                          .getKeys()
-                          .where((String key) =>
-                              key != 'lib_cached_image_data' &&
-                              key != 'lib_cached_image_data')
-                          .map((key) {
-                        return MapEntry(key, prefs.get(key).toString());
-                      }).toList(growable: false))));
+                      jsonEncode(Map.fromEntries(values_itr.toList(growable: false))));
 
                   final dir = await getApplicationDocumentsDirectory();
                   await VioletServer.uploadFile('${dir.path}/user.db');
@@ -368,8 +372,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
   }
 
   Future<bool> _checkMaterKey() async {
-    final prefs = await SharedPreferences.getInstance();
-    var key = prefs.getString('labmasterkey');
+    final prefs = await MultiPreferences.getInstance();
+    var key = await prefs.getString('labmasterkey');
     if (key != null && getValid('${key}saltff') == '605f372') {
       return true;
     }

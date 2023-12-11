@@ -109,8 +109,8 @@ class _LockSettingPageState extends State<LockSettingPage> {
   }
 
   Future<void> _toggleAppLock() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString('pinPass') == null) {
+    final prefs = await MultiPreferences.getInstance();
+    if ((await prefs.getString('pinPass')) == null) {
       showOkDialog(context,
           Translations.of(context).trans('registerfinbeforeuseapplock'));
       return;

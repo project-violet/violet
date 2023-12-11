@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/server/wsalt.dart';
+import 'package:violet/settings/settings.dart';
 
 class VioletCommunityAnonymous {
   static Future<dynamic> _getV(String api, String params) async {
@@ -50,8 +51,8 @@ class VioletCommunityAnonymous {
   static String? _userAppId;
   static Future<String> _getUserAppId() async {
     if (_userAppId == null) {
-      final prefs = await SharedPreferences.getInstance();
-      _userAppId = prefs.getString('fa_userid');
+      final prefs = await MultiPreferences.getInstance();
+      _userAppId = await prefs.getString('fa_userid');
     }
     return _userAppId!;
   }

@@ -67,9 +67,9 @@ class SyncManager {
       var infoRaw = (await http.get(syncInfoURL(branch))).body;
       var lines = ls.convert(infoRaw);
 
-      final prefs = await SharedPreferences.getInstance();
-      var latest = prefs.getInt('synclatest');
-      var lastDB = prefs.getString('databasesync');
+      final prefs = await MultiPreferences.getInstance();
+      var latest = await prefs.getInt('synclatest');
+      var lastDB = await prefs.getString('databasesync');
 
       if (latest == null) {
         syncRequire = firstSync = true;
@@ -228,7 +228,7 @@ class SyncManager {
         });
         await dbraw.close();
 
-        final prefs = await SharedPreferences.getInstance();
+        final prefs = await MultiPreferences.getInstance();
         await prefs.setInt('synclatest', row.timestamp);
       }
 
