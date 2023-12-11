@@ -539,7 +539,7 @@ class Settings {
     searchPure = await _getBool('searchPure');
 
     // main에서 셋팅됨
-    userAppId = ((await prefs.getString('fa_userid')))!;
+    if(Platform.isAndroid || Platform.isIOS) userAppId = ((await prefs.getString('fa_userid')))!;
 
     autobackupBookmark = await _getBool('autobackupbookmark', false);
 
