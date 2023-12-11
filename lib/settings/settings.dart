@@ -7,15 +7,231 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
+import 'package:get/get.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/hitomi/shielder.dart';
+import 'package:violet/database/database.dart';
 import 'package:violet/database/user/download.dart';
+import 'package:violet/database/user/settings.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/platform/android_external_storage_directory.dart';
 import 'package:violet/settings/device_type.dart';
+
+class MultiPreferences {
+  static late SharedPreferences shared_prefs;
+  static late SettingsManager db_prefs;
+  
+  static MultiPreferences? _instance;
+
+  static MultiPreferences create() {
+    return MultiPreferences();
+  }
+
+  @protected
+  @mustCallSuper
+  void dispose() async {
+    if(Platform.isLinux){
+      db_prefs.dispose();
+    }
+  }
+
+  static Future<MultiPreferences> getInstance() async {
+    // switch(true){
+    //   case Platform.isAndroid:
+    //   case Platform.isIOS: 
+    //     shared_prefs = await SharedPreferences.getInstance();
+    //     break;
+    //   case Platform.isLinux:
+    //   case Platform.isMacOS: 
+    //     db_prefs = await SettingsManager.getInstance();
+    //     break;
+    // }
+    if(Platform.isAndroid || Platform.isIOS){
+      shared_prefs = await SharedPreferences.getInstance();
+    } else if(Platform.isLinux){
+      db_prefs = await SettingsManager.getInstance();
+    }
+    if (_instance == null) {
+      _instance = create();
+    }
+    return _instance!;
+  }
+  Future<void> init() async {
+    if(Platform.isLinux){
+      await db_prefs.execute('CREATE TABLE IF NOT EXISTS SharedPreferences (key STRING, value STRING,type STRING );');
+    }
+  }
+
+  Future<Set<String>> getKeys() async {
+    if(Platform.isAndroid || Platform.isIOS){
+      return Future.value(shared_prefs.getKeys());
+    } else if(Platform.isLinux){
+      try {
+        var res = await db_prefs.query('SELECT key FROM SharedPreferences;');
+        if(res.isEmpty) return Future.value(null);
+        return res.first.values.first;
+      } catch(e){
+        return Future.value(null);
+      }
+    } else {
+      throw Error();
+    }
+  }
+
+  Future<Object> get(String key) async {
+    if(Platform.isAndroid || Platform.isIOS){
+      return Future.value(shared_prefs.get(key));
+    } else if(Platform.isLinux){
+      try {
+        var res = await db_prefs.query('SELECT value FROM SharedPreferences WHERE key="${key}";');
+        if(res.isEmpty) return Future.value(null);
+        return res.first.values.first;
+      } catch(e){
+        return Future.value(null);
+      }
+    } else {
+      throw Error();
+    }
+  }
+
+  Future<String?> getString(String key) async {
+    if(Platform.isAndroid || Platform.isIOS){
+      return Future.value(shared_prefs.getString(key));
+    } else if(Platform.isLinux){
+      try {
+        var res = await db_prefs.query('SELECT value FROM SharedPreferences WHERE key="${key}" AND type="STRING";');
+        if(res.isEmpty) return Future.value(null);
+        return res.first.values.first;
+      } catch(e){
+        return Future.value(null);
+      }
+    } else {
+      throw Error();
+    }
+  }
+  
+  Future<void> setString(String key,String value) async {
+    if(Platform.isAndroid || Platform.isIOS){
+      shared_prefs.setString(key, value);
+    } else if(Platform.isLinux){
+      String? result = null;
+      try {
+        result = await getString(key);
+      } catch(e){
+        result = null;
+      }
+      if(result != null){
+        await db_prefs.execute('UPDATE SharedPreferences SET value="${value}" WHERE key="${key}" AND type="STRING";');
+      } else {
+        await db_prefs.execute('INSERT INTO SharedPreferences (key,value,type) VALUES ("${key}","${value}","STRING");');
+      }
+    }
+  }
+
+  Future<bool?> getBool(String key) async {
+    if(Platform.isAndroid || Platform.isIOS){
+      return Future.value(shared_prefs.getBool(key));
+    } else if(Platform.isLinux){
+      try {
+        var res = await db_prefs.query('SELECT value FROM SharedPreferences WHERE key="${key}" AND type="BOOL";');
+        if(res.isEmpty) return Future.value(null);
+        return res.first.values.first;
+        // return Future.value(null);
+      } catch(e){
+        return Future.value(null);
+      }
+    } else {
+      throw Error();
+    }
+  }
+  Future<void> setBool(String key,bool value) async {
+    if(Platform.isAndroid || Platform.isIOS){
+      await shared_prefs.setBool(key, value);
+    } else if(Platform.isLinux){
+      bool? result = null;
+      try {
+        result = await getBool(key);
+      } catch(e){
+        result = null;
+      }
+      if(result != null){
+        await db_prefs.execute('UPDATE SharedPreferences SET value="${value}" WHERE key="${key}" AND type="BOOL";');
+      } else {
+        await db_prefs.execute('INSERT INTO SharedPreferences(key,value,type) VALUES("${key}","${value}","BOOL");');
+      }
+    }
+  }
+
+  Future<double?> getDouble(String key) async {
+    if(Platform.isAndroid || Platform.isIOS){
+      return Future.value(shared_prefs.getDouble(key));
+    } else if(Platform.isLinux){
+      try {
+        var res = await db_prefs.query('SELECT value FROM SharedPreferences WHERE key="${key}" AND type="DOUBLE";');
+        if(res.isEmpty) return Future.value(null);
+        return res.first.values.first;
+        // return Future.value(null);
+      } catch(e){
+        return Future.value(null);
+      }
+    } else {
+      throw Error();
+    }
+  }
+  Future<void> setDouble(String key,double value) async {
+    if(Platform.isAndroid || Platform.isIOS){
+      await shared_prefs.setDouble(key, value);
+    } else if(Platform.isLinux){
+      double? result = null;
+      try {
+        result = await getDouble(key);
+      } catch(e){
+        result = null;
+      }
+      if(result != null){
+        await db_prefs.execute('UPDATE SharedPreferences SET value="${value}" WHERE key="${key}" AND type="DOUBLE";');
+      } else {
+        await db_prefs.execute('INSERT INTO SharedPreferences(key,value,type) VALUES("${key}","${value}","DOUBLE");');
+      }
+    }
+  }
+
+  Future<int?> getInt(String key) async {
+    if(Platform.isAndroid || Platform.isIOS){
+      return Future.value(shared_prefs.getInt(key));
+    } else if(Platform.isLinux){
+      try{
+        var res = await db_prefs.query('SELECT value FROM SharedPreferences WHERE key="${key}" AND TYPE="INT";');
+        if(res.isEmpty) return Future.value(null);
+        return res.first.values.first;
+      } catch(e){
+        return Future.value(null);
+      }
+    } else {
+      throw Error();
+    }
+  }
+  Future<void> setInt(String key,int value) async {
+    if(Platform.isAndroid || Platform.isIOS){
+      await shared_prefs.setInt(key, value);
+    } else if(Platform.isLinux){
+      int? result = null;
+      try {
+        result = await getInt(key);
+      } catch(e){
+        result = null;
+      }
+      if(result != null){
+        await db_prefs.execute('UPDATE SharedPreferences SET value="${value}" WHERE key="${key}" AND type="INT";');
+      } else {
+        await db_prefs.execute('INSERT INTO SharedPreferences(key,value,type) VALUES("${key}","${value}","INT");');
+      }
+    }
+  }
+}
 
 class Settings {
   static late final SharedPreferences prefs;
