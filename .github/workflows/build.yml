@@ -56,14 +56,14 @@ jobs:
 
   # https://github.com/AppImageCrafters/appimage-builder-flutter-example/blob/main/.github/workflows/appimage.yml
   linux-build:
-    runs-on: Ubuntu-20.04
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
     - uses: subosito/flutter-action@v1
       # with:
         # flutter-version: '1.22.4'
-    - run: flutter channel beta
-    - run: flutter upgrade
+    # - run: flutter channel beta
+    # - run: flutter upgrade
     - run: flutter config --enable-linux-desktop
     - name: "Install dependencies"
       run: |
@@ -83,6 +83,12 @@ jobs:
         EOF
         python3 preprocess-linux.py
         flutter build linux
+        find ./build/linux/x64/release/plugins -type f -name '*.so' -exec cp {} ./build/linux/x64/release/bundle/lib/ \;
+    - name: Save build Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: LinuxBuild
+        path: './build/linux/x64/release/bundle'
     - name: Build AppImage unsing appimage-builder
       uses: docker://appimagecrafters/appimage-builder:0.8.5
       with:
