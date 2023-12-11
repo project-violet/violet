@@ -64,6 +64,15 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
         var dbPath = Platform.isAndroid
             ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
             : '${await getDatabasesPath()}/data.db';
+        if(Platform.isLinux){
+          var home = '';
+          Platform.environment.forEach((key, value) {
+            if(key == 'HOME'){
+              home = value;
+            }
+          });
+          dbPath = '${home}/.violet/data.db';
+        }
         if (await File(dbPath).exists()) await File(dbPath).delete();
         var dir = await getApplicationDocumentsDirectory();
         if (await Directory('${dir.path}/data').exists()) {
@@ -76,11 +85,13 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     }
 
     if (Platform.isAndroid) {
-      downloadFileAndroid();
+      await downloadFileAndroid();
     } else if (Platform.isIOS) {
       // p7zip is not supported on IOS.
       // So, download raw database.
-      downloadFileIOS();
+      await downloadFileIOS();
+    } else if (Platform.isLinux){
+      await downloadFileLinux();
     }
   }
 
@@ -96,6 +107,14 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       await downloadFileIOSWith('latest', true);
     } catch(e){
       await downloadFileIOSWith('old', false);
+    }
+  }
+
+  Future<void> downloadFileLinux() async {
+    try {
+      await downloadFileLinuxWith('latest', true);
+    } catch(e){
+      await downloadFileLinuxWith('old', false);
     }
   }
 
@@ -179,7 +198,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
 
       await File('${dir.path}/db.sql.7z').delete();
 
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = await MultiPreferences.getInstance();
       await prefs.setInt('db_exists', 1);
       await prefs.setString('databasetype', widget.dbType!);
       await prefs.setString(
@@ -281,7 +300,118 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       });
       timer.cancel();
 
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = await MultiPreferences.getInstance();
+      await prefs.setInt('db_exists', 1);
+      await prefs.setString('databasetype', widget.dbType!);
+      await prefs.setString(
+          'databasesync', SyncManager.getLatestDB().getDateTime().toString());
+      await prefs.setInt('synclatest', SyncManager.getLatestDB().timestamp);
+
+      setState(() {
+        downloading = false;
+      });
+
+      await DataBaseManager.reloadInstance();
+
+      try {
+        if (Settings.useOptimizeDatabase) await deleteUnused();
+      } catch(e1,st1){
+        Logger.error('[deleteUnused] E: $e1\n'
+            '$st1');
+      }
+      try {
+        await indexing();
+      } catch(e1,st1){
+        Logger.error('[indexing] E: $e1\n'
+            '$st1');
+      }
+
+      if (widget.isSync == true) {
+        Navigator.pop(context);
+      } else {
+        setState(() {
+          baseString = Translations.instance!.trans('dbdcomplete');
+          _showCloseAppButton = true;
+        });
+      }
+
+      return;
+    } catch (e, st) {
+      Logger.error('[DBDownload] E: $e\n'
+          '$st');
+      if(_throw) throw e;
+    }
+
+    setState(() {
+      downloading = false;
+      baseString = Translations.instance!.trans('dbdretry');
+    });
+  }
+  Future<void> downloadFileLinuxWith(String target, bool _throw) async {
+    Dio dio = Dio();
+    int oneMega = 1024 * 1024;
+    int nu = 0;
+    int latest = 0;
+    int tlatest = 0;
+    int tnu = 0;
+
+    try {
+      var dir = '';
+      if(Platform.isLinux){
+        Platform.environment.forEach((key, value) => {
+          if(key == 'HOME'){
+            dir = value
+          }
+        });
+        dir = '${dir}/.violet';
+      }
+      if (await File('$dir/data.db').exists()) {
+        await File('$dir/data.db').delete();
+      }
+      switch(target){
+        case 'latest': await SyncManager.checkSyncLatest(_throw); break;
+        case 'old': await SyncManager.checkSyncOld(_throw); break;
+        default: {
+          try {
+            await downloadFileLinuxWith('latest', true);
+          } catch(e){
+            await downloadFileLinuxWith('old', false);
+          }
+          return;
+        }
+      }
+
+      Timer timer = Timer.periodic(
+          const Duration(seconds: 1),
+          (Timer timer) => setState(() {
+                final speed = tlatest / 1024;
+                speedString = '${_formatNumberWithComma(speed)} KB/s';
+                tlatest = tnu;
+                tnu = 0;
+              }));
+      await dio.download(
+          SyncManager.getLatestDB().getDBDownloadUrliOS(widget.dbType!),
+          '$dir/data.db', onReceiveProgress: (rec, total) {
+        nu += rec - latest;
+        tnu += rec - latest;
+        latest = rec;
+        if (nu <= oneMega) return;
+
+        nu = 0;
+
+        setState(
+          () {
+            downloading = true;
+            final progressPercent = (rec / total) * 100;
+            progressString = '${_formatNumberWithComma(progressPercent)}%';
+            downString =
+                '[${_formatNumberWithComma(rec)}/${_formatNumberWithComma(total)}]';
+          },
+        );
+      });
+      timer.cancel();
+
+      final prefs = await MultiPreferences.getInstance();
       await prefs.setInt('db_exists', 1);
       await prefs.setString('databasetype', widget.dbType!);
       await prefs.setString(

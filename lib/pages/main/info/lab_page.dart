@@ -348,8 +348,20 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       'prefs.json',
                       jsonEncode(Map.fromEntries(values_itr.toList(growable: false))));
 
-                  final dir = await getApplicationDocumentsDirectory();
-                  await VioletServer.uploadFile('${dir.path}/user.db');
+                  late final dir;
+                  if(Platform.isAndroid || Platform.isIOS) {
+                    dir = await getApplicationDocumentsDirectory();
+                    await VioletServer.uploadFile('${dir.path}/user.db');
+                  } else if(Platform.isLinux) {
+                    var home = '';
+                    Platform.environment.forEach((key, value) {
+                      if(key == 'HOME'){
+                        home = value;
+                      }
+                    });
+                    dir = '${home}/.violet';
+                    await VioletServer.uploadFile('${dir}/user.db');
+                  }
                   await Future.delayed(const Duration(milliseconds: 500));
                   await VioletServer.uploadFile(ActLogger.logFile.path);
                 },
