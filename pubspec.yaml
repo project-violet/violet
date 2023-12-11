@@ -124,6 +124,7 @@ dependencies:
   webview_flutter: ^3.0.0
   collection: ^1.16.0
   octo_image: ^2.0.0
+  sqflite_common_ffi: ^2.3.1
 
 dev_dependencies:
   flutter_test:
@@ -132,7 +133,6 @@ dev_dependencies:
   json_serializable: ^6.7.0
   freezed: ^2.3.5
   drift_sqflite: ^2.0.0
-  sqflite_common_ffi:
   flutter_lints: ^3.0.0
 
 # For information on the generic Dart part of this file, see the
@@ -183,6 +183,7 @@ flutter:
     - assets/p7zip/x86_64/lib7zr.so # @dependent: android
 
     - assets/webview/
+    - assets/db/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
