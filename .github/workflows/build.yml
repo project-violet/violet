@@ -21,10 +21,16 @@ jobs:
           python-version: '3.8'
       - name: Preprocess
         run: | 
-          cd lib/server
-          wget -q ${{ secrets.SECRET_SALT }}
-          wget -q ${{ secrets.SECRET_WSALT }}
-          cd ../..
+          # cd lib/server
+          # wget -q ${{ secrets.SECRET_SALT }}
+          # wget -q ${{ secrets.SECRET_WSALT }}
+          # cd ../..
+          cat << EOF > lib/server/salt.dart
+            String getValid(foo) {return foo;}
+          EOF
+          cat << EOF > lib/server/wsalt.dart
+            String getValid(foo) {return foo;}
+          EOF
           python3 preprocess-ios.py
       - name: Podfile
         run: |
@@ -48,6 +54,55 @@ jobs:
           name: ipa-build
           path: Payload.ipa
 
+  # https://github.com/AppImageCrafters/appimage-builder-flutter-example/blob/main/.github/workflows/appimage.yml
+  linux-build:
+    runs-on: Ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: subosito/flutter-action@v1
+      # with:
+        # flutter-version: '1.22.4'
+    - run: flutter channel beta
+    - run: flutter upgrade
+    - run: flutter config --enable-linux-desktop
+    - name: "Install dependencies"
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake ninja-build build-essential pkg-config curl file git unzip xz-utils zip libgtk-3-dev
+    - name: Build flutter app
+      run: |
+        # cd lib/server
+        # wget -q ${{ secrets.SECRET_SALT }}
+        # wget -q ${{ secrets.SECRET_WSALT }}
+        # cd ../..
+        cat << EOF > lib/server/salt.dart
+          String getValid(foo) {return foo;}
+        EOF
+        cat << EOF > lib/server/wsalt.dart
+          String getValid(foo) {return foo;}
+        EOF
+        python3 preprocess-linux.py
+        flutter build linux
+    - name: Build AppImage unsing appimage-builder
+      uses: docker://appimagecrafters/appimage-builder:0.8.5
+      with:
+        entrypoint: appimage-builder
+        args: --recipe ./AppImageBuilder.yml --skip-test
+    - name: Save build Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: AppImage
+        path: './*.AppImage*'
+    # - name: Release AppImage
+    #   uses: marvinpinto/action-automatic-releases@latest
+    #   with:
+    #     title: Continuous build
+    #     automatic_release_tag: 'continuous'
+    #     prerelease: true
+    #     draft: false
+    #     files: './*.AppImage*'
+    #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+
   android-build:
     runs-on: ubuntu-latest
     steps:
@@ -66,10 +121,16 @@ jobs:
           python-version: '3.8'
       - name: Preprocess
         run: | 
-          cd lib/server
-          wget -q ${{ secrets.SECRET_SALT }}
-          wget -q ${{ secrets.SECRET_WSALT }}
-          cd ../..
+          # cd lib/server
+          # wget -q ${{ secrets.SECRET_SALT }}
+          # wget -q ${{ secrets.SECRET_WSALT }}
+          # cd ../..
+          cat << EOF > lib/server/salt.dart
+            String getValid(foo) {return foo;}
+          EOF
+          cat << EOF > lib/server/wsalt.dart
+            String getValid(foo) {return foo;}
+          EOF
           python3 preprocess-android.py
       - name: Build
         run: |
