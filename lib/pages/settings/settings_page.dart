@@ -1944,12 +1944,23 @@ class _SettingsPageState extends State<SettingsPage>
               }
 
               final pickedFile = File(pickedFilePath);
-              final db = Platform.isIOS
+              late final db;
+              if(Platform.isAndroid || Platform.isIOS){
+                db = Platform.isIOS
                     ? await getApplicationSupportDirectory()
                     : (await getApplicationDocumentsDirectory());
 
                 await pickedFile.copy('${db.path}/user.db');
-
+              } else if(Platform.isLinux){
+                var home = '';
+                Platform.environment.forEach((key, value) {
+                  if(key == 'HOME'){
+                    home = value;
+                  }
+                });
+                db = '${home}/.violet';
+                await pickedFile.copy('${db}/user.db');
+              }
               await Bookmark.getInstance();
 
               flutterToast.showToast(
@@ -1971,10 +1982,23 @@ class _SettingsPageState extends State<SettingsPage>
             title: Text(Translations.of(context).trans('exportingbookmark')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
-              final dir = Platform.isIOS
+              late final dir;
+              late final bookmarkDatabaseFile;
+              if(Platform.isAndroid || Platform.isIOS) {
+                dir = Platform.isIOS
                   ? await getApplicationSupportDirectory()
                   : (await getApplicationDocumentsDirectory());
-              final bookmarkDatabaseFile = File('${dir.path}/user.db');
+                bookmarkDatabaseFile = File('${dir.path}/user.db');
+              } else if(Platform.isLinux){
+                var home = '';
+                Platform.environment.forEach((key, value) {
+                  if(key == 'HOME'){
+                    home = value;
+                  }
+                });
+                dir = '${home}/.violet';
+                bookmarkDatabaseFile = File('${dir}/user.db');
+              }
 
               if (Platform.isAndroid) {
                 await PlatformMiscMethods.instance.exportFile(

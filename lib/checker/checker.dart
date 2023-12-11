@@ -20,6 +20,15 @@ class VioletChecker {
       var dbPath = Platform.isAndroid
           ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
           : '${await getDatabasesPath()}/data.db';
+      if(Platform.isLinux){
+        var home = '';
+        Platform.environment.forEach((key, value) {
+          if(key == 'HOME'){
+            home = value;
+          }
+        });
+        dbPath = '${home}/.violet/data.db';
+      }
 
       //
       // 1. check file exists

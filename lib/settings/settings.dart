@@ -509,6 +509,14 @@ class Settings {
       }
     } else if (Platform.isIOS) {
       tDownloadBasePath = await _getString('downloadbasepath', 'not supported');
+    } else if(Platform.isLinux){
+      var home = '';
+      Platform.environment.forEach((key, value) {
+        if(key == 'HOME'){
+          home = value;
+        }
+      });
+      tDownloadBasePath = await _getString('downloadbasepath', '${home}/.violet');
     }
     downloadBasePath = tDownloadBasePath!;
 
