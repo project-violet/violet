@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -170,8 +172,21 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
                       Colors.black,
                       DateTime.parse(data.datetime()));
 
-                  var dir = await getApplicationDocumentsDirectory();
-                  var dbraw = await openDatabase('${dir.path}/user.db');
+
+                  var dir;
+                  if(Platform.isAndroid || Platform.isIOS){
+                    var d = await getApplicationDocumentsDirectory();
+                    dir = d.path;
+                  } else if(Platform.isLinux){
+                    var home = '';
+                    Platform.environment.forEach((key, value) {
+                      if(key == 'HOME'){
+                        home = value;
+                      }
+                    });
+                    dir = '${home}/.violet';
+                  }
+                  var dbraw = await openDatabase('${dir}/user.db');
                   await dbraw.transaction((txn) async {
                     final batch = txn.batch();
                     for (var article in articles) {

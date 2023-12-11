@@ -13,8 +13,21 @@ import 'package:violet/database/query.dart';
 class SeriesFinder {
   static Future<void> doFind1() async {
     final subdir = Platform.isAndroid ? '/data' : '';
-    final directory = await getApplicationDocumentsDirectory();
-    final path = File('${directory.path}$subdir/index.json');
+    late final directory;
+    late final path;
+    if(Platform.isAndroid || Platform.isIOS){
+      directory = await getApplicationDocumentsDirectory();
+      path = File('${directory.path}$subdir/index.json');
+    } else if(Platform.isLinux){
+      var home = '';
+      Platform.environment.forEach((key, value) {
+        if(key == 'HOME'){
+          home = value;
+        }
+      });
+      directory = '${home}/.violet';
+      path = '${directory}$subdir/index.json';
+    }
     final text = path.readAsStringSync();
     final tagmap = jsonDecode(text);
     final artists = tagmap['artist'] as Map<String, dynamic>;

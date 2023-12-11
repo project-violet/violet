@@ -353,42 +353,55 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
         };
         final subdir = Platform.isAndroid ? '/data' : '';
 
-        final directory = await getApplicationDocumentsDirectory();
-        final path1 = File('${directory.path}$subdir/index.json');
+
+        late final directory;
+        if(Platform.isAndroid || Platform.isIOS){
+          var d = await getApplicationDocumentsDirectory();
+          directory = d.path;
+        } else if(Platform.isLinux){
+          var home = '';
+          Platform.environment.forEach((key, value) {
+            if(key == 'HOME'){
+              home = value;
+            }
+          });
+          directory = '${home}/.violet';
+        }
+        final path1 = File('${directory}$subdir/index.json');
         if (path1.existsSync()) path1.deleteSync();
         path1.writeAsString(jsonEncode(index));
         print(index);
 
-        final path2 = File('${directory.path}$subdir/tag-artist.json');
+        final path2 = File('${directory}$subdir/tag-artist.json');
         if (path2.existsSync()) path2.deleteSync();
         path2.writeAsString(jsonEncode(tagArtist));
-        final path3 = File('${directory.path}$subdir/tag-group.json');
+        final path3 = File('${directory}$subdir/tag-group.json');
         if (path3.existsSync()) path3.deleteSync();
         path3.writeAsString(jsonEncode(tagGroup));
-        final path4 = File('${directory.path}$subdir/tag-index.json');
+        final path4 = File('${directory}$subdir/tag-index.json');
         if (path4.existsSync()) path4.deleteSync();
         path4.writeAsString(jsonEncode(tagIndex));
-        final path5 = File('${directory.path}$subdir/tag-uploader.json');
+        final path5 = File('${directory}$subdir/tag-uploader.json');
         if (path5.existsSync()) path5.deleteSync();
         path5.writeAsString(jsonEncode(tagUploader));
-        final path6 = File('${directory.path}$subdir/tag-series.json');
+        final path6 = File('${directory}$subdir/tag-series.json');
         if (path6.existsSync()) path6.deleteSync();
         path6.writeAsString(jsonEncode(tagSeries));
-        final path7 = File('${directory.path}$subdir/tag-character.json');
+        final path7 = File('${directory}$subdir/tag-character.json');
         if (path7.existsSync()) path7.deleteSync();
         path7.writeAsString(jsonEncode(tagCharacter));
 
-        final path8 = File('${directory.path}$subdir/character-series.json');
+        final path8 = File('${directory}$subdir/character-series.json');
         if (path8.existsSync()) path8.deleteSync();
         path8.writeAsString(jsonEncode(characterSeries));
-        final path9 = File('${directory.path}$subdir/series-character.json');
+        final path9 = File('${directory}$subdir/series-character.json');
         if (path9.existsSync()) path9.deleteSync();
         path9.writeAsString(jsonEncode(seriesCharacter));
         final path10 =
-            File('${directory.path}$subdir/character-character.json');
+            File('${directory}$subdir/character-character.json');
         if (path10.existsSync()) path10.deleteSync();
         path10.writeAsString(jsonEncode(characterCharacter));
-        final path11 = File('${directory.path}$subdir/series-series.json');
+        final path11 = File('${directory}$subdir/series-series.json');
         if (path11.existsSync()) path11.deleteSync();
         path11.writeAsString(jsonEncode(seriesSeries));
 

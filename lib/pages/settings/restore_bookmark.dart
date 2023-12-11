@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
@@ -58,8 +60,19 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
         }
 
         // 북마크 작품 처리
-        var dir = await getApplicationDocumentsDirectory();
-        var dbraw = await openDatabase('${dir.path}/user.db');
+        var dir;
+        if(Platform.isAndroid || Platform.isIOS){
+          dir = await getApplicationDocumentsDirectory();
+        } else if(Platform.isLinux){
+          var home = '';
+          Platform.environment.forEach((key, value) {
+            if(key == 'HOME'){
+              home = value;
+            }
+          });
+          dir = '${home}/.violet';
+        }
+        var dbraw = await openDatabase('${dir}/user.db');
         await dbraw.transaction((txn) async {
           final batch = txn.batch();
           for (var article in articles) {

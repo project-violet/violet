@@ -27,8 +27,18 @@ class HitomiManager {
   static int? getArticleCount(String classification, String name) {
     if (tagmap == null) {
       final subdir = Platform.isAndroid ? '/data' : '';
-      final path =
-          File('${Variables.applicationDocumentsDirectory}$subdir/index.json');
+      late final path;
+      if(Platform.isAndroid || Platform.isIOS){
+        path = File('${Variables.applicationDocumentsDirectory}$subdir/index.json');
+      } else if(Platform.isLinux){
+        var home = '';
+        Platform.environment.forEach((key, value) {
+          if(key == 'HOME'){
+            home = value;
+          }
+        });
+        path = File('${home}/.violet$subdir/index.json');
+      }
       final text = path.readAsStringSync();
       tagmap = jsonDecode(text);
     }
@@ -38,8 +48,18 @@ class HitomiManager {
 
   static void reloadIndex() {
     final subdir = Platform.isAndroid ? '/data' : '';
-    final path =
-        File('${Variables.applicationDocumentsDirectory}$subdir/index.json');
+    late final path;
+    if(Platform.isAndroid || Platform.isIOS){
+      path = File('${Variables.applicationDocumentsDirectory}$subdir/index.json');
+    } else if(Platform.isLinux){
+      var home = '';
+      Platform.environment.forEach((key, value) {
+        if(key == 'HOME'){
+          home = value;
+        }
+      });
+      path = File('${home}/.violet$subdir/index.json');
+    }
     final text = path.readAsStringSync();
     tagmap = jsonDecode(text);
   }
@@ -81,8 +101,21 @@ class HitomiManager {
         tagmap = jsonDecode(await file.readAsString());
       } else {
         final subdir = Platform.isAndroid ? '/data' : '';
-        final directory = await getApplicationDocumentsDirectory();
-        final path = File('${directory.path}$subdir/index.json');
+        late final directory;
+        late final path;
+        if(Platform.isAndroid || Platform.isIOS){
+          directory = await getApplicationDocumentsDirectory();
+          path = File('${directory.path}$subdir/index.json');
+        } else if(Platform.isLinux){
+          var home = '';
+          Platform.environment.forEach((key, value) {
+            if(key == 'HOME'){
+              home = value;
+            }
+          });
+          directory = '${home}/.violet';
+          path = File('${directory}$subdir/index.json');
+        }
         final text = path.readAsStringSync();
         tagmap = jsonDecode(text);
       }
