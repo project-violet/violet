@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/displayed_tag.dart';
@@ -12,7 +14,8 @@ class TagSelectorDialog extends StatefulWidget {
   final String what;
   final bool onlyFMT;
 
-  const TagSelectorDialog({super.key, required this.what, this.onlyFMT = false});
+  const TagSelectorDialog(
+      {super.key, required this.what, this.onlyFMT = false});
 
   @override
   State<TagSelectorDialog> createState() => _TagSelectorDialogState();
@@ -110,7 +113,11 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
                             controller: ScrollController(),
                             child: Wrap(
                               spacing: 4.0,
-                              runSpacing: -10.0,
+                              runSpacing: ((){
+                                if(Platform.isAndroid || Platform.isIOS) return -10.0;
+                                if(Platform.isLinux) return 10.0;
+                                return -10.0;
+                              })(),
                               children: _searchLists
                                   .map((item) => chip(item))
                                   .toList(),
