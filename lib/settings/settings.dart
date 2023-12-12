@@ -138,7 +138,7 @@ class MultiPreferences {
       try {
         var res = await db_prefs.query('SELECT value FROM SharedPreferences WHERE key="${key}" AND type="BOOL";');
         if(res.isEmpty) return Future.value(null);
-        return res.first.values.first;
+        return bool.parse('${res.first.values.first}');
         // return Future.value(null);
       } catch(e){
         return Future.value(null);
@@ -172,7 +172,7 @@ class MultiPreferences {
       try {
         var res = await db_prefs.query('SELECT value FROM SharedPreferences WHERE key="${key}" AND type="DOUBLE";');
         if(res.isEmpty) return Future.value(null);
-        return res.first.values.first;
+        return double.parse('${res.first.values.first}');
         // return Future.value(null);
       } catch(e){
         return Future.value(null);
@@ -206,7 +206,7 @@ class MultiPreferences {
       try{
         var res = await db_prefs.query('SELECT value FROM SharedPreferences WHERE key="${key}" AND TYPE="INT";');
         if(res.isEmpty) return Future.value(null);
-        return res.first.values.first;
+        return int.parse('${res.first.values.first}');
       } catch(e){
         return Future.value(null);
       }
