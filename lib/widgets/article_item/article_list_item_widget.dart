@@ -474,9 +474,12 @@ class BodyWidget extends StatelessWidget {
                       getxId: getxId,
                     ),
                     Expanded(
-                      child: _DetailWidget(
+                      child: ((){
+                        var a = _DetailWidget(
                         getxId: getxId,
-                      ),
+                      );
+                      return a;
+                      })(),
                     )
                   ],
                 )
@@ -584,13 +587,32 @@ class _DetailWidget extends StatelessWidget {
             e.contains(':') ? e.split(':')[0] : 'tags',
             e.contains(':') ? e.split(':')[1] : e))
         .toList();
-
-    return Wrap(
+    var _body = Wrap(
       spacing: 3.0,
-      runSpacing: -10.0,
-      children:
+      runSpacing: ((){
+        if(Platform.isAndroid || Platform.isIOS) return -10.0;
+        if(Platform.isLinux) return 10.0;
+        return -10.0;
+      })(),
+      children: 
           tags.map((x) => TagChip(group: x.item1, name: x.item2)).toList(),
     );
+    if(Platform.isAndroid || Platform.isIOS){
+      return _body;
+    }
+    if(Platform.isLinux){
+      return Container(
+        height: ((){
+          if(Platform.isAndroid || Platform.isIOS) return null;
+          if(Platform.isLinux) return 30.0;
+          return null;
+        })(),
+        child: ClipRect(
+          child: _body,
+        )
+      );
+    }
+    return _body;
   }
 }
 
@@ -710,7 +732,11 @@ class TagChip extends StatelessWidget {
     );
 
     return SizedBox(
-      height: 42,
+      height: ((){
+        if(Platform.isAndroid || Platform.isIOS) return 42.0;
+        if(Platform.isLinux) return 25.0;
+        return 42.0;
+      })(),
       child: FittedBox(child: fc),
     );
   }
