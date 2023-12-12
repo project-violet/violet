@@ -62,6 +62,7 @@ import 'package:violet/pages/settings/version_page.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/platform/misc.dart';
 import 'package:violet/server/violet.dart';
+import 'package:violet/settings/path.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 import 'package:violet/variables.dart';
@@ -1233,19 +1234,7 @@ class _SettingsPageState extends State<SettingsPage>
                       return;
                     }
 
-                    var dir;
-                    if(Platform.isAndroid || Platform.isIOS){
-                      var d = await getApplicationDocumentsDirectory();
-                      dir = d.path;
-                    } else if(Platform.isLinux){
-                      var home = '';
-                      Platform.environment.forEach((key, value) {
-                        if(key == 'HOME'){
-                          home = value;
-                        }
-                      });
-                      dir = '${home}/.violet';
-                    }
+                    var dir = await DefaultPathProvider.getDocumentsDirectory();
                     try {
                       await ((await openDatabase('${dir}/data/data.db'))
                           .close());
@@ -1263,20 +1252,8 @@ class _SettingsPageState extends State<SettingsPage>
                         .then(
                       (value) async {
                         HitomiIndexs.init();
-                        late final directory;
-                        if(Platform.isAndroid || Platform.isIOS){
-                          var d = await getApplicationDocumentsDirectory();
-                          directory = d.path;
-                        } else if(Platform.isLinux){
-                          var home = '';
-                          Platform.environment.forEach((key, value) {
-                            if(key == 'HOME'){
-                              home = value;
-                            }
-                          });
-                          directory = '${home}/.violet';
-                        }
-                        final path = File('${directory.path}/data/index.json');
+                        final directory = await DefaultPathProvider.getDocumentsDirectory();
+                        final path = File('${directory}/data/index.json');
                         final text = path.readAsStringSync();
                         HitomiManager.tagmap = jsonDecode(text);
                         await DataBaseManager.reloadInstance();
@@ -1968,23 +1945,9 @@ class _SettingsPageState extends State<SettingsPage>
               }
 
               final pickedFile = File(pickedFilePath);
-              late final db;
-              if(Platform.isAndroid || Platform.isIOS){
-                db = Platform.isIOS
-                    ? await getApplicationSupportDirectory()
-                    : (await getApplicationDocumentsDirectory());
-
-                await pickedFile.copy('${db.path}/user.db');
-              } else if(Platform.isLinux){
-                var home = '';
-                Platform.environment.forEach((key, value) {
-                  if(key == 'HOME'){
-                    home = value;
-                  }
-                });
-                db = '${home}/.violet';
-                await pickedFile.copy('${db}/user.db');
-              }
+              final db = await DefaultPathProvider.getSupportDirectory();
+                
+              await pickedFile.copy('${db}/user.db');
               await Bookmark.getInstance();
 
               flutterToast.showToast(
@@ -2006,23 +1969,8 @@ class _SettingsPageState extends State<SettingsPage>
             title: Text(Translations.of(context).trans('exportingbookmark')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
-              late final dir;
-              late final bookmarkDatabaseFile;
-              if(Platform.isAndroid || Platform.isIOS) {
-                dir = Platform.isIOS
-                  ? await getApplicationSupportDirectory()
-                  : (await getApplicationDocumentsDirectory());
-                bookmarkDatabaseFile = File('${dir.path}/user.db');
-              } else if(Platform.isLinux){
-                var home = '';
-                Platform.environment.forEach((key, value) {
-                  if(key == 'HOME'){
-                    home = value;
-                  }
-                });
-                dir = '${home}/.violet';
-                bookmarkDatabaseFile = File('${dir}/user.db');
-              }
+              final dir = await DefaultPathProvider.getSupportDirectory();
+              final bookmarkDatabaseFile = File('${dir}/user.db');
 
               if (Platform.isAndroid) {
                 await PlatformMiscMethods.instance.exportFile(

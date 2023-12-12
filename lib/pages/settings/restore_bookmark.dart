@@ -10,6 +10,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/log/log.dart';
+import 'package:violet/settings/path.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/toast.dart';
@@ -60,18 +61,7 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
         }
 
         // 북마크 작품 처리
-        var dir;
-        if(Platform.isAndroid || Platform.isIOS){
-          dir = await getApplicationDocumentsDirectory();
-        } else if(Platform.isLinux){
-          var home = '';
-          Platform.environment.forEach((key, value) {
-            if(key == 'HOME'){
-              home = value;
-            }
-          });
-          dir = '${home}/.violet';
-        }
+        var dir = await DefaultPathProvider.getDocumentsDirectory();
         var dbraw = await openDatabase('${dir}/user.db');
         await dbraw.transaction((txn) async {
           final batch = txn.batch();

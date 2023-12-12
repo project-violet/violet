@@ -32,6 +32,7 @@ import 'package:violet/other/named_color.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
 import 'package:violet/script/script_manager.dart';
+import 'package:violet/settings/path.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
@@ -569,19 +570,7 @@ class _SplashPageState extends State<SplashPage> {
       }
     }
     if (widget.switching) {
-      var dir;
-      if(Platform.isAndroid || Platform.isIOS){
-        var d = await getApplicationDocumentsDirectory();
-        dir = d.path;
-      } else if(Platform.isLinux){
-        var home = '';
-        Platform.environment.forEach((key, value) {
-          if(key == 'HOME'){
-            home = value;
-          }
-        });
-        dir = '${home}/.violet';
-      }
+      var dir = await DefaultPathProvider.getDocumentsDirectory();
       try {
         await ((await openDatabase('${dir}/data/data.db')).close());
         await deleteDatabase('${dir}/data/data.db');

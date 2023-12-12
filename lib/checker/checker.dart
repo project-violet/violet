@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/log/log.dart';
+import 'package:violet/settings/path.dart';
 
 class VioletChecker {
   static Future<bool> checkArticleDatabase() async {
@@ -18,17 +19,8 @@ class VioletChecker {
       //  0. get database path
       //
       var dbPath = Platform.isAndroid
-          ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
-          : '${await getDatabasesPath()}/data.db';
-      if(Platform.isLinux){
-        var home = '';
-        Platform.environment.forEach((key, value) {
-          if(key == 'HOME'){
-            home = value;
-          }
-        });
-        dbPath = '${home}/.violet/data.db';
-      }
+          ? '${(await DefaultPathProvider.getBaseDirectory())}/data/data.db'
+          : '${(await DefaultPathProvider.getBaseDirectory())}/data.db';
 
       //
       // 1. check file exists
@@ -106,19 +98,7 @@ class VioletChecker {
       //
       //  0. get database path
       //
-      var dir;
-      if(Platform.isAndroid || Platform.isIOS){
-        var d = await getApplicationDocumentsDirectory();
-        dir = d.path;
-      } else if(Platform.isLinux){
-        var home = '';
-        Platform.environment.forEach((key, value) {
-          if(key == 'HOME'){
-            home = value;
-          }
-        });
-        dir = '${home}/.violet';
-      }
+      var dir = DefaultPathProvider.getDocumentsDirectory();
       var dbPath = '${dir}/user.db';
 
       //

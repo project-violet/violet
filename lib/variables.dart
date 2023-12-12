@@ -5,6 +5,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:path_provider/path_provider.dart';
+import 'package:violet/settings/path.dart';
 
 class Variables {
   static late String applicationDocumentsDirectory;
@@ -12,7 +13,7 @@ class Variables {
 
   static Future<void> init() async {
     applicationDocumentsDirectory =
-        (await getApplicationDocumentsDirectory()).path;
+        (await DefaultPathProvider.getDocumentsDirectory());
   }
 
   static double statusBarHeight = 0;

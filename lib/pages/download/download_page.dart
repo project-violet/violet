@@ -33,6 +33,7 @@ import 'package:violet/pages/segment/filter_page.dart';
 import 'package:violet/pages/segment/filter_page_controller.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/script/script_manager.dart';
+import 'package:violet/settings/path.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/search_bar.dart';
@@ -124,19 +125,8 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     /// to
     /// /var/mobile/Containers/Data/Application/<new-app-code>/Documents
 
-    late final newPath;
-    if(Platform.isAndroid || Platform.isIOS){
-      newPath = (await getApplicationDocumentsDirectory()).path;
-    } else if(Platform.isLinux){
-      var home = '';
-      Platform.environment.forEach((key, value) {
-        if(key == 'HOME'){
-          home = value;
-        }
-      });
-      newPath = '${home}/.violet';
-    } else { newPath = ''; }
-
+    final newPath = await DefaultPathProvider.getBaseDirectory();
+    
     for (var item in items) {
       if (item.files() == null) continue;
 

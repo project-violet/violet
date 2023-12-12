@@ -13,6 +13,7 @@ import 'package:violet/pages/main/info/lab/bookmark/bookmarks_article_list.dart'
 import 'package:violet/pages/main/info/lab/bookmark/bookmarks_records.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/server/violet.dart';
+import 'package:violet/settings/path.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 
@@ -173,19 +174,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
                       DateTime.parse(data.datetime()));
 
 
-                  var dir;
-                  if(Platform.isAndroid || Platform.isIOS){
-                    var d = await getApplicationDocumentsDirectory();
-                    dir = d.path;
-                  } else if(Platform.isLinux){
-                    var home = '';
-                    Platform.environment.forEach((key, value) {
-                      if(key == 'HOME'){
-                        home = value;
-                      }
-                    });
-                    dir = '${home}/.violet';
-                  }
+                  var dir = await DefaultPathProvider.getDocumentsDirectory();
                   var dbraw = await openDatabase('${dir}/user.db');
                   await dbraw.transaction((txn) async {
                     final batch = txn.batch();

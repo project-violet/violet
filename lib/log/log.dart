@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:synchronized/synchronized.dart' as sync;
+import 'package:violet/settings/path.dart';
 
 class LogEvent {
   DateTime? dateTime;
@@ -48,19 +49,8 @@ class Logger {
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       logFile = File('log.txt');
     } else {
-      if(Platform.isAndroid || Platform.isIOS){
-        final dir = await getApplicationDocumentsDirectory();
-        logFile = File(join(dir.path, 'log.txt'));
-      } else if(Platform.isLinux){
-        var home = '';
-        Platform.environment.forEach((key, value) {
-          if(key == 'HOME'){
-            home = value;
-          }
-        });
-        final dir = '${home}/.violet';
-        logFile = File(join(dir, 'log.txt'));
-      }
+      final dir = await DefaultPathProvider.getDocumentsDirectory();
+      logFile = File(join(dir, 'log.txt'));
     }
 
     if (!await logFile.exists()) {
@@ -121,12 +111,10 @@ class Logger {
   }
 
   static Future<void> exportLog() async {
-    final ext = Platform.isIOS
-        ? await getApplicationSupportDirectory()
-        : await getExternalStorageDirectory();
+    final ext = await DefaultPathProvider.getExportDirectory();
     // final dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
     // final extpath = '${ext.path}/log-${dateFormat.format(DateTime.now())}.log';
-    final extpath = '${ext!.path}/log.txt';
+    final extpath = '${ext}/log.txt';
     await logFile.copy(extpath);
   }
 }

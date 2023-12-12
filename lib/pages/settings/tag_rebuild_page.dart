@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/settings/path.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 
@@ -354,19 +355,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
         final subdir = Platform.isAndroid ? '/data' : '';
 
 
-        late final directory;
-        if(Platform.isAndroid || Platform.isIOS){
-          var d = await getApplicationDocumentsDirectory();
-          directory = d.path;
-        } else if(Platform.isLinux){
-          var home = '';
-          Platform.environment.forEach((key, value) {
-            if(key == 'HOME'){
-              home = value;
-            }
-          });
-          directory = '${home}/.violet';
-        }
+        final directory  = await DefaultPathProvider.getDocumentsDirectory();
         final path1 = File('${directory}$subdir/index.json');
         if (path1.existsSync()) path1.deleteSync();
         path1.writeAsString(jsonEncode(index));
