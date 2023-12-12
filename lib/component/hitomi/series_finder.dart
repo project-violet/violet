@@ -9,25 +9,13 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/title_cluster.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/settings/path.dart';
 
 class SeriesFinder {
   static Future<void> doFind1() async {
     final subdir = Platform.isAndroid ? '/data' : '';
-    late final directory;
-    late final path;
-    if(Platform.isAndroid || Platform.isIOS){
-      directory = await getApplicationDocumentsDirectory();
-      path = File('${directory.path}$subdir/index.json');
-    } else if(Platform.isLinux){
-      var home = '';
-      Platform.environment.forEach((key, value) {
-        if(key == 'HOME'){
-          home = value;
-        }
-      });
-      directory = '${home}/.violet';
-      path = '${directory}$subdir/index.json';
-    }
+    final directory = await DefaultPathProvider.getDocumentsDirectory();
+    final path = File('${directory}$subdir/index.json');
     final text = path.readAsStringSync();
     final tagmap = jsonDecode(text);
     final artists = tagmap['artist'] as Map<String, dynamic>;

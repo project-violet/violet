@@ -11,6 +11,7 @@ import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/displayed_tag.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/script/script_manager.dart';
+import 'package:violet/settings/path.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 
@@ -27,18 +28,7 @@ class HitomiManager {
   static int? getArticleCount(String classification, String name) {
     if (tagmap == null) {
       final subdir = Platform.isAndroid ? '/data' : '';
-      late final path;
-      if(Platform.isAndroid || Platform.isIOS){
-        path = File('${Variables.applicationDocumentsDirectory}$subdir/index.json');
-      } else if(Platform.isLinux){
-        var home = '';
-        Platform.environment.forEach((key, value) {
-          if(key == 'HOME'){
-            home = value;
-          }
-        });
-        path = File('${home}/.violet$subdir/index.json');
-      }
+      final path = File('${Variables.applicationDocumentsDirectory}$subdir/index.json');
       final text = path.readAsStringSync();
       tagmap = jsonDecode(text);
     }
@@ -101,21 +91,8 @@ class HitomiManager {
         tagmap = jsonDecode(await file.readAsString());
       } else {
         final subdir = Platform.isAndroid ? '/data' : '';
-        late final directory;
-        late final path;
-        if(Platform.isAndroid || Platform.isIOS){
-          directory = await getApplicationDocumentsDirectory();
-          path = File('${directory.path}$subdir/index.json');
-        } else if(Platform.isLinux){
-          var home = '';
-          Platform.environment.forEach((key, value) {
-            if(key == 'HOME'){
-              home = value;
-            }
-          });
-          directory = '${home}/.violet';
-          path = File('${directory}$subdir/index.json');
-        }
+        final directory = (await (DefaultPathProvider.getDocumentsDirectory()));
+        final path = File('${directory}$subdir/index.json');
         final text = path.readAsStringSync();
         tagmap = jsonDecode(text);
       }

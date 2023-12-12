@@ -39,6 +39,7 @@ import 'package:violet/pages/segment/double_tap_to_top.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/platform/android_external_storage_directory.dart';
+import 'package:violet/settings/path.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 import 'package:violet/variables.dart';
@@ -534,19 +535,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
       return;
     }
 
-    var dir;
-    if(Platform.isAndroid || Platform.isIOS){
-      var d = await getApplicationDocumentsDirectory();
-      dir = d.path;
-    } else if(Platform.isLinux){
-      var home = '';
-      Platform.environment.forEach((key, value) {
-        if(key == 'HOME'){
-          home = value;
-        }
-      });
-      dir = '${home}/.violet';
-    }
+    var dir = await DefaultPathProvider.getDocumentsDirectory();
 
     try {
       await ((await openDatabase('${dir}/data/data.db')).close());
@@ -566,21 +555,9 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
                 )))
         .then((value) async {
       HitomiIndexs.init();
-      late final directory;
-      late final path;
-      if(Platform.isAndroid || Platform.isIOS){
-        directory = await getApplicationDocumentsDirectory();
-        path = File('${directory.path}/data/index.json');
-      } else if(Platform.isLinux){
-        var home = '';
-        Platform.environment.forEach((key, value) {
-          if(key == 'HOME'){
-            home = value;
-          }
-        });
-        directory = '${home}/.violet';
-        path = File('${directory}/index.json');
-      }
+      final subdir = Platform.isAndroid ? '/data' : '';
+      final directory = await DefaultPathProvider.getDocumentsDirectory();
+      final path = File('${directory}$subdir/index.json');
       final text = path.readAsStringSync();
       HitomiManager.tagmap = jsonDecode(text);
       await DataBaseManager.reloadInstance();

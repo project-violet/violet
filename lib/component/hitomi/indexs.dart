@@ -10,6 +10,7 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/log/log.dart';
+import 'package:violet/settings/path.dart';
 
 // This is used for estimation similiar Aritst/Group/Uplaoder with each others.
 class HitomiIndexs {
@@ -40,19 +41,7 @@ class HitomiIndexs {
   static late Map<String, dynamic> relatedTag;
 
   static Future<void> init() async {
-    late final directory;
-    if(Platform.isAndroid || Platform.isIOS){
-      var d = await getApplicationDocumentsDirectory();
-      directory = d.path;
-    } else if(Platform.isLinux){
-      var home = '';
-      Platform.environment.forEach((key, value) {
-        if(key == 'HOME'){
-          home = value;
-        }
-      });
-      directory = '${home}/.violet';
-    }
+    final directory = await DefaultPathProvider.getDocumentsDirectory();
     final subdir = Platform.isAndroid ? '/data' : '';
 
     // No data on first run.

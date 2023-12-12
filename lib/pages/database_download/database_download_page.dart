@@ -21,6 +21,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/pages/database_download/decompress.dart';
 import 'package:violet/platform/misc.dart';
+import 'package:violet/settings/path.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
@@ -62,32 +63,10 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       final prefs = await MultiPreferences.getInstance();
       if ((await prefs.getInt('db_exists')) == 1) {
         var dbPath = Platform.isAndroid
-            ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
-            : '${await getDatabasesPath()}/data.db';
-        if(Platform.isLinux){
-          var home = '';
-          Platform.environment.forEach((key, value) {
-            if(key == 'HOME'){
-              home = value;
-            }
-          });
-          dbPath = '${home}/.violet/data.db';
-        }
+          ? '${(await DefaultPathProvider.getBaseDirectory())}/data/data.db'
+          : '${(await DefaultPathProvider.getBaseDirectory())}/data.db';
         if (await File(dbPath).exists()) await File(dbPath).delete();
-        var dir;
-        if(Platform.isAndroid || Platform.isIOS){
-          var d = await getApplicationDocumentsDirectory();
-          dir = d.path;
-        }
-        if(Platform.isLinux){
-          var home = '';
-          Platform.environment.forEach((key, value) {
-            if(key == 'HOME'){
-              home = value;
-            }
-          });
-          dir = '${home}/.violet';
-        }
+        var dir = '${(await DefaultPathProvider.getDocumentsDirectory())}';
         if (await Directory('${dir}/data').exists()) {
           await Directory('${dir}/data').delete(recursive: true);
         }
@@ -140,9 +119,9 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     int tnu = 0;
 
     try {
-      var dir = await getApplicationDocumentsDirectory();
-      if (await File('${dir.path}/db.sql.7z').exists()) {
-        await File('${dir.path}/db.sql.7z').delete();
+      var dir = await DefaultPathProvider.getBaseDirectory();
+      if (await File('${dir}/db.sql.7z').exists()) {
+        await File('${dir}/db.sql.7z').delete();
       }
       switch(target){
         case 'latest': await SyncManager.checkSyncLatest(_throw); break;
@@ -166,7 +145,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
               }));
       await dio.download(
           SyncManager.getLatestDB().getDBDownloadUrl(widget.dbType!),
-          '${dir.path}/db.sql.7z', onReceiveProgress: (rec, total) {
+          '${dir}/db.sql.7z', onReceiveProgress: (rec, total) {
         nu += rec - latest;
         tnu += rec - latest;
         latest = rec;
@@ -193,23 +172,23 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       });
 
       final p7zip = P7zip();
-      if (await Directory('${dir.path}/data2').exists()) {
-        await Directory('${dir.path}/data2').delete(recursive: true);
+      if (await Directory('${dir}/data2').exists()) {
+        await Directory('${dir}/data2').delete(recursive: true);
       }
       await p7zip.decompress(
-        ['${dir.path}/db.sql.7z'],
-        path: '${dir.path}/data2',
+        ['${dir}/db.sql.7z'],
+        path: '${dir}/data2',
       );
       Variables.databaseDecompressed = true;
-      if (await Directory('${dir.path}/data').exists()) {
-        await Directory('${dir.path}/data').delete(recursive: true);
+      if (await Directory('${dir}/data').exists()) {
+        await Directory('${dir}/data').delete(recursive: true);
       }
-      await Directory('${dir.path}/data2').rename('${dir.path}/data');
-      if (await Directory('${dir.path}/data2').exists()) {
-        await Directory('${dir.path}/data2').delete(recursive: true);
+      await Directory('${dir}/data2').rename('${dir}/data');
+      if (await Directory('${dir}/data2').exists()) {
+        await Directory('${dir}/data2').delete(recursive: true);
       }
 
-      await File('${dir.path}/db.sql.7z').delete();
+      await File('${dir}/db.sql.7z').delete();
 
       final prefs = await MultiPreferences.getInstance();
       await prefs.setInt('db_exists', 1);
@@ -266,7 +245,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     int tnu = 0;
 
     try {
-      var dir = await getDatabasesPath();
+      var dir = await DefaultPathProvider.getBaseDirectory();
       if (await File('$dir/data.db').exists()) {
         await File('$dir/data.db').delete();
       }
@@ -369,15 +348,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     int tnu = 0;
 
     try {
-      var dir = '';
-      if(Platform.isLinux){
-        Platform.environment.forEach((key, value) => {
-          if(key == 'HOME'){
-            dir = value
-          }
-        });
-        dir = '${dir}/.violet';
-      }
+      var dir = await DefaultPathProvider.getBaseDirectory();
       if (await File('$dir/data.db').exists()) {
         await File('$dir/data.db').delete();
       }
@@ -675,19 +646,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
           'class': classes,
         };
 
-        late final directory;
-        if(Platform.isAndroid || Platform.isIOS){
-          var d = await getApplicationDocumentsDirectory();
-          directory = d.path;
-        } else if(Platform.isLinux){
-          var home = '';
-          Platform.environment.forEach((key, value) {
-            if(key == 'HOME'){
-              home = value;
-            }
-          });
-          directory = '${home}/.violet';
-        }
+        final directory = await DefaultPathProvider.getDocumentsDirectory();
         final path1 = File('${directory}/index.json');
         path1.writeAsString(jsonEncode(index));
 

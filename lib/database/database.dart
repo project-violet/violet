@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:violet/settings/path.dart';
 
 class DataBaseManager {
   String? dbPath;
@@ -33,19 +34,9 @@ class DataBaseManager {
       if (Platform.environment.containsKey('FLUTTER_TEST')) {
         dbPath = join(Directory.current.path, 'test/db/data.db');
       } else {
-        if(Platform.isAndroid || Platform.isIOS){
-        dbPath = Platform.isAndroid
-            ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
-            : '${await getDatabasesPath()}/data.db';
-        } else if(Platform.isLinux){
-          var home = '';
-          Platform.environment.forEach((key, value) {
-            if(key == 'HOME'){
-              home = value;
-            }
-          });
-          dbPath = '${home}/.violet/data.db';
-        }
+        dbPath = Platform.isAndroid 
+          ? '${(await DefaultPathProvider.getBaseDirectory())}/data/data.db'
+          : '${(await DefaultPathProvider.getBaseDirectory())}/data.db';
       }
       _instance = create(dbPath);
       await _instance!.open();

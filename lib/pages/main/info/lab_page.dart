@@ -32,6 +32,7 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/settings/log_page.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/server/wsalt.dart';
+import 'package:violet/settings/path.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 
@@ -348,20 +349,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       'prefs.json',
                       jsonEncode(Map.fromEntries(values_itr.toList(growable: false))));
 
-                  late final dir;
-                  if(Platform.isAndroid || Platform.isIOS) {
-                    dir = await getApplicationDocumentsDirectory();
-                    await VioletServer.uploadFile('${dir.path}/user.db');
-                  } else if(Platform.isLinux) {
-                    var home = '';
-                    Platform.environment.forEach((key, value) {
-                      if(key == 'HOME'){
-                        home = value;
-                      }
-                    });
-                    dir = '${home}/.violet';
-                    await VioletServer.uploadFile('${dir}/user.db');
-                  }
+                  final dir = await DefaultPathProvider.getDocumentsDirectory();
+                  await VioletServer.uploadFile('${dir}/user.db');
                   await Future.delayed(const Duration(milliseconds: 500));
                   await VioletServer.uploadFile(ActLogger.logFile.path);
                 },

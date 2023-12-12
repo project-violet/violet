@@ -13,6 +13,7 @@ import 'package:violet/component/downloadable.dart';
 import 'package:violet/component/hentai_download_manager.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/downloader/isolate_downloader.dart';
+import 'package:violet/settings/path.dart';
 import 'package:violet/settings/settings.dart';
 
 class DownloadRoutine {
@@ -87,7 +88,7 @@ class DownloadRoutine {
   }
 
   Future<void> extractFilePath() async {
-    final inner = (await getApplicationDocumentsDirectory()).path;
+    final inner = (await DefaultPathProvider.getDocumentsDirectory());
     final files = tasks!
         .map((e) => join(
             Settings.useInnerStorage ? inner : Settings.downloadBasePath,
@@ -123,7 +124,7 @@ class DownloadRoutine {
     var basepath = Settings.downloadBasePath;
 
     if (Settings.useInnerStorage) {
-      basepath = (await getApplicationDocumentsDirectory()).path;
+      basepath = (await DefaultPathProvider.getDocumentsDirectory());
     }
 
     downloader.appendTasks(tasks!.map((e) {
@@ -150,7 +151,7 @@ class DownloadRoutine {
     var basepath = Settings.downloadBasePath;
 
     if (Settings.useInnerStorage) {
-      basepath = (await getApplicationDocumentsDirectory()).path;
+      basepath = (await DefaultPathProvider.getDocumentsDirectory());
     }
 
     final filenames = tasks!
@@ -190,7 +191,7 @@ class DownloadRoutine {
     var basepath = Settings.downloadBasePath;
 
     if (Settings.useInnerStorage) {
-      basepath = (await getApplicationDocumentsDirectory()).path;
+      basepath = (await DefaultPathProvider.getDocumentsDirectory());
     }
 
     downloader.appendTasks(invalidIndex.map((e) => tasks![e]).map((e) {

@@ -9,6 +9,7 @@ import 'package:crypto/crypto.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:synchronized/synchronized.dart' as sync;
+import 'package:violet/settings/path.dart';
 
 enum ActLogType {
   none,
@@ -109,19 +110,7 @@ class ActLogger {
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       logFile = File('act-log.txt');
     } else {
-      late final dir;
-      if(Platform.isAndroid || Platform.isIOS){
-        var d = await getApplicationDocumentsDirectory();
-        dir = d.path;
-      } else if(Platform.isLinux){
-        var home = '';
-        Platform.environment.forEach((key, value) {
-          if(key == 'HOME'){
-            home = value;
-          }
-        });
-        dir = '${home}/.violet';
-      }
+      final dir = await DefaultPathProvider.getDocumentsDirectory();
       logFile = File(join(dir, 'act-log.txt'));
     }
 
@@ -150,21 +139,7 @@ class ActLogger {
   }
 
   static Future<void> exportLog() async {
-    late final ext;
-    if(Platform.isAndroid || Platform.isIOS){
-      var d = Platform.isIOS
-        ? await getApplicationSupportDirectory()
-        : await getExternalStorageDirectory();
-      ext = d!.path;
-    } else if(Platform.isLinux){
-      var home = '';
-      Platform.environment.forEach((key, value) {
-        if(key == 'HOME'){
-          key = value;
-        }
-      });
-      ext = '${home}/.violet';
-    }
+    final ext = await DefaultPathProvider.getExportDirectory();
     final extpath = '${ext}/act-log.txt';
     await logFile.copy(extpath);
   }
