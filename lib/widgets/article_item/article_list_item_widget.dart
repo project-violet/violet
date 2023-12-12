@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -465,20 +466,25 @@ class BodyWidget extends StatelessWidget {
               ? Colors.black26
               : Colors.white,
       child: c.articleListItem.showDetail
-          ? IntrinsicHeight(
+          ? ((){
+             var _body = IntrinsicHeight(
               child: Row(
-                children: <Widget>[
-                  ThumbnailWidget(
-                    getxId: getxId,
-                  ),
-                  Expanded(
-                    child: _DetailWidget(
+                  children: <Widget>[
+                    ThumbnailWidget(
                       getxId: getxId,
                     ),
-                  )
-                ],
-              ),
-            )
+                    Expanded(
+                      child: _DetailWidget(
+                        getxId: getxId,
+                      ),
+                    )
+                  ],
+                )
+              );
+              if(Platform.isAndroid || Platform.isIOS) return _body;
+              if(Platform.isLinux) return ClipRect(child: _body);
+              return _body;
+            })()
           : ThumbnailWidget(
               getxId: getxId,
             ),
