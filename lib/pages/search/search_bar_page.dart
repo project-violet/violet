@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flare_flutter/asset_provider.dart';
@@ -298,7 +299,11 @@ class _SearchBarPageState extends State<SearchBarPage>
       children: [
         Wrap(
           spacing: 4.0,
-          runSpacing: -10.0,
+          runSpacing: ((){
+            if(Platform.isAndroid || Platform.isIOS) return -10.0;
+            if(Platform.isLinux) return 10.0;
+            return -10.0;
+          })(),
           children: _searchLists.map((item) => chip(item)).toList(),
         ),
       ],
