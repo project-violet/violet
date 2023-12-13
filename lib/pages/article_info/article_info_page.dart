@@ -509,7 +509,11 @@ class MultiChipWidget extends StatelessWidget {
         Expanded(
           child: Wrap(
             spacing: 3.0,
-            runSpacing: -9.0,
+            runSpacing: ((){
+              if(Platform.isAndroid || Platform.isIOS) return -9.0;
+              if(Platform.isLinux) return 9.0;
+              return -9.0;
+            })(),
             children: groupName
                 .map((x) => _Chip(group: x.item1, name: x.item2))
                 .toList(),
@@ -1144,7 +1148,11 @@ class _Chip extends StatelessWidget {
     );
 
     return SizedBox(
-      height: 44,
+      height: ((){
+        if(Platform.isAndroid || Platform.isIOS) return 44.0;
+        if(Platform.isLinux) return 44.0;
+        return 44.0;
+      })(),
       child: FittedBox(child: fc),
     );
   }
