@@ -1,0 +1,77 @@
+# appimage-builder recipe see https://appimage-builder.readthedocs.io for details
+version: 1
+script:
+ - rm -rf AppDir || true
+ - cp -r build/linux/*/release/bundle AppDir
+ - mkdir -p AppDir/usr/share/icons/hicolor/64x64/apps/
+ - cp assets/images/logo.png AppDir/usr/share/icons/hicolor/64x64/apps/
+AppDir:
+  path: ./AppDir
+  app_info:
+    id: xyz.project.violet
+    name: Violet
+    icon: logo
+    version: latest
+    exec: violet
+    exec_args: $@
+  apt:
+    arch: arm64
+    allow_unauthenticated: true
+    sources:
+      # https://github.com/minecraft-linux/appimage-builder/blob/main/sources.list.focal
+    - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal main restricted
+    - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal-updates main restricted
+    - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal universe
+    - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal-updates universe
+    - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal multiverse
+    - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal-updates multiverse
+    - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal-backports main restricted universe multiverse
+    - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal-security main restricted
+    - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal-security universe
+    - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal-security multiverse
+    include:
+    - libgtk-3-0
+    exclude:
+    - humanity-icon-theme
+    - hicolor-icon-theme
+    - adwaita-icon-theme
+    - ubuntu-mono
+  files:
+    include:
+    - lib/*.so
+    - data
+    exclude:
+    - usr/share/man
+    - usr/share/doc/*/README.*
+    - usr/share/doc/*/changelog.*
+    - usr/share/doc/*/NEWS.*
+    - usr/share/doc/*/TODO.*
+  runtime:
+    env:
+      GIO_MODULE_DIR: $APPDIR/usr/lib/aarch64-linux-gnu/gio/modules/
+  test:
+    fedora:
+      image: appimagecrafters/tests-env:fedora-30
+      command: ./violet
+      use_host_x: true
+    debian:
+      image: appimagecrafters/tests-env:debian-stable
+      command: ./violet
+      use_host_x: true
+    arch:
+      image: appimagecrafters/tests-env:archlinux-latest
+      command: ./violet
+      use_host_x: true
+    centos:
+      image: appimagecrafters/tests-env:centos-7
+      command: ./violet
+      use_host_x: true
+    ubuntu:
+      image: appimagecrafters/tests-env:ubuntu-xenial
+      command: ./violet
+      use_host_x: true
+AppImage:
+  arch: aarch64
+  update-information: guess
+  sign-key: None
+
