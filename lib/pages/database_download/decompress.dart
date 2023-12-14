@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
@@ -9,6 +10,8 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:violet/log/log.dart';
+import 'package:violet/settings/path.dart';
 
 typedef _NativeP7zipShell = NativeFunction<Int32 Function(Pointer<Int8>)>;
 typedef _DartP7zipShell = int Function(Pointer<Int8>);
@@ -49,7 +52,37 @@ class P7zip {
     final soPath = await _checkSharedLibrary();
     print(soPath);
     if (soPath == null) {
-      return null;
+      final binPath = await _checkBinary();
+      if(binPath == null){
+        return null;
+      }
+      final filesStr = files.join(' ');
+      await ((()async{
+        Process process = await Process.start(
+          "chmod",
+            [
+              "+x",
+              "${(await DefaultPathProvider.getBaseDirectory())}/7zr",
+            ],
+        );
+        await process.stdout
+            .transform(utf8.decoder)
+            .forEach(print);
+      })());
+      await ((()async{
+        Process process = await Process.start(
+            "${(await DefaultPathProvider.getBaseDirectory())}/7zr",
+            [
+                "e","$filesStr",
+                "-o$path"
+            ],
+        );
+        await process.stdout
+            .transform(utf8.decoder)
+            .forEach(print);
+      })());
+      // return null;
+      return path;
     }
 
     final filesStr = files.join(' ');
@@ -96,5 +129,50 @@ class P7zip {
     await writtenFile.close();
 
     return libraryFile.path;
+  }
+  Future<String?> _checkBinary() async {
+    if(!Platform.isLinux){
+      return null;
+    }
+
+    var _arch = await ((()async{
+      var _a = '';
+      // https://stackoverflow.com/questions/70247458/flutter-dart-print-output-of-all-child-processes-to-stdout
+      Process process = await Process.start(
+          "uname",
+          [
+              "-m"
+          ],
+      );
+
+      await process.stdout
+          .transform(utf8.decoder)
+          .forEach((value){
+            if(_a.isEmpty){
+              _a = value.replaceAll('\r', '').replaceAll('\n', '');
+            }
+          });
+      if((_a.contains('arm') || _a.contains('aarch')) && (_a.contains('32') || _a.contains('v7'))) return 'armv7';
+      if((_a.contains('arm') || _a.contains('aarch')) && (_a.contains('64') || _a.contains('v8'))) return 'armv8';
+      if(_a == 'x86_64' || _a == 'amd64') return 'x86_64';
+      if((_a.contains('i') || _a.contains('x')) && _a.contains('86') && !_a.contains('64')) return 'x86';
+    })());
+    final binaryPath = 'assets/p7zip/linux/$_arch/7zr';
+    final binaryContent = await rootBundle.load(binaryPath);
+    final tempDir = await DefaultPathProvider.getBaseDirectory();
+    final binaryFile = File('${tempDir}/7zr');
+    if(await binaryFile.exists()){
+      await binaryFile.delete();
+    }
+    if(await Directory('${tempDir}/').exists()){
+      Logger.info('${tempDir}/ exists');
+    }
+    final createdFile = await binaryFile.create();
+    final openFile = await createdFile.open(mode: FileMode.write);
+    final writtenFile =
+        await openFile.writeFrom(Uint8List.view(binaryContent.buffer));
+    await writtenFile.close();
+
+    return binaryFile.path;
   }
 }

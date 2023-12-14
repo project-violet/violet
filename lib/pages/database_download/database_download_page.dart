@@ -62,7 +62,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     try {
       final prefs = await MultiPreferences.getInstance();
       if ((await prefs.getInt('db_exists')) == 1) {
-        var dbPath = Platform.isAndroid
+        var dbPath = (Platform.isAndroid || Platform.isLinux)
           ? '${(await DefaultPathProvider.getBaseDirectory())}/data/data.db'
           : '${(await DefaultPathProvider.getBaseDirectory())}/data.db';
         if (await File(dbPath).exists()) await File(dbPath).delete();
@@ -104,9 +104,9 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
 
   Future<void> downloadFileLinux() async {
     try {
-      await downloadFileLinuxWith('latest', true);
+      await downloadFileAndroidWith('latest', true);
     } catch(e){
-      await downloadFileLinuxWith('old', false);
+      await downloadFileAndroidWith('old', false);
     }
   }
 
@@ -349,8 +349,8 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
 
     try {
       var dir = await DefaultPathProvider.getBaseDirectory();
-      if (await File('$dir/data.db').exists()) {
-        await File('$dir/data.db').delete();
+      if (await File('${dir}/db.sql.7z').exists()) {
+        await File('${dir}/db.sql.7z').delete();
       }
       switch(target){
         case 'latest': await SyncManager.checkSyncLatest(_throw); break;
@@ -364,7 +364,6 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
           return;
         }
       }
-
       Timer timer = Timer.periodic(
           const Duration(seconds: 1),
           (Timer timer) => setState(() {
@@ -374,8 +373,8 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
                 tnu = 0;
               }));
       await dio.download(
-          SyncManager.getLatestDB().getDBDownloadUrliOS(widget.dbType!),
-          '$dir/data.db', onReceiveProgress: (rec, total) {
+          SyncManager.getLatestDB().getDBDownloadUrl(widget.dbType!),
+          '${dir}/db.sql.7z', onReceiveProgress: (rec, total) {
         nu += rec - latest;
         tnu += rec - latest;
         latest = rec;
@@ -395,6 +394,31 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       });
       timer.cancel();
 
+      setState(() {
+        baseString = Translations.instance!.trans('dbdunzip');
+        print(baseString);
+        downloading = false;
+      });
+
+      final p7zip = P7zip();
+      if (await Directory('${dir}/data2').exists()) {
+        await Directory('${dir}/data2').delete(recursive: true);
+      }
+      await p7zip.decompress(
+        ['${dir}/db.sql.7z'],
+        path: '${dir}/data2',
+      );
+      Variables.databaseDecompressed = true;
+      if (await Directory('${dir}/data').exists()) {
+        await Directory('${dir}/data').delete(recursive: true);
+      }
+      await Directory('${dir}/data2').rename('${dir}/data');
+      if (await Directory('${dir}/data2').exists()) {
+        await Directory('${dir}/data2').delete(recursive: true);
+      }
+
+      await File('${dir}/db.sql.7z').delete();
+
       final prefs = await MultiPreferences.getInstance();
       await prefs.setInt('db_exists', 1);
       await prefs.setString('databasetype', widget.dbType!);
@@ -402,23 +426,21 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
           'databasesync', SyncManager.getLatestDB().getDateTime().toString());
       await prefs.setInt('synclatest', SyncManager.getLatestDB().timestamp);
 
-      setState(() {
-        downloading = false;
-      });
-
       await DataBaseManager.reloadInstance();
 
-      try {
-        if (Settings.useOptimizeDatabase) await deleteUnused();
-      } catch(e1,st1){
-        Logger.error('[deleteUnused] E: $e1\n'
-            '$st1');
-      }
-      try {
-        await indexing();
-      } catch(e1,st1){
-        Logger.error('[indexing] E: $e1\n'
-            '$st1');
+      if (Settings.useOptimizeDatabase) {
+        try {
+          await deleteUnused();
+        } catch(e1,st1){
+          Logger.error('[deleteUnused] E: $e1\n'
+              '$st1');
+        }
+        try {
+          await indexing();
+        } catch(e1,st1){
+          Logger.error('[indexing] E: $e1\n'
+              '$st1');
+        }
       }
 
       if (widget.isSync == true) {
