@@ -18,7 +18,7 @@ class VioletChecker {
       //
       //  0. get database path
       //
-      var dbPath = Platform.isAndroid
+      var dbPath = (Platform.isAndroid || Platform.isLinux)
           ? '${(await DefaultPathProvider.getBaseDirectory())}/data/data.db'
           : '${(await DefaultPathProvider.getBaseDirectory())}/data.db';
 

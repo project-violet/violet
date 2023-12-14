@@ -34,7 +34,7 @@ class DataBaseManager {
       if (Platform.environment.containsKey('FLUTTER_TEST')) {
         dbPath = join(Directory.current.path, 'test/db/data.db');
       } else {
-        dbPath = Platform.isAndroid 
+        dbPath = (Platform.isAndroid || Platform.isLinux)
           ? '${(await DefaultPathProvider.getBaseDirectory())}/data/data.db'
           : '${(await DefaultPathProvider.getBaseDirectory())}/data.db';
       }
