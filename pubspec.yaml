@@ -182,6 +182,11 @@ flutter:
     - assets/p7zip/x86/lib7zr.so # @dependent: android
     - assets/p7zip/x86_64/lib7zr.so # @dependent: android
 
+    - assets/p7zip/linux/armv7/7zr # @dependent: linux
+    - assets/p7zip/linux/armv8/7zr # @dependent: linux
+    # - assets/p7zip/linux/x86/7zr # @dependent: linux
+    - assets/p7zip/linux/x86_64/7zr # @dependent: linux
+
     - assets/webview/
     - assets/db/
 
