@@ -92,12 +92,12 @@ class HentaiDonwloadManager {
             uploadDate: target.getDateTime().toString(),
             filenameWithoutExtension: intToString(i, pad: 3),
             artist: target.artists() != null
-                ? target.artists().split('|')[1]
+                ? target.artists().split('|').firstWhere((artist) => artist != null && (artist as String).isNotEmpty)
                 : target.groups() != null
-                    ? target.groups().split('|')[1]
+                    ? target.groups().split('|').firstWhere((group) => group != null && (group as String).isNotEmpty)
                     : null,
             group:
-                target.groups() != null ? target.groups().split('|')[1] : null,
+                target.groups() != null ? target.groups().split('|').firstWhere((group) => group != null && (group as String).isNotEmpty) : null,
             extension: page.contains('fullimg.php')
                 ? 'jpg'
                 : path.extension(page.split('/').last).replaceAll('.', ''),
