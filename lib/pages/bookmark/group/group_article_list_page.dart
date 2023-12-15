@@ -3,10 +3,13 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:html/parser.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import 'package:violet/component/eh/eh_headers.dart';
+import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hitomi/hitomi_parser.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
@@ -91,6 +94,32 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     };
     return QueryResult(result: meta);
   }
+  Future<QueryResult> _tryGetArticleFromEhentai(String id) async {
+    late var gallery_url,gallery_token,gallery_id;
+    var list_html = await EHSession.requestString(
+      'https://e-hentai.org/?next=${(int.parse(id) + 1)}'
+    );
+    parse(list_html)
+      .querySelector('a[href*="/g/$id/"]')
+      !.attributes.forEach((key, value) {
+        if(key == 'href'){
+          if(value.contains('/g/$id/')){
+            gallery_url = value;
+            gallery_token = value.split('/').lastWhere((element) => element.isNotEmpty);
+            gallery_id = id;
+          }
+        }
+      });
+    var html = await EHSession.requestString('https://e-hentai.org/g/${gallery_id}/${gallery_token}/?p=0&inline_set=ts_m');
+    var article_eh = EHParser.parseArticleData(html);
+    var meta = {
+      'Id': int.parse(gallery_id),
+      'EHash': gallery_token,
+      'Title': article_eh.title,
+      'Artists': article_eh.artist?.join('|'),
+    };
+    return QueryResult(result: meta);
+  }
 
   Future<void> _loadBookmarkAlignType() async {
     final prefs = await SharedPreferences.getInstance();
@@ -130,7 +159,11 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     // ignore: avoid_function_literals_in_foreach_calls
     articleList.forEach((element) async {
       var article = qr[element.article()];
-      article ??= await _tryGetArticleFromHitomi(element.article());
+      try {
+        article ??= await _tryGetArticleFromHitomi(element.article());
+      } catch(_){
+        article ??= await _tryGetArticleFromEhentai(element.article());
+      }
       result.add(article);
     });
 
