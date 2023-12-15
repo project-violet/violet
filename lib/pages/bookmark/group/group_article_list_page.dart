@@ -14,6 +14,7 @@ import 'package:violet/component/hitomi/hitomi_parser.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/other/dialogs.dart';
@@ -86,6 +87,10 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       'https://ltn.hitomi.la/galleryblock/$id.html',
       headers: headers,
     );
+    if(hh.body == null) {
+      Logger.warning('[_tryGetArticleFromHitomi] body was null');
+      throw Error();
+    }
     var article = await HitomiParser.parseGalleryBlock(hh.body);
     var meta = {
       'Id': int.parse(id),
@@ -116,7 +121,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       'Id': int.parse(gallery_id),
       'EHash': gallery_token,
       'Title': article_eh.title,
-      'Artists': article_eh.artist?.join('|'),
+      'Artists': article_eh.artist == null ? 'N/A' : article_eh.artist?.join('|'),
     };
     return QueryResult(result: meta);
   }
