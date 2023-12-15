@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
+import 'package:html/parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
@@ -94,6 +95,33 @@ class HentaiManager {
     } catch (e, st) {
       Logger.error('[hentai-idSearch] E: $e\n'
           '$st');
+      try {
+        late var gallery_url,gallery_token;
+        var list_html = await EHSession.requestString(
+          'https://e-hentai.org/?next=${(no + 1)}'
+        );
+        parse(list_html)
+          .querySelector('a[href*="/g/$no/"]')
+          ?.attributes.forEach((key, value) {
+            if(key == 'href'){
+              gallery_url = value;
+              gallery_token = value.split('/').lastWhere((element) => element.isNotEmpty);
+            }
+          });
+        var html = await EHSession.requestString('https://e-hentai.org/g/${no}/${gallery_token}/?p=0&inline_set=ts_m');
+        var article_eh = EHParser.parseArticleData(html);
+        var meta = {
+          'Id': no,
+          'Title': article_eh.title,
+          'EHash': gallery_token,
+          'Artists': article_eh.artist == null ? 'N/A' : article_eh.artist?.join('|'),
+          'Language': article_eh.language,
+        };
+        return SearchResult(results: [QueryResult(result: meta)], offset: -1);
+      } catch(e1,st1){
+        Logger.error('[hentai-idSearch] E: $e\n'
+            '$st');
+      }
     }
 
     return const SearchResult(results: [], offset: -1);
