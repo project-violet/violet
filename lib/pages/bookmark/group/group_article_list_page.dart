@@ -162,7 +162,8 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
     // TODO: fix this hack
     // ignore: avoid_function_literals_in_foreach_calls
-    articleList.forEach((element) async {
+    // articleList.forEach((element) async {
+    for(var element in articleList){
       var article = qr[element.article()];
       try {
         article ??= await _tryGetArticleFromHitomi(element.article());
@@ -170,7 +171,8 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         article ??= await _tryGetArticleFromEhentai(element.article());
       }
       result.add(article);
-    });
+    }
+    // });
 
     queryResult = result;
     _applyFilter();
