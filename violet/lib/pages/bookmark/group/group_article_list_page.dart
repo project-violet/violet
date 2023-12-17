@@ -75,6 +75,13 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   void _rebuild() {
     _shouldRebuild = true;
     itemKeys.clear();
+    // https://github.com/flutter/flutter/issues/81684
+    // https://github.com/flutter/flutter/issues/82109
+    // https://github.com/fluttercommunity/chewie/blob/09659cc32a898c1c308a53e7461ac405fa36b615/lib/src/cupertino_controls.dart#L603
+    if(!mounted) {
+      Logger.warning('[_GroupArticleListPageState][_rebuild] _element was null don\'t do setState');
+      return;
+    }
     setState(() {
       _shouldRebuild = true;
       key = ObjectKey(const Uuid().v4());
