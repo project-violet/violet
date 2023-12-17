@@ -171,19 +171,19 @@ class HentaiManager {
 
   static Future<SearchResult> _dbSearch(String what, [int offset = 0]) async {
     final queryString = HitomiManager.translate2query(
-        '$what ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ').trim()}');
+        '$what ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ').trim()}').replaceAll('AND ExistOnHitomi=1', '');
 
     await Logger.info('[Database Query]\nSQL: $queryString');
 
     const int itemsPerPage = 500;
-    final queryResult = (await (await DataBaseManager.getInstance()).query(
-            '$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET $offset'))
-        .map((e) => QueryResult(result: e))
-        .toList();
+    var dbManager = await DataBaseManager.getInstance();
+    var dbResult = await dbManager.query('$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET $offset');
+    var queryResult = dbResult.map((e) => QueryResult(result: e));
+    var queryList = queryResult.toList();
 
     return SearchResult(
-      results: queryResult,
-      offset: queryResult.length >= itemsPerPage ? offset + itemsPerPage : -1,
+      results: queryList,
+      offset: queryList.length >= itemsPerPage ? offset + itemsPerPage : -1,
     );
   }
 
