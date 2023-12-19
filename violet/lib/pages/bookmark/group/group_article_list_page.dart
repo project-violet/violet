@@ -133,6 +133,33 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     return QueryResult(result: meta);
   }
 
+  Future<QueryResult> _tryGetArticleFromExhentai(String id) async {
+    late var gallery_url,gallery_token,gallery_id;
+    var list_html = await EHSession.requestString(
+      'https://exhentai.org/?next=${(int.parse(id) + 1)}'
+    );
+    parse(list_html)
+      .querySelector('a[href*="/g/$id/"]')
+      !.attributes.forEach((key, value) {
+        if(key == 'href'){
+          if(value.contains('/g/$id/')){
+            gallery_url = value;
+            gallery_token = value.split('/').lastWhere((element) => element.isNotEmpty);
+            gallery_id = id;
+          }
+        }
+      });
+    var html = await EHSession.requestString('https://exhentai.org/g/${gallery_id}/${gallery_token}/?p=0&inline_set=ts_m');
+    var article_exh = EHParser.parseArticleData(html);
+    var meta = {
+      'Id': int.parse(gallery_id),
+      'EHash': gallery_token,
+      'Title': article_exh.title,
+      'Artists': article_exh.artist == null ? 'N/A' : article_exh.artist?.join('|'),
+    };
+    return QueryResult(result: meta);
+  }
+
   Future<void> _loadBookmarkAlignType() async {
     final prefs = await SharedPreferences.getInstance();
     nowType = prefs.getInt('bookmark_${widget.groupId}') ?? 3;
@@ -175,7 +202,11 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       try {
         article ??= await _tryGetArticleFromHitomi(element.article());
       } catch(_){
-        article ??= await _tryGetArticleFromEhentai(element.article());
+        try {
+          article ??= await _tryGetArticleFromEhentai(element.article());
+        } catch(__){
+          article ??= await _tryGetArticleFromExhentai(element.article());
+        }
       }
       result.add(article);
     }
