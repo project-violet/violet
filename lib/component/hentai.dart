@@ -172,9 +172,6 @@ class HentaiManager {
   static Future<SearchResult> _dbSearch(String what, [int offset = 0]) async {
     var queryString = HitomiManager.translate2query(
         '$what ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ').trim()}');
-    if(!Settings.searchPure) {
-      queryString = queryString.replaceAll('AND ExistOnHitomi=1', '');
-    }
 
     await Logger.info('[Database Query]\nSQL: $queryString');
 
