@@ -801,7 +801,7 @@ class _SettingsPageState extends State<SettingsPage>
               },
             ),
           if (!Settings.liteMode) _buildDivider(),
-          if (!Settings.liteMode)
+          // if (!Settings.liteMode)
             InkWell(
               child: ListTile(
                 leading: Icon(Mdi.compassOutline, color: Settings.majorColor),
