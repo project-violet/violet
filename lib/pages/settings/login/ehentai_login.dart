@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
     developer.log('Get cookies: $cookies');
 
     if (cookies.containsKey('ipb_member_id') &&
-        cookies.containsKey('igneous') &&
+        cookies.containsKey('sk') &&
         cookies.containsKey('ipb_pass_hash')) {
       // await sessionStore.setSession(cookieString);
       // await _cookieManager.clearCookies();

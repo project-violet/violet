@@ -2269,7 +2269,7 @@ class _SettingsPageState extends State<SettingsPage>
 
                 var iController = TextEditingController(
                     text:
-                        cookie != null ? parseCookies(cookie)['igneous'] : '');
+                        cookie != null ? parseCookies(cookie)['sk'] : '');
                 var imiController = TextEditingController(
                     text: cookie != null
                         ? parseCookies(cookie)['ipb_member_id']
@@ -2304,7 +2304,7 @@ class _SettingsPageState extends State<SettingsPage>
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Row(children: [
-                          const Text('igneous: '),
+                          const Text('sk: '),
                           Expanded(
                             child: TextField(
                               controller: iController,
@@ -2334,7 +2334,7 @@ class _SettingsPageState extends State<SettingsPage>
 
                 if (dialog != null && dialog == true) {
                   var ck =
-                      'igneous=${iController.text};ipb_member_id=${imiController.text};ipb_pass_hash=${iphController.text};';
+                      'sk=${iController.text};ipb_member_id=${imiController.text};ipb_pass_hash=${iphController.text};';
                   await prefs.setString('eh_cookies', ck);
                 }
               }
