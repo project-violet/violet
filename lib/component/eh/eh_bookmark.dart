@@ -12,8 +12,8 @@ class EHBookmark {
     // https://exhentai.org/favorites.php?page=0&favcat=0
 
     var result = <HashSet<int>>[];
-    var rr = RegExp(r'https://exhentai\.org/g/\d+/');
-    var r2 = RegExp(r'https://e\-hentai\.org/g/\d+/');
+    var rr = RegExp(r'https://exhentai\.org/g/\d+/a-f0-9+');
+    var r2 = RegExp(r'https://e\-hentai\.org/g/\d+/a-f0-9+');
 
     for (int i = 0; i < 10; i++) {
       var hh = HashSet<int>();
