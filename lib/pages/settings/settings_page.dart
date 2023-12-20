@@ -61,6 +61,7 @@ import 'package:violet/pages/settings/version_page.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/platform/misc.dart';
 import 'package:violet/server/violet.dart';
+import 'package:violet/settings/cookie.dart';
 import 'package:violet/settings/path.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
@@ -2230,8 +2231,16 @@ class _SettingsPageState extends State<SettingsPage>
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Settings.majorColor,
                         ),
-                        child: const Text('Login From WebPage'),
-                        onPressed: () => Navigator.pop(context, 1),
+                        child: ((){
+                          if(Platform.isAndroid || Platform.isIOS) return const Text('Login From WebPage');
+                          if(Platform.isLinux) return const Text('Read cookies from firefox');
+                        })(),
+                        onPressed: (() {
+                          if(Platform.isAndroid || Platform.isIOS) Navigator.pop(context, 1);
+                          if(Platform.isLinux) {
+                            CookieReader.getCookieFirefoxLinux();
+                          }
+                        }),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
