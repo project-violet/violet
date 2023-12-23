@@ -187,6 +187,8 @@ flutter:
     # - assets/p7zip/linux/x86/7zr # @dependent: linux
     - assets/p7zip/linux/x86_64/7zr # @dependent: linux
 
+    - assets/static-curl/linux/x86_64/curl # @dependent: linux
+
     - assets/webview/
     - assets/db/
 

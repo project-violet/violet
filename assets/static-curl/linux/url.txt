@@ -1,0 +1,1 @@
+https://github.com/stunnel/static-curl/releases/tag/8.5.0
