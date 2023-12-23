@@ -32,6 +32,7 @@ class VerticalViewerPage extends StatefulWidget {
 class _VerticalViewerPageState extends State<VerticalViewerPage>
     with SingleTickerProviderStateMixin {
   late final ViewerController c;
+  Duration? lastKeyPressedTimeStamp;
 
   /// this is used for interactive viewer widget
   /// double-tap a specific location to zoom in on that location.
@@ -185,9 +186,31 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
       color: null,
       width: width,
       height: height,
-      child: CustomDoubleTapGestureDectector(
-        onTap: _touchEvent,
-        onDoubleTap: _doubleTapEvent,
+      child: Column(
+        children:[
+          CustomDoubleTapGestureDectector(
+            onTap: _touchEvent,
+            onDoubleTap: _doubleTapEvent,
+          ),
+            KeyboardListener(
+                focusNode: FocusNode(),
+                onKeyEvent: (event) {
+                  if(lastKeyPressedTimeStamp != null){
+                    // print('${event.timeStamp.inSeconds}');
+                    // print('${lastKeyPressedTimeStamp!.inSeconds}');
+                    if((event.timeStamp.inMilliseconds - lastKeyPressedTimeStamp!.inMilliseconds) < 250) return;
+                  }
+                  lastKeyPressedTimeStamp = event.timeStamp;
+                  if(event.physicalKey.debugName == 'Arrow Left'){
+                    c.leftButton();
+                  }
+                  if(event.physicalKey.debugName == 'Arrow Right'){
+                    c.rightButton();
+                  }
+                },
+                child: Container(),
+              ),
+        ],
       ),
     );
   }
