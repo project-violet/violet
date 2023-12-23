@@ -26,6 +26,7 @@ class HorizontalViewerPage extends StatefulWidget {
 
 class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
   late final ViewerController c;
+  Duration? lastKeyPressedTimeStamp;
 
   @override
   void initState() {
@@ -76,6 +77,24 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                 ),
               ),
             ),
+            KeyboardListener(
+                focusNode: FocusNode(),
+                onKeyEvent: (event) {
+                  if(lastKeyPressedTimeStamp != null){
+                    // print('${event.timeStamp.inSeconds}');
+                    // print('${lastKeyPressedTimeStamp!.inSeconds}');
+                    if((event.timeStamp.inMilliseconds - lastKeyPressedTimeStamp!.inMilliseconds) < 250) return;
+                  }
+                  lastKeyPressedTimeStamp = event.timeStamp;
+                  if(event.physicalKey.debugName == 'Arrow Left'){
+                    c.leftButton();
+                  }
+                  if(event.physicalKey.debugName == 'Arrow Right'){
+                    c.rightButton();
+                  }
+                },
+                child: Container(),
+              ),
           Align(
             alignment: Alignment.center,
             child: Container(
