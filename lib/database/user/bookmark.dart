@@ -187,6 +187,9 @@ class Bookmark {
       'DateTime': datetime.toString(),
       'GroupId': group,
     });
+    if(bookmarkSet == null){
+      bookmarkSet = HashSet<int>();
+    }
     bookmarkSet!.add(int.parse(article));
   }
 
