@@ -2066,7 +2066,7 @@ class _SettingsPageState extends State<SettingsPage>
                   await bookmark.createGroup('Favorite $i', '', Colors.black);
                   var group = (await bookmark.getGroup())
                       .where((element) => element.name() == 'Favorite $i')
-                      .first
+                      .last
                       .id();
                   for (int j = 0; j < EHBookmark.bookmarkInfo![i].length; j++) {
                     await bookmark.insertArticle(
