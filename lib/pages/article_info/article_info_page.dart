@@ -549,7 +549,14 @@ class PreviewAreaWidget extends StatelessWidget {
             controller: null,
             physics: const ScrollPhysics(),
             shrinkWrap: true,
-            crossAxisCount: 3,
+            crossAxisCount: ((){
+              // @default return 3;
+              if(Settings.useTabletMode){
+                return int.parse('${(int.parse(('${(MediaQuery.of(context).size.width)}'.split('.')[0])) / 200)}'.split('.')[0]);
+              } else {
+                return 3;
+              }
+            })(),
             childAspectRatio: 3 / 4,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
