@@ -3,10 +3,12 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:violet/log/log.dart';
+import 'package:violet/network/curl.dart';
 import 'package:violet/thread/semaphore.dart';
 
 class HttpWrapper {
@@ -66,6 +68,15 @@ Future<http.Response> post(String url,
 
 Future<http.Response> _ehentaiGet(String url,
     {Map<String, String>? headers, Duration? timeout}) async {
+  if(Platform.isLinux){
+    try {
+      final res = await StaticCurl.getHttp3Request(url, headers);
+      return res;
+    } catch(e,st){
+      Logger.warning('[getHttp3Request] $e\n'
+        '$st');
+    }
+  }
   if (HttpWrapper.cacheResponse.containsKey(url)) {
     return HttpWrapper.cacheResponse[url]!;
   }
