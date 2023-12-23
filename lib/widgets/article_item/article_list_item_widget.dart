@@ -484,8 +484,10 @@ class BodyWidget extends StatelessWidget {
                   ],
                 )
               );
+              if(Platform.isLinux || Settings.useTabletMode || 
+                MediaQuery.of(context).orientation == Orientation.landscape
+              ) return ClipRect(child: _body);
               if(Platform.isAndroid || Platform.isIOS) return _body;
-              if(Platform.isLinux) return ClipRect(child: _body);
               return _body;
             })()
           : ThumbnailWidget(
@@ -528,7 +530,7 @@ class _DetailWidget extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            if (c.articleListItem.showUltra) tagArea() else const Spacer(),
+            if (c.articleListItem.showUltra) tagArea(context) else const Spacer(),
             Row(
               children: [
                 const Icon(Icons.date_range, size: 18),
@@ -575,7 +577,7 @@ class _DetailWidget extends StatelessWidget {
     );
   }
 
-  Widget tagArea() {
+  Widget tagArea(context) {
     if (c.articleListItem.queryResult.tags() == null) {
       return Container(height: 30);
     }
@@ -590,27 +592,33 @@ class _DetailWidget extends StatelessWidget {
     var _body = Wrap(
       spacing: 3.0,
       runSpacing: ((){
+        if(Platform.isLinux || Settings.useTabletMode || 
+          MediaQuery.of(context).orientation == Orientation.landscape
+        ) return 10.0;
         if(Platform.isAndroid || Platform.isIOS) return -10.0;
-        if(Platform.isLinux) return 10.0;
         return -10.0;
       })(),
       children: 
           tags.map((x) => TagChip(group: x.item1, name: x.item2)).toList(),
     );
-    if(Platform.isAndroid || Platform.isIOS){
-      return _body;
-    }
-    if(Platform.isLinux){
+    if(Platform.isLinux || Settings.useTabletMode ||
+      MediaQuery.of(context).orientation == Orientation.landscape
+    ){
       return Container(
         height: ((){
+          if(Platform.isLinux || Settings.useTabletMode || 
+            MediaQuery.of(context).orientation == Orientation.landscape
+          ) return 30.0;
           if(Platform.isAndroid || Platform.isIOS) return null;
-          if(Platform.isLinux) return 30.0;
           return null;
         })(),
         child: ClipRect(
           child: _body,
         )
       );
+    }
+    if(Platform.isAndroid || Platform.isIOS){
+      return _body;
     }
     return _body;
   }
@@ -733,8 +741,10 @@ class TagChip extends StatelessWidget {
 
     return SizedBox(
       height: ((){
+        if(Platform.isLinux || Settings.useTabletMode || 
+          MediaQuery.of(context).orientation == Orientation.landscape
+        ) return 25.0;
         if(Platform.isAndroid || Platform.isIOS) return 42.0;
-        if(Platform.isLinux) return 25.0;
         return 42.0;
       })(),
       child: FittedBox(child: fc),

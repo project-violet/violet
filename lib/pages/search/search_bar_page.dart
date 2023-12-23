@@ -300,8 +300,10 @@ class _SearchBarPageState extends State<SearchBarPage>
         Wrap(
           spacing: 4.0,
           runSpacing: ((){
+            if(Platform.isLinux || Settings.useTabletMode || 
+              MediaQuery.of(context).orientation == Orientation.landscape
+            ) return 10.0;
             if(Platform.isAndroid || Platform.isIOS) return -10.0;
-            if(Platform.isLinux) return 10.0;
             return -10.0;
           })(),
           children: _searchLists.map((item) => chip(item)).toList(),

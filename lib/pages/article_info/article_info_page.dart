@@ -510,8 +510,10 @@ class MultiChipWidget extends StatelessWidget {
           child: Wrap(
             spacing: 3.0,
             runSpacing: ((){
+              if(Platform.isLinux || Settings.useTabletMode || 
+          MediaQuery.of(context).orientation == Orientation.landscape
+              ) return 9.0;
               if(Platform.isAndroid || Platform.isIOS) return -9.0;
-              if(Platform.isLinux) return 9.0;
               return -9.0;
             })(),
             children: groupName
@@ -551,7 +553,9 @@ class PreviewAreaWidget extends StatelessWidget {
             shrinkWrap: true,
             crossAxisCount: ((){
               // @default return 3;
-              if(Settings.useTabletMode){
+              if(Platform.isLinux || Settings.useTabletMode || 
+          MediaQuery.of(context).orientation == Orientation.landscape
+              ){
                 return int.parse('${(int.parse(('${(MediaQuery.of(context).size.width)}'.split('.')[0])) / 200)}'.split('.')[0]);
               } else {
                 return 3;
@@ -1156,8 +1160,10 @@ class _Chip extends StatelessWidget {
 
     return SizedBox(
       height: ((){
+        if(Platform.isLinux || Settings.useTabletMode || 
+          MediaQuery.of(context).orientation == Orientation.landscape
+        ) return 44.0;
         if(Platform.isAndroid || Platform.isIOS) return 44.0;
-        if(Platform.isLinux) return 44.0;
         return 44.0;
       })(),
       child: FittedBox(child: fc),
