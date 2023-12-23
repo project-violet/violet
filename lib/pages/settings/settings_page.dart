@@ -18,6 +18,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:html/parser.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mdi/mdi.dart';
 import 'package:path_provider/path_provider.dart';
@@ -26,6 +27,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/component/eh/eh_bookmark.dart';
+import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/database.dart';
@@ -2057,11 +2059,19 @@ class _SettingsPageState extends State<SettingsPage>
                       .replaceAll('\$1', count.toString()));
               if (qqq) {
                 var bookmark = await Bookmark.getInstance();
+                var forum_members_html = await EHSession.requestString(
+                  'https://forums.e-hentai.org/index.php?act=Members'
+                );
+                var username = (
+                  parse(forum_members_html)
+                    .querySelector('[href*="showuser="]')
+                    !.text.replaceAll('\n', '').replaceAll('\r', '').trim()
+                );
                 for (int i = 0; i < EHBookmark.bookmarkInfo!.length; i++) {
                   if (EHBookmark.bookmarkInfo![i].isEmpty) continue;
-                  await bookmark.createGroup('Favorite $i', '', Colors.black);
+                  await bookmark.createGroup('[${username}] Favorite $i', '', Colors.black);
                   var group = (await bookmark.getGroup())
-                      .where((element) => element.name() == 'Favorite $i')
+                      .where((element) => element.name() == '[${username}] Favorite $i')
                       .last
                       .id();
                   for (int j = 0; j < EHBookmark.bookmarkInfo![i].length; j++) {
