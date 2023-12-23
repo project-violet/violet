@@ -70,6 +70,7 @@ import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
+import 'package:violet/network/wrapper.dart' as http;
 
 class ExCountry extends Country {
   String? language;
@@ -2276,7 +2277,7 @@ class _SettingsPageState extends State<SettingsPage>
               } else if (dialog == 2) {
                 var cookie = await prefs.getString('eh_cookies');
 
-                var iController = TextEditingController(
+                var sController = TextEditingController(
                     text:
                         cookie != null ? parseCookies(cookie)['sk'] : '');
                 var imiController = TextEditingController(
@@ -2287,6 +2288,9 @@ class _SettingsPageState extends State<SettingsPage>
                     text: cookie != null
                         ? parseCookies(cookie)['ipb_pass_hash']
                         : '');
+                var iController = TextEditingController(
+                    text:
+                        cookie != null ? parseCookies(cookie)['igneous'] : '');
                 Widget okButton = TextButton(
                   style: TextButton.styleFrom(
                       foregroundColor: Settings.majorColor),
@@ -2316,7 +2320,7 @@ class _SettingsPageState extends State<SettingsPage>
                           const Text('sk: '),
                           Expanded(
                             child: TextField(
-                              controller: iController,
+                              controller: sController,
                             ),
                           ),
                         ]),
@@ -2336,6 +2340,14 @@ class _SettingsPageState extends State<SettingsPage>
                             ),
                           ),
                         ]),
+                        Row(children: [
+                          const Text('igneous: '),
+                          Expanded(
+                            child: TextField(
+                              controller: iController,
+                            ),
+                          ),
+                        ]),
                       ],
                     ),
                   ),
@@ -2343,7 +2355,20 @@ class _SettingsPageState extends State<SettingsPage>
 
                 if (dialog != null && dialog == true) {
                   var ck =
-                      'sk=${iController.text};ipb_member_id=${imiController.text};ipb_pass_hash=${iphController.text};';
+                      'sk=${sController.text};ipb_member_id=${imiController.text};ipb_pass_hash=${iphController.text};${((iController.text.length == 0 || iController.text == 'mystery') ? '' : 'igneous=${iController.text};')}';
+                  await prefs.setString('eh_cookies', ck);
+                  try {
+                    final res = await http.get('https://exhentai.org',headers: { 'Cookie': ck });
+                    res.headers.forEach((key, value) {
+                      if(key == 'set-cookie'){
+                        final firstCookieString = value.split(';')[0];
+                        final firstCookieKey = firstCookieString.substring(0,firstCookieString.indexOf('=')).trim();
+                        final firstCookieValue = firstCookieString.substring(firstCookieString.indexOf('=') + 1,firstCookieString.length).trim();
+                        if(firstCookieKey == 'igneous' && firstCookieValue == 'mystery') return;
+                        ck += '${firstCookieKey}=${firstCookieValue};';
+                      }
+                    });
+                  } catch(e,st){}
                   await prefs.setString('eh_cookies', ck);
                 }
               }
