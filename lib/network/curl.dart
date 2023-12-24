@@ -28,7 +28,7 @@ Pointer<Int8> intListToArray(String list) {
 }
 
 class StaticCurl {
-  static Future<http.Response> getHttp3Request(String url,Map<String, String>? headers) async {
+  static Future<http.Response> getHttp3Request(String url,Map<String, String>? headers,[bool? followRedirects = true]) async {
       final binPath = await _checkBinary();
       if(binPath == null){
         throw Error();
@@ -45,7 +45,8 @@ class StaticCurl {
         Process process = await Process.start(
             "${(await DefaultPathProvider.getBaseDirectory())}/curl",
             [
-                "--http3-only","-LsSf",...(options.length == 0 ? [''] : options),
+                (((followRedirects == null || followRedirects == true) && followRedirects != false) ? "-LsSf" : ''),
+                "--http3-only",...(options.length == 0 ? [''] : options),
                 // "-H","Pragma: no-cache",
                 // "-H","Cache-Control: no-cache",
                 "${url}","-vvv"
