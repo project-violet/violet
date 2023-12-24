@@ -78,8 +78,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     // https://github.com/flutter/flutter/issues/81684
     // https://github.com/flutter/flutter/issues/82109
     // https://github.com/fluttercommunity/chewie/blob/09659cc32a898c1c308a53e7461ac405fa36b615/lib/src/cupertino_controls.dart#L603
-    if(!mounted) {
-      Logger.warning('[_GroupArticleListPageState][_rebuild] _element was null don\'t do setState');
+    if (!mounted) {
+      Logger.warning(
+          '[_GroupArticleListPageState][_rebuild] _element was null don\'t do setState');
       return;
     }
     setState(() {
@@ -89,73 +90,53 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   Future<QueryResult> _tryGetArticleFromHitomi(String id) async {
-    var headers = await ScriptManager.runHitomiGetHeaderContent(id);
-    var hh = await http.get(
+    final headers = await ScriptManager.runHitomiGetHeaderContent(id);
+    final res = await http.get(
       'https://ltn.hitomi.la/galleryblock/$id.html',
       headers: headers,
     );
-    if(hh.body == null) {
-      Logger.warning('[_tryGetArticleFromHitomi] body was null');
-      throw Error();
-    }
-    var article = await HitomiParser.parseGalleryBlock(hh.body);
-    var meta = {
+
+    final article = await HitomiParser.parseGalleryBlock(res.body);
+    final meta = {
       'Id': int.parse(id),
       'Title': article['Title'],
       'Artists': article['Artists'].join('|'),
     };
     return QueryResult(result: meta);
   }
+
   Future<QueryResult> _tryGetArticleFromEhentai(String id) async {
-    late var gallery_url,gallery_token,gallery_id;
-    var list_html = await EHSession.requestString(
-      'https://e-hentai.org/?next=${(int.parse(id) + 1)}'
-    );
-    parse(list_html)
-      .querySelector('a[href*="/g/$id/"]')
-      !.attributes.forEach((key, value) {
-        if(key == 'href'){
-          if(value.contains('/g/$id/')){
-            gallery_url = value;
-            gallery_token = value.split('/').lastWhere((element) => element.isNotEmpty);
-            gallery_id = id;
-          }
-        }
-      });
-    var html = await EHSession.requestString('https://e-hentai.org/g/${gallery_id}/${gallery_token}/?p=0&inline_set=ts_m');
-    var article_eh = EHParser.parseArticleData(html);
-    var meta = {
-      'Id': int.parse(gallery_id),
-      'EHash': gallery_token,
-      'Title': article_eh.title,
-      'Artists': article_eh.artist == null ? 'N/A' : article_eh.artist?.join('|'),
+    final listHtml = await EHSession.requestString(
+        'https://e-hentai.org/?next=${(int.parse(id) + 1)}');
+    final href =
+        parse(listHtml).querySelector('a[href*="/g/$id/"]')?.attributes['href'];
+    final hash = href!.split('/').lastWhere((element) => element.isNotEmpty);
+    final html = await EHSession.requestString(
+        'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
+    final articleEh = EHParser.parseArticleData(html);
+    final meta = {
+      'Id': int.parse(id),
+      'EHash': hash,
+      'Title': articleEh.title,
+      'Artists': articleEh.artist?.join('|') ?? 'N/A',
     };
     return QueryResult(result: meta);
   }
 
   Future<QueryResult> _tryGetArticleFromExhentai(String id) async {
-    late var gallery_url,gallery_token,gallery_id;
-    var list_html = await EHSession.requestString(
-      'https://exhentai.org/?next=${(int.parse(id) + 1)}'
-    );
-    parse(list_html)
-      .querySelector('a[href*="/g/$id/"]')
-      !.attributes.forEach((key, value) {
-        if(key == 'href'){
-          if(value.contains('/g/$id/')){
-            gallery_url = value;
-            gallery_token = value.split('/').lastWhere((element) => element.isNotEmpty);
-            gallery_id = id;
-          }
-        }
-      });
-    var html = await EHSession.requestString('https://exhentai.org/g/${gallery_id}/${gallery_token}/?p=0&inline_set=ts_m');
-    var article_exh = EHParser.parseArticleData(html);
-    var meta = {
-      'Id': int.parse(gallery_id),
-      'EHash': gallery_token,
-      'Title': article_exh.title,
-      'Artists': article_exh.artist == null ? 'N/A' : article_exh.artist?.join('|'),
+    final listHtml = await EHSession.requestString(
+        'https://exhentai.org/?next=${(int.parse(id) + 1)}');
+    final href =
+        parse(listHtml).querySelector('a[href*="/g/$id/"]')?.attributes['href'];
+    final hash = href!.split('/').lastWhere((element) => element.isNotEmpty);
+    final html = await EHSession.requestString(
+        'https://exhentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
+    final articleEh = EHParser.parseArticleData(html);
+    final meta = {
+      'Id': int.parse(id),
+      'EHash': hash,
+      'Title': articleEh.title,
+      'Artists': articleEh.artist?.join('|') ?? 'N/A',
     };
     return QueryResult(result: meta);
   }
@@ -196,21 +177,19 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
     // TODO: fix this hack
     // ignore: avoid_function_literals_in_foreach_calls
-    // articleList.forEach((element) async {
-    for(var element in articleList){
+    articleList.forEach((element) async {
       var article = qr[element.article()];
       try {
         article ??= await _tryGetArticleFromHitomi(element.article());
-      } catch(_){
+      } catch (_) {
         try {
           article ??= await _tryGetArticleFromEhentai(element.article());
-        } catch(__){
+        } catch (_) {
           article ??= await _tryGetArticleFromExhentai(element.article());
         }
       }
       result.add(article);
-    }
-    // });
+    });
 
     queryResult = result;
     _applyFilter();
