@@ -177,7 +177,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
     // TODO: fix this hack
     // ignore: avoid_function_literals_in_foreach_calls
-    articleList.forEach((element) async {
+    await Future.forEach(articleList,(element) async {
       var article = qr[element.article()];
       try {
         article ??= await _tryGetArticleFromHitomi(element.article());
