@@ -3,6 +3,7 @@
 
 import 'dart:collection';
 
+import 'package:html/parser.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 
 class EHBookmark {
@@ -17,14 +18,35 @@ class EHBookmark {
 
     for (int i = 0; i < 10; i++) {
       var hh = HashSet<int>();
+      var href_arr = [];
       try {
         for (int j = 0; j < 1000; j++) {
           var html = await EHSession.requestString(
               'https://exhentai.org/favorites.php?page=$j&favcat=$i');
-          var matched = rr.allMatches(html).map((e) => e.group(0));
-          if (matched.isEmpty) break;
-          for (var element in matched) {
-            hh.add(int.parse(element!.split('/')[4]));
+          // var matched = rr.allMatches(html).map((e) => e.group(0));
+          var doc = parse(html);
+          final before = href_arr.length;
+          doc.querySelectorAll('a[href*="/g/"]').forEach((element) {
+            var href;
+            element.attributes.forEach((key, value) {
+              if(key == 'href'){
+                href = value;
+              }
+            });
+            if(href == null) return;
+            if(href_arr.contains(href)){
+              return;
+            }
+            href_arr.add(href);
+            hh.add(int.parse((href!.split('/')[4])));
+          });
+          // if (matched.isEmpty) break;
+          // for (var element in matched) {
+          //   hh.add(int.parse(element!.split('/')[4]));
+          // }
+          final after = href_arr.length;
+          if(before == after){
+            break;
           }
         }
       } catch (_) {}
@@ -33,14 +55,34 @@ class EHBookmark {
     }
 
     for (int i = 0; i < 10; i++) {
+      var href_arr = [];
       try {
         for (int j = 0; j < 1000; j++) {
           var html = await EHSession.requestString(
               'https://e-hentai.org/favorites.php?page=$j&favcat=$i');
-          var matched = r2.allMatches(html).map((e) => e.group(0));
-          if (matched.isEmpty) break;
-          for (var element in matched) {
-            result[i].add(int.parse(element!.split('/')[4]));
+          // var matched = r2.allMatches(html).map((e) => e.group(0));
+          final before = href_arr.length;
+          parse(html).querySelectorAll('a[href*="/g/"]').forEach((element) {
+            var href;
+            element.attributes.forEach((key, value) {
+              if(key == 'href'){
+                href = value;
+              }
+            });
+            if(href == null) return;
+            if(href_arr.contains(href) || result[i].contains(int.parse((href!.split('/')[4])))){
+              return;
+            }
+            href_arr.add(href);
+            result[i].add(int.parse((href!.split('/')[4])));
+          });
+          // if (matched.isEmpty) break;
+          // for (var element in matched) {
+          //   result[i].add(int.parse(element!.split('/')[4]));
+          // }
+          final after = href_arr.length;
+          if(before == after){
+            break;
           }
         }
       } catch (_) {}

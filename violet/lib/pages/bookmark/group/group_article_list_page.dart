@@ -3,14 +3,18 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:html/parser.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import 'package:violet/component/eh/eh_headers.dart';
+import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hitomi/hitomi_parser.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/other/dialogs.dart';
@@ -71,6 +75,13 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   void _rebuild() {
     _shouldRebuild = true;
     itemKeys.clear();
+    // https://github.com/flutter/flutter/issues/81684
+    // https://github.com/flutter/flutter/issues/82109
+    // https://github.com/fluttercommunity/chewie/blob/09659cc32a898c1c308a53e7461ac405fa36b615/lib/src/cupertino_controls.dart#L603
+    if(!mounted) {
+      Logger.warning('[_GroupArticleListPageState][_rebuild] _element was null don\'t do setState');
+      return;
+    }
     setState(() {
       _shouldRebuild = true;
       key = ObjectKey(const Uuid().v4());
@@ -83,11 +94,68 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       'https://ltn.hitomi.la/galleryblock/$id.html',
       headers: headers,
     );
+    if(hh.body == null) {
+      Logger.warning('[_tryGetArticleFromHitomi] body was null');
+      throw Error();
+    }
     var article = await HitomiParser.parseGalleryBlock(hh.body);
     var meta = {
       'Id': int.parse(id),
       'Title': article['Title'],
       'Artists': article['Artists'].join('|'),
+    };
+    return QueryResult(result: meta);
+  }
+  Future<QueryResult> _tryGetArticleFromEhentai(String id) async {
+    late var gallery_url,gallery_token,gallery_id;
+    var list_html = await EHSession.requestString(
+      'https://e-hentai.org/?next=${(int.parse(id) + 1)}'
+    );
+    parse(list_html)
+      .querySelector('a[href*="/g/$id/"]')
+      !.attributes.forEach((key, value) {
+        if(key == 'href'){
+          if(value.contains('/g/$id/')){
+            gallery_url = value;
+            gallery_token = value.split('/').lastWhere((element) => element.isNotEmpty);
+            gallery_id = id;
+          }
+        }
+      });
+    var html = await EHSession.requestString('https://e-hentai.org/g/${gallery_id}/${gallery_token}/?p=0&inline_set=ts_m');
+    var article_eh = EHParser.parseArticleData(html);
+    var meta = {
+      'Id': int.parse(gallery_id),
+      'EHash': gallery_token,
+      'Title': article_eh.title,
+      'Artists': article_eh.artist == null ? 'N/A' : article_eh.artist?.join('|'),
+    };
+    return QueryResult(result: meta);
+  }
+
+  Future<QueryResult> _tryGetArticleFromExhentai(String id) async {
+    late var gallery_url,gallery_token,gallery_id;
+    var list_html = await EHSession.requestString(
+      'https://exhentai.org/?next=${(int.parse(id) + 1)}'
+    );
+    parse(list_html)
+      .querySelector('a[href*="/g/$id/"]')
+      !.attributes.forEach((key, value) {
+        if(key == 'href'){
+          if(value.contains('/g/$id/')){
+            gallery_url = value;
+            gallery_token = value.split('/').lastWhere((element) => element.isNotEmpty);
+            gallery_id = id;
+          }
+        }
+      });
+    var html = await EHSession.requestString('https://exhentai.org/g/${gallery_id}/${gallery_token}/?p=0&inline_set=ts_m');
+    var article_exh = EHParser.parseArticleData(html);
+    var meta = {
+      'Id': int.parse(gallery_id),
+      'EHash': gallery_token,
+      'Title': article_exh.title,
+      'Artists': article_exh.artist == null ? 'N/A' : article_exh.artist?.join('|'),
     };
     return QueryResult(result: meta);
   }
@@ -128,11 +196,21 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
     // TODO: fix this hack
     // ignore: avoid_function_literals_in_foreach_calls
-    articleList.forEach((element) async {
+    // articleList.forEach((element) async {
+    for(var element in articleList){
       var article = qr[element.article()];
-      article ??= await _tryGetArticleFromHitomi(element.article());
+      try {
+        article ??= await _tryGetArticleFromHitomi(element.article());
+      } catch(_){
+        try {
+          article ??= await _tryGetArticleFromEhentai(element.article());
+        } catch(__){
+          article ??= await _tryGetArticleFromExhentai(element.article());
+        }
+      }
       result.add(article);
-    });
+    }
+    // });
 
     queryResult = result;
     _applyFilter();
