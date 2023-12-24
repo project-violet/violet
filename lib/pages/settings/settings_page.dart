@@ -26,6 +26,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/component/eh/eh_bookmark.dart';
+import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/database.dart';
@@ -68,6 +69,7 @@ import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
+import 'package:violet/network/wrapper.dart' as http;
 
 class ExCountry extends Country {
   String? language;
@@ -800,7 +802,7 @@ class _SettingsPageState extends State<SettingsPage>
               },
             ),
           if (!Settings.liteMode) _buildDivider(),
-          if (!Settings.liteMode)
+          // if (!Settings.liteMode)
             InkWell(
               child: ListTile(
                 leading: Icon(Mdi.compassOutline, color: Settings.majorColor),
@@ -2064,7 +2066,7 @@ class _SettingsPageState extends State<SettingsPage>
                   await bookmark.createGroup('Favorite $i', '', Colors.black);
                   var group = (await bookmark.getGroup())
                       .where((element) => element.name() == 'Favorite $i')
-                      .first
+                      .last
                       .id();
                   for (int j = 0; j < EHBookmark.bookmarkInfo![i].length; j++) {
                     await bookmark.insertArticle(
@@ -2255,8 +2257,27 @@ class _SettingsPageState extends State<SettingsPage>
               if (dialog == 1) {
                 var result = await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const LoginScreen()));
-
-                await prefs.setString('eh_cookies', result);
+                if(result != null){
+                  var ck = result.toString().split(';').where((element) => element.trim().isNotEmpty).join(';');
+                  await prefs.setString('eh_cookies', ck);
+                  try {
+                    final res = await http.get('https://exhentai.org',headers: { 'Cookie': result });
+                    res.headers.forEach((key, value) {
+                      if(key == 'set-cookie'){
+                        final firstCookieString = value.split(';')[0];
+                        final firstCookieKey = firstCookieString.substring(0,firstCookieString.indexOf('=')).trim();
+                        final firstCookieValue = firstCookieString.substring(firstCookieString.indexOf('=') + 1,firstCookieString.length).trim();
+                        if(firstCookieKey == 'igneous' && firstCookieValue == 'mystery') return;
+                        var _ck = ck.split(';').where((element) => element.trim().isNotEmpty).toList();
+                        _ck.add('${firstCookieKey}=${firstCookieValue}');
+                        ck = _ck.join(';');
+                      }
+                    });
+                    await prefs.setString('eh_cookies', ck);
+                  } catch(e,st){
+                  }
+                  await prefs.setString('eh_cookies', ck);
+                }
 
                 if (result != null) {
                   flutterToast.showToast(
@@ -2271,9 +2292,9 @@ class _SettingsPageState extends State<SettingsPage>
               } else if (dialog == 2) {
                 var cookie = prefs.getString('eh_cookies');
 
-                var iController = TextEditingController(
+                var sController = TextEditingController(
                     text:
-                        cookie != null ? parseCookies(cookie)['igneous'] : '');
+                        cookie != null ? parseCookies(cookie)['sk'] : '');
                 var imiController = TextEditingController(
                     text: cookie != null
                         ? parseCookies(cookie)['ipb_member_id']
@@ -2282,6 +2303,9 @@ class _SettingsPageState extends State<SettingsPage>
                     text: cookie != null
                         ? parseCookies(cookie)['ipb_pass_hash']
                         : '');
+                var iController = TextEditingController(
+                    text:
+                        cookie != null ? parseCookies(cookie)['igneous'] : '');
                 Widget okButton = TextButton(
                   style: TextButton.styleFrom(
                       foregroundColor: Settings.majorColor),
@@ -2308,10 +2332,10 @@ class _SettingsPageState extends State<SettingsPage>
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Row(children: [
-                          const Text('igneous: '),
+                          const Text('sk: '),
                           Expanded(
                             child: TextField(
-                              controller: iController,
+                              controller: sController,
                             ),
                           ),
                         ]),
@@ -2331,6 +2355,14 @@ class _SettingsPageState extends State<SettingsPage>
                             ),
                           ),
                         ]),
+                        Row(children: [
+                          const Text('igneous: '),
+                          Expanded(
+                            child: TextField(
+                              controller: iController,
+                            ),
+                          ),
+                        ]),
                       ],
                     ),
                   ),
@@ -2338,7 +2370,21 @@ class _SettingsPageState extends State<SettingsPage>
 
                 if (dialog != null && dialog == true) {
                   var ck =
-                      'igneous=${iController.text};ipb_member_id=${imiController.text};ipb_pass_hash=${iphController.text};';
+                      'sk=${sController.text};ipb_member_id=${imiController.text};ipb_pass_hash=${iphController.text};${((iController.text.length == 0 || iController.text == 'mystery') ? '' : 'igneous=${iController.text};')}';
+                  await prefs.setString('eh_cookies', ck);
+                  try {
+                    final res = await http.get('https://exhentai.org',headers: { 'Cookie': ck });
+                    res.headers.forEach((key, value) {
+                      if(key == 'set-cookie'){
+                        final firstCookieString = value.split(';')[0];
+                        final firstCookieKey = firstCookieString.substring(0,firstCookieString.indexOf('=')).trim();
+                        final firstCookieValue = firstCookieString.substring(firstCookieString.indexOf('=') + 1,firstCookieString.length).trim();
+                        if(firstCookieKey == 'igneous' && firstCookieValue == 'mystery') return;
+                        ck += '${firstCookieKey}=${firstCookieValue};';
+                      }
+                    });
+                  } catch(e,st){
+                  }
                   await prefs.setString('eh_cookies', ck);
                 }
               }

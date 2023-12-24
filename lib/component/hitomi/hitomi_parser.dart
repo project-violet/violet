@@ -19,7 +19,15 @@ class HitomiParser {
           .querySelectorAll('li')
           .map((e) => e.querySelector('a')!.text.trim())
           .toList();
-    } catch (_) {}
+    } catch (_) {
+      try{
+        artists = doc
+            .querySelector('div.artist-list')!
+            .querySelectorAll('li')
+            .map((e) => e.querySelector('a')!.text.trim())
+            .toList();
+      } catch (__) {}
+    }
 
     return {'Title': title, 'Artists': artists, 'Language': language};
   }

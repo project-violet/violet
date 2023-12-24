@@ -350,7 +350,7 @@ class HitomiManager {
     final filterExistsOnHitomi = !Settings.searchPure && filter;
 
     if (tokens.isEmpty) {
-      return 'SELECT * FROM HitomiColumnModel WHERE ${filterExistsOnHitomi ? 'ExistOnHitomi=1' : ''}';
+      return 'SELECT * FROM HitomiColumnModel ${filterExistsOnHitomi ? 'WHERE ExistOnHitomi=1' : ''}';
     }
 
     final split =
