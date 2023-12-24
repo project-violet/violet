@@ -300,8 +300,14 @@ class HentaiManager {
               break;
           }
         } catch (e, st) {
-          Logger.error('[hentai-getImageProvider] E: $e\n'
-              '$st');
+          if(!qr.loading()){
+            Logger.error('[hentai-getImageProvider] E: $e\n'
+                '$st');
+          }
+          if(qr.loading()){
+            Logger.warning('[getImageProvider] throw \'Loading\'; for loading screen');
+            throw 'Loading';
+          }
         }
       }
 
