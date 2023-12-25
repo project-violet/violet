@@ -2,7 +2,7 @@ import { IsString, Matches } from 'class-validator';
 
 export class UserRegisterDTO {
   @IsString()
-  @Matches(/^\w{4,20}$/, {
+  @Matches(/^\w{40}$/, {
     message:
       'Id must be between 4 and 20 characters long with number or alphabet',
   })
