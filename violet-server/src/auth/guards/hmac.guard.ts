@@ -3,6 +3,7 @@ import {
   CanActivate,
   ExecutionContext,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
@@ -17,25 +18,25 @@ export class HmacAuthGuard implements CanActivate {
     const valid = request.headers['v-valid'];
 
     if (token == null || valid == null) {
-      // logger.info('auth: token or valid is null');
+      Logger.log('auth: token or valid is null');
       throw new BadRequestException();
     }
 
     const clientTimestamp = parseInt(token);
 
     if (isNaN(clientTimestamp)) {
-      // logger.info('auth: token is not int');
+      Logger.log('auth: token is not int');
       throw new BadRequestException();
     }
 
     const serverTimestamp = new Date().getTime();
 
     if (Math.abs(serverTimestamp - clientTimestamp) > 30000) {
-      // logger.info(
-      //   'auth: timestamp error, st=%d, ct=%d',
-      //   serverTimestamp,
-      //   clientTimestamp,
-      // );
+      Logger.log(
+        'auth: timestamp error, st=%d, ct=%d',
+        serverTimestamp,
+        clientTimestamp,
+      );
       throw new BadRequestException();
     }
 

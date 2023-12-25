@@ -5,6 +5,7 @@ import { MySQLConfigModule } from './config/config.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MySQLConfigService } from './config/config.service';
 import { ConfigModule } from '@nestjs/config';
+import { CommonModule } from './common/common.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -37,6 +38,7 @@ import * as Joi from 'joi';
     }),
 
     ConfigModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],
