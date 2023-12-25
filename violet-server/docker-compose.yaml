@@ -1,0 +1,12 @@
+services:
+  local-mysql:
+    platform: linux/x86_64
+    image: mysql
+    restart: always
+    container_name: violet-dev-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./config/:/docker-entrypoint-initdb.d/
+    ports:
+      - 3306:3306
