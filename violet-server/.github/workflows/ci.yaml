@@ -33,7 +33,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: violet-dev/violet:latest
+          tags: violetdev/violet:latest
 
       - name: Diploy
         uses: fjogeleit/http-request-action@v1
