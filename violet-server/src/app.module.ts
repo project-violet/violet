@@ -6,6 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MySQLConfigService } from './config/config.service';
 import { ConfigModule } from '@nestjs/config';
 import { CommonModule } from './common/common.module';
+import { CommentModule } from './comment/comment.module';
+import { UserModule } from './user/user.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -39,6 +41,8 @@ import * as Joi from 'joi';
 
     ConfigModule,
     CommonModule,
+    CommentModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
