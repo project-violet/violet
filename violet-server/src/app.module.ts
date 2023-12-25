@@ -9,6 +9,8 @@ import { CommonModule } from './common/common.module';
 import { CommentModule } from './comment/comment.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { RankModule } from './rank/rank.module';
+import { RedisModule } from './redis/redis.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -31,6 +33,8 @@ import * as Joi from 'joi';
         ACCESS_TOKEN_SECRET_KEY: Joi.string().required(),
         REFRESH_TOKEN_SECRET_KEY: Joi.string().required(),
         SALT: Joi.string().required(),
+        REDIS_HOST: Joi.string().required(),
+        REDIS_PORT: Joi.string().required(),
       }),
     }),
 
@@ -45,6 +49,8 @@ import * as Joi from 'joi';
     CommentModule,
     UserModule,
     AuthModule,
+    RankModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
