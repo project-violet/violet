@@ -148,14 +148,16 @@ Future<http.Response> _scriptGet(String url,
   }
 
   Response res;
+  var _headers = headers ?? {};
+  _headers['user-agent'] = HttpWrapper.userAgent;
   if (timeout == null) {
-    res = await http.get(Uri.parse(url), headers: headers);
+    res = await http.get(Uri.parse(url), headers: _headers);
   } else {
     bool isTimeout = false;
     var retry = 0;
     do {
       isTimeout = false;
-      res = await http.get(Uri.parse(url), headers: headers).timeout(
+      res = await http.get(Uri.parse(url), headers: _headers).timeout(
         timeout,
         onTimeout: () {
           isTimeout = true;
