@@ -46,7 +46,7 @@ jobs:
         if: success()
         uses: sarisia/actions-status-discord@v1
         with:
-          webhook: https://discord.com/api/webhooks/1174515555294785586/P8DhDILhFczo7q0bBBoM9DrOxfQbx1Jwv_o01i7IerhBLuPA-AJdoJrQLtBPpJWp8sqb
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
           title: "Success Deploy!"
           color: 0x28e1ff
           nodetail: true
@@ -58,7 +58,7 @@ jobs:
         if: failure()
         uses: sarisia/actions-status-discord@v1
         with:
-          webhook: https://discord.com/api/webhooks/1174515555294785586/P8DhDILhFczo7q0bBBoM9DrOxfQbx1Jwv_o01i7IerhBLuPA-AJdoJrQLtBPpJWp8sqb
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
           title: "Failed to Deploy"
           nodetail: true
           color: 0xff9300
