@@ -26,6 +26,7 @@ import * as Joi from 'joi';
         DB_DB: Joi.string().required(),
         ACCESS_TOKEN_SECRET_KEY: Joi.string().required(),
         REFRESH_TOKEN_SECRET_KEY: Joi.string().required(),
+        SALT: Joi.string().required(),
       }),
     }),
 
