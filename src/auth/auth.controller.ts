@@ -41,7 +41,7 @@ export class AuthController {
   @UseGuards(HmacAuthGuard)
   @ApiOperation({ summary: 'Login' })
   @ApiCreatedResponse({ description: 'jwt token', type: Tokens })
-  @Redirect('/monitoringpage')
+  @Redirect('violet://login')
   async logIn(
     @Body() dto: UserRegisterDTO,
     @Res({ passthrough: true }) res: Response,
