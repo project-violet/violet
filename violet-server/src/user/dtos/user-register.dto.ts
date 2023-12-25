@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Matches } from 'class-validator';
 
 export class UserRegisterDTO {
@@ -5,6 +6,10 @@ export class UserRegisterDTO {
   @Matches(/^\w{40}$/, {
     message:
       'Id must be between 4 and 20 characters long with number or alphabet',
+  })
+  @ApiProperty({
+    description: 'User App Id',
+    required: true,
   })
   userAppId: string;
 

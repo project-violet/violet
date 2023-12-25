@@ -9,6 +9,14 @@ export class UserRepository extends Repository<User> {
     super(User, dataSource.createEntityManager());
   }
 
+  async isUserExists(userAppId: string): Promise<boolean> {
+    return (
+      (await this.findOneBy({
+        userAppId,
+      })) !== null
+    );
+  }
+
   async createUser(dto: UserRegisterDTO): Promise<User> {
     const { userAppId } = dto;
     const user = this.create({ userAppId });
