@@ -16,7 +16,7 @@ docker create --env-file ./.env.docker.prod \
                   violet-dev/violet:latest
 
 # download env & copy to container
-aws s3api get-object --bucket scs-config --key .prod.env .prod.env
+aws s3api get-object --bucket violet-config --key .prod.env .prod.env
 docker cp .prod.env violet:/home/node/
 
 # run docker
