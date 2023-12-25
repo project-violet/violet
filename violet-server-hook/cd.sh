@@ -1,4 +1,6 @@
 #!/bin/bash
+set +x
+
 # sync docker
 docker stop scsbackend && docker rm $_
 docker pull violet-dev/violet:latest
