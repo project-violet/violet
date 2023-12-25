@@ -2,7 +2,7 @@
 set +x
 
 # sync docker
-docker stop scsbackend && docker rm $_
+docker stop violet && docker rm $_
 docker pull violet-dev/violet:latest
 
 # download env-file for docker
