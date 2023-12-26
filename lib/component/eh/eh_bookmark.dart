@@ -33,7 +33,7 @@ class EHBookmark {
             parse(html).querySelectorAll('a[href*="/g/"]').forEach((element) {
               final href = element.attributes['href'];
               if (href == null) return;
-              bookmark.add(int.parse((href.split('/')[4])));
+              bookmark.add(int.parse(Uri.parse(href).path.split('/').firstWhere((e) => int.tryParse(e) is int)));
             });
 
             if (prev == bookmark.length) {
