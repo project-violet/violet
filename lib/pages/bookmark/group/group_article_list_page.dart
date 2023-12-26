@@ -101,6 +101,10 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       'Id': int.parse(id),
       'Title': article['Title'],
       'Artists': article['Artists'].join('|'),
+      'Language': article['Language'] ?? 'N/A',
+      'Tags': article['Tags']?.join('|') ?? '',
+      'Type': article['Type'] ?? 'N/A',
+      'Series': article['Series']?.join('|') ?? 'N/A',
     };
     return QueryResult(result: meta);
   }
