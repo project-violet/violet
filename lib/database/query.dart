@@ -28,6 +28,9 @@ class QueryResult {
   thumbnail() => result['Thumbnail'];
   url() => result['URL'];
 
+  // For Loading
+  loading() => result['Loading'] ?? false;
+
   DateTime? getDateTime() {
     if (published() == null || published() == 0) {
       if (publishedeh() != null) return DateTime.parse(publishedeh());

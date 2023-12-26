@@ -177,7 +177,22 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
     // TODO: fix this hack
     // ignore: avoid_function_literals_in_foreach_calls
-    await Future.forEach(articleList,(element) async {
+    var index = 0;
+    articleList.forEach((element) {
+      setState((){
+        try{
+          result.add(QueryResult(result: {
+            'Id': int.parse(element.article()),
+            'Loading': true,
+          }));
+        } catch(e,st){}
+        queryResult = result;
+        _rebuild();
+        _applyFilter();
+        _rebuild();
+      });
+    });
+    articleList.forEach((element) async {
       var article = qr[element.article()];
       try {
         article ??= await _tryGetArticleFromHitomi(element.article());
@@ -188,7 +203,16 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
           article ??= await _tryGetArticleFromExhentai(element.article());
         }
       }
-      result.add(article);
+      setState((){
+        if(article != null) {
+          result[index] = (article);
+          index++; 
+          queryResult = result;
+          _rebuild();
+          _applyFilter();
+          _rebuild();
+        }
+      });
     });
 
     queryResult = result;

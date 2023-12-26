@@ -306,6 +306,7 @@ class HentaiManager {
         } catch (e, st) {
           Logger.error('[hentai-getImageProvider] E: $e\n'
               '$st');
+          if(qr.loading()) throw Error();
         }
       }
 
