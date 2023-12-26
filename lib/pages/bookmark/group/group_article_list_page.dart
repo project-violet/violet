@@ -169,7 +169,6 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
     // TODO: fix this hack
     // ignore: avoid_function_literals_in_foreach_calls
-    var index = 0;
     articleList.forEach((element) {
       setState((){
         try{
@@ -179,7 +178,6 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
           }));
         } catch(e,st){}
         queryResult = result;
-        _rebuild();
         _applyFilter();
         _rebuild();
       });
@@ -197,10 +195,14 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       }
       setState((){
         if(article != null) {
-          result[index] = (article);
-          index++; 
+          int i;
+          for(i = 0;i < articleList.length;i++){
+            if(articleList[i].article() == element.article()){
+              break;
+            }
+          }
+          result[i] = (article);
           queryResult = result;
-          _rebuild();
           _applyFilter();
           _rebuild();
         }
