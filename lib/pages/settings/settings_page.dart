@@ -2205,6 +2205,7 @@ class _SettingsPageState extends State<SettingsPage>
     ];
   }
 
+
   List<Widget> _componetGroup() {
     return [
       _buildGroup(Translations.of(context).trans('component')),
@@ -2258,25 +2259,14 @@ class _SettingsPageState extends State<SettingsPage>
                 var result = await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const LoginScreen()));
                 if(result != null){
-                  var ck = result.toString().split(';').where((element) => element.trim().isNotEmpty).join(';');
+                  final ck = result ?? '';
                   await prefs.setString('eh_cookies', ck);
-                  try {
-                    final res = await http.get('https://exhentai.org',headers: { 'Cookie': result });
-                    res.headers.forEach((key, value) {
-                      if(key == 'set-cookie'){
-                        final firstCookieString = value.split(';')[0];
-                        final firstCookieKey = firstCookieString.substring(0,firstCookieString.indexOf('=')).trim();
-                        final firstCookieValue = firstCookieString.substring(firstCookieString.indexOf('=') + 1,firstCookieString.length).trim();
-                        if(firstCookieKey == 'igneous' && firstCookieValue == 'mystery') return;
-                        var _ck = ck.split(';').where((element) => element.trim().isNotEmpty).toList();
-                        _ck.add('${firstCookieKey}=${firstCookieValue}');
-                        ck = _ck.join(';');
-                      }
-                    });
-                    await prefs.setString('eh_cookies', ck);
-                  } catch(e,st){
+                  if(!(await EHSession.hasSkCookie())){
+                    await EHSession.refreshEhentaiCookie();
                   }
-                  await prefs.setString('eh_cookies', ck);
+                  if(!(await EHSession.hasIgneousCookie())){
+                    await EHSession.refreshExhentaiCookie();
+                  }
                 }
 
                 if (result != null) {
@@ -2369,23 +2359,15 @@ class _SettingsPageState extends State<SettingsPage>
                 );
 
                 if (dialog != null && dialog == true) {
-                  var ck =
+                  final ck =
                       'sk=${sController.text};ipb_member_id=${imiController.text};ipb_pass_hash=${iphController.text};${((iController.text.length == 0 || iController.text == 'mystery') ? '' : 'igneous=${iController.text};')}';
                   await prefs.setString('eh_cookies', ck);
-                  try {
-                    final res = await http.get('https://exhentai.org',headers: { 'Cookie': ck });
-                    res.headers.forEach((key, value) {
-                      if(key == 'set-cookie'){
-                        final firstCookieString = value.split(';')[0];
-                        final firstCookieKey = firstCookieString.substring(0,firstCookieString.indexOf('=')).trim();
-                        final firstCookieValue = firstCookieString.substring(firstCookieString.indexOf('=') + 1,firstCookieString.length).trim();
-                        if(firstCookieKey == 'igneous' && firstCookieValue == 'mystery') return;
-                        ck += '${firstCookieKey}=${firstCookieValue};';
-                      }
-                    });
-                  } catch(e,st){
+                  if(!(await EHSession.hasSkCookie())){
+                    await EHSession.refreshEhentaiCookie();
                   }
-                  await prefs.setString('eh_cookies', ck);
+                  if(!(await EHSession.hasIgneousCookie())){
+                    await EHSession.refreshExhentaiCookie();
+                  }
                 }
               }
 
