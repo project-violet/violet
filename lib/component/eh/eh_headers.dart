@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
 
 class EHSession {
@@ -119,7 +120,7 @@ class EHSession {
   }
   static Future<String> getEHashById(String id) async {
     if(id.isEmpty) throw Error();
-    var ehash;
+    String? ehash;
     await Future.forEach(['e-hentai.org','exhentai.org'],(host) async {
       if(ehash != null) return;
       try {
@@ -132,6 +133,26 @@ class EHSession {
         return;
       }
     });
-    return ehash ?? '';
+    if(ehash != null) return ehash ?? '';
+    if(ehash == null){
+      final search_res = await http.post(
+        "https://lite.duckduckgo.com/lite/",
+        body: 'q=${('https://e-hentai.org/g/${id}/').replaceAll(':', '%3A').replaceAll('/', '%2F')}&kl=&df=',
+        headers: {
+          'user-agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        }
+      );
+      final search_html = search_res.body;
+      final found_url = parse(search_html)
+        .querySelector('[href*="/g/${id}/"]')
+        ?.attributes['href'];
+      ehash = found_url?.split('/').lastWhere((element) => element.isNotEmpty);
+    }
+    if(ehash != null){
+      return ehash ?? '';
+    }
+    Logger.warning('[getEHashById] Could not found hash of ${id}');
+    throw Error();
   }
 }
