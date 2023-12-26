@@ -114,11 +114,37 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     final html = await EHSession.requestString(
         'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
     final articleEh = EHParser.parseArticleData(html);
+    List<String> tags = [];
+    List<String> series = [];
+    if(articleEh.female != null){
+      articleEh.female?.forEach((female) {
+        tags.add('female:${female}');
+      });
+    }
+    if(articleEh.male != null){
+      articleEh.male?.forEach((male) {
+        tags.add('male:${male}');
+      });
+    }
+    if(articleEh.misc != null){
+      articleEh.misc?.forEach((misc) {
+        tags.add('tag:${misc}');
+      });
+    }
+    if(articleEh.parody != null){
+      articleEh.parody?.forEach((parody) {
+        series.add(parody);
+      });
+    }
     final meta = {
       'Id': int.parse(id),
       'EHash': hash,
       'Title': articleEh.title,
       'Artists': articleEh.artist?.join('|') ?? 'N/A',
+      'Language': articleEh.languages?.join('|') ?? articleEh.language.trim().toLowerCase() ?? 'N/A',
+      'Tags': tags.join('|'),
+      'Type': articleEh.type,
+      'Series': series.join('|'),
     };
     return QueryResult(result: meta);
   }
@@ -128,11 +154,37 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     final html = await EHSession.requestString(
         'https://exhentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
     final articleEh = EHParser.parseArticleData(html);
+    List<String> tags = [];
+    List<String> series = [];
+    if(articleEh.female != null){
+      articleEh.female?.forEach((female) {
+        tags.add('female:${female}');
+      });
+    }
+    if(articleEh.male != null){
+      articleEh.male?.forEach((male) {
+        tags.add('male:${male}');
+      });
+    }
+    if(articleEh.misc != null){
+      articleEh.misc?.forEach((misc) {
+        tags.add('tag:${misc}');
+      });
+    }
+    if(articleEh.parody != null){
+      articleEh.parody?.forEach((parody) {
+        series.add(parody);
+      });
+    }
     final meta = {
       'Id': int.parse(id),
       'EHash': hash,
       'Title': articleEh.title,
       'Artists': articleEh.artist?.join('|') ?? 'N/A',
+      'Language': articleEh.languages?.join('|') ?? articleEh.language.trim().toLowerCase() ?? 'N/A',
+      'Tags': tags.join('|'),
+      'Type': articleEh.type,
+      'Series': series.join('|'),
     };
     return QueryResult(result: meta);
   }
