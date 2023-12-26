@@ -106,11 +106,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   Future<QueryResult> _tryGetArticleFromEhentai(String id) async {
-    final listHtml = await EHSession.requestString(
-        'https://e-hentai.org/?next=${(int.parse(id) + 1)}');
-    final href =
-        parse(listHtml).querySelector('a[href*="/g/$id/"]')?.attributes['href'];
-    final hash = href!.split('/').lastWhere((element) => element.isNotEmpty);
+    final hash = await EHSession.getEHashById(id,'e-hentai.org');
     final html = await EHSession.requestString(
         'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
     final articleEh = EHParser.parseArticleData(html);
@@ -124,11 +120,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   Future<QueryResult> _tryGetArticleFromExhentai(String id) async {
-    final listHtml = await EHSession.requestString(
-        'https://exhentai.org/?next=${(int.parse(id) + 1)}');
-    final href =
-        parse(listHtml).querySelector('a[href*="/g/$id/"]')?.attributes['href'];
-    final hash = href!.split('/').lastWhere((element) => element.isNotEmpty);
+    final hash = await EHSession.getEHashById(id,'exhentai.org');
     final html = await EHSession.requestString(
         'https://exhentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
     final articleEh = EHParser.parseArticleData(html);
