@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:get/get.dart';
+import 'package:html/parser.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/network/wrapper.dart' as http;
@@ -115,5 +116,22 @@ class EHSession {
             headers: {'Cookie': cookie ?? ''},
             body: 'commenttext_new=${Uri.encodeFull(content)}'))
         .body;
+  }
+  static Future<String> getEHashById(String id) async {
+    if(id.isEmpty) throw Error();
+    var ehash;
+    await Future.forEach(['e-hentai.org','exhentai.org'],(host) async {
+      if(ehash != null) return;
+      try {
+        final list_html = await EHSession.requestString('https://${host}/?next=${(int.parse(id) + 1)}');
+        final doc = parse(list_html);
+        final _ehash = doc.querySelector('a[href*="/g/${id}"]')?.attributes['href']?.split('/').lastWhere((element) => element.isNotEmpty);
+        if(_ehash == null) return;
+        if(ehash == null) ehash = _ehash;
+      } catch(e,st){
+        return;
+      }
+    });
+    return ehash ?? '';
   }
 }
