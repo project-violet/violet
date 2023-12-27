@@ -116,6 +116,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     final articleEh = EHParser.parseArticleData(html);
     List<String> tags = [];
     List<String> series = [];
+    List<String> characters = [];
     if(articleEh.female != null){
       articleEh.female?.forEach((female) {
         tags.add('female:${female}');
@@ -136,6 +137,11 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         series.add(parody);
       });
     }
+    if(articleEh.character != null){
+      articleEh.character?.forEach((character) {
+        characters.add(character);
+      });
+    }
     final meta = {
       'Id': int.parse(id),
       'EHash': hash,
@@ -143,6 +149,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       'Artists': articleEh.artist?.join('|') ?? 'N/A',
       'Language': articleEh.languages?.join('|') ?? articleEh.language.trim().toLowerCase() ?? 'N/A',
       'Tags': tags.join('|'),
+      'Characters': characters.join('|'),
       'Type': articleEh.type,
       'Series': series.join('|'),
     };
@@ -156,6 +163,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     final articleEh = EHParser.parseArticleData(html);
     List<String> tags = [];
     List<String> series = [];
+    List<String> characters = [];
     if(articleEh.female != null){
       articleEh.female?.forEach((female) {
         tags.add('female:${female}');
@@ -176,6 +184,11 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         series.add(parody);
       });
     }
+    if(articleEh.character != null){
+      articleEh.character?.forEach((character) {
+        characters.add(character);
+      });
+    }
     final meta = {
       'Id': int.parse(id),
       'EHash': hash,
@@ -183,6 +196,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       'Artists': articleEh.artist?.join('|') ?? 'N/A',
       'Language': articleEh.languages?.join('|') ?? articleEh.language.trim().toLowerCase() ?? 'N/A',
       'Tags': tags.join('|'),
+      'Characters': characters.join('|'),
       'Type': articleEh.type,
       'Series': series.join('|'),
     };
