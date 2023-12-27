@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:violet/component/duckduckgo/search.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
 
@@ -135,19 +136,24 @@ class EHSession {
     });
     if(ehash != null) return ehash ?? '';
     if(ehash == null){
-      final search_res = await http.post(
-        "https://lite.duckduckgo.com/lite/",
-        body: 'q=${('https://e-hentai.org/g/${id}/').replaceAll(':', '%3A').replaceAll('/', '%2F')}&kl=&df=',
-        headers: {
-          'user-agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0',
-          'Content-Type': 'application/x-www-form-urlencoded',
-        }
-      );
+      final ddg = DuckDuckGoSearch();
+      final search_res = await ddg.searchProxied('site:e-hentai.org in-url:/g/${id}/');
       final search_html = search_res.body;
-      final found_url = parse(search_html)
-        .querySelector('[href*="/g/${id}/"]')
-        ?.attributes['href'];
-      ehash = found_url?.split('/').lastWhere((element) => element.isNotEmpty);
+      var found_encoded_urls = parse(search_res.body)
+        .querySelectorAll('a[href*="${Uri.encodeComponent('/g/${id}')}"]')
+        .map((encoded_url) => encoded_url.attributes['href']?.trim() ?? '')
+        .where((encoded_url) => encoded_url.trim().isNotEmpty);
+      var url = '';
+      found_encoded_urls
+        ?.map((url) => Uri.parse(url ?? '').queryParameters)
+        ?.forEach((element){
+          element.forEach((key, value) {
+            if(value.contains('/g/${id}/')){
+              url = value;
+            }
+          });
+        });
+      ehash = url.split('/').lastWhere((e) => e.isNotEmpty);
     }
     if(ehash != null){
       return ehash ?? '';
