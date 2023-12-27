@@ -10,6 +10,7 @@ import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
 
 class EHSession {
+  static Map<String,String> ehashs = Map<String,String>();
   static EHSession? tryLogin(String id, String pass) {
     return null;
   }
@@ -122,6 +123,9 @@ class EHSession {
   static Future<String> getEHashById(String id) async {
     if(id.isEmpty) throw Error();
     String? ehash;
+    if(ehashs[id]?.isNotEmpty ?? false){
+      return ehashs[id] ?? '';
+    }
     await Future.forEach(['e-hentai.org','exhentai.org'],(host) async {
       if(ehash != null) return;
       try {
@@ -134,7 +138,7 @@ class EHSession {
         return;
       }
     });
-    if(ehash != null) return ehash ?? '';
+    if(ehash != null) return (ehashs[id] = (ehash ?? ''));
     if(ehash == null){
       final ddg = DuckDuckGoSearch();
       final search_res = await ddg.searchProxied('site:e-hentai.org in-url:/g/${id}/');
@@ -153,7 +157,7 @@ class EHSession {
             }
           });
         });
-      ehash = url.split('/').lastWhere((e) => e.isNotEmpty);
+      ehashs[id] = ehash = url.split('/').lastWhere((e) => e.isNotEmpty);
     }
     if(ehash != null){
       return ehash ?? '';
