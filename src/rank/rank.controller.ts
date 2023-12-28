@@ -21,8 +21,8 @@ export class RankController {
   @ApiResponse({
     type: RankResponseDto,
   })
-  @UseGuards(HmacAuthGuard)
-  async get(@Query() data: RankRequestDto) {
-    return;
+  // @UseGuards(HmacAuthGuard)
+  async get(@Query() dto: RankRequestDto) {
+    return this.rankService.getRank(dto);
   }
 }
