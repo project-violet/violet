@@ -39,8 +39,10 @@ export class RankRequestDto {
   @IsString()
   @IsOptional()
   @Matches(`^${Object.values(RANK_REQUEST_TYPE).join('|')}$`, 'i')
-  @ApiProperty({ description: '' })
+  @ApiProperty({ description: 'Type', required: false })
   type?: string = 'alltime';
 }
 
-export class RankResponseDto {}
+export class RankResponseDto {
+  test: string[];
+}

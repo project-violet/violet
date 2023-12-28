@@ -7,7 +7,7 @@ export class RedisService {
   private readonly redis: Redis;
 
   constructor(private readonly redisService: RedisInnerService) {
-    this.redis = redisService.getClient();
+    this.redis = this.redisService.getClient();
   }
 
   async get(key: string): Promise<string> {
@@ -15,6 +15,14 @@ export class RedisService {
   }
 
   async set(key: string, value: string, expireTime?: number) {
-    this.redis.set(key, value, 'EX', expireTime ?? 10);
+    await this.redis.set(key, value, 'EX', expireTime ?? 10);
+  }
+
+  async zrevrange_by_score(
+    group: string,
+    offset: number,
+    count: number,
+  ): Promise<string[]> {
+    return await this.redis.zrevrange(group, offset, count, 'WITHSCORES');
   }
 }
