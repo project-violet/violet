@@ -344,8 +344,8 @@ class HentaiManager {
       }
 
       var map = {
-        'Id': int.parse(element.url!.split('/')[4]),
-        'EHash': element.url!.split('/')[5],
+        'Id': int.parse(Uri.parse(element.url!).path.split('/').firstWhere((e) => int.tryParse(e) is int)),
+        'EHash': Uri.parse(element.url!).path.split('/').lastWhere((e) => e.trim().isNotEmpty),
         'Title': element.title,
         'Artists': element.descripts!['artist'] != null
             ? element.descripts!['artist']!.join('|')

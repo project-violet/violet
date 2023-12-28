@@ -131,7 +131,8 @@ class EHSession {
       try {
         final list_html = await EHSession.requestString('https://${host}/?next=${(int.parse(id) + 1)}');
         final doc = parse(list_html);
-        final _ehash = doc.querySelector('a[href*="/g/${id}"]')?.attributes['href']?.split('/').lastWhere((element) => element.isNotEmpty);
+        final _url = doc.querySelector('a[href*="/g/${id}"]')?.attributes['href'] ?? '';
+        final _ehash = Uri.parse(_url).path.split('/').lastWhere((e) => e.trim().isNotEmpty).trim();
         if(_ehash == null) return;
         if(ehash == null) ehash = _ehash;
       } catch(e,st){

@@ -6,7 +6,9 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:violet/component/proxy/proxy.myvipwebtools.com.dart';
 import 'package:violet/log/log.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/thread/semaphore.dart';
 
 class HttpWrapper {
@@ -33,11 +35,18 @@ bool _isScriptUrl(String url) {
 Future<http.Response> get(String url,
     {Map<String, String>? headers, Duration? timeout}) async {
   if (url.contains('exhentai.org') || url.contains('e-hentai.org')) {
-    return await _ehentaiGet(
-      url,
-      headers: headers,
-      timeout: timeout,
-    );
+    if(!Settings.useProxy){
+      return await _ehentaiGet(
+        url,
+        headers: headers,
+        timeout: timeout,
+      );
+    } else if(Settings.useProxy) {
+      return await _ehentaiProxyGet(
+        url,
+        headers: headers,
+      );
+    }
   } else if (_isScriptUrl(url)) {
     return await _scriptGet(url, headers: headers, timeout: timeout);
   }
@@ -138,6 +147,13 @@ Future<http.Response> _ehentaiGet(String url,
     return res;
   }
 }
+Future<http.Response> _ehentaiProxyGet(String url,
+    {Map<String, String>? headers}) async {
+  Logger.info('[Http Request] GET: $url');
+  ProxyHttpRequest phr = ProxyHttpRequest();
+  final res = await phr.get(url,headers: headers);
+  return res;
+}
 
 Future<http.Response> _scriptGet(String url,
     {Map<String, String>? headers, Duration? timeout}) async {
@@ -176,6 +192,26 @@ Future<http.Response> _scriptGet(String url,
       res.statusCode == 200 &&
       res.body.trim().isNotEmpty) {
     HttpWrapper.cacheResponse[url] = res;
+  }
+
+  return res;
+}
+
+Future<http.Response> _scriptProxyGet(String url,
+    {Map<String, String>? headers, Duration? timeout}) async {
+  Logger.info('[Http Cache] GET: $url');
+
+  if (HttpWrapper.cacheResponse.containsKey(url)) {
+    return HttpWrapper.cacheResponse[url]!;
+  }
+  ProxyHttpRequest phr = ProxyHttpRequest();
+  Response res;
+  var _headers = headers ?? {};
+  _headers['user-agent'] = HttpWrapper.userAgent;
+  res = await phr.get(url, headers: _headers);
+
+  if (res.statusCode != 200) {
+    Logger.warning('[Http Response] CODE: ${res.statusCode}, GET: $url');
   }
 
   return res;

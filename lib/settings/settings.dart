@@ -19,6 +19,9 @@ import 'package:violet/settings/device_type.dart';
 
 class Settings {
   static late final SharedPreferences prefs;
+  
+  // Proxy Settings
+  static late bool useProxy;
 
   // Color Settings
   static late Color themeColor; // default light
@@ -301,6 +304,7 @@ class Settings {
         'searchmessageapi', 'https://koromo.xyz/api/search/msg');
 
     useVioletServer = await _getBool('usevioletserver');
+    useProxy = await _getBool('useproxy');
     useDrawer = await _getBool('usedrawer');
     showArticleProgress = await _getBool('showarticleprogress');
     useOptimizeDatabase = await _getBool('useoptimizedatabase', true);
@@ -627,6 +631,12 @@ class Settings {
     useVioletServer = nn;
 
     await prefs.setBool('usevioletserver', nn);
+  }
+
+  static Future<void> setUseProxy(bool nn) async {
+    useProxy = nn;
+
+    await prefs.setBool('useproxy', nn);
   }
 
   static Future<void> setUseDrawer(bool nn) async {
