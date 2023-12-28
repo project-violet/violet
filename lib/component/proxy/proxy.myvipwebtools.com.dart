@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:html/parser.dart';
 import 'package:violet/log/log.dart';
-import 'package:violet/network/wrapper.dart' as http;
 import 'package:http/http.dart' as _http;
 
 
@@ -12,11 +11,11 @@ class ProxyHttpRequest {
   Map<String,String> cookies = Map<String,String>();
 
   Future<String> getCSRF(String host) async {
-    var res = await http.get('https://www-${host}/',
+    var res = await _http.get(Uri.parse('https://www-${host}/'),
     );
     while(true){
       if(res?.headers?['location']?.isNotEmpty ?? false){
-        res = await http.get(res.headers['location'] ?? '');
+        res = await _http.get(Uri.parse(res.headers['location'] ?? ''));
       } else {
         break;
       }
@@ -78,7 +77,7 @@ class ProxyHttpRequest {
     if(host == null){
       throw Error();
     }
-    final res_requests = await http.post('https://www-${host}/requests',
+    final res_requests = await _http.post(Uri.parse('https://www-${host}/requests'),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
@@ -96,8 +95,8 @@ class ProxyHttpRequest {
       Logger.error('cpi_url is null');
       throw Error();
     }
-    final res_cpi = await http.get(
-      cpi_url,
+    final res_cpi = await _http.get(
+      Uri.parse(cpi_url),
       headers: {
         'Cookie': cookies[host] ?? ''
       }
@@ -146,7 +145,7 @@ class ProxyHttpRequest {
     ]
       .where((c) => c.trim().isNotEmpty)
       .join(';');
-    final res = await http.get('https://${host}${target_path}${target_query}',
+    final res = await _http.get(Uri.parse('https://${host}${target_path}${target_query}'),
       headers: _headers
     );
     return res;
