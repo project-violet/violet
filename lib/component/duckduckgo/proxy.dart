@@ -130,7 +130,18 @@ class ProxyHttpRequest {
     target_query += '__cpo=${__cpo}';
 
     var _headers = headers ?? {};
-    _headers['Cookie'] = [(_headers?['Cookie'] ?? ''),cookies[host] ?? ''].where((c) => c.trim().isNotEmpty).toList().join(';');
+    _headers['Cookie'] = cookies[host] ?? '';
+    if(headers?['Cookie']?.isNotEmpty ?? false){
+      _headers['Cookie'] = [cookies[host] ?? '', (headers?['Cookie']??'')
+        ?.split(';')
+        .where((c) => c.trim().isNotEmpty)
+        .map((_cKV) {
+          final cKV = _cKV.trim();
+          final cK = cKV.substring(0,cKV.indexOf('=')).trim();
+          final cV = cKV.substring(cKV.indexOf('=') + 1);
+          return '${cK}@${target_host}=${cV}';
+        }).join(';')].join(';');
+    }
     final res = await http.get('https://${host}${target_path}${target_query}',
       headers: _headers
     );
