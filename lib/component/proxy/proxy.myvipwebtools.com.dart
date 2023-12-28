@@ -6,8 +6,9 @@ import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:http/http.dart' as _http;
 
+
 class ProxyHttpRequest {
-  List<String> hosts = [ 'proxy.myvipwebtools.com' ];
+  String host = 'proxy.myvipwebtools.com';
   Map<String,String> cookies = Map<String,String>();
 
   Future<String> getCSRF(String host) async {
@@ -72,7 +73,6 @@ class ProxyHttpRequest {
   }
 
   Future<String> _requests(String target,{
-    String? host,
     String? csrf,
   }) async {
     if(host == null){
@@ -87,9 +87,7 @@ class ProxyHttpRequest {
     await setCookie(host, res_requests.headers);
     return res_requests.headers['location'] ?? '';
   }
-  Future<void> _cpi(String location,{
-    String? host,
-  }) async {
+  Future<void> _cpi(String location) async {
     if(host == null){
       throw Error();
     }
@@ -107,7 +105,6 @@ class ProxyHttpRequest {
     await setCookie(host, res_cpi.headers);
   }
   Future<_http.Response> _get(String target,{
-    String? host,
     Map<String,String>? headers
   }) async {
     if(host == null){
@@ -148,13 +145,12 @@ class ProxyHttpRequest {
     return res;
   }
   Future<_http.Response> get(String target,{
-    String? host,
     Map<String,String>? headers
   }) async {
-    final csrf = await getCSRF(host ?? hosts[0]);
-    final cpi_url = await _requests(target, host: host, csrf: csrf);
-    await _cpi(cpi_url, host: host);
-    final res = await _get(target, host: host, headers: headers);
+    final csrf = await getCSRF(host);
+    final cpi_url = await _requests(target, csrf: csrf);
+    await _cpi(cpi_url);
+    final res = await _get(target, headers: headers);
     return res;
   }
 }
