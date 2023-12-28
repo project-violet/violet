@@ -1428,38 +1428,38 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
-          _buildDivider(),
-          InkWell(
-            customBorder: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(8.0),
-                    bottomRight: Radius.circular(8.0))),
-            child: ListTile(
-              leading: Image.asset(
-                'assets/images/logo.png',
-                width: 25,
-                height: 25,
-              ),
-              title: Text(Translations.of(context).trans('useproxy')),
-              trailing: Switch(
-                value: Settings.useProxy,
-                onChanged: (newValue) async {
-                  await Settings.setUseProxy(newValue);
-                  setState(() {
-                    _shouldReload = true;
-                  });
-                },
-                activeTrackColor: Settings.majorColor,
-                activeColor: Settings.majorAccentColor,
-              ),
-            ),
-            onTap: () async {
-              await Settings.setUseProxy(!Settings.useProxy);
-              setState(() {
-                _shouldReload = true;
-              });
-            },
-          ),
+          // _buildDivider(),
+          // InkWell(
+          //   customBorder: const RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.only(
+          //           bottomLeft: Radius.circular(8.0),
+          //           bottomRight: Radius.circular(8.0))),
+          //   child: ListTile(
+          //     leading: Image.asset(
+          //       'assets/images/logo.png',
+          //       width: 25,
+          //       height: 25,
+          //     ),
+          //     title: Text(Translations.of(context).trans('useproxy')),
+          //     trailing: Switch(
+          //       value: Settings.useProxy,
+          //       onChanged: (newValue) async {
+          //         await Settings.setUseProxy(newValue);
+          //         setState(() {
+          //           _shouldReload = true;
+          //         });
+          //       },
+          //       activeTrackColor: Settings.majorColor,
+          //       activeColor: Settings.majorAccentColor,
+          //     ),
+          //   ),
+          //   onTap: () async {
+          //     await Settings.setUseProxy(!Settings.useProxy);
+          //     setState(() {
+          //       _shouldReload = true;
+          //     });
+          //   },
+          // ),
         ],
       ),
     ];
