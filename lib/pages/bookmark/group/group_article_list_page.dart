@@ -110,7 +110,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   Future<QueryResult> _tryGetArticleFromEhentai(String id) async {
-    final hash = await EHSession.getEHashById(id);
+    final hash = await EHSession.getEHashById(id,'e-hentai.org');
     final html = await EHSession.requestString(
         'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
     final articleEh = EHParser.parseArticleData(html);
@@ -157,7 +157,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   Future<QueryResult> _tryGetArticleFromExhentai(String id) async {
-    final hash = await EHSession.getEHashById(id);
+    final hash = await EHSession.getEHashById(id,'exhentai.org');
     final html = await EHSession.requestString(
         'https://exhentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
     final articleEh = EHParser.parseArticleData(html);

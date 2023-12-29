@@ -11,6 +11,7 @@ import 'package:violet/network/wrapper.dart' as http;
 
 class EHSession {
   static Map<String,String> ehashs = Map<String,String>();
+  static Map<String,bool> ehash_lock = Map<String,bool>();
   static EHSession? tryLogin(String id, String pass) {
     return null;
   }
@@ -120,49 +121,62 @@ class EHSession {
             body: 'commenttext_new=${Uri.encodeFull(content)}'))
         .body;
   }
-  static Future<String> getEHashById(String id) async {
+  static Future<String> getEHashById(String id,[String? from]) async {
+    if(ehash_lock[id] == true){
+      throw Error();
+    } else {
+      ehash_lock[id] = true;
+    }
     if(id.isEmpty) throw Error();
     String? ehash;
     if(ehashs[id]?.isNotEmpty ?? false){
+      ehash_lock[id] = false;
       return ehashs[id] ?? '';
     }
-    await Future.forEach(['e-hentai.org','exhentai.org'],(host) async {
+    try {
+    await Future.forEach([...(from == null ? ['e-hentai.org','exhentai.org'] : [from])],(host) async {
       if(ehash != null) return;
       try {
         final list_html = await EHSession.requestString('https://${host}/?next=${(int.parse(id) + 1)}');
         final doc = parse(list_html);
         final _url = doc.querySelector('a[href*="/g/${id}"]')?.attributes['href'] ?? '';
         final _ehash = Uri.parse(_url).path.split('/').lastWhere((e) => e.trim().isNotEmpty).trim();
-        if(_ehash == null) return;
-        if(ehash == null) ehash = _ehash;
+        if(ehash == null && _ehash.isNotEmpty) ehash = _ehash;
       } catch(e,st){
-        return;
       }
     });
-    if(ehash != null) return (ehashs[id] = (ehash ?? ''));
-    if(ehash == null){
-      final ddg = DuckDuckGoSearch();
-      final search_res = await ddg.searchProxied('site:e-hentai.org in-url:/g/${id}/');
-      final search_html = search_res.body;
-      var found_encoded_urls = parse(search_res.body)
-        .querySelectorAll('a[href*="${Uri.encodeComponent('/g/${id}')}"]')
-        .map((encoded_url) => encoded_url.attributes['href']?.trim() ?? '')
-        .where((encoded_url) => encoded_url.trim().isNotEmpty);
-      var url = '';
-      found_encoded_urls
-        ?.map((url) => Uri.parse(url ?? '').queryParameters)
-        ?.forEach((element){
-          element.forEach((key, value) {
-            if(value.contains('/g/${id}/')){
-              url = value;
-            }
+    } catch(_){}
+    if(ehash != null) {
+      ehash_lock[id] = false;
+      return (ehashs[id] = (ehash ?? ''));
+    }
+    if(ehash == null && (from?.contains('e-hentai.org') ?? true)){
+      try{
+        final ddg = DuckDuckGoSearch();
+        final search_res = await ddg.searchProxied('site:e-hentai.org in-url:/g/${id}/');
+        final search_html = search_res.body;
+        var found_encoded_urls = parse(search_res.body)
+          .querySelectorAll('a[href*="${Uri.encodeComponent('/g/${id}')}"]')
+          .map((encoded_url) => encoded_url.attributes['href']?.trim() ?? '')
+          .where((encoded_url) => encoded_url.trim().isNotEmpty);
+        var url = '';
+        found_encoded_urls
+          ?.map((url) => Uri.parse(url ?? '').queryParameters)
+          ?.forEach((element){
+            element.forEach((key, value) {
+              if(value.contains('/g/${id}/')){
+                url = value;
+              }
+            });
           });
-        });
-      ehashs[id] = ehash = url.split('/').lastWhere((e) => e.isNotEmpty);
+        ehashs[id] = ehash = url.split('/').lastWhere((e) => e.isNotEmpty);
+      }catch(_){}
     }
     if(ehash != null){
+      ehash_lock[id] = false;
       return ehash ?? '';
     }
+    ehash_lock[id] = false;
     Logger.warning('[getEHashById] Could not found hash of ${id}');
     throw Error();
   }

@@ -97,7 +97,12 @@ class HentaiManager {
           '$st');
       try {
         late var gallery_url,gallery_token;
-        gallery_token = await EHSession.getEHashById('${no}');
+        while(true){
+          try{
+            gallery_token = await EHSession.getEHashById('${no}');
+          } catch(_){}
+          if(gallery_token != null) break;
+        }
         var html = await EHSession.requestString('https://e-hentai.org/g/${no}/${gallery_token}/?p=0&inline_set=ts_m');
         var article_eh = EHParser.parseArticleData(html);
         var meta = {
@@ -238,7 +243,11 @@ class HentaiManager {
           switch (route[i]) {
             case 'EHentai':
               if (qr.ehash() == null) {
-                ehash = await EHSession.getEHashById('${qr.id()}');
+                try {
+                  ehash = await EHSession.getEHashById('${qr.id()}','e-hentai.org');
+                } catch(_){
+                  rethrow;
+                }
               }
               if (qr.ehash() != null || ehash != null) {
                 var html = await EHSession.requestString(
@@ -257,7 +266,7 @@ class HentaiManager {
               break;
             case 'ExHentai':
               if (qr.ehash() == null) {
-                ehash = await EHSession.getEHashById('${qr.id()}');
+                ehash = await EHSession.getEHashById('${qr.id()}','exhentai.org');
               }
               if (qr.ehash() != null || ehash != null) {
                 var html = await EHSession.requestString(
