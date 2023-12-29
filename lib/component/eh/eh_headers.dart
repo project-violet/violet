@@ -230,6 +230,6 @@ class EHSession {
     }
     ehash_lock[id] = false;
     Logger.warning('[getEHashById] Could not found hash of ${id}');
-    throw Error();
+    throw 'NOT_FOUND_EHASH';
   }
 }
