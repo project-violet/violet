@@ -110,7 +110,20 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   Future<QueryResult> _tryGetArticleFromEhentai(String id) async {
-    final hash = await EHSession.getEHashById(id,'e-hentai.org');
+    late var hash;
+    while(true){
+      try{  
+        hash = await EHSession.getEHashById(id,'exhentai.org');
+      }catch(e,st){
+        if(e == 'EHASH_LOCK'){
+          if(hash != null){
+            break;
+          }
+        } else {
+          rethrow;
+        }
+      }
+    }
     final html = await EHSession.requestString(
         'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
     final articleEh = EHParser.parseArticleData(html);
@@ -157,7 +170,20 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   Future<QueryResult> _tryGetArticleFromExhentai(String id) async {
-    final hash = await EHSession.getEHashById(id,'exhentai.org');
+    late var hash;
+    while(true){
+      try{  
+        hash = await EHSession.getEHashById(id,'exhentai.org');
+      }catch(e,st){
+        if(e == 'EHASH_LOCK'){
+          if(hash != null){
+            break;
+          }
+        } else {
+          rethrow;
+        }
+      }
+    }
     final html = await EHSession.requestString(
         'https://exhentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
     final articleEh = EHParser.parseArticleData(html);

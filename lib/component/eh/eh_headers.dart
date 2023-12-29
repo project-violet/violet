@@ -129,22 +129,22 @@ class EHSession {
       case 'e-hentai.org':
         if(eh_ehash_could_not_found[id] == true) {
           Logger.warning('[getEHashById] could not found ${id}`s ehash from ${from}');
-          throw Error();
+          throw 'EHASH_LOCK';
         }
       case 'exhentai.org':
         if(ex_ehash_could_not_found[id] == true) {
           Logger.warning('[getEHashById] could not found ${id}`s ehash from ${from}');
-          throw Error();
+          throw 'EHASH_LOCK';
         }
       default:
         if(eh_ehash_could_not_found[id] == true && ex_ehash_could_not_found == true){
           Logger.warning('[getEHashById] could not found ${id}`s ehash');
-          throw Error();
+          throw 'EHASH_LOCK';
         }
     }
     if(ehash_lock[id] == true){
       Logger.warning('[getEHashById] ${id} is processing');
-      throw Error();
+      throw 'EHASH_LOCK';
     } else {
       ehash_lock[id] = true;
     }
