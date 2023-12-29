@@ -1473,6 +1473,38 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
+          _buildDivider(),
+          InkWell(
+            customBorder: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0))),
+            child: ListTile(
+              leading: Image.asset(
+                'assets/images/logo.png',
+                width: 25,
+                height: 25,
+              ),
+              title: Text(Translations.of(context).trans('ignorehttptimeout')),
+              trailing: Switch(
+                value: Settings.ignoreHTTPTimeout,
+                onChanged: (newValue) async {
+                  await Settings.setIgnoreHTTPTimeout(newValue);
+                  setState(() {
+                    _shouldReload = true;
+                  });
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
+            ),
+            onTap: () async {
+              await Settings.setIgnoreHTTPTimeout(!Settings.ignoreHTTPTimeout);
+              setState(() {
+                _shouldReload = true;
+              });
+            },
+          ),
         ],
       ),
     ];

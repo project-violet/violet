@@ -23,6 +23,9 @@ class Settings {
   // Logger Settings
   static late bool deleteOldLogAtStart; // default false
 
+  // Http Settings
+  static late bool ignoreHTTPTimeout; // default false
+
   // Color Settings
   static late Color themeColor; // default light
   static late bool themeWhat; // default false == light
@@ -205,6 +208,7 @@ class Settings {
     databaseType = databasetype;
 
     deleteOldLogAtStart = await _getBool('deleteoldlogatstart');
+    ignoreHTTPTimeout = await _getBool('ignorehttptimeout');
 
     rightToLeft = await _getBool('right2left', true);
     isHorizontal = await _getBool('ishorizontal');
@@ -475,6 +479,12 @@ class Settings {
     deleteOldLogAtStart = nn;
 
     await prefs.setBool('deleteoldlogatstart', nn);
+  }
+  
+  static Future<void> setIgnoreHTTPTimeout(bool nn) async {
+    ignoreHTTPTimeout = nn;
+
+    await prefs.setBool('ignorehttptimeout', nn);
   }
 
   static Future<void> setSearchResultType(int wh) async {

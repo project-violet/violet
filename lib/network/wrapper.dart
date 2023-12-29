@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:violet/log/log.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/thread/semaphore.dart';
 
 class HttpWrapper {
@@ -95,13 +96,17 @@ Future<http.Response> _ehentaiGet(String url,
     StreamedResponse response;
 
     try {
-      response = await client.send(request).timeout(
-        const Duration(seconds: 3),
-        onTimeout: () {
-          timeout = true;
-          throw TimeoutException('Timeout error');
-        },
-      );
+      var _sent = client.send(request);
+      if(!Settings.ignoreHTTPTimeout){
+        _sent.timeout(
+          const Duration(seconds: 3),
+          onTimeout: () {
+            timeout = true;
+            throw TimeoutException('Timeout error');
+          },
+        );
+      }
+      response = await _sent;
     } catch (e, st) {
       Logger.error('[Http Request] GET: $url\n'
           'E:$e\n'
@@ -161,14 +166,19 @@ Future<http.Response> _scriptGet(String url,
     var retry = 0;
     do {
       isTimeout = false;
-      res = await http.get(Uri.parse(url), headers: headers).timeout(
-        timeout,
-        onTimeout: () {
-          isTimeout = true;
-          retry++;
-          return http.Response('', 200);
-        },
-      );
+      var _sent = http.get(Uri.parse(url), headers: headers);
+      if(!Settings.ignoreHTTPTimeout){
+        _sent
+          .timeout(
+            timeout,
+            onTimeout: () {
+              isTimeout = true;
+              retry++;
+              return http.Response('', 200);
+            },
+          );
+      }
+      res = await _sent;
     } while (isTimeout && retry < 10);
   }
 
