@@ -307,5 +307,6 @@
   "manualupdate": "Manual Update",
   "cannotuseios": "You cannot use update on iOS :(",
   "exitTheApp": "Exit the app",
-  "deleteoldlogatstart": "Delete Old Log (At App Start)"
+  "deleteoldlogatstart": "Delete Old Log (At App Start)",
+  "ignorehttptimeout": "Ignore Http Timeout"
 }
