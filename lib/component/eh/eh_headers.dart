@@ -142,13 +142,13 @@ class EHSession {
           throw 'EHASH_LOCK';
         }
     }
+    if(id.isEmpty) throw Error();
     if(ehash_lock[id] == true){
       // Logger.warning('[getEHashById] ${id} is processing');
       throw 'EHASH_LOCK';
     } else {
       ehash_lock[id] = true;
     }
-    if(id.isEmpty) throw Error();
     String? ehash;
     Map<String,String> ehashs = Map<String,String>();
     switch(from){
