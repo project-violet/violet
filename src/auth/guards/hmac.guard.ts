@@ -13,6 +13,10 @@ export class HmacAuthGuard implements CanActivate {
   constructor(private configService: ConfigService) {}
 
   canActivate(context: ExecutionContext) {
+    if (this.configService.get<string>('NODE_ENV') == 'dev') {
+      return true;
+    }
+
     const request = context.switchToHttp().getRequest();
     const token = request.headers['v-token'];
     const valid = request.headers['v-valid'];
