@@ -163,14 +163,18 @@ class SearchPageController extends GetxController {
   }
 
   loadNextQuery() async {
-    await _querySem.acquire().timeout(
-      const Duration(seconds: 5),
-      onTimeout: () {
-        showErrorToast('Semaphore acquisition failed');
+    var _aq = _querySem.acquire();
+    if(!Settings.ignoreHTTPTimeout){ 
+      _aq.timeout(
+        const Duration(seconds: 5),
+        onTimeout: () {
+          showErrorToast('Semaphore acquisition failed');
 
-        throw TimeoutException('Failed to acquire the query semaphore');
-      },
-    );
+          throw TimeoutException('Failed to acquire the query semaphore');
+        },
+      );
+    }
+    await _aq;
 
     try {
       if (_queryEnd ||
@@ -178,13 +182,17 @@ class SearchPageController extends GetxController {
         return;
       }
 
-      var next = await HentaiManager.search(latestQuery!.item2,
-              latestQuery!.item1 == null ? 0 : latestQuery!.item1!.offset)
-          .timeout(const Duration(seconds: 10), onTimeout: () {
-        Logger.error('[Search_loadNextQuery] Search Timeout');
+      var next;
+      var search = HentaiManager.search(latestQuery!.item2,
+              latestQuery!.item1 == null ? 0 : latestQuery!.item1!.offset);
+      if(Settings.ignoreHTTPTimeout){
+        search.timeout(const Duration(seconds: 10), onTimeout: () {
+          Logger.error('[Search_loadNextQuery] Search Timeout');
 
-        throw TimeoutException('Failed to search the query');
-      });
+          throw TimeoutException('Failed to search the query');
+        });
+      }
+      next = await search;
 
       latestQuery = Tuple2(next, latestQuery!.item2);
 
