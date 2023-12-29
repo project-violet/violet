@@ -132,7 +132,7 @@ class ArticleListItemWidgetController extends GetxController {
             await HentaiManager.getImageProvider(articleListItem.queryResult);
       } catch(e,st){
         if(e == 'Loading'){
-          Logger.warning('loading');
+          // Logger.warning('loading');
         } else {
           Logger.error('[setProvider] $e\n'
             '$st');

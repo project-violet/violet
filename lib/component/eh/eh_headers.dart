@@ -143,7 +143,7 @@ class EHSession {
         }
     }
     if(ehash_lock[id] == true){
-      Logger.warning('[getEHashById] ${id} is processing');
+      // Logger.warning('[getEHashById] ${id} is processing');
       throw 'EHASH_LOCK';
     } else {
       ehash_lock[id] = true;
