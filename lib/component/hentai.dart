@@ -124,12 +124,7 @@ class HentaiManager {
 
     try {
       late var gallery_url,gallery_token;
-      while(true){
-        try{
-          gallery_token = await EHSession.getEHashById('${no}','e-hentai.org');
-        } catch(_){}
-        if(gallery_token != null) break;
-      }
+      gallery_token = await EHSession.getEHashById('${no}','e-hentai.org');
       var html = await EHSession.requestString('https://e-hentai.org/g/${no}/${gallery_token}/?p=0&inline_set=ts_m');
       var article_eh = EHParser.parseArticleData(html);
       var meta = {
@@ -156,12 +151,7 @@ class HentaiManager {
 
     try {
       late var gallery_url,gallery_token;
-      while(true){
-        try{
-          gallery_token = await EHSession.getEHashById('${no}','exhentai.org');
-        } catch(_){}
-        if(gallery_token != null) break;
-      }
+      gallery_token = await EHSession.getEHashById('${no}','exhentai.org');
       var html = await EHSession.requestString('https://exhentai.org/g/${no}/${gallery_token}/?p=0&inline_set=ts_m');
       var article_eh = EHParser.parseArticleData(html);
       var meta = {
