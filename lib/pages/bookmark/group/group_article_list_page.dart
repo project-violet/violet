@@ -241,17 +241,15 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     // ignore: avoid_function_literals_in_foreach_calls
     articleList.forEach((element) {
       if(!mounted) return;
-      setState((){
-        try{
-          result.add(QueryResult(result: {
-            'Id': int.parse(element.article()),
-            'Loading': true,
-          }));
-        } catch(e,st){}
-        queryResult = result;
-        _applyFilter();
-        _rebuild();
-      });
+      try{
+        result.add(QueryResult(result: {
+          'Id': int.parse(element.article()),
+          'Loading': true,
+        }));
+      } catch(e,st){}
+      queryResult = result;
+      _applyFilter();
+      _rebuild();
     });
     articleList.forEach((element) async {
       if(!mounted) return;
@@ -265,20 +263,18 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
           article ??= await _tryGetArticleFromExhentai(element.article());
         }
       }
-      setState((){
-        if(article != null) {
-          int i;
-          for(i = 0;i < articleList.length;i++){
-            if(articleList[i].article() == element.article()){
-              break;
-            }
+      if(article != null) {
+        int i;
+        for(i = 0;i < articleList.length;i++){
+          if(articleList[i].article() == element.article()){
+            break;
           }
-          result[i] = (article);
-          queryResult = result;
-          _applyFilter();
-          _rebuild();
         }
-      });
+        result[i] = (article);
+        queryResult = result;
+        _applyFilter();
+        _rebuild();
+      }
     });
 
     queryResult = result;
@@ -787,6 +783,11 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
         // 5. Update UI
         _shouldRebuild = true;
+        if (!mounted) {
+          Logger.warning(
+              '[_GroupArticleListPageState] _element was null don\'t do setState');
+          return;
+        }
         setState(() {
           _shouldRebuild = true;
           checkModePre = false;
@@ -794,6 +795,11 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         });
         _shouldRebuild = true;
         Future.delayed(const Duration(milliseconds: 500)).then((value) {
+          if (!mounted) {
+            Logger.warning(
+                '[_GroupArticleListPageState] _element was null don\'t do setState');
+            return;
+          }
           setState(() {
             _shouldRebuild = true;
             checkMode = false;
