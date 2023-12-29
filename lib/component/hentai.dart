@@ -68,6 +68,21 @@ class HentaiManager {
   }
 
   static Future<SearchResult> idSearch(String what) async {
+    try {
+      return await idSearchHitomi(what);
+    } catch(_){
+      try {
+        return await idSearchEhentai(what);
+      } catch(_){
+        try {
+          return await idSearchExhentai(what);
+        } catch(_){}
+      }
+    }
+
+    return const SearchResult(results: [], offset: -1);
+  }
+  static Future<SearchResult> idSearchHitomi(String what) async {
     final queryString = HitomiManager.translate2query(what);
     var queryResult = (await (await DataBaseManager.getInstance())
             .query('$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0'))
@@ -93,33 +108,74 @@ class HentaiManager {
       };
       return SearchResult(results: [QueryResult(result: meta)], offset: -1);
     } catch (e, st) {
-      Logger.error('[hentai-idSearch] E: $e\n'
+      Logger.error('[hentai-idSearchHitomi] E: $e\n'
           '$st');
-      try {
-        late var gallery_url,gallery_token;
-        while(true){
-          try{
-            gallery_token = await EHSession.getEHashById('${no}');
-          } catch(_){}
-          if(gallery_token != null) break;
-        }
-        var html = await EHSession.requestString('https://e-hentai.org/g/${no}/${gallery_token}/?p=0&inline_set=ts_m');
-        var article_eh = EHParser.parseArticleData(html);
-        var meta = {
-          'Id': no,
-          'Title': article_eh.title,
-          'EHash': gallery_token,
-          'Artists': article_eh.artist == null ? 'N/A' : article_eh.artist?.join('|'),
-          'Language': article_eh.language,
-        };
-        return SearchResult(results: [QueryResult(result: meta)], offset: -1);
-      } catch(e1,st1){
-        Logger.error('[hentai-idSearch] E: $e\n'
-            '$st');
-      }
+      rethrow;
     }
+  }
+  
+  static idSearchEhentai(String what) async {
+    final queryString = HitomiManager.translate2query(what);
+    var queryResult = (await (await DataBaseManager.getInstance())
+            .query('$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0'))
+        .map((e) => QueryResult(result: e))
+        .toList();
+    int no = int.parse(what);
 
-    return const SearchResult(results: [], offset: -1);
+    try {
+      late var gallery_url,gallery_token;
+      while(true){
+        try{
+          gallery_token = await EHSession.getEHashById('${no}','e-hentai.org');
+        } catch(_){}
+        if(gallery_token != null) break;
+      }
+      var html = await EHSession.requestString('https://e-hentai.org/g/${no}/${gallery_token}/?p=0&inline_set=ts_m');
+      var article_eh = EHParser.parseArticleData(html);
+      var meta = {
+        'Id': no,
+        'Title': article_eh.title,
+        'EHash': gallery_token,
+        'Artists': article_eh.artist == null ? 'N/A' : article_eh.artist?.join('|'),
+        'Language': article_eh.language,
+      };
+      return SearchResult(results: [QueryResult(result: meta)], offset: -1);
+    } catch(e,st){
+      Logger.error('[hentai-idSearchEhentai] E: $e\n'
+          '$st');
+      rethrow;
+    }
+  }
+  static idSearchExhentai(String what) async {
+    final queryString = HitomiManager.translate2query(what);
+    var queryResult = (await (await DataBaseManager.getInstance())
+            .query('$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0'))
+        .map((e) => QueryResult(result: e))
+        .toList();
+    int no = int.parse(what);
+
+    try {
+      late var gallery_url,gallery_token;
+      while(true){
+        try{
+          gallery_token = await EHSession.getEHashById('${no}','exhentai.org');
+        } catch(_){}
+        if(gallery_token != null) break;
+      }
+      var html = await EHSession.requestString('https://exhentai.org/g/${no}/${gallery_token}/?p=0&inline_set=ts_m');
+      var article_eh = EHParser.parseArticleData(html);
+      var meta = {
+        'Id': no,
+        'Title': article_eh.title,
+        'EHash': gallery_token,
+        'Artists': article_eh.artist == null ? 'N/A' : article_eh.artist?.join('|'),
+        'Language': article_eh.language,
+      };
+      return SearchResult(results: [QueryResult(result: meta)], offset: -1);
+    } catch(e,st){
+      Logger.error('[hentai-idSearchEhentai] E: $e\n'
+          '$st');
+    }
   }
 
   // static double _latestSeed = 0;
