@@ -254,13 +254,45 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     articleList.forEach((element) async {
       if(!mounted) return;
       var article = qr[element.article()];
-      try {
+
+      tryHitomi () async {
         article ??= await _tryGetArticleFromHitomi(element.article());
-      } catch (_) {
+      };
+
+      tryEhentai () async {
+        article ??= await _tryGetArticleFromEhentai(element.article());
+      };
+      tryExhentai () async {
+        article ??= await _tryGetArticleFromExhentai(element.article());
+      };
+
+      handleEhentai () async {
         try {
-          article ??= await _tryGetArticleFromEhentai(element.article());
-        } catch (_) {
-          article ??= await _tryGetArticleFromExhentai(element.article());
+          await tryEhentai();
+        } catch(e,st){
+          if(e == 'EHASH_LOCK'){
+          } else {
+            rethrow;
+          }
+        }
+      }
+      handleExhentai () async {
+        try {
+          await tryExhentai();
+        } catch(e,st){
+          if(e == 'EHASH_LOCK'){
+          } else {
+            rethrow;
+          }
+        }
+      }
+      try {
+        await tryHitomi();
+      } catch(_){
+        try {
+          await handleEhentai();
+        } catch(_){
+          await handleExhentai();
         }
       }
       if(article != null) {
@@ -270,7 +302,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             break;
           }
         }
-        result[i] = (article);
+        result[i] = (article)!;
         queryResult = result;
         _applyFilter();
         _rebuild();
