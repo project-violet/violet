@@ -44,5 +44,10 @@ export class ViewGetRequestDto {
 }
 
 export class ViewGetResponseDto {
-  test: string[];
+  @ApiProperty({
+    name: 'result',
+    description: 'View get response',
+    example: '[ [1234,55], [1235,44] ]',
+  })
+  result: [number, number][];
 }
