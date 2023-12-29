@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { RankGetRequestDto, RankGetResponseDto } from './dtos/rank-get.dto';
+import { ViewGetRequestDto, ViewGetResponseDto } from './dtos/view-get.dto';
 import { RedisService } from 'src/redis/redis.service';
-import { RankPostRequestDto } from './dtos/rank-post.dto';
+import { ViewPostRequestDto } from './dtos/view-post.dto';
 import { User } from 'src/user/entity/user.entity';
 
 @Injectable()
-export class RankService {
+export class ViewService {
   constructor(private redisService: RedisService) {}
 
-  async getRank(dto: RankGetRequestDto): Promise<RankGetResponseDto> {
+  async getView(dto: ViewGetRequestDto): Promise<ViewGetResponseDto> {
     let v = await this.redisService.zrevrange_by_score(
       dto.type ?? 'daily',
       dto.offset,
@@ -19,11 +19,11 @@ export class RankService {
     };
   }
 
-  post(dto: RankPostRequestDto) {
+  post(dto: ViewPostRequestDto) {
     this.postRedis(dto.articleId);
   }
 
-  async postLogined(user: User, dto: RankPostRequestDto) {
+  async postLogined(user: User, dto: ViewPostRequestDto) {
     this.postRedis(dto.articleId);
   }
 

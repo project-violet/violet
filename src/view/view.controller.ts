@@ -7,36 +7,36 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { RankService } from './rank.service';
+import { ViewService } from './view.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { RankGetRequestDto, RankGetResponseDto } from './dtos/rank-get.dto';
+import { ViewGetRequestDto, ViewGetResponseDto } from './dtos/view-get.dto';
 import { HmacAuthGuard } from 'src/auth/guards/hmac.guard';
-import { RankPostRequestDto } from './dtos/rank-post.dto';
+import { ViewPostRequestDto } from './dtos/view-post.dto';
 import { User } from 'src/user/entity/user.entity';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 
-@Controller('rank')
-export class RankController {
-  constructor(private readonly rankService: RankService) {}
+@Controller('view')
+export class ViewController {
+  constructor(private readonly viewService: ViewService) {}
 
   @Get()
   @UsePipes(new ValidationPipe({ transform: true }))
-  @ApiOperation({ summary: 'Get article read rank' })
+  @ApiOperation({ summary: 'Get article read view' })
   @ApiResponse({
-    type: RankGetResponseDto,
+    type: ViewGetResponseDto,
   })
   @UseGuards(HmacAuthGuard)
-  async get(@Query() dto: RankGetRequestDto) {
-    return this.rankService.getRank(dto);
+  async get(@Query() dto: ViewGetRequestDto) {
+    return this.viewService.getView(dto);
   }
 
   @Post()
   @UsePipes(new ValidationPipe({ transform: true }))
   @ApiOperation({ summary: 'Post article read data' })
   @UseGuards(HmacAuthGuard)
-  post(@Query() dto: RankPostRequestDto) {
-    this.rankService.post(dto);
+  post(@Query() dto: ViewPostRequestDto) {
+    this.viewService.post(dto);
   }
 
   @Post('/logined')
@@ -46,8 +46,8 @@ export class RankController {
   @UseGuards(AccessTokenGuard)
   async postLogined(
     @CurrentUser() currentUser: User,
-    @Query() dto: RankPostRequestDto,
+    @Query() dto: ViewPostRequestDto,
   ) {
-    this.rankService.postLogined(currentUser, dto);
+    this.viewService.postLogined(currentUser, dto);
   }
 }
