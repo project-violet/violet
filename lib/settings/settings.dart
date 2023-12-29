@@ -23,6 +23,9 @@ class Settings {
   // // Proxy Settings
   // static late bool useProxy;
 
+  // Logger Settings
+  static late bool deleteOldLogAtStart; // default false
+
   // Color Settings
   static late Color themeColor; // default light
   static late bool themeWhat; // default false == light
@@ -203,6 +206,8 @@ class Settings {
       await prefs.setString('databasetype', langcode);
     }
     databaseType = databasetype;
+
+    deleteOldLogAtStart = await _getBool('deleteoldlogatstart');
 
     rightToLeft = await _getBool('right2left', true);
     isHorizontal = await _getBool('ishorizontal');
@@ -469,6 +474,11 @@ class Settings {
 
     await prefs.setInt('majorAccentColor', accent!.value);
     majorAccentColor = accent;
+  }
+  static Future<void> setDeleteOldLogAtStart(bool nn) async {
+    deleteOldLogAtStart = nn;
+
+    await prefs.setBool('deleteoldlogatstart', nn);
   }
 
   static Future<void> setSearchResultType(int wh) async {

@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synchronized/synchronized.dart' as sync;
 
 class LogEvent {
@@ -45,11 +46,20 @@ class Logger {
   static List<LogEvent> events = <LogEvent>[];
 
   static Future<void> init() async {
+    final prefs = await SharedPreferences.getInstance();
+
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       logFile = File('log.txt');
     } else {
       final dir = await getApplicationDocumentsDirectory();
       logFile = File(join(dir.path, 'log.txt'));
+    }
+
+    if(prefs.getBool('deleteoldlogatstart') == true){
+      if(await logFile.exists()){
+        print('Deleting old log');
+        await logFile.delete();
+      }
     }
 
     if (!await logFile.exists()) {
