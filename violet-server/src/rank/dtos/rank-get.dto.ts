@@ -16,7 +16,7 @@ export const RANK_REQUEST_TYPE = {
   ALLTIME: 'alltime',
 };
 
-export class RankRequestDto {
+export class RankGetRequestDto {
   @IsNumber()
   @Type(() => Number)
   @Min(0)
@@ -43,6 +43,6 @@ export class RankRequestDto {
   type?: string = 'alltime';
 }
 
-export class RankResponseDto {
+export class RankGetResponseDto {
   test: string[];
 }
