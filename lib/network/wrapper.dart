@@ -130,10 +130,14 @@ Future<http.Response> _ehentaiGet(String url,
 
     Logger.info('[Http Request] GETS: $url');
 
-    if (!HttpWrapper.cacheResponse.containsKey(url) && res.statusCode == 200
-       && (res.body.contains('<') && res.body.contains('>')) // THIS CHECKS HTML TAG EXISTS (if banned respone no cache)
-    ) {
-      HttpWrapper.cacheResponse[url] = res;
+    if (!HttpWrapper.cacheResponse.containsKey(url) && res.statusCode == 200) {
+      if(
+       (!res.body.contains('<') && !res.body.contains('>')) // THIS CHECKS HTML TAG EXISTS (if banned respone no cache)
+      ) {
+        Logger.warning('[_ehentaiGet] ${res.body}');
+      } else {
+        HttpWrapper.cacheResponse[url] = res;
+      }
     }
 
     throttler.release();
