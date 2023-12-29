@@ -9,7 +9,7 @@ import { CommonModule } from './common/common.module';
 import { CommentModule } from './comment/comment.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { RankModule } from './rank/rank.module';
+import { ViewModule } from './view/view.module';
 import { RedisModule } from './redis/redis.module';
 import * as Joi from 'joi';
 
@@ -49,7 +49,7 @@ import * as Joi from 'joi';
     CommentModule,
     UserModule,
     AuthModule,
-    RankModule,
+    ViewModule,
     RedisModule,
   ],
   controllers: [AppController],
