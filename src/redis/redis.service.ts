@@ -25,4 +25,16 @@ export class RedisService {
   ): Promise<string[]> {
     return await this.redis.zrevrange(group, offset, count, 'WITHSCORES');
   }
+
+  async zincrby(
+    group: string,
+    increment: number,
+    member: number,
+  ): Promise<string> {
+    return await this.redis.zincrby(group, increment, member);
+  }
+
+  async setex(group: string, seconds: number, value: string): Promise<void> {
+    await this.redis.setex(group, seconds, value);
+  }
 }
