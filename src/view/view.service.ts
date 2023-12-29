@@ -9,13 +9,18 @@ export class ViewService {
   constructor(private redisService: RedisService) {}
 
   async getView(dto: ViewGetRequestDto): Promise<ViewGetResponseDto> {
-    let v = await this.redisService.zrevrange_by_score(
+    let query = await this.redisService.zrevrange_by_score(
       dto.type ?? 'daily',
       dto.offset,
       dto.count,
     );
+
+    let result = [];
+    for (var i = 0; i < query.length; i += 2)
+      result.push([parseInt(query[i]), parseInt(query[i + 1])]);
+
     return {
-      test: v,
+      result: result,
     };
   }
 
