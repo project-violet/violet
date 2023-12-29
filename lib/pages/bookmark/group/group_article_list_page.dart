@@ -302,7 +302,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             break;
           }
         }
-        result[i] = (article)!;
+        if(article != null){
+          result[i] = article!;
+        }
         queryResult = result;
         _applyFilter();
         _rebuild();
