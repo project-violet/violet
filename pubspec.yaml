@@ -87,7 +87,7 @@ dependencies:
   flutter_typeahead: ^4.0.0
   flutter_js: ^0.8.0
   flutter_windowmanager: ^0.2.0
-  fluttertoast: ^8.0.9
+  fluttertoast: ^8.2.4
   freezed_annotation:
   get: ^4.6.6
   gradient_widgets: ^0.6.0

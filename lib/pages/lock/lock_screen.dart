@@ -339,6 +339,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
           isWarning: false,
           msg: Translations.of(context).trans('pinisregistered'),
         ),
+        ignorePointer: true,
         gravity: ToastGravity.BOTTOM,
         toastDuration: const Duration(seconds: 4),
       );
