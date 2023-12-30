@@ -313,6 +313,14 @@ class HentaiManager {
                   throw '[getImageProvider][EHentai] ID: ${qr.id()} CODE: ${res.statusCode}';
                 }
                 final html = res.body;
+                if (html
+                    .contains('This gallery has been removed or is unavailable.')) {
+                  throw '[getImageProvider][EHentai] ID:${qr.id()} NOT_AVAILABLE';
+                }
+                if (html
+                    .contains('Your IP address has been temporarily banned for excessive pageloads.')) {
+                  throw '[getImageProvider][EHentai] ID:${qr.id()} RATE_LIMIT';
+                }
                 var article = EHParser.parseArticleData(html);
                 return EHentaiImageProvider(
                   count: article.length,
@@ -339,6 +347,14 @@ class HentaiManager {
                   throw '[getImageProvider][ExHentai] ID: ${qr.id()} CODE: ${res.statusCode}';
                 }
                 final html = res.body;
+                if (html
+                    .contains('This gallery has been removed or is unavailable.')) {
+                  throw '[getImageProvider][ExHentai] ID:${qr.id()} NOT_AVAILABLE';
+                }
+                if (html
+                    .contains('Your IP address has been temporarily banned for excessive pageloads.')) {
+                  throw '[getImageProvider][ExHentai] ID:${qr.id()} RATE_LIMIT';
+                }
                 var article = EHParser.parseArticleData(html);
                 return EHentaiImageProvider(
                   count: article.length,

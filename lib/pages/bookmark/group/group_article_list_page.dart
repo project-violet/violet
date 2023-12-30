@@ -120,6 +120,14 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       throw '[_tryGetArticleFromEhentai] ID:${id} CODE:${res.statusCode}';
     }
     final html = res.body;
+    if (html
+        .contains('This gallery has been removed or is unavailable.')) {
+      throw '[_tryGetArticleFromEhentai] ID:${id} NOT_AVAILABLE';
+    }
+    if (html
+        .contains('Your IP address has been temporarily banned for excessive pageloads.')) {
+      throw '[_tryGetArticleFromEhentai] ID:${id} RATE_LIMIT';
+    }
     final articleEh = EHParser.parseArticleData(html);
     List<String> tags = [];
     List<String> series = [];
@@ -176,6 +184,14 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       throw '[_tryGetArticleFromExhentai] ID:${id} CODE:${res.statusCode}';
     }
     final html = res.body;
+    if (html
+        .contains('This gallery has been removed or is unavailable.')) {
+      throw '[_tryGetArticleFromExhentai] ID:${id} NOT_AVAILABLE';
+    }
+    if (html
+        .contains('Your IP address has been temporarily banned for excessive pageloads.')) {
+      throw '[_tryGetArticleFromExhentai] ID:${id} RATE_LIMIT';
+    }
     final articleEh = EHParser.parseArticleData(html);
     List<String> tags = [];
     List<String> series = [];
