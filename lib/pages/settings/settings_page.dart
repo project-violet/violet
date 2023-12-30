@@ -26,6 +26,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/component/eh/eh_bookmark.dart';
+import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/database.dart';
@@ -2386,8 +2387,8 @@ class _SettingsPageState extends State<SettingsPage>
               if (dialog == 1) {
                 var cookie = await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const LoginScreen()));
-                if(result != null){
-                  final ck = result ?? '';
+                if(cookie != null){
+                  final ck = cookie ?? '';
                   await prefs.setString('eh_cookies', ck);
                   if(!(await EHSession.hasSkCookie())){
                     await EHSession.refreshEhentaiCookie();
