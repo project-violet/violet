@@ -284,20 +284,21 @@ class HentaiManager {
       final v4 = ScriptManager.enableV4;
 
       for (int i = 0; i < route.length; i++) {
-        var ehash;
+        var eh_ehash;
+        var ex_ehash;
         try {
           switch (route[i]) {
             case 'EHentai':
               if (qr.ehash() == null) {
                 try {
-                  ehash = await EHSession.getEHashById('${qr.id()}','e-hentai.org');
+                  eh_ehash = await EHSession.getEHashById('${qr.id()}','e-hentai.org');
                 } catch(_){
                   rethrow;
                 }
               }
-              if (qr.ehash() != null || ehash != null) {
+              if (qr.ehash() != null || eh_ehash != null) {
                 var html = await EHSession.requestString(
-                    'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? ehash)}/?p=0&inline_set=ts_m');
+                    'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? eh_ehash)}/?p=0&inline_set=ts_m');
                 var article = EHParser.parseArticleData(html);
                 return EHentaiImageProvider(
                   count: article.length,
@@ -305,18 +306,18 @@ class HentaiManager {
                   pagesUrl: List<String>.generate(
                       (article.length / 40).ceil(),
                       (index) =>
-                          'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? ehash)}/?p=$index'),
+                          'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? eh_ehash)}/?p=$index'),
                   isEHentai: true,
                 );
               }
               break;
             case 'ExHentai':
               if (qr.ehash() == null) {
-                ehash = await EHSession.getEHashById('${qr.id()}','exhentai.org');
+                ex_ehash = await EHSession.getEHashById('${qr.id()}','exhentai.org');
               }
-              if (qr.ehash() != null || ehash != null) {
+              if (qr.ehash() != null || ex_ehash != null) {
                 var html = await EHSession.requestString(
-                    'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? ehash)}/?p=0&inline_set=ts_m');
+                    'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? ex_ehash)}/?p=0&inline_set=ts_m');
                 var article = EHParser.parseArticleData(html);
                 return EHentaiImageProvider(
                   count: article.length,
@@ -324,7 +325,7 @@ class HentaiManager {
                   pagesUrl: List<String>.generate(
                       (article.length / 40).ceil(),
                       (index) =>
-                          'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? ehash)}/?p=$index'),
+                          'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? ex_ehash)}/?p=$index'),
                   isEHentai: false,
                 );
               }
