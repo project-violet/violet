@@ -23,7 +23,7 @@ import 'package:violet/pages/viewer/vertical_webview_viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/script/script_manager.dart';
-import 'package:violet/server/violet.dart';
+import 'package:violet/server/v1/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/util/call_once.dart';
 import 'package:violet/util/evict_image_urls.dart';

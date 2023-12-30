@@ -5,7 +5,7 @@ import 'dart:convert';
 
 import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
-import 'package:violet/server/violet.dart';
+import 'package:violet/server/v1/violet.dart';
 import 'package:violet/server/wsalt.dart';
 
 class VioletCommunitySession {

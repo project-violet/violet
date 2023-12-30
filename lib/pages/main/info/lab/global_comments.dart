@@ -11,7 +11,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/main/info/lab/recent_user_record.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
-import 'package:violet/server/community/anon.dart';
+import 'package:violet/server/v1/community/anon.dart';
 import 'package:violet/settings/settings.dart';
 
 class LabGlobalComments extends StatefulWidget {

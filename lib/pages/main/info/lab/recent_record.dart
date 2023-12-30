@@ -14,7 +14,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/segment/card_panel.dart';
-import 'package:violet/server/violet.dart';
+import 'package:violet/server/v1/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 

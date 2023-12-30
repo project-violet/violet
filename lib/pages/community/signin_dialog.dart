@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:violet/other/dialogs.dart';
-import 'package:violet/server/community/session.dart';
+import 'package:violet/server/v1/community/session.dart';
 import 'package:violet/settings/settings.dart';
 
 class SignInDialog extends StatefulWidget {

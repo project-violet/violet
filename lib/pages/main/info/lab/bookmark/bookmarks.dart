@@ -10,7 +10,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/main/info/lab/bookmark/bookmarks_article_list.dart';
 import 'package:violet/pages/main/info/lab/bookmark/bookmarks_records.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
-import 'package:violet/server/violet.dart';
+import 'package:violet/server/v1/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 

@@ -8,8 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/community/signin_dialog.dart';
 import 'package:violet/pages/community/signup_dialog.dart';
-import 'package:violet/server/community/article.dart';
-import 'package:violet/server/community/session.dart';
+import 'package:violet/server/v1/community/article.dart';
+import 'package:violet/server/v1/community/session.dart';
 import 'package:violet/settings/settings.dart';
 
 class CommunityPage extends StatefulWidget {
