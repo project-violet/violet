@@ -306,19 +306,18 @@ class HentaiManager {
               }
               if (qr.ehash() != null || eh_ehash != null) {
                 final res = await http.get(
-                  'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? eh_ehash)}/?p=0&inline_set=ts_m',
-                  headers: { 'Cookie': prefs.getString('eh_cookies') ?? '' }
-                );
-                if(res.statusCode != 200){
+                    'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? eh_ehash)}/?p=0&inline_set=ts_m',
+                    headers: {'Cookie': prefs.getString('eh_cookies') ?? ''});
+                if (res.statusCode != 200) {
                   throw '[getImageProvider][EHentai] ID: ${qr.id()} CODE: ${res.statusCode}';
                 }
                 final html = res.body;
-                if (html
-                    .contains('This gallery has been removed or is unavailable.')) {
+                if (html.contains(
+                    'This gallery has been removed or is unavailable.')) {
                   throw '[getImageProvider][EHentai] ID:${qr.id()} NOT_AVAILABLE';
                 }
-                if (html
-                    .contains('Your IP address has been temporarily banned for excessive pageloads.')) {
+                if (html.contains(
+                    'Your IP address has been temporarily banned for excessive pageloads.')) {
                   throw '[getImageProvider][EHentai] ID:${qr.id()} RATE_LIMIT';
                 }
                 var article = EHParser.parseArticleData(html);
@@ -340,19 +339,18 @@ class HentaiManager {
               }
               if (qr.ehash() != null || ex_ehash != null) {
                 final res = await http.get(
-                  'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? ex_ehash)}/?p=0&inline_set=ts_m',
-                  headers: { 'Cookie': prefs.getString('eh_cookies') ?? '' }
-                );
-                if(res.statusCode != 200){
+                    'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? ex_ehash)}/?p=0&inline_set=ts_m',
+                    headers: {'Cookie': prefs.getString('eh_cookies') ?? ''});
+                if (res.statusCode != 200) {
                   throw '[getImageProvider][ExHentai] ID: ${qr.id()} CODE: ${res.statusCode}';
                 }
                 final html = res.body;
-                if (html
-                    .contains('This gallery has been removed or is unavailable.')) {
+                if (html.contains(
+                    'This gallery has been removed or is unavailable.')) {
                   throw '[getImageProvider][ExHentai] ID:${qr.id()} NOT_AVAILABLE';
                 }
-                if (html
-                    .contains('Your IP address has been temporarily banned for excessive pageloads.')) {
+                if (html.contains(
+                    'Your IP address has been temporarily banned for excessive pageloads.')) {
                   throw '[getImageProvider][ExHentai] ID:${qr.id()} RATE_LIMIT';
                 }
                 var article = EHParser.parseArticleData(html);
