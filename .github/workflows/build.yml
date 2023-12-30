@@ -1,7 +1,5 @@
 name: Build android/ios
 on:
-  push:
-    branches: [ dev ]
   workflow_dispatch:
   merge_group:
 
