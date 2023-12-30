@@ -26,7 +26,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/component/eh/eh_bookmark.dart';
-import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/database.dart';
@@ -64,6 +63,7 @@ import 'package:violet/platform/misc.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
+import 'package:violet/util/helper.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
@@ -803,29 +803,29 @@ class _SettingsPageState extends State<SettingsPage>
             ),
           if (!Settings.liteMode) _buildDivider(),
           // if (!Settings.liteMode)
-            InkWell(
-              child: ListTile(
-                leading: Icon(Mdi.compassOutline, color: Settings.majorColor),
-                title: const Text('Pure Search'),
-                trailing: Switch(
-                  value: Settings.searchPure,
-                  onChanged: (newValue) async {
-                    await Settings.setSearchPure(newValue);
-                    setState(() {
-                      _shouldReload = true;
-                    });
-                  },
-                  activeTrackColor: Settings.majorColor,
-                  activeColor: Settings.majorAccentColor,
-                ),
+          InkWell(
+            child: ListTile(
+              leading: Icon(Mdi.compassOutline, color: Settings.majorColor),
+              title: const Text('Pure Search'),
+              trailing: Switch(
+                value: Settings.searchPure,
+                onChanged: (newValue) async {
+                  await Settings.setSearchPure(newValue);
+                  setState(() {
+                    _shouldReload = true;
+                  });
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
               ),
-              onTap: () async {
-                await Settings.setSearchPure(!Settings.searchPure);
-                setState(() {
-                  _shouldReload = true;
-                });
-              },
             ),
+            onTap: () async {
+              await Settings.setSearchPure(!Settings.searchPure);
+              setState(() {
+                _shouldReload = true;
+              });
+            },
+          ),
           _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
@@ -2352,7 +2352,7 @@ class _SettingsPageState extends State<SettingsPage>
 
               final prefs = await SharedPreferences.getInstance();
               if (dialog == 1) {
-                var result = await Navigator.of(context).push(MaterialPageRoute(
+                var cookie = await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const LoginScreen()));
                 if(result != null){
                   final ck = result ?? '';
@@ -2365,7 +2365,7 @@ class _SettingsPageState extends State<SettingsPage>
                   }
                 }
 
-                if (result != null) {
+                if (cookie != null) {
                   flutterToast.showToast(
                     child: const ToastWrapper(
                       isCheck: true,
@@ -2379,8 +2379,7 @@ class _SettingsPageState extends State<SettingsPage>
                 var cookie = prefs.getString('eh_cookies');
 
                 var sController = TextEditingController(
-                    text:
-                        cookie != null ? parseCookies(cookie)['sk'] : '');
+                    text: cookie != null ? parseCookies(cookie)['sk'] : '');
                 var imiController = TextEditingController(
                     text: cookie != null
                         ? parseCookies(cookie)['ipb_member_id']

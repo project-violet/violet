@@ -41,8 +41,10 @@ class SyncInfoRecord {
 }
 
 class SyncManager {
-  static String syncInfoURL(String branch){
-    return 'https://raw.githubusercontent.com/violet-dev/sync-data/'+(branch)+'/syncversion.txt';
+  static String syncInfoURL(String branch) {
+    return 'https://raw.githubusercontent.com/violet-dev/sync-data/' +
+        (branch) +
+        '/syncversion.txt';
   }
 
   static bool firstSync = false;
@@ -51,15 +53,14 @@ class SyncManager {
   static const ignoreUserAcceptThreshold = 1024 * 1024 * 10; // 10MB
   static List<SyncInfoRecord>? _rows;
   static int requestSize = 0;
-  
+
   static Future<void> checkSyncLatest(bool _throw) async {
     await checkSync('master', _throw);
   }
-  
+
   static Future<void> checkSyncOld(bool _throw) async {
     await checkSync('d2bd5ae068efb26eb4689e5d6281a590e59fc4e2', _throw);
   }
-
 
   static Future<void> checkSync(String branch, bool _throw) async {
     try {
@@ -76,7 +77,7 @@ class SyncManager {
         latest = 0;
       } else if (lastDB != null &&
           DateTime.now().difference(DateTime.parse(lastDB)).inDays > 7) {
-          syncRequire = true;
+        syncRequire = true;
       }
 
       // lines: [old ... latest]
@@ -134,7 +135,7 @@ class SyncManager {
     } catch (e, st) {
       Logger.error('[Sync-check] E: $e\n'
           '$st');
-      if(_throw) throw e;
+      if (_throw) throw e;
     }
   }
 

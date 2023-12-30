@@ -46,7 +46,7 @@ class CustomShrinkWrappingViewport extends CustomViewport {
     super.center,
     super.cacheExtent,
     super.slivers,
-  })  : _anchor = anchor;
+  }) : _anchor = anchor;
 
   // [Viewport] enforces constraints on [Viewport.anchor], so we need our own
   // version.
@@ -121,7 +121,7 @@ class CustomRenderShrinkWrappingViewport extends CustomRenderViewport {
     super.children,
     super.center,
     super.cacheExtent,
-  })  : _anchor = anchor;
+  }) : _anchor = anchor;
 
   double _anchor;
 

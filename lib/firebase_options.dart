@@ -73,7 +73,8 @@ class DefaultFirebaseOptions {
     projectId: 'real-violet-app',
     databaseURL: 'https://real-violet-app.firebaseio.com',
     storageBucket: 'real-violet-app.appspot.com',
-    iosClientId: '774645671791-kpjcq7n5g2ap84nco7j2iab603tkrf0m.apps.googleusercontent.com',
+    iosClientId:
+        '774645671791-kpjcq7n5g2ap84nco7j2iab603tkrf0m.apps.googleusercontent.com',
     iosBundleId: 'xyz.project.violet',
   );
 }

@@ -84,24 +84,24 @@ class HentaiManager {
   }
   static Future<SearchResult> idSearchHitomi(String what) async {
     final queryString = HitomiManager.translate2query(what);
-    var queryResult = (await (await DataBaseManager.getInstance())
+    final queryResult = (await (await DataBaseManager.getInstance())
             .query('$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0'))
         .map((e) => QueryResult(result: e))
         .toList();
-    int no = int.parse(what);
+    final id = int.parse(what);
 
     if (queryResult.isNotEmpty) {
       return SearchResult(results: queryResult, offset: -1);
     }
 
     try {
-      var headers =
-          await ScriptManager.runHitomiGetHeaderContent(no.toString());
-      var hh = await http.get('https://ltn.hitomi.la/galleryblock/$no.html',
+      final headers =
+          await ScriptManager.runHitomiGetHeaderContent(id.toString());
+      final hh = await http.get('https://ltn.hitomi.la/galleryblock/$id.html',
           headers: headers);
-      var article = await HitomiParser.parseGalleryBlock(hh.body);
-      var meta = {
-        'Id': no,
+      final article = await HitomiParser.parseGalleryBlock(hh.body);
+      final meta = {
+        'Id': id,
         'Title': article['Title'],
         'Artists': article['Artists']?.join('|'),
         'Language': article['Language'],

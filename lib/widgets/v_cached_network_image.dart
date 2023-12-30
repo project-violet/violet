@@ -224,7 +224,7 @@ class VCachedNetworkImage extends StatelessWidget {
     this.cacheKey,
     this.maxWidthDiskCache,
     this.maxHeightDiskCache,
-  })  : _image = CachedNetworkImageProvider(
+  }) : _image = CachedNetworkImageProvider(
           imageUrl,
           headers: httpHeaders,
           cacheManager: cacheManager,

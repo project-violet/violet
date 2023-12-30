@@ -35,6 +35,7 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
+import 'package:violet/util/helper.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
@@ -156,7 +157,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
 
   Future<void> _buildQueryResults() async {
     var articles = <int>[];
-    for (var item in items) {
+    for (final item in items) {
       if (item.state() == 0 && int.tryParse(item.url()) != null) {
         articles.add(int.parse(item.url()));
         itemsMap[item.id()] = item;
@@ -166,39 +167,42 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
     queryRaw += 'Id IN (${articles.map((e) => e).join(',')})';
 
-    final value = await QueryManager.query(queryRaw);
-
-    var qr = <int, QueryResult>{};
-    for (var element in value.results!) {
-      qr[element.id()] = element;
-    }
-
-    var result = <QueryResult>[];
-    for (var element in articles) {
-      if (qr[element] == null) {
-        try {
-          var headers =
-              await ScriptManager.runHitomiGetHeaderContent(element.toString());
-          var hh = await http.get(
-            'https://ltn.hitomi.la/galleryblock/$element.html',
-            headers: headers,
-          );
-          var article = await HitomiParser.parseGalleryBlock(hh.body);
-          var meta = {
-            'Id': element,
-            'Title': article['Title'],
-            'Artists': article['Artists'].join('|'),
-          };
-          result.add(QueryResult(result: meta));
-        } catch (_) {}
-      } else {
-        result.add(qr[element]!);
+    QueryManager.query(queryRaw).then((value) async {
+      var qr = <int, QueryResult>{};
+      for (final element in value.results!) {
+        qr[element.id()] = element;
       }
-    }
 
-    for (var element in result) {
-      queryResults[element.id()] = element;
-    }
+      var result = <QueryResult>[];
+      for (final element in articles) {
+        if (qr[element] == null) {
+          await catchUnwind(() async {
+            final headers =
+                await ScriptManager.runHitomiGetHeaderContent('$element');
+            final res = await http.get(
+              'https://ltn.hitomi.la/galleryblock/$element.html',
+              headers: headers,
+            );
+            final article = await HitomiParser.parseGalleryBlock(res.body);
+            final meta = {
+              'Id': element,
+              'Title': article['Title'],
+              'Artists': article['Artists'].join('|'),
+            };
+
+            qr[element] = QueryResult(result: meta);
+          });
+        }
+
+        if (qr[element] != null) {
+          result.add(qr[element]!);
+        }
+      }
+
+      for (final element in result) {
+        queryResults[element.id()] = element;
+      }
+    });
   }
 
   final ScrollController _scrollController = ScrollController();
