@@ -186,8 +186,7 @@ class _LabSettingState extends State<LabSetting> {
             child: ListTile(
               leading: Icon(MdiIcons.flask, color: Settings.majorColor),
               title: const Text('In Viewer Message Search'),
-              subtitle: const Text(
-                  'Support message search on viewer mode.'),
+              subtitle: const Text('Support message search on viewer mode.'),
               trailing: Switch(
                 value: Settings.inViewerMessageSearch,
                 onChanged: (newValue) async {
