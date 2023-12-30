@@ -10,19 +10,19 @@ import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
 
 class EHSession {
-  static Map<String, String> ex_ehashs = Map<String, String>();
-  static Map<String, String> eh_ehashs = Map<String, String>();
-  static Map<String, bool> eh_ehash_could_not_found = Map<String, bool>();
-  static Map<String, bool> ex_ehash_could_not_found = Map<String, bool>();
-  static Map<String, bool> ehash_lock = Map<String, bool>();
+  static Map<String, String> exEhashs = Map<String, String>();
+  static Map<String, String> ehEhashs = Map<String, String>();
+  static Map<String, bool> ehEhashCouldNotFound = Map<String, bool>();
+  static Map<String, bool> exEhashCouldNotFound = Map<String, bool>();
+  static Map<String, bool> ehashLock = Map<String, bool>();
   static EHSession? tryLogin(String id, String pass) {
     return null;
   }
 
   static Future<void> refreshExhentaiCookie() async {
     final prefs = await SharedPreferences.getInstance();
-    var ck_tmp = prefs.getString('eh_cookies');
-    var ck = ck_tmp ?? '';
+    var ckTmp = prefs.getString('eh_cookies');
+    var ck = ckTmp ?? '';
     ck = ck
         .split(';')
         .where((cookieKeyVal) => cookieKeyVal.contains('='))
@@ -58,8 +58,8 @@ class EHSession {
 
   static Future<void> refreshEhentaiCookie() async {
     final prefs = await SharedPreferences.getInstance();
-    var ck_tmp = prefs.getString('eh_cookies');
-    var ck = ck_tmp ?? '';
+    var ckTmp = prefs.getString('eh_cookies');
+    var ck = ckTmp ?? '';
     ck = ck
         .split(';')
         .where((cookieKeyVal) => cookieKeyVal.contains('='))
@@ -94,8 +94,8 @@ class EHSession {
 
   static Future<bool> hasIgneousCookie() async {
     final prefs = await SharedPreferences.getInstance();
-    final ck_tmp = prefs.getString('eh_cookies');
-    var ck = ck_tmp ?? '';
+    final ckTmp = prefs.getString('eh_cookies');
+    var ck = ckTmp ?? '';
     if (!ck.contains(';')) return false;
     var _has = false;
     ck
@@ -117,8 +117,8 @@ class EHSession {
 
   static Future<bool> hasSkCookie() async {
     final prefs = await SharedPreferences.getInstance();
-    final ck_tmp = prefs.getString('eh_cookies');
-    var ck = ck_tmp ?? '';
+    final ckTmp = prefs.getString('eh_cookies');
+    var ck = ckTmp ?? '';
     if (!ck.contains(';')) return false;
     var _has = false;
     ck
@@ -165,53 +165,53 @@ class EHSession {
   static Future<String> getEHashById(String id, [String? from]) async {
     switch (from) {
       case 'e-hentai.org':
-        if (eh_ehash_could_not_found[id] == true) {
+        if (ehEhashCouldNotFound[id] == true) {
           Logger.warning(
               '[getEHashById] could not found ${id}`s ehash from ${from}');
           throw 'EHASH_LOCK';
         }
         break;
       case 'exhentai.org':
-        if (ex_ehash_could_not_found[id] == true) {
+        if (exEhashCouldNotFound[id] == true) {
           Logger.warning(
               '[getEHashById] could not found ${id}`s ehash from ${from}');
           throw 'EHASH_LOCK';
         }
         break;
       default:
-        if (eh_ehash_could_not_found[id] == true &&
-            ex_ehash_could_not_found == true) {
+        if (ehEhashCouldNotFound[id] == true &&
+            exEhashCouldNotFound == true) {
           Logger.warning('[getEHashById] could not found ${id}`s ehash');
           throw 'EHASH_LOCK';
         }
         break;
     }
     if (id.isEmpty) throw Error();
-    if (ehash_lock[id] == true) {
+    if (ehashLock[id] == true) {
       // Logger.warning('[getEHashById] ${id} is processing');
       throw 'EHASH_LOCK';
     } else {
-      ehash_lock[id] = true;
+      ehashLock[id] = true;
     }
     String? ehash;
     Map<String, String> ehashs = Map<String, String>();
     switch (from) {
       case 'e-hentai.org':
-        ehashs = eh_ehashs;
+        ehashs = ehEhashs;
         break;
       case 'exhentai.org':
-        ehashs = ex_ehashs;
+        ehashs = exEhashs;
         break;
       default:
         if (from == null) {
           ehashs = Map<String, String>();
-          ehashs.addAll(ex_ehashs);
-          ehashs.addAll(eh_ehashs);
+          ehashs.addAll(exEhashs);
+          ehashs.addAll(ehEhashs);
         }
         break;
     }
     if (ehashs[id]?.isNotEmpty ?? false) {
-      ehash_lock[id] = false;
+      ehashLock[id] = false;
       return ehashs[id] ?? '';
     }
     try {
@@ -221,9 +221,9 @@ class EHSession {
         // next?${id + 1} search for {e-/ex}hentai.org
         if (ehash != null) return;
         try {
-          final list_html = await EHSession.requestString(
+          final listHtml = await EHSession.requestString(
               'https://${host}/?next=${(int.parse(id) + 1)}');
-          final doc = parse(list_html);
+          final doc = parse(listHtml);
           final _url =
               doc.querySelector('a[href*="/g/${id}"]')?.attributes['href'] ??
                   '';
@@ -233,31 +233,31 @@ class EHSession {
               .lastWhere((e) => e.trim().isNotEmpty)
               .trim();
           if (ehash == null && _ehash.isNotEmpty) {
-            if (host.contains('exhentai')) ehashs = ex_ehashs;
-            if (host.contains('e-hentai')) ehashs = eh_ehashs;
+            if (host.contains('exhentai')) ehashs = exEhashs;
+            if (host.contains('e-hentai')) ehashs = ehEhashs;
             ehash = _ehash;
           }
         } catch (e, st) {}
       });
     } catch (_) {}
     if (ehash != null) {
-      ehash_lock[id] = false;
+      ehashLock[id] = false;
       return (ehashs[id] = (ehash ?? ''));
     }
     if (ehash == null && (from?.contains('e-hentai.org') ?? true)) {
       // duckduckgo search (only for search e-hentai.org)
-      ehashs = eh_ehashs;
+      ehashs = ehEhashs;
       try {
         final ddg = DuckDuckGoSearch();
-        final search_res =
+        final searchResponse =
             await ddg.searchProxied('site:e-hentai.org in-url:/g/${id}/');
-        final search_html = search_res.body;
-        var found_encoded_urls = parse(search_res.body)
+        final searchHtml = searchResponse.body;
+        var foundEncodedUrls = parse(searchResponse.body)
             .querySelectorAll('a[href*="${Uri.encodeComponent('/g/${id}')}"]')
-            .map((encoded_url) => encoded_url.attributes['href']?.trim() ?? '')
-            .where((encoded_url) => encoded_url.trim().isNotEmpty);
+            .map((encodedUrl) => encodedUrl.attributes['href']?.trim() ?? '')
+            .where((encodedUrl) => encodedUrl.trim().isNotEmpty);
         var url = '';
-        found_encoded_urls
+        foundEncodedUrls
             ?.map((url) => Uri.parse(url ?? '').queryParameters)
             ?.forEach((element) {
           element.forEach((key, value) {
@@ -270,22 +270,22 @@ class EHSession {
       } catch (_) {}
     }
     if (ehash != null) {
-      ehash_lock[id] = false;
+      ehashLock[id] = false;
       return ehash ?? '';
     }
     switch (from) {
       case 'e-hentai.org':
-        eh_ehash_could_not_found[id] = true;
+        ehEhashCouldNotFound[id] = true;
         break;
       case 'exhentai.org':
-        ex_ehash_could_not_found[id] = true;
+        exEhashCouldNotFound[id] = true;
         break;
       default:
-        eh_ehash_could_not_found[id] = true;
-        ex_ehash_could_not_found[id] = true;
+        ehEhashCouldNotFound[id] = true;
+        exEhashCouldNotFound[id] = true;
         break;
     }
-    ehash_lock[id] = false;
+    ehashLock[id] = false;
     Logger.warning('[getEHashById] Could not found hash of ${id}');
     throw 'NOT_FOUND_EHASH';
   }

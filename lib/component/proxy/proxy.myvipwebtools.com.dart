@@ -3,19 +3,19 @@ import 'dart:io';
 
 import 'package:html/parser.dart';
 import 'package:violet/log/log.dart';
-import 'package:http/http.dart' as _http;
+import 'package:http/http.dart' as http;
 
 class ProxyHttpRequest {
   String host = 'proxy.myvipwebtools.com';
   Map<String, String> cookies = Map<String, String>();
 
   Future<String> getCSRF(String host) async {
-    var res = await _http.get(
+    var res = await http.get(
       Uri.parse('https://www-${host}/'),
     );
     while (true) {
       if (res?.headers?['location']?.isNotEmpty ?? false) {
-        res = await _http.get(Uri.parse(res.headers['location'] ?? ''));
+        res = await http.get(Uri.parse(res.headers['location'] ?? ''));
       } else {
         break;
       }
@@ -52,11 +52,11 @@ class ProxyHttpRequest {
             final cookieVal =
                 cookieKeyVal.substring(cookieKeyVal.indexOf('=') + 1).trim();
             if (cookieVal.isEmpty) return;
-            final ck_tmp = ck
+            final ckTmp = ck
                 .split(';')
                 .where((c) => c.trim().startsWith('${cookieKey}='));
 
-            if (ck_tmp.isNotEmpty) {
+            if (ckTmp.isNotEmpty) {
               // when old cookie is exist
               ck = ck.split(';').where((c) => c.trim().isNotEmpty).map((c) {
                 final cKey = c.substring(0, c.indexOf('=')).trim();
@@ -67,10 +67,10 @@ class ProxyHttpRequest {
               }).join(';');
             } else {
               // Set new cookie where not exist
-              var ck_arr =
+              var ckArr =
                   ck.split(';').where((c) => c.trim().isNotEmpty).toList();
-              ck_arr.add('${cookieKey}=${cookieVal}');
-              ck = ck_arr.join(';');
+              ckArr.add('${cookieKey}=${cookieVal}');
+              ck = ckArr.join(';');
             }
             ck = ck.split(';').where((c) => c.trim().isNotEmpty).join(';');
           });
@@ -87,49 +87,49 @@ class ProxyHttpRequest {
     if (host == null) {
       throw Error();
     }
-    final res_requests = await _http.post(
+    final resRequests = await http.post(
         Uri.parse('https://www-${host}/requests'),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: 'url=${Uri.encodeComponent((target))}&csrf=${csrf}');
-    await setCookie(host, res_requests.headers);
-    return res_requests.headers['location'] ?? '';
+    await setCookie(host, resRequests.headers);
+    return resRequests.headers['location'] ?? '';
   }
 
   Future<void> _cpi(String location) async {
     if (host == null) {
       throw Error();
     }
-    final cpi_url = location;
-    if (cpi_url == null) {
-      Logger.error('cpi_url is null');
+    final cpiUrl = location;
+    if (cpiUrl == null) {
+      Logger.error('cpiUrl is null');
       throw Error();
     }
-    final res_cpi = await _http
-        .get(Uri.parse(cpi_url), headers: {'Cookie': cookies[host] ?? ''});
-    await setCookie(host, res_cpi.headers);
+    final resCpi = await http
+        .get(Uri.parse(cpiUrl), headers: {'Cookie': cookies[host] ?? ''});
+    await setCookie(host, resCpi.headers);
   }
 
-  Future<_http.Response> _get(String target,
+  Future<http.Response> _get(String target,
       {Map<String, String>? headers}) async {
     if (host == null) {
       throw Error();
     }
-    final target_host = Uri.parse(target).host;
-    final target_path = Uri.parse(target).path;
-    final target_protocol = target.startsWith('http:') ? 'http' : 'https';
-    final __cpo =
-        base64.encode(utf8.encode('${target_protocol}://${target_host}'));
-    var target_query = '?';
+    final targetHost = Uri.parse(target).host;
+    final targetPath = Uri.parse(target).path;
+    final targetProtocol = target.startsWith('http:') ? 'http' : 'https';
+    final cpo =
+        base64.encode(utf8.encode('${targetProtocol}://${targetHost}'));
+    var targetQuery = '?';
     Uri.parse(target).queryParameters.forEach((key, value) {
-      if (target_query != '?') {
-        target_query += '&';
+      if (targetQuery != '?') {
+        targetQuery += '&';
       }
-      target_query += '${key}=${Uri.encodeComponent(value)}';
+      targetQuery += '${key}=${Uri.encodeComponent(value)}';
     });
-    if (target_query != '?') {
-      target_query += '&';
+    if (targetQuery != '?') {
+      targetQuery += '&';
     }
-    target_query += '__cpo=${__cpo}';
+    targetQuery += '__cpo=${cpo}';
 
     var _headers = headers ?? {};
     var _cks = headers?['Cookie'] ?? '';
@@ -138,24 +138,24 @@ class ProxyHttpRequest {
             final cKV = _cKV.trim();
             final cK = cKV.substring(0, cKV.indexOf('=')).trim();
             final cV = cKV.substring(cKV.indexOf('=') + 1).trim();
-            return '${cK}@${target_host}=${cV}';
+            return '${cK}@${targetHost}=${cV}';
           }).join(';') ??
           '';
     }
     _headers['Cookie'] = [(_cks), (cookies[host] ?? '')]
         .where((c) => c.trim().isNotEmpty)
         .join(';');
-    final res = await _http.get(
-        Uri.parse('https://${host}${target_path}${target_query}'),
+    final res = await http.get(
+        Uri.parse('https://${host}${targetPath}${targetQuery}'),
         headers: _headers);
     return res;
   }
 
-  Future<_http.Response> get(String target,
+  Future<http.Response> get(String target,
       {Map<String, String>? headers}) async {
     final csrf = await getCSRF(host);
-    final cpi_url = await _requests(target, csrf: csrf);
-    await _cpi(cpi_url);
+    final cpiUrl = await _requests(target, csrf: csrf);
+    await _cpi(cpiUrl);
     final res = await _get(target, headers: headers);
     return res;
   }

@@ -124,18 +124,18 @@ class HentaiManager {
     int no = int.parse(what);
 
     try {
-      var gallery_url, gallery_token;
-      gallery_token = await EHSession.getEHashById('${no}', 'e-hentai.org');
+      var galleryUrl, galleryToken;
+      galleryToken = await EHSession.getEHashById('${no}', 'e-hentai.org');
       var html = await EHSession.requestString(
-          'https://e-hentai.org/g/${no}/${gallery_token}/?p=0&inline_set=ts_m');
-      var article_eh = EHParser.parseArticleData(html);
+          'https://e-hentai.org/g/${no}/${galleryToken}/?p=0&inline_set=ts_m');
+      var articleEh = EHParser.parseArticleData(html);
       var meta = {
         'Id': no,
-        'Title': article_eh.title,
-        'EHash': gallery_token,
+        'Title': articleEh.title,
+        'EHash': galleryToken,
         'Artists':
-            article_eh.artist == null ? 'N/A' : article_eh.artist?.join('|'),
-        'Language': article_eh.language,
+            articleEh.artist == null ? 'N/A' : articleEh.artist?.join('|'),
+        'Language': articleEh.language,
       };
       return SearchResult(results: [QueryResult(result: meta)], offset: -1);
     } catch (e, st) {
@@ -154,18 +154,18 @@ class HentaiManager {
     int no = int.parse(what);
 
     try {
-      var gallery_url, gallery_token;
-      gallery_token = await EHSession.getEHashById('${no}', 'exhentai.org');
+      var galleryUrl, galleryToken;
+      galleryToken = await EHSession.getEHashById('${no}', 'exhentai.org');
       var html = await EHSession.requestString(
-          'https://exhentai.org/g/${no}/${gallery_token}/?p=0&inline_set=ts_m');
-      var article_eh = EHParser.parseArticleData(html);
+          'https://exhentai.org/g/${no}/${galleryToken}/?p=0&inline_set=ts_m');
+      var articleEh = EHParser.parseArticleData(html);
       var meta = {
         'Id': no,
-        'Title': article_eh.title,
-        'EHash': gallery_token,
+        'Title': articleEh.title,
+        'EHash': galleryToken,
         'Artists':
-            article_eh.artist == null ? 'N/A' : article_eh.artist?.join('|'),
-        'Language': article_eh.language,
+            articleEh.artist == null ? 'N/A' : articleEh.artist?.join('|'),
+        'Language': articleEh.language,
       };
       return SearchResult(results: [QueryResult(result: meta)], offset: -1);
     } catch (e, st) {
@@ -291,22 +291,22 @@ class HentaiManager {
       final v4 = ScriptManager.enableV4;
 
       for (int i = 0; i < route.length; i++) {
-        var eh_ehash;
-        var ex_ehash;
+        var ehEhash;
+        var exEhash;
         try {
           switch (route[i]) {
             case 'EHentai':
               if (qr.ehash() == null) {
                 try {
-                  eh_ehash = await EHSession.getEHashById(
+                  ehEhash = await EHSession.getEHashById(
                       '${qr.id()}', 'e-hentai.org');
                 } catch (_) {
                   rethrow;
                 }
               }
-              if (qr.ehash() != null || eh_ehash != null) {
+              if (qr.ehash() != null || ehEhash != null) {
                 final res = await http.get(
-                    'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? eh_ehash)}/?p=0&inline_set=ts_m',
+                    'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? ehEhash)}/?p=0&inline_set=ts_m',
                     headers: {'Cookie': prefs.getString('eh_cookies') ?? ''});
                 if (res.statusCode != 200) {
                   throw '[getImageProvider][EHentai] ID: ${qr.id()} CODE: ${res.statusCode}';
@@ -327,19 +327,19 @@ class HentaiManager {
                   pagesUrl: List<String>.generate(
                       (article.length / 40).ceil(),
                       (index) =>
-                          'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? eh_ehash)}/?p=$index'),
+                          'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? ehEhash)}/?p=$index'),
                   isEHentai: true,
                 );
               }
               break;
             case 'ExHentai':
               if (qr.ehash() == null) {
-                ex_ehash =
+                exEhash =
                     await EHSession.getEHashById('${qr.id()}', 'exhentai.org');
               }
-              if (qr.ehash() != null || ex_ehash != null) {
+              if (qr.ehash() != null || exEhash != null) {
                 final res = await http.get(
-                    'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? ex_ehash)}/?p=0&inline_set=ts_m',
+                    'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? exEhash)}/?p=0&inline_set=ts_m',
                     headers: {'Cookie': prefs.getString('eh_cookies') ?? ''});
                 if (res.statusCode != 200) {
                   throw '[getImageProvider][ExHentai] ID: ${qr.id()} CODE: ${res.statusCode}';
@@ -360,7 +360,7 @@ class HentaiManager {
                   pagesUrl: List<String>.generate(
                       (article.length / 40).ceil(),
                       (index) =>
-                          'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? ex_ehash)}/?p=$index'),
+                          'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? exEhash)}/?p=$index'),
                   isEHentai: false,
                 );
               }
