@@ -16,7 +16,7 @@ npm start dev
 ```
 
 ```sh
-java -jar swagger-codegen-cli.jar generate -i http://localhost:3000/api-docs-json -l dart -o ./api-dart
+java -jar swagger-codegen-cli.jar generate -i http://localhost:3000/api/v2/docs-json -l dart -o ./api-dart
 ```
 
 ## Run for Server
