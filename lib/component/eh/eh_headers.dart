@@ -10,11 +10,11 @@ import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
 
 class EHSession {
-  static Map<String, String> exEhashs = Map<String, String>();
-  static Map<String, String> ehEhashs = Map<String, String>();
-  static Map<String, bool> ehEhashCouldNotFound = Map<String, bool>();
-  static Map<String, bool> exEhashCouldNotFound = Map<String, bool>();
-  static Map<String, bool> ehashLock = Map<String, bool>();
+  static Map<String, String> exEhashs = <String, String>{};
+  static Map<String, String> ehEhashs = <String, String>{};
+  static Map<String, bool> ehEhashCouldNotFound = <String, bool>{};
+  static Map<String, bool> exEhashCouldNotFound = <String, bool>{};
+  static Map<String, bool> ehashLock = <String, bool>{};
   static EHSession? tryLogin(String id, String pass) {
     return null;
   }
@@ -194,7 +194,7 @@ class EHSession {
       ehashLock[id] = true;
     }
     String? ehash;
-    Map<String, String> ehashs = Map<String, String>();
+    Map<String, String> ehashs = <String, String>{};
     switch (from) {
       case 'e-hentai.org':
         ehashs = ehEhashs;
@@ -204,7 +204,7 @@ class EHSession {
         break;
       default:
         if (from == null) {
-          ehashs = Map<String, String>();
+          ehashs = <String, String>{};
           ehashs.addAll(exEhashs);
           ehashs.addAll(ehEhashs);
         }

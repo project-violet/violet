@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 class ProxyHttpRequest {
   String host = 'proxy.myvipwebtools.com';
-  Map<String, String> cookies = Map<String, String>();
+  Map<String, String> cookies = <String, String>{};
 
   Future<String> getCSRF(String host) async {
     var res = await http.get(
