@@ -26,7 +26,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/component/eh/eh_bookmark.dart';
-import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/database.dart';
@@ -803,29 +802,29 @@ class _SettingsPageState extends State<SettingsPage>
             ),
           if (!Settings.liteMode) _buildDivider(),
           // if (!Settings.liteMode)
-            InkWell(
-              child: ListTile(
-                leading: Icon(Mdi.compassOutline, color: Settings.majorColor),
-                title: const Text('Pure Search'),
-                trailing: Switch(
-                  value: Settings.searchPure,
-                  onChanged: (newValue) async {
-                    await Settings.setSearchPure(newValue);
-                    setState(() {
-                      _shouldReload = true;
-                    });
-                  },
-                  activeTrackColor: Settings.majorColor,
-                  activeColor: Settings.majorAccentColor,
-                ),
+          InkWell(
+            child: ListTile(
+              leading: Icon(Mdi.compassOutline, color: Settings.majorColor),
+              title: const Text('Pure Search'),
+              trailing: Switch(
+                value: Settings.searchPure,
+                onChanged: (newValue) async {
+                  await Settings.setSearchPure(newValue);
+                  setState(() {
+                    _shouldReload = true;
+                  });
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
               ),
-              onTap: () async {
-                await Settings.setSearchPure(!Settings.searchPure);
-                setState(() {
-                  _shouldReload = true;
-                });
-              },
             ),
+            onTap: () async {
+              await Settings.setSearchPure(!Settings.searchPure);
+              setState(() {
+                _shouldReload = true;
+              });
+            },
+          ),
           _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
@@ -2257,25 +2256,38 @@ class _SettingsPageState extends State<SettingsPage>
               if (dialog == 1) {
                 var result = await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const LoginScreen()));
-                if(result != null){
-                  var ck = result.toString().split(';').where((element) => element.trim().isNotEmpty).join(';');
+                if (result != null) {
+                  var ck = result
+                      .toString()
+                      .split(';')
+                      .where((element) => element.trim().isNotEmpty)
+                      .join(';');
                   await prefs.setString('eh_cookies', ck);
                   try {
-                    final res = await http.get('https://exhentai.org',headers: { 'Cookie': result });
+                    final res = await http.get('https://exhentai.org',
+                        headers: {'Cookie': result});
                     res.headers.forEach((key, value) {
-                      if(key == 'set-cookie'){
+                      if (key == 'set-cookie') {
                         final firstCookieString = value.split(';')[0];
-                        final firstCookieKey = firstCookieString.substring(0,firstCookieString.indexOf('=')).trim();
-                        final firstCookieValue = firstCookieString.substring(firstCookieString.indexOf('=') + 1,firstCookieString.length).trim();
-                        if(firstCookieKey == 'igneous' && firstCookieValue == 'mystery') return;
-                        var _ck = ck.split(';').where((element) => element.trim().isNotEmpty).toList();
+                        final firstCookieKey = firstCookieString
+                            .substring(0, firstCookieString.indexOf('='))
+                            .trim();
+                        final firstCookieValue = firstCookieString
+                            .substring(firstCookieString.indexOf('=') + 1,
+                                firstCookieString.length)
+                            .trim();
+                        if (firstCookieKey == 'igneous' &&
+                            firstCookieValue == 'mystery') return;
+                        var _ck = ck
+                            .split(';')
+                            .where((element) => element.trim().isNotEmpty)
+                            .toList();
                         _ck.add('${firstCookieKey}=${firstCookieValue}');
                         ck = _ck.join(';');
                       }
                     });
                     await prefs.setString('eh_cookies', ck);
-                  } catch(e,st){
-                  }
+                  } catch (e, st) {}
                   await prefs.setString('eh_cookies', ck);
                 }
 
@@ -2293,8 +2305,7 @@ class _SettingsPageState extends State<SettingsPage>
                 var cookie = prefs.getString('eh_cookies');
 
                 var sController = TextEditingController(
-                    text:
-                        cookie != null ? parseCookies(cookie)['sk'] : '');
+                    text: cookie != null ? parseCookies(cookie)['sk'] : '');
                 var imiController = TextEditingController(
                     text: cookie != null
                         ? parseCookies(cookie)['ipb_member_id']
@@ -2373,18 +2384,24 @@ class _SettingsPageState extends State<SettingsPage>
                       'sk=${sController.text};ipb_member_id=${imiController.text};ipb_pass_hash=${iphController.text};${((iController.text.length == 0 || iController.text == 'mystery') ? '' : 'igneous=${iController.text};')}';
                   await prefs.setString('eh_cookies', ck);
                   try {
-                    final res = await http.get('https://exhentai.org',headers: { 'Cookie': ck });
+                    final res = await http
+                        .get('https://exhentai.org', headers: {'Cookie': ck});
                     res.headers.forEach((key, value) {
-                      if(key == 'set-cookie'){
+                      if (key == 'set-cookie') {
                         final firstCookieString = value.split(';')[0];
-                        final firstCookieKey = firstCookieString.substring(0,firstCookieString.indexOf('=')).trim();
-                        final firstCookieValue = firstCookieString.substring(firstCookieString.indexOf('=') + 1,firstCookieString.length).trim();
-                        if(firstCookieKey == 'igneous' && firstCookieValue == 'mystery') return;
+                        final firstCookieKey = firstCookieString
+                            .substring(0, firstCookieString.indexOf('='))
+                            .trim();
+                        final firstCookieValue = firstCookieString
+                            .substring(firstCookieString.indexOf('=') + 1,
+                                firstCookieString.length)
+                            .trim();
+                        if (firstCookieKey == 'igneous' &&
+                            firstCookieValue == 'mystery') return;
                         ck += '${firstCookieKey}=${firstCookieValue};';
                       }
                     });
-                  } catch(e,st){
-                  }
+                  } catch (e, st) {}
                   await prefs.setString('eh_cookies', ck);
                 }
               }

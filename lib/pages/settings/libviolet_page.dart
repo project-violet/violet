@@ -59,7 +59,8 @@ class LibvioletPage extends StatelessWidget {
               title: const Text('openssl'),
               trailing: const Icon(Icons.open_in_new),
               onTap: () async {
-                final url = Uri.parse('https://github.com/sfackler/rust-openssl');
+                final url =
+                    Uri.parse('https://github.com/sfackler/rust-openssl');
                 if (await canLaunchUrl(url)) {
                   await launchUrl(url);
                 }
@@ -76,7 +77,8 @@ class LibvioletPage extends StatelessWidget {
               title: const Text('futures-rs'),
               trailing: const Icon(Icons.open_in_new),
               onTap: () async {
-                final url = Uri.parse('https://github.com/rust-lang/futures-rs');
+                final url =
+                    Uri.parse('https://github.com/rust-lang/futures-rs');
                 if (await canLaunchUrl(url)) {
                   await launchUrl(url);
                 }
@@ -93,7 +95,8 @@ class LibvioletPage extends StatelessWidget {
               title: const Text('hyper-native-tls'),
               trailing: const Icon(Icons.open_in_new),
               onTap: () async {
-                final url = Uri.parse('https://github.com/sfackler/hyper-native-tls');
+                final url =
+                    Uri.parse('https://github.com/sfackler/hyper-native-tls');
                 if (await canLaunchUrl(url)) {
                   await launchUrl(url);
                 }
@@ -179,7 +182,8 @@ class LibvioletPage extends StatelessWidget {
               title: const Text('concurrent-queue'),
               trailing: const Icon(Icons.open_in_new),
               onTap: () async {
-                final url = Uri.parse('https://github.com/stjepang/concurrent-queue');
+                final url =
+                    Uri.parse('https://github.com/stjepang/concurrent-queue');
                 if (await canLaunchUrl(url)) {
                   await launchUrl(url);
                 }
@@ -196,7 +200,8 @@ class LibvioletPage extends StatelessWidget {
               title: const Text('lazy-static'),
               trailing: const Icon(Icons.open_in_new),
               onTap: () async {
-                final url = Uri.parse('https://github.com/rust-lang-nursery/lazy-static.rs');
+                final url = Uri.parse(
+                    'https://github.com/rust-lang-nursery/lazy-static.rs');
                 if (await canLaunchUrl(url)) {
                   await launchUrl(url);
                 }

@@ -87,14 +87,15 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
   Future<void> downloadFileAndroid() async {
     try {
       await downloadFileAndroidWith('latest', true);
-    } catch(e){
+    } catch (e) {
       await downloadFileAndroidWith('old', false);
     }
   }
+
   Future<void> downloadFileIOS() async {
     try {
       await downloadFileIOSWith('latest', true);
-    } catch(e){
+    } catch (e) {
       await downloadFileIOSWith('old', false);
     }
   }
@@ -112,17 +113,22 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       if (await File('${dir.path}/db.sql.7z').exists()) {
         await File('${dir.path}/db.sql.7z').delete();
       }
-      switch(target){
-        case 'latest': await SyncManager.checkSyncLatest(_throw); break;
-        case 'old': await SyncManager.checkSyncOld(_throw); break;
-        default: {
-          try {
-            await downloadFileAndroidWith('latest', true);
-          } catch(e){
-            await downloadFileAndroidWith('old', false);
+      switch (target) {
+        case 'latest':
+          await SyncManager.checkSyncLatest(_throw);
+          break;
+        case 'old':
+          await SyncManager.checkSyncOld(_throw);
+          break;
+        default:
+          {
+            try {
+              await downloadFileAndroidWith('latest', true);
+            } catch (e) {
+              await downloadFileAndroidWith('old', false);
+            }
+            return;
           }
-          return;
-        }
       }
       Timer timer = Timer.periodic(
           const Duration(seconds: 1),
@@ -191,13 +197,13 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       if (Settings.useOptimizeDatabase) {
         try {
           await deleteUnused();
-        } catch(e1,st1){
+        } catch (e1, st1) {
           Logger.error('[deleteUnused] E: $e1\n'
               '$st1');
         }
         try {
           await indexing();
-        } catch(e1,st1){
+        } catch (e1, st1) {
           Logger.error('[indexing] E: $e1\n'
               '$st1');
         }
@@ -216,7 +222,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     } catch (e, st) {
       Logger.error('[DBDownload] E: $e\n'
           '$st');
-      if(_throw) throw e;
+      if (_throw) throw e;
     }
 
     setState(() {
@@ -238,17 +244,22 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       if (await File('$dir/data.db').exists()) {
         await File('$dir/data.db').delete();
       }
-      switch(target){
-        case 'latest': await SyncManager.checkSyncLatest(_throw); break;
-        case 'old': await SyncManager.checkSyncOld(_throw); break;
-        default: {
-          try {
-            await downloadFileIOSWith('latest', true);
-          } catch(e){
-            await downloadFileIOSWith('old', false);
+      switch (target) {
+        case 'latest':
+          await SyncManager.checkSyncLatest(_throw);
+          break;
+        case 'old':
+          await SyncManager.checkSyncOld(_throw);
+          break;
+        default:
+          {
+            try {
+              await downloadFileIOSWith('latest', true);
+            } catch (e) {
+              await downloadFileIOSWith('old', false);
+            }
+            return;
           }
-          return;
-        }
       }
 
       Timer timer = Timer.periodic(
@@ -296,13 +307,13 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
 
       try {
         if (Settings.useOptimizeDatabase) await deleteUnused();
-      } catch(e1,st1){
+      } catch (e1, st1) {
         Logger.error('[deleteUnused] E: $e1\n'
             '$st1');
       }
       try {
         await indexing();
-      } catch(e1,st1){
+      } catch (e1, st1) {
         Logger.error('[indexing] E: $e1\n'
             '$st1');
       }
@@ -320,7 +331,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     } catch (e, st) {
       Logger.error('[DBDownload] E: $e\n'
           '$st');
-      if(_throw) throw e;
+      if (_throw) throw e;
     }
 
     setState(() {
