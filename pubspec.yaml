@@ -41,12 +41,6 @@ dependencies:
   # cached_network_image: ^3.0.0
   cached_network_image: ^3.2.1
   carousel_slider: ^4.1.1
-  # charts_flutter: ^0.11.0
-  # charts_flutter: # https://github.com/google/charts/issues/678
-  #   git:
-  #     url: https://github.com/google/charts
-  #     path: charts_flutter
-  # charts_flutter: ^0.12.0
   community_charts_flutter: ^1.0.1
   connectivity:
   convert:
@@ -87,7 +81,7 @@ dependencies:
   flutter_typeahead: ^4.0.0
   flutter_js: ^0.8.0
   flutter_windowmanager: ^0.2.0
-  fluttertoast: ^8.0.9
+  fluttertoast: ^8.2.4
   freezed_annotation:
   get: ^4.6.6
   gradient_widgets: ^0.6.0
@@ -154,8 +148,6 @@ flutter:
     - assets/locale/
     - assets/locale/tag/
     - assets/rank/
-
-    - assets/hisoki.json
 
     - assets/images/
 

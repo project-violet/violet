@@ -271,6 +271,7 @@ class _UserStatusCardState extends ThemeSwitchableState<UserStatusCard>
                           isCheck: true,
                           msg: 'Bookmark Backup Success!',
                         ),
+                        ignorePointer: true,
                         gravity: ToastGravity.BOTTOM,
                         toastDuration: const Duration(seconds: 4),
                       );
@@ -281,6 +282,7 @@ class _UserStatusCardState extends ThemeSwitchableState<UserStatusCard>
                           isWarning: false,
                           msg: 'Bookmark Backup Fail!',
                         ),
+                        ignorePointer: true,
                         gravity: ToastGravity.BOTTOM,
                         toastDuration: const Duration(seconds: 4),
                       );

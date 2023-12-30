@@ -796,6 +796,7 @@ class _SettingsPageState extends State<SettingsPage>
                       msg:
                           '${Translations.of(context).trans('tagrebuild')} ${Translations.of(context).trans('complete')}',
                     ),
+                    ignorePointer: true,
                     gravity: ToastGravity.BOTTOM,
                     toastDuration: const Duration(seconds: 4),
                   );
@@ -995,6 +996,7 @@ class _SettingsPageState extends State<SettingsPage>
                     isCheck: true,
                     msg: Translations.of(context).trans('complete'),
                   ),
+                  ignorePointer: true,
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: const Duration(seconds: 4),
                 );
@@ -1172,6 +1174,7 @@ class _SettingsPageState extends State<SettingsPage>
                     msg:
                         '${Translations.of(context).trans('dbrebuild')} ${Translations.of(context).trans('complete')}',
                   ),
+                  ignorePointer: true,
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: const Duration(seconds: 4),
                 );
@@ -1228,6 +1231,7 @@ class _SettingsPageState extends State<SettingsPage>
                           msg: Translations.of(context)
                               .trans('thisislatestbookmark'),
                         ),
+                        ignorePointer: true,
                         gravity: ToastGravity.BOTTOM,
                         toastDuration: const Duration(seconds: 4),
                       );
@@ -1264,6 +1268,7 @@ class _SettingsPageState extends State<SettingsPage>
                             isCheck: true,
                             msg: Translations.of(context).trans('synccomplete'),
                           ),
+                          ignorePointer: true,
                           gravity: ToastGravity.BOTTOM,
                           toastDuration: const Duration(seconds: 4),
                         );
@@ -1703,6 +1708,7 @@ class _SettingsPageState extends State<SettingsPage>
                     isCheck: true,
                     msg: Translations.of(context).trans('changedthread'),
                   ),
+                  ignorePointer: true,
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: const Duration(seconds: 4),
                 );
@@ -2033,6 +2039,7 @@ class _SettingsPageState extends State<SettingsPage>
                       isCheck: false,
                       msg: 'Bookmark Restoring Error!',
                     ),
+                    ignorePointer: true,
                     gravity: ToastGravity.BOTTOM,
                     toastDuration: const Duration(seconds: 4),
                   );
@@ -2046,6 +2053,7 @@ class _SettingsPageState extends State<SettingsPage>
                     isCheck: true,
                     msg: Translations.of(context).trans('importbookmark'),
                   ),
+                  ignorePointer: true,
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: const Duration(seconds: 4),
                 );
@@ -2067,6 +2075,7 @@ class _SettingsPageState extends State<SettingsPage>
                     isCheck: false,
                     msg: Translations.of(context).trans('noselectedb'),
                   ),
+                  ignorePointer: true,
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: const Duration(seconds: 4),
                 );
@@ -2088,6 +2097,7 @@ class _SettingsPageState extends State<SettingsPage>
                   isCheck: true,
                   msg: Translations.of(context).trans('importbookmark'),
                 ),
+                ignorePointer: true,
                 gravity: ToastGravity.BOTTOM,
                 toastDuration: const Duration(seconds: 4),
               );
@@ -2131,6 +2141,7 @@ class _SettingsPageState extends State<SettingsPage>
                   isCheck: true,
                   msg: Translations.of(context).trans('exportbookmark'),
                 ),
+                ignorePointer: true,
                 gravity: ToastGravity.BOTTOM,
                 toastDuration: const Duration(seconds: 4),
               );
@@ -2156,6 +2167,7 @@ class _SettingsPageState extends State<SettingsPage>
                     isCheck: false,
                     msg: Translations.of(context).trans('setcookiefirst'),
                   ),
+                  ignorePointer: true,
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: const Duration(seconds: 4),
                 );
@@ -2174,6 +2186,7 @@ class _SettingsPageState extends State<SettingsPage>
                     isWarning: true,
                     msg: Translations.of(context).trans('bookmarkisempty'),
                   ),
+                  ignorePointer: true,
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: const Duration(seconds: 4),
                 );
@@ -2214,6 +2227,7 @@ class _SettingsPageState extends State<SettingsPage>
                     msg: Translations.of(context)
                         .trans('completeimportbookmark'),
                   ),
+                  ignorePointer: true,
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: const Duration(seconds: 4),
                 );
@@ -2405,6 +2419,7 @@ class _SettingsPageState extends State<SettingsPage>
                       isCheck: true,
                       msg: 'Login Success!',
                     ),
+                    ignorePointer: true,
                     gravity: ToastGravity.BOTTOM,
                     toastDuration: const Duration(seconds: 4),
                   );
@@ -2583,6 +2598,7 @@ class _SettingsPageState extends State<SettingsPage>
                     isCheck: true,
                     msg: Translations.of(context).trans('newupdate'),
                   ),
+                  ignorePointer: true,
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: const Duration(seconds: 4),
                 );
@@ -2592,6 +2608,7 @@ class _SettingsPageState extends State<SettingsPage>
                     isCheck: true,
                     msg: Translations.of(context).trans('latestver'),
                   ),
+                  ignorePointer: true,
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: const Duration(seconds: 4),
                 );
@@ -2623,6 +2640,7 @@ class _SettingsPageState extends State<SettingsPage>
                     isCheck: true,
                     msg: Translations.of(context).trans('latestver'),
                   ),
+                  ignorePointer: true,
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: const Duration(seconds: 4),
                 );
@@ -2635,6 +2653,7 @@ class _SettingsPageState extends State<SettingsPage>
                     isWarning: true,
                     msg: Translations.of(context).trans('cannotuseios'),
                   ),
+                  ignorePointer: true,
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: const Duration(seconds: 4),
                 );
