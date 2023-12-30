@@ -3,14 +3,10 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:flutter_curl/flutter_curl.dart' as flutter_curl;
-import 'package:path_provider/path_provider.dart';
-import 'package:violet/component/proxy/proxy.myvipwebtools.com.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/libcurl.dart';
 import 'package:violet/settings/settings.dart';

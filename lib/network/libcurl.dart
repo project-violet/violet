@@ -1,12 +1,9 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:ffi';
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:ffi/ffi.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';

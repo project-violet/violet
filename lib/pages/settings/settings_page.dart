@@ -64,13 +64,11 @@ import 'package:violet/platform/misc.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
-import 'package:violet/util/helper.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
-import 'package:violet/network/wrapper.dart' as http;
 
 class ExCountry extends Country {
   String? language;

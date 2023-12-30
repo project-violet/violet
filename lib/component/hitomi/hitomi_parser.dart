@@ -2,7 +2,6 @@
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
 import 'package:html/parser.dart';
 
 class HitomiParser {
