@@ -154,8 +154,6 @@ flutter:
     - assets/locale/tag/
     - assets/rank/
 
-    - assets/hisoki.json
-
     - assets/images/
 
     - assets/flare/Cosmos.flr
