@@ -181,7 +181,7 @@ class EHSession {
         break;
       default:
         if (ehEhashCouldNotFound[id] == true &&
-            exEhashCouldNotFound == true) {
+            exEhashCouldNotFound[id] == true) {
           Logger.warning('[getEHashById] could not found ${id}`s ehash');
           throw 'EHASH_LOCK';
         }
