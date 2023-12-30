@@ -47,7 +47,7 @@ class ArticleInfo {
           .split('|')
           .where((x) => x.isNotEmpty)
           .elementAt(0);
-    } catch (e, st) {
+    } catch (e) {
       artist = 'N/A';
     }
 

@@ -278,7 +278,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
           'Id': int.parse(element.article()),
           'Loading': true,
         }));
-      } catch (e, st) {}
+      } catch (e) {}
       queryResult = result;
       _applyFilter();
       _rebuild();
@@ -307,7 +307,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       handleEhentai() async {
         try {
           await tryEhentai();
-        } catch (e, st) {
+        } catch (e) {
           if (e == 'EHASH_LOCK') {
           } else {
             rethrow;
@@ -318,7 +318,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       handleExhentai() async {
         try {
           await tryExhentai();
-        } catch (e, st) {
+        } catch (e) {
           if (e == 'EHASH_LOCK') {
           } else {
             rethrow;
