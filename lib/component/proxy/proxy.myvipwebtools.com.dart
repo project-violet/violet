@@ -13,7 +13,7 @@ class ProxyHttpRequest {
       Uri.parse('https://www-$host/'),
     );
     while (true) {
-      if (res?.headers?['location']?.isNotEmpty ?? false) {
+      if (res.headers['location']?.isNotEmpty ?? false) {
         res = await http.get(Uri.parse(res.headers['location'] ?? ''));
       } else {
         break;
@@ -42,9 +42,9 @@ class ProxyHttpRequest {
         if (key == 'set-cookie') {
           final setCookie = value
               .split(',')
-              .where((c) => c?.trim()?.split(';')[0]?.contains('=') ?? false);
+              .where((c) => c.trim().split(';')[0].contains('=') ?? false);
           if (setCookie == null) return;
-          setCookie?.forEach((v) {
+          setCookie.forEach((v) {
             final cookieKeyVal = v.split(';')[0].trim(); // ignores expire etc
             final cookieKey =
                 cookieKeyVal.substring(0, cookieKeyVal.indexOf('=')).trim();
@@ -133,7 +133,7 @@ class ProxyHttpRequest {
     var headersTmp = headers ?? {};
     var cookieStr = headers?['Cookie'] ?? '';
     if (headers?['Cookie']?.isNotEmpty ?? false) {
-      cookieStr = cookieStr?.split(';')?.where((e) => e.trim().isNotEmpty)?.map((cookieKeyVal) {
+      cookieStr = cookieStr.split(';').where((e) => e.trim().isNotEmpty).map((cookieKeyVal) {
             final cKV = cookieKeyVal.trim();
             final cK = cKV.substring(0, cKV.indexOf('=')).trim();
             final cV = cKV.substring(cKV.indexOf('=') + 1).trim();

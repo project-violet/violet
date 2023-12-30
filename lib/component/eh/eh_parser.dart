@@ -135,7 +135,7 @@ class EHParser {
             ?.attributes['onclick']
             ?.split('/')
             .lastWhere((e) => e.trim().isNotEmpty ?? false)
-            ?.replaceAll('\'', '') ??
+            .replaceAll('\'', '') ??
         'N/A';
 
     var nodesData =
