@@ -228,15 +228,15 @@ class EHSession {
           final url =
               doc.querySelector('a[href*="/g/${id}"]')?.attributes['href'] ??
                   '';
-          final ehash = Uri.parse(url)
+          final foundEhash = Uri.parse(url)
               .path
               .split('/')
               .lastWhere((e) => e.trim().isNotEmpty)
               .trim();
-          if (ehash == null && _ehash.isNotEmpty) {
+          if (ehash == null && foundEhash.isNotEmpty) {
             if (host.contains('exhentai')) ehashs = exEhashs;
             if (host.contains('e-hentai')) ehashs = ehEhashs;
-            ehash = _ehash;
+            ehash = foundEhash;
           }
         } catch (e, st) {}
       });
