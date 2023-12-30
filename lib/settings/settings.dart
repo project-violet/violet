@@ -28,6 +28,7 @@ class Settings {
 
   // Http Settings
   static late bool ignoreHTTPTimeout; // default false
+  static late bool useHttp3; // default false
 
   // Color Settings
   static late Color themeColor; // default light
@@ -212,6 +213,7 @@ class Settings {
 
     deleteOldLogAtStart = await _getBool('deleteoldlogatstart');
     ignoreHTTPTimeout = await _getBool('ignorehttptimeout');
+    useHttp3 = await _getBool('usehttp3');
 
     rightToLeft = await _getBool('right2left', true);
     isHorizontal = await _getBool('ishorizontal');
@@ -489,6 +491,12 @@ class Settings {
     ignoreHTTPTimeout = nn;
 
     await prefs.setBool('ignorehttptimeout', nn);
+  }
+
+  static Future<void> setUseHttp3(bool nn) async {
+    useHttp3 = nn;
+
+    await prefs.setBool('usehttp3', nn);
   }
 
   static Future<void> setSearchResultType(int wh) async {

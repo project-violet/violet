@@ -124,6 +124,7 @@ dependencies:
   webview_flutter: ^3.0.0
   collection: ^1.16.0
   octo_image: ^2.0.0
+  flutter_curl: ^0.3.0
 
 dev_dependencies:
   flutter_test:
@@ -181,6 +182,16 @@ flutter:
     - assets/p7zip/armeabi-v7a/lib7zr.so # @dependent: android
     - assets/p7zip/x86/lib7zr.so # @dependent: android
     - assets/p7zip/x86_64/lib7zr.so # @dependent: android
+
+    - assets/libcurl/android/arm64-v8a/libcurl.so # @dependent: android
+    - assets/libcurl/android/armeabi-v7a/libcurl.so # @dependent: android
+    # - assets/libcurl/android/x86/libcurl.so # @dependent: android
+    - assets/libcurl/android/x86_64/libcurl.so # @dependent: android
+
+    - assets/libcurl/android/arm64-v8a/libquiche.so # @dependent: android
+    - assets/libcurl/android/armeabi-v7a/libquiche.so # @dependent: android
+    # - assets/libcurl/android/x86/libquiche.so # @dependent: android
+    - assets/libcurl/android/x86_64/libquiche.so # @dependent: android
 
     - assets/webview/
 

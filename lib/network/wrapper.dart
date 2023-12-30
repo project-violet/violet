@@ -3,11 +3,16 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:flutter_curl/flutter_curl.dart' as flutter_curl;
+import 'package:path_provider/path_provider.dart';
 import 'package:violet/component/proxy/proxy.myvipwebtools.com.dart';
 import 'package:violet/log/log.dart';
+import 'package:violet/network/libcurl.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/thread/semaphore.dart';
 
@@ -97,7 +102,16 @@ Future<http.Response> _ehentaiGet(String url,
     StreamedResponse response;
 
     try {
-      var _sent = client.send(request);
+      late var _sent;
+      if(Settings.useHttp3){
+        try {
+          _sent = Http3Request().get(url, headers: headers);
+        } catch(_){
+          _sent = client.send(request);
+        }
+      } else {
+        _sent = client.send(request);
+      }
       if(!Settings.ignoreHTTPTimeout){
         _sent.timeout(
           const Duration(seconds: 3),
@@ -107,7 +121,12 @@ Future<http.Response> _ehentaiGet(String url,
           },
         );
       }
-      response = await _sent;
+      var _res = await _sent;
+      if(_res is flutter_curl.Response){
+        response = await Http3Request.toStreamedHttpResponse(_res);
+      } else {
+        response = _res;
+      }
     } catch (e, st) {
       Logger.error('[Http Request] GET: $url\n'
           'E:$e\n'
@@ -163,13 +182,30 @@ Future<http.Response> _scriptGet(String url,
   var _headers = headers ?? {};
   _headers['user-agent'] = HttpWrapper.userAgent;
   if (timeout == null) {
+    if(Settings.useHttp3){
+      try {
+        var _res = await Http3Request().get(url, headers: _headers);
+        res = await Http3Request.toHttpResponse(_res);
+      } catch(_){
+        res = await http.get(Uri.parse(url), headers: _headers);
+      }
+    }
     res = await http.get(Uri.parse(url), headers: _headers);
   } else {
     bool isTimeout = false;
     var retry = 0;
     do {
       isTimeout = false;
-      var _sent = http.get(Uri.parse(url), headers: _headers);
+      late var _sent;
+      if(Settings.useHttp3){
+        try {
+          _sent = Http3Request().get(url, headers: _headers);
+        } catch(_){
+          _sent = http.get(Uri.parse(url), headers: _headers);
+        }
+      } else {
+        _sent = http.get(Uri.parse(url), headers: _headers);
+      }
       if(!Settings.ignoreHTTPTimeout){
         _sent
           .timeout(
@@ -181,7 +217,12 @@ Future<http.Response> _scriptGet(String url,
             },
           );
       }
-      res = await _sent;
+      var _res = await _sent;
+      if(_res is flutter_curl.Response){
+        res = await Http3Request.toHttpResponse(_res);
+      } else {
+        res = _res;
+      }
     } while (isTimeout && retry < 10);
   }
 

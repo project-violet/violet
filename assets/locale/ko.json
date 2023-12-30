@@ -308,5 +308,6 @@
   "cannotuseios": "iOS에선 사용할 수 없어요 :(",
   "exitTheApp": "앱 종료하기",
   "deleteoldlogatstart": "Delete Old Log (At App Start)",
-  "ignorehttptimeout": "Ignore Http Timeout"
+  "ignorehttptimeout": "Ignore Http Timeout",
+  "usehttp3": "Use Http3 (Experimental)"
 }

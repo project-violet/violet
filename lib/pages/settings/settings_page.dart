@@ -1492,6 +1492,38 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
+          _buildDivider(),
+          InkWell(
+            customBorder: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0))),
+            child: ListTile(
+              leading: Image.asset(
+                'assets/images/logo.png',
+                width: 25,
+                height: 25,
+              ),
+              title: Text(Translations.of(context).trans('usehttp3')),
+              trailing: Switch(
+                value: Settings.useHttp3,
+                onChanged: (newValue) async {
+                  await Settings.setUseHttp3(newValue);
+                  setState(() {
+                    _shouldReload = true;
+                  });
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
+            ),
+            onTap: () async {
+              await Settings.setUseHttp3(!Settings.useHttp3);
+              setState(() {
+                _shouldReload = true;
+              });
+            },
+          ),
           // _buildDivider(),
           // InkWell(
           //   customBorder: const RoundedRectangleBorder(
