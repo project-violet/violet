@@ -103,16 +103,16 @@ Future<http.Response> _ehentaiGet(String url,
 
     try {
       late var _sent;
-      if(Settings.useHttp3){
+      if (Settings.useHttp3) {
         try {
           _sent = Http3Request().get(url, headers: headers);
-        } catch(_){
+        } catch (_) {
           _sent = client.send(request);
         }
       } else {
         _sent = client.send(request);
       }
-      if(!Settings.ignoreHTTPTimeout){
+      if (!Settings.ignoreHTTPTimeout) {
         _sent.timeout(
           const Duration(seconds: 3),
           onTimeout: () {
@@ -122,7 +122,7 @@ Future<http.Response> _ehentaiGet(String url,
         );
       }
       var _res = await _sent;
-      if(_res is flutter_curl.Response){
+      if (_res is flutter_curl.Response) {
         response = await Http3Request.toStreamedHttpResponse(_res);
       } else {
         response = _res;
@@ -156,9 +156,10 @@ Future<http.Response> _ehentaiGet(String url,
     Logger.info('[Http Request] GETS: $url');
 
     if (!HttpWrapper.cacheResponse.containsKey(url) && res.statusCode == 200) {
-      if(
-       (!res.body.contains('<') && !res.body.contains('>')) // THIS CHECKS HTML TAG EXISTS (if banned respone no cache)
-      ) {
+      if ((!res.body.contains('<') &&
+              !res.body.contains(
+                  '>')) // THIS CHECKS HTML TAG EXISTS (if banned respone no cache)
+          ) {
         Logger.warning('[_ehentaiGet] ${res.body}');
       } else {
         HttpWrapper.cacheResponse[url] = res;
@@ -182,11 +183,11 @@ Future<http.Response> _scriptGet(String url,
   var _headers = headers ?? {};
   _headers['user-agent'] = HttpWrapper.userAgent;
   if (timeout == null) {
-    if(Settings.useHttp3){
+    if (Settings.useHttp3) {
       try {
         var _res = await Http3Request().get(url, headers: _headers);
         res = await Http3Request.toHttpResponse(_res);
-      } catch(_){
+      } catch (_) {
         res = await http.get(Uri.parse(url), headers: _headers);
       }
     }
@@ -197,28 +198,27 @@ Future<http.Response> _scriptGet(String url,
     do {
       isTimeout = false;
       late var _sent;
-      if(Settings.useHttp3){
+      if (Settings.useHttp3) {
         try {
           _sent = Http3Request().get(url, headers: _headers);
-        } catch(_){
+        } catch (_) {
           _sent = http.get(Uri.parse(url), headers: _headers);
         }
       } else {
         _sent = http.get(Uri.parse(url), headers: _headers);
       }
-      if(!Settings.ignoreHTTPTimeout){
-        _sent
-          .timeout(
-            timeout,
-            onTimeout: () {
-              isTimeout = true;
-              retry++;
-              return http.Response('', 200);
-            },
-          );
+      if (!Settings.ignoreHTTPTimeout) {
+        _sent.timeout(
+          timeout,
+          onTimeout: () {
+            isTimeout = true;
+            retry++;
+            return http.Response('', 200);
+          },
+        );
       }
       var _res = await _sent;
-      if(_res is flutter_curl.Response){
+      if (_res is flutter_curl.Response) {
         res = await Http3Request.toHttpResponse(_res);
       } else {
         res = _res;

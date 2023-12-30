@@ -115,9 +115,9 @@ class ActLogger {
       final dir = await getApplicationDocumentsDirectory();
       logFile = File(join(dir.path, 'act-log.txt'));
     }
-    
-    if(prefs.getBool('deleteoldlogatstart') == true){
-      if(await logFile.exists()){
+
+    if (prefs.getBool('deleteoldlogatstart') == true) {
+      if (await logFile.exists()) {
         print('Deleting old act-log');
         await logFile.delete();
       }

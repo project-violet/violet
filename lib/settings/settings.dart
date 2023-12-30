@@ -19,7 +19,7 @@ import 'package:violet/settings/device_type.dart';
 
 class Settings {
   static late final SharedPreferences prefs;
-  
+
   // // Proxy Settings
   // static late bool useProxy;
 
@@ -481,12 +481,13 @@ class Settings {
     await prefs.setInt('majorAccentColor', accent!.value);
     majorAccentColor = accent;
   }
+
   static Future<void> setDeleteOldLogAtStart(bool nn) async {
     deleteOldLogAtStart = nn;
 
     await prefs.setBool('deleteoldlogatstart', nn);
   }
-  
+
   static Future<void> setIgnoreHTTPTimeout(bool nn) async {
     ignoreHTTPTimeout = nn;
 

@@ -1441,7 +1441,8 @@ class _SettingsPageState extends State<SettingsPage>
                 width: 25,
                 height: 25,
               ),
-              title: Text(Translations.of(context).trans('deleteoldlogatstart')),
+              title:
+                  Text(Translations.of(context).trans('deleteoldlogatstart')),
               trailing: Switch(
                 value: Settings.deleteOldLogAtStart,
                 onChanged: (newValue) async {
@@ -1455,7 +1456,8 @@ class _SettingsPageState extends State<SettingsPage>
               ),
             ),
             onTap: () async {
-              await Settings.setDeleteOldLogAtStart(!Settings.deleteOldLogAtStart);
+              await Settings.setDeleteOldLogAtStart(
+                  !Settings.deleteOldLogAtStart);
               setState(() {
                 _shouldReload = true;
               });
@@ -2334,7 +2336,6 @@ class _SettingsPageState extends State<SettingsPage>
     ];
   }
 
-
   List<Widget> _componetGroup() {
     return [
       _buildGroup(Translations.of(context).trans('component')),
@@ -2387,13 +2388,13 @@ class _SettingsPageState extends State<SettingsPage>
               if (dialog == 1) {
                 var cookie = await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const LoginScreen()));
-                if(cookie != null){
+                if (cookie != null) {
                   final ck = cookie ?? '';
                   await prefs.setString('eh_cookies', ck);
-                  if(!(await EHSession.hasSkCookie())){
+                  if (!(await EHSession.hasSkCookie())) {
                     await EHSession.refreshEhentaiCookie();
                   }
-                  if(!(await EHSession.hasIgneousCookie())){
+                  if (!(await EHSession.hasIgneousCookie())) {
                     await EHSession.refreshExhentaiCookie();
                   }
                 }
@@ -2487,17 +2488,15 @@ class _SettingsPageState extends State<SettingsPage>
                 );
 
                 if (dialog != null && dialog == true) {
-                  final ck = (
-                    '${sController.text.length == 0 ? '' : 'sk=${sController.text};'}'
-                    '${imiController.text.length == 0 ? '' : 'ipb_member_id=${imiController.text};'}'
-                    '${iphController.text.length == 0 ? '' : 'ipb_pass_hash=${iphController.text};'}'
-                    '${((iController.text.length == 0 || iController.text == 'mystery') ? '' : 'igneous=${iController.text};')}'
-                  );
+                  final ck = ('${sController.text.length == 0 ? '' : 'sk=${sController.text};'}'
+                      '${imiController.text.length == 0 ? '' : 'ipb_member_id=${imiController.text};'}'
+                      '${iphController.text.length == 0 ? '' : 'ipb_pass_hash=${iphController.text};'}'
+                      '${((iController.text.length == 0 || iController.text == 'mystery') ? '' : 'igneous=${iController.text};')}');
                   await prefs.setString('eh_cookies', ck);
-                  if(!(await EHSession.hasSkCookie())){
+                  if (!(await EHSession.hasSkCookie())) {
                     await EHSession.refreshEhentaiCookie();
                   }
-                  if(!(await EHSession.hasIgneousCookie())){
+                  if (!(await EHSession.hasIgneousCookie())) {
                     await EHSession.refreshExhentaiCookie();
                   }
                 }

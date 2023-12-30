@@ -130,7 +130,13 @@ class EHParser {
         .text
         .replaceAll('times', '')
         .trim());
-    article.type = doc.querySelector('[onclick^="document.location"]')?.attributes['onclick']?.split('/').lastWhere((e) => e.trim().isNotEmpty ?? false)?.replaceAll('\'', '') ?? 'N/A';
+    article.type = doc
+            .querySelector('[onclick^="document.location"]')
+            ?.attributes['onclick']
+            ?.split('/')
+            .lastWhere((e) => e.trim().isNotEmpty ?? false)
+            ?.replaceAll('\'', '') ??
+        'N/A';
 
     var nodesData =
         doc.querySelectorAll("div[id='gmid'] div[id='taglist'] table tr");
