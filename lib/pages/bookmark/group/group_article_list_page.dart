@@ -161,8 +161,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       'Title': articleEh.title,
       'Artists': articleEh.artist?.join('|') ?? 'N/A',
       'Language': articleEh.languages?.join('|') ??
-          articleEh.language.trim().toLowerCase() ??
-          'N/A',
+          articleEh.language.trim().toLowerCase(),
       'Tags': tags.join('|'),
       'Characters': characters.join('|'),
       'Type': articleEh.type,
@@ -224,8 +223,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       'Title': articleEh.title,
       'Artists': articleEh.artist?.join('|') ?? 'N/A',
       'Language': articleEh.languages?.join('|') ??
-          articleEh.language.trim().toLowerCase() ??
-          'N/A',
+          articleEh.language.trim().toLowerCase(),
       'Tags': tags.join('|'),
       'Characters': characters.join('|'),
       'Type': articleEh.type,

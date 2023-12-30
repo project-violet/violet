@@ -134,7 +134,7 @@ class EHParser {
             .querySelector('[onclick^="document.location"]')
             ?.attributes['onclick']
             ?.split('/')
-            .lastWhere((e) => e.trim().isNotEmpty ?? false)
+            .lastWhere((e) => e.trim().isNotEmpty)
             .replaceAll('\'', '') ??
         'N/A';
 

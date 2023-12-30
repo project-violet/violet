@@ -257,7 +257,7 @@ class EHSession {
             .where((encodedUrl) => encodedUrl.trim().isNotEmpty);
         var url = '';
         foundEncodedUrls
-            .map((url) => Uri.parse(url ?? '').queryParameters)
+            .map((url) => Uri.parse(url).queryParameters)
             .forEach((element) {
           element.forEach((key, value) {
             if (value.contains('/g/$id/')) {

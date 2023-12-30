@@ -42,7 +42,7 @@ class ProxyHttpRequest {
         if (key == 'set-cookie') {
           final setCookie = value
               .split(',')
-              .where((c) => c.trim().split(';')[0].contains('=') ?? false);
+              .where((c) => c.trim().split(';')[0].contains('='));
           if (setCookie == null) return;
           setCookie.forEach((v) {
             final cookieKeyVal = v.split(';')[0].trim(); // ignores expire etc
@@ -138,8 +138,7 @@ class ProxyHttpRequest {
             final cK = cKV.substring(0, cKV.indexOf('=')).trim();
             final cV = cKV.substring(cKV.indexOf('=') + 1).trim();
             return '$cK@$targetHost=$cV';
-          }).join(';') ??
-          '';
+          }).join(';');
     }
     headersTmp['Cookie'] = [(cookieStr), (cookies[host] ?? '')]
         .where((c) => c.trim().isNotEmpty)
