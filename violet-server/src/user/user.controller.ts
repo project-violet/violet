@@ -1,9 +1,10 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserRegisterDTO } from './dtos/user-register.dto';
 import { UserService } from './user.service';
 import { HmacAuthGuard } from 'src/auth/guards/hmac.guard';
 
+@ApiTags('user')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

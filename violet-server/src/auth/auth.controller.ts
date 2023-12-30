@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { UserRegisterDTO } from 'src/user/dtos/user-register.dto';
 import { User } from 'src/user/entity/user.entity';
@@ -22,6 +22,7 @@ import { ResLoginUser } from './dtos/res-login-user.dto';
 import { plainToClass } from 'class-transformer';
 import { HmacAuthGuard } from './guards/hmac.guard';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
