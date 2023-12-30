@@ -50,9 +50,8 @@ class ProxyHttpRequest {
             final cookieVal =
                 cookieKeyVal.substring(cookieKeyVal.indexOf('=') + 1).trim();
             if (cookieVal.isEmpty) return;
-            final ckTmp = ck
-                .split(';')
-                .where((c) => c.trim().startsWith('$cookieKey='));
+            final ckTmp =
+                ck.split(';').where((c) => c.trim().startsWith('$cookieKey='));
 
             if (ckTmp.isNotEmpty) {
               // when old cookie is exist
@@ -82,8 +81,7 @@ class ProxyHttpRequest {
     String target, {
     String? csrf,
   }) async {
-    final resRequests = await http.post(
-        Uri.parse('https://www-$host/requests'),
+    final resRequests = await http.post(Uri.parse('https://www-$host/requests'),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: 'url=${Uri.encodeComponent((target))}&csrf=$csrf');
     await setCookie(host, resRequests.headers);
@@ -102,8 +100,7 @@ class ProxyHttpRequest {
     final targetHost = Uri.parse(target).host;
     final targetPath = Uri.parse(target).path;
     final targetProtocol = target.startsWith('http:') ? 'http' : 'https';
-    final cpo =
-        base64.encode(utf8.encode('$targetProtocol://$targetHost'));
+    final cpo = base64.encode(utf8.encode('$targetProtocol://$targetHost'));
     var targetQuery = '?';
     Uri.parse(target).queryParameters.forEach((key, value) {
       if (targetQuery != '?') {
@@ -119,12 +116,15 @@ class ProxyHttpRequest {
     var headersTmp = headers ?? {};
     var cookieStr = headers?['Cookie'] ?? '';
     if (headers?['Cookie']?.isNotEmpty ?? false) {
-      cookieStr = cookieStr.split(';').where((e) => e.trim().isNotEmpty).map((cookieKeyVal) {
-            final cKV = cookieKeyVal.trim();
-            final cK = cKV.substring(0, cKV.indexOf('=')).trim();
-            final cV = cKV.substring(cKV.indexOf('=') + 1).trim();
-            return '$cK@$targetHost=$cV';
-          }).join(';');
+      cookieStr = cookieStr
+          .split(';')
+          .where((e) => e.trim().isNotEmpty)
+          .map((cookieKeyVal) {
+        final cKV = cookieKeyVal.trim();
+        final cK = cKV.substring(0, cKV.indexOf('=')).trim();
+        final cV = cKV.substring(cKV.indexOf('=') + 1).trim();
+        return '$cK@$targetHost=$cV';
+      }).join(';');
     }
     headersTmp['Cookie'] = [(cookieStr), (cookies[host] ?? '')]
         .where((c) => c.trim().isNotEmpty)

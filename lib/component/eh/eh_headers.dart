@@ -225,8 +225,7 @@ class EHSession {
               'https://$host/?next=${(int.parse(id) + 1)}');
           final doc = parse(listHtml);
           final url =
-              doc.querySelector('a[href*="/g/$id"]')?.attributes['href'] ??
-                  '';
+              doc.querySelector('a[href*="/g/$id"]')?.attributes['href'] ?? '';
           final foundEhash = Uri.parse(url)
               .path
               .split('/')

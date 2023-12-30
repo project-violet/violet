@@ -3,8 +3,8 @@ import 'package:violet/component/proxy/proxy.myvipwebtools.com.dart';
 
 class DuckDuckGoSearch {
   Future<http.Response> search(String query) async {
-    final res = await http.get(
-        Uri.parse('https://lite.duckduckgo.com/lite/?q=${Uri.encodeComponent(query)}'));
+    final res = await http.get(Uri.parse(
+        'https://lite.duckduckgo.com/lite/?q=${Uri.encodeComponent(query)}'));
     return res;
   }
 
