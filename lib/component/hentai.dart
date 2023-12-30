@@ -332,7 +332,7 @@ class HentaiManager {
               }
               if (qr.ehash() != null || ex_ehash != null) {
                 final res = await http.get(
-                  'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? eh_ehash)}/?p=0&inline_set=ts_m',
+                  'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? ex_ehash)}/?p=0&inline_set=ts_m',
                   headers: { 'Cookie': prefs.getString('eh_cookies') ?? '' }
                 );
                 if(res.statusCode != 200){
