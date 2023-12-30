@@ -41,7 +41,7 @@ class ArticleInfo {
     List<QueryResult>? usableTabList,
     bool lockRead = false,
   }) {
-    var artist;
+    String artist;
     try {
       artist = (queryResult.artists() as String)
           .split('|')

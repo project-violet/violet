@@ -102,7 +102,7 @@ Future<http.Response> _ehentaiGet(String url,
     StreamedResponse response;
 
     try {
-      late var tmpSent;
+      late dynamic tmpSent;
       if (Settings.useHttp3) {
         try {
           tmpSent = Http3Request().get(url, headers: headers);
@@ -197,7 +197,7 @@ Future<http.Response> _scriptGet(String url,
     var retry = 0;
     do {
       isTimeout = false;
-      late var tmpSent;
+      late dynamic tmpSent;
       if (Settings.useHttp3) {
         try {
           tmpSent = Http3Request().get(url, headers: tmpHeaders);

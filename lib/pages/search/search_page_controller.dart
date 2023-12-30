@@ -182,7 +182,7 @@ class SearchPageController extends GetxController {
         return;
       }
 
-      var next;
+      SearchResult? next;
       var search = HentaiManager.search(latestQuery!.item2,
           latestQuery!.item1 == null ? 0 : latestQuery!.item1!.offset);
       if (Settings.ignoreHTTPTimeout) {

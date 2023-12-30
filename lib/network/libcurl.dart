@@ -16,7 +16,7 @@ import 'package:violet/settings/settings.dart';
 
 class Http3Request {
   Future<flutter_curl.Client> getClient() async {
-    late final soPath;
+    late String soPath;
     if (Platform.isAndroid) {
       soPath = (await _checkSharedLibraryAndroid('libcurl'))!;
       (await _checkSharedLibraryAndroid('libquiche'))!;

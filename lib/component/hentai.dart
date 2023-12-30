@@ -124,7 +124,7 @@ class HentaiManager {
     int no = int.parse(what);
 
     try {
-      var galleryUrl, galleryToken;
+      String? galleryUrl, galleryToken;
       galleryToken = await EHSession.getEHashById('$no', 'e-hentai.org');
       var html = await EHSession.requestString(
           'https://e-hentai.org/g/$no/$galleryToken/?p=0&inline_set=ts_m');
@@ -154,7 +154,7 @@ class HentaiManager {
     int no = int.parse(what);
 
     try {
-      var galleryUrl, galleryToken;
+      String? galleryUrl, galleryToken;
       galleryToken = await EHSession.getEHashById('$no', 'exhentai.org');
       var html = await EHSession.requestString(
           'https://exhentai.org/g/$no/$galleryToken/?p=0&inline_set=ts_m');
@@ -291,8 +291,8 @@ class HentaiManager {
       final v4 = ScriptManager.enableV4;
 
       for (int i = 0; i < route.length; i++) {
-        var ehEhash;
-        var exEhash;
+        String? ehEhash;
+        String? exEhash;
         try {
           switch (route[i]) {
             case 'EHentai':
