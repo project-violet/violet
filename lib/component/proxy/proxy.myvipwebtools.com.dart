@@ -43,7 +43,6 @@ class ProxyHttpRequest {
           final setCookie = value
               .split(',')
               .where((c) => c.trim().split(';')[0].contains('='));
-          if (setCookie == null) return;
           setCookie.forEach((v) {
             final cookieKeyVal = v.split(';')[0].trim(); // ignores expire etc
             final cookieKey =
@@ -83,9 +82,6 @@ class ProxyHttpRequest {
     String target, {
     String? csrf,
   }) async {
-    if (host == null) {
-      throw Error();
-    }
     final resRequests = await http.post(
         Uri.parse('https://www-$host/requests'),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -95,14 +91,7 @@ class ProxyHttpRequest {
   }
 
   Future<void> _cpi(String location) async {
-    if (host == null) {
-      throw Error();
-    }
     final cpiUrl = location;
-    if (cpiUrl == null) {
-      Logger.error('cpiUrl is null');
-      throw Error();
-    }
     final resCpi = await http
         .get(Uri.parse(cpiUrl), headers: {'Cookie': cookies[host] ?? ''});
     await setCookie(host, resCpi.headers);
@@ -110,9 +99,6 @@ class ProxyHttpRequest {
 
   Future<http.Response> _get(String target,
       {Map<String, String>? headers}) async {
-    if (host == null) {
-      throw Error();
-    }
     final targetHost = Uri.parse(target).host;
     final targetPath = Uri.parse(target).path;
     final targetProtocol = target.startsWith('http:') ? 'http' : 'https';
