@@ -43,8 +43,9 @@ class EHSession {
             .substring(
                 firstCookieString.indexOf('=') + 1, firstCookieString.length)
             .trim();
-        if (firstCookieKey == 'igneous' && firstCookieValue == 'mystery')
+        if (firstCookieKey == 'igneous' && firstCookieValue == 'mystery') {
           return;
+        }
         var _ck = ck
             .split(';')
             .where((element) => element.trim().isNotEmpty)

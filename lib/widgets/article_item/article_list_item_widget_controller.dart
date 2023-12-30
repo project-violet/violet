@@ -138,8 +138,9 @@ class ArticleListItemWidgetController extends GetxController {
               '$st');
         }
       }
-      if (provider != null)
+      if (provider != null) {
         ProviderManager.insert(articleListItem.queryResult.id(), provider);
+      }
     } else {
       provider = await ProviderManager.get(articleListItem.queryResult.id());
     }
