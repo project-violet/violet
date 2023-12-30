@@ -170,18 +170,21 @@ class EHSession {
               '[getEHashById] could not found ${id}`s ehash from ${from}');
           throw 'EHASH_LOCK';
         }
+        break;
       case 'exhentai.org':
         if (ex_ehash_could_not_found[id] == true) {
           Logger.warning(
               '[getEHashById] could not found ${id}`s ehash from ${from}');
           throw 'EHASH_LOCK';
         }
+        break;
       default:
         if (eh_ehash_could_not_found[id] == true &&
             ex_ehash_could_not_found == true) {
           Logger.warning('[getEHashById] could not found ${id}`s ehash');
           throw 'EHASH_LOCK';
         }
+        break;
     }
     if (id.isEmpty) throw Error();
     if (ehash_lock[id] == true) {
@@ -276,9 +279,11 @@ class EHSession {
         break;
       case 'exhentai.org':
         ex_ehash_could_not_found[id] = true;
+        break;
       default:
         eh_ehash_could_not_found[id] = true;
         ex_ehash_could_not_found[id] = true;
+        break;
     }
     ehash_lock[id] = false;
     Logger.warning('[getEHashById] Could not found hash of ${id}');
