@@ -21,6 +21,9 @@ jobs:
         with:
           channel: 'stable'
 
+      - name: Formatting
+        run: dart format --output=none --set-exit-if-changed .
+
       - name: Preprocess
         run: | 
           cd lib/server
@@ -33,9 +36,6 @@ jobs:
             echo 'String getValid(String vToken) { return vToken; }' > wsalt.dart
           EOF
           
-      - name: Formatting
-        run: dart format --output=none --set-exit-if-changed .
-
       - name: Analyze
         run: flutter analyze --no-fatal-infos
 
