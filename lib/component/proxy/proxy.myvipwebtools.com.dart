@@ -131,23 +131,23 @@ class ProxyHttpRequest {
     }
     targetQuery += '__cpo=${cpo}';
 
-    var _headers = headers ?? {};
-    var _cks = headers?['Cookie'] ?? '';
+    var headersTmp = headers ?? {};
+    var cookieStr = headers?['Cookie'] ?? '';
     if (headers?['Cookie']?.isNotEmpty ?? false) {
-      _cks = _cks?.split(';')?.where((e) => e.trim().isNotEmpty)?.map((_cKV) {
-            final cKV = _cKV.trim();
+      cookieStr = cookieStr?.split(';')?.where((e) => e.trim().isNotEmpty)?.map((cookieKeyVal) {
+            final cKV = cookieKeyVal.trim();
             final cK = cKV.substring(0, cKV.indexOf('=')).trim();
             final cV = cKV.substring(cKV.indexOf('=') + 1).trim();
             return '${cK}@${targetHost}=${cV}';
           }).join(';') ??
           '';
     }
-    _headers['Cookie'] = [(_cks), (cookies[host] ?? '')]
+    headersTmp['Cookie'] = [(cookieStr), (cookies[host] ?? '')]
         .where((c) => c.trim().isNotEmpty)
         .join(';');
     final res = await http.get(
         Uri.parse('https://${host}${targetPath}${targetQuery}'),
-        headers: _headers);
+        headers: headersTmp);
     return res;
   }
 

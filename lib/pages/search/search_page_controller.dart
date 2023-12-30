@@ -163,9 +163,9 @@ class SearchPageController extends GetxController {
   }
 
   loadNextQuery() async {
-    var _aq = _querySem.acquire();
+    var tmpAq = _querySem.acquire();
     if (!Settings.ignoreHTTPTimeout) {
-      _aq.timeout(
+      tmpAq.timeout(
         const Duration(seconds: 5),
         onTimeout: () {
           showErrorToast('Semaphore acquisition failed');
@@ -174,7 +174,7 @@ class SearchPageController extends GetxController {
         },
       );
     }
-    await _aq;
+    await tmpAq;
 
     try {
       if (_queryEnd ||

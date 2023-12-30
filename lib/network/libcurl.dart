@@ -49,11 +49,11 @@ class Http3Request {
         req.headers.addAll({'Referer': req.url});
       }
       Logger.info('[Http3 Request] GET ${req.url}');
-      var _sent = client.send(req);
+      var tmpSent = client.send(req);
       if (!Settings.ignoreHTTPTimeout && timeout != null) {
-        _sent.timeout(timeout);
+        tmpSent.timeout(timeout);
       }
-      res = await _sent;
+      res = await tmpSent;
       Logger.info('[Http3 Request] GET ${req.url} code: ${res.statusCode}');
       if (((res.statusCode) / 100).floor() != 3) {
         break;
@@ -83,11 +83,11 @@ class Http3Request {
         req.headers.addAll({'Referer': req.url});
       }
       Logger.info('[Http3 Request] POST ${req.url}');
-      var _sent = client.send(req);
+      var tmpSent = client.send(req);
       if (!Settings.ignoreHTTPTimeout && timeout != null) {
-        _sent.timeout(timeout);
+        tmpSent.timeout(timeout);
       }
-      res = await _sent;
+      res = await tmpSent;
       Logger.info('[Http3 Request] POST ${req.url} code: ${res.statusCode}');
       if (((res.statusCode) / 100).floor() != 3) {
         break;

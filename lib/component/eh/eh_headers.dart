@@ -46,12 +46,12 @@ class EHSession {
         if (firstCookieKey == 'igneous' && firstCookieValue == 'mystery') {
           return;
         }
-        var _ck = ck
+        var ckTmp2 = ck
             .split(';')
             .where((element) => element.trim().isNotEmpty)
             .toList();
-        _ck.add('${firstCookieKey}=${firstCookieValue}');
-        ck = _ck.join(';');
+        ckTmp2.add('${firstCookieKey}=${firstCookieValue}');
+        ck = ckTmp2.join(';');
       }
     });
     await prefs.setString('eh_cookies', ck);
@@ -82,12 +82,12 @@ class EHSession {
                 firstCookieString.indexOf('=') + 1, firstCookieString.length)
             .trim();
         if (firstCookieKey != 'sk') return;
-        var _ck = ck
+        var ckTmp2 = ck
             .split(';')
             .where((element) => element.trim().isNotEmpty)
             .toList();
-        _ck.add('${firstCookieKey}=${firstCookieValue}');
-        ck = _ck.join(';');
+        ckTmp2.add('${firstCookieKey}=${firstCookieValue}');
+        ck = ckTmp2.join(';');
       }
     });
     await prefs.setString('eh_cookies', ck);
@@ -98,7 +98,7 @@ class EHSession {
     final ckTmp = prefs.getString('eh_cookies');
     var ck = ckTmp ?? '';
     if (!ck.contains(';')) return false;
-    var _has = false;
+    var has = false;
     ck
         .split(';')
         .where((cookieKeyVal) => cookieKeyVal.trim().isNotEmpty)
@@ -111,9 +111,9 @@ class EHSession {
       if (cookieKey != 'igneous') return;
       if (cookieVal == 'mystery') return;
       if (cookieVal.isEmpty) return;
-      _has = true;
+      has = true;
     });
-    return _has;
+    return has;
   }
 
   static Future<bool> hasSkCookie() async {
@@ -121,7 +121,7 @@ class EHSession {
     final ckTmp = prefs.getString('eh_cookies');
     var ck = ckTmp ?? '';
     if (!ck.contains(';')) return false;
-    var _has = false;
+    var has = false;
     ck
         .split(';')
         .where((cookieKeyVal) => cookieKeyVal.trim().isNotEmpty)
@@ -133,9 +133,9 @@ class EHSession {
           cookieKeyVal.substring(cookieKeyVal.indexOf('=') + 1).trim();
       if (cookieKey != 'sk') return;
       if (cookieVal.isEmpty) return;
-      _has = true;
+      has = true;
     });
-    return _has;
+    return has;
   }
 
   static Future<String> requestString(String url) async {
@@ -225,10 +225,10 @@ class EHSession {
           final listHtml = await EHSession.requestString(
               'https://${host}/?next=${(int.parse(id) + 1)}');
           final doc = parse(listHtml);
-          final _url =
+          final url =
               doc.querySelector('a[href*="/g/${id}"]')?.attributes['href'] ??
                   '';
-          final _ehash = Uri.parse(_url)
+          final ehash = Uri.parse(url)
               .path
               .split('/')
               .lastWhere((e) => e.trim().isNotEmpty)
