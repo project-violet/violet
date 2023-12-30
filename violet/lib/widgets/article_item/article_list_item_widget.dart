@@ -330,6 +330,7 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
           msg:
               '${data.queryResult.id()}${locale.Translations.of(context).trans(c.isBookmarked.value ? 'removetobookmark' : 'addtobookmark')}',
         ),
+        ignorePointer: true,
         gravity: ToastGravity.BOTTOM,
         toastDuration: const Duration(seconds: 4),
       );

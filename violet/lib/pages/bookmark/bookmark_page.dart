@@ -164,6 +164,7 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
           isWarning: false,
           msg: 'You cannot move like that!',
         ),
+        ignorePointer: true,
         gravity: ToastGravity.BOTTOM,
         toastDuration: const Duration(seconds: 4),
       );

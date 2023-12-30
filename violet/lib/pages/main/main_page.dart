@@ -486,6 +486,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
           isCheck: true,
           msg: Translations.of(context).trans('thisislatestbookmark'),
         ),
+        ignorePointer: true,
         gravity: ToastGravity.BOTTOM,
         toastDuration: const Duration(seconds: 4),
       );
@@ -523,6 +524,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
           isCheck: true,
           msg: Translations.of(context).trans('synccomplete'),
         ),
+        ignorePointer: true,
         gravity: ToastGravity.BOTTOM,
         toastDuration: const Duration(seconds: 4),
       );

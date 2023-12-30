@@ -124,6 +124,7 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
             isCheck: false,
             msg: 'Bookmark Restoring Error!',
           ),
+          ignorePointer: true,
           gravity: ToastGravity.BOTTOM,
           toastDuration: const Duration(seconds: 4),
         );

@@ -269,6 +269,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
             msg:
                 '${widget.item.info()!.split('[')[1].split(']').first}${Translations.of(context).trans('download')} ${Translations.of(context).trans('complete')}',
           ),
+          ignorePointer: true,
           gravity: ToastGravity.BOTTOM,
           toastDuration: const Duration(seconds: 4),
         );
@@ -331,6 +332,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
               isWarning: false,
               msg: 'URL Copied!',
             ),
+            ignorePointer: true,
             gravity: ToastGravity.BOTTOM,
             toastDuration: const Duration(seconds: 4),
           );

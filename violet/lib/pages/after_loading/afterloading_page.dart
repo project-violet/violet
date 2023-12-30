@@ -316,6 +316,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             icon: Icons.logout,
             msg: Translations.of(context).trans('closedoubletap'),
           ),
+          ignorePointer: true,
           gravity: ToastGravity.BOTTOM,
           toastDuration: const Duration(seconds: 4),
         );
