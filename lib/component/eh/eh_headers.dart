@@ -252,7 +252,6 @@ class EHSession {
         final ddg = DuckDuckGoSearch();
         final searchResponse =
             await ddg.searchProxied('site:e-hentai.org in-url:/g/$id/');
-        final searchHtml = searchResponse.body;
         var foundEncodedUrls = parse(searchResponse.body)
             .querySelectorAll('a[href*="${Uri.encodeComponent('/g/$id')}"]')
             .map((encodedUrl) => encodedUrl.attributes['href']?.trim() ?? '')

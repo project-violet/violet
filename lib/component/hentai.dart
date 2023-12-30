@@ -1,7 +1,6 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
-import 'package:html/parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
@@ -116,15 +115,10 @@ class HentaiManager {
   }
 
   static idSearchEhentai(String what) async {
-    final queryString = HitomiManager.translate2query(what);
-    var queryResult = (await (await DataBaseManager.getInstance())
-            .query('$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0'))
-        .map((e) => QueryResult(result: e))
-        .toList();
     int no = int.parse(what);
 
     try {
-      String? galleryUrl, galleryToken;
+      String? galleryToken;
       galleryToken = await EHSession.getEHashById('$no', 'e-hentai.org');
       var html = await EHSession.requestString(
           'https://e-hentai.org/g/$no/$galleryToken/?p=0&inline_set=ts_m');
@@ -146,15 +140,10 @@ class HentaiManager {
   }
 
   static idSearchExhentai(String what) async {
-    final queryString = HitomiManager.translate2query(what);
-    var queryResult = (await (await DataBaseManager.getInstance())
-            .query('$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0'))
-        .map((e) => QueryResult(result: e))
-        .toList();
     int no = int.parse(what);
 
     try {
-      String? galleryUrl, galleryToken;
+      String? galleryToken;
       galleryToken = await EHSession.getEHashById('$no', 'exhentai.org');
       var html = await EHSession.requestString(
           'https://exhentai.org/g/$no/$galleryToken/?p=0&inline_set=ts_m');
