@@ -582,6 +582,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
             isWarning: false,
             msg: 'Ids Copied!',
           ),
+          ignorePointer: true,
           gravity: ToastGravity.BOTTOM,
           toastDuration: const Duration(seconds: 4),
         );

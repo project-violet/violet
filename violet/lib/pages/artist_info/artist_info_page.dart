@@ -441,6 +441,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             msg:
                 '${widget.artist}${Translations.of(context).trans(isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
           ),
+          ignorePointer: true,
           gravity: ToastGravity.BOTTOM,
           toastDuration: const Duration(seconds: 4),
         );

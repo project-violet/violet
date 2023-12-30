@@ -252,6 +252,7 @@ class ArticleInfoPage extends StatelessWidget {
           isWarning: true,
           msg: 'You need to open the download tab!',
         ),
+        ignorePointer: true,
         gravity: ToastGravity.BOTTOM,
         toastDuration: const Duration(seconds: 4),
       );
@@ -276,6 +277,7 @@ class ArticleInfoPage extends StatelessWidget {
         msg: data.queryResult.id().toString() +
             Translations.of(context).trans('addtodownloadqueue'),
       ),
+      ignorePointer: true,
       gravity: ToastGravity.BOTTOM,
       toastDuration: const Duration(seconds: 4),
     );
@@ -1133,6 +1135,7 @@ class _Chip extends StatelessWidget {
               isWarning: false,
               msg: Translations.of(context).trans('copied'),
             ),
+            ignorePointer: true,
             gravity: ToastGravity.BOTTOM,
             toastDuration: const Duration(seconds: 4),
           );
