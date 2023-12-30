@@ -285,6 +285,7 @@ class HentaiManager {
 
   static Future<VioletImageProvider> getImageProvider(QueryResult qr) async {
     final route = Settings.routingRule;
+    final prefs = await SharedPreferences.getInstance();
 
     do {
       final v4 = ScriptManager.enableV4;
@@ -304,8 +305,14 @@ class HentaiManager {
                 }
               }
               if (qr.ehash() != null || eh_ehash != null) {
-                var html = await EHSession.requestString(
-                    'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? eh_ehash)}/?p=0&inline_set=ts_m');
+                final res = await http.get(
+                  'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? eh_ehash)}/?p=0&inline_set=ts_m',
+                  headers: { 'Cookie': prefs.getString('eh_cookies') ?? '' }
+                );
+                if(res.statusCode != 200){
+                  throw '[getImageProvider][EHentai] ID: ${qr.id()} CODE: ${res.statusCode}';
+                }
+                final html = res.body;
                 var article = EHParser.parseArticleData(html);
                 return EHentaiImageProvider(
                   count: article.length,
@@ -324,8 +331,14 @@ class HentaiManager {
                     await EHSession.getEHashById('${qr.id()}', 'exhentai.org');
               }
               if (qr.ehash() != null || ex_ehash != null) {
-                var html = await EHSession.requestString(
-                    'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? ex_ehash)}/?p=0&inline_set=ts_m');
+                final res = await http.get(
+                  'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? eh_ehash)}/?p=0&inline_set=ts_m',
+                  headers: { 'Cookie': prefs.getString('eh_cookies') ?? '' }
+                );
+                if(res.statusCode != 200){
+                  throw '[getImageProvider][ExHentai] ID: ${qr.id()} CODE: ${res.statusCode}';
+                }
+                final html = res.body;
                 var article = EHParser.parseArticleData(html);
                 return EHentaiImageProvider(
                   count: article.length,

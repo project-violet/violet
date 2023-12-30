@@ -110,9 +110,16 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   Future<QueryResult> _tryGetArticleFromEhentai(String id) async {
+    final prefs = await SharedPreferences.getInstance();
     final hash = await EHSession.getEHashById(id, 'e-hentai.org');
-    final html = await EHSession.requestString(
-        'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
+    final res = await http.get(
+      'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m',
+      headers: { 'Cookie': prefs.getString('eh_cookies') ?? '' },
+    );
+    if(res.statusCode != 200){
+      throw '[_tryGetArticleFromEhentai] ID:${id} CODE:${res.statusCode}';
+    }
+    final html = res.body;
     final articleEh = EHParser.parseArticleData(html);
     List<String> tags = [];
     List<String> series = [];
@@ -159,9 +166,16 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   Future<QueryResult> _tryGetArticleFromExhentai(String id) async {
+    final prefs = await SharedPreferences.getInstance();
     final hash = await EHSession.getEHashById(id, 'exhentai.org');
-    final html = await EHSession.requestString(
-        'https://exhentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
+    final res = await http.get(
+      'https://exhentai.org/g/$id/$hash/?p=0&inline_set=ts_m',
+      headers: { 'Cookie': prefs.getString('eh_cookies') ?? '' },
+    );
+    if(res.statusCode != 200){
+      throw '[_tryGetArticleFromExhentai] ID:${id} CODE:${res.statusCode}';
+    }
+    final html = res.body;
     final articleEh = EHParser.parseArticleData(html);
     List<String> tags = [];
     List<String> series = [];
