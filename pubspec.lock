@@ -591,6 +591,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.3"
+  flutter_curl:
+    dependency: "direct main"
+    description:
+      name: flutter_curl
+      sha256: d79f6c32d3488678db15f26d58ed59bb57b917d3d5ce86c42c4297912b3bb88d
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   flutter_downloader:
     dependency: "direct main"
     description:
