@@ -1,4 +1,4 @@
-name: Build android/ios
+name: CI 
 on:
   pull_request:
     branches:
@@ -6,6 +6,39 @@ on:
   merge_group:
 
 jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
+          
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+          
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'stable'
+
+      - name: Preprocess
+        run: | 
+          cd lib/server
+          wget -q ${{ secrets.SECRET_SALT }} || bash << EOF
+            echo DO NOT USE SECRET
+            echo 'String getValid(String vToken) { return vToken; }' > salt.dart
+          EOF
+          wget -q ${{ secrets.SECRET_WSALT }} || bash << EOF
+            echo DO NOT USE SECRET
+            echo 'String getValid(String vToken) { return vToken; }' > wsalt.dart
+          EOF
+          
+      - name: Formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos
+
   ios-build:
     runs-on: macos-latest
     steps:
@@ -15,11 +48,12 @@ jobs:
           
       - uses: subosito/flutter-action@v2
         with:
-          # flutter-version: '2.5.2'
           channel: 'stable'
+          
       - uses: actions/setup-python@v2
         with:
           python-version: '3.8'
+          
       - name: Preprocess
         run: | 
           cd lib/server
@@ -33,6 +67,7 @@ jobs:
           EOF
           cd ../..
           python3 preprocess-ios.py
+          
       - name: Podfile
         run: |
           cd ios
@@ -42,6 +77,7 @@ jobs:
           pod install
           pod update
           cd ..
+          
       - name: Build
         run: |
           flutter build ios --release --no-codesign
@@ -49,6 +85,7 @@ jobs:
           mv ./build/ios/iphoneos/Runner.app Payload
           zip -r -y Payload.zip Payload/Runner.app
           mv Payload.zip Payload.ipa
+          
       - name: Upload IPA
         uses: actions/upload-artifact@v2
         with:
@@ -65,13 +102,16 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '12.x'
+          
       - uses: subosito/flutter-action@v1
         with:
           # flutter-version: '2.5.2'
           channel: 'stable'
+          
       - uses: actions/setup-python@v2
         with:
           python-version: '3.8'
+          
       - name: Preprocess
         run: | 
           cd lib/server
@@ -85,10 +125,12 @@ jobs:
           EOF
           cd ../..
           python3 preprocess-android.py
+          
       - name: Build
         run: |
           flutter clean
           flutter build apk --release
+          
       - name: Upload APK
         uses: actions/upload-artifact@v2
         with:
