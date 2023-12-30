@@ -117,15 +117,15 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       headers: {'Cookie': prefs.getString('eh_cookies') ?? ''},
     );
     if (res.statusCode != 200) {
-      throw '[_tryGetArticleFromEhentai] ID:${id} CODE:${res.statusCode}';
+      throw '[_tryGetArticleFromEhentai] ID:$id CODE:${res.statusCode}';
     }
     final html = res.body;
     if (html.contains('This gallery has been removed or is unavailable.')) {
-      throw '[_tryGetArticleFromEhentai] ID:${id} NOT_AVAILABLE';
+      throw '[_tryGetArticleFromEhentai] ID:$id NOT_AVAILABLE';
     }
     if (html.contains(
         'Your IP address has been temporarily banned for excessive pageloads.')) {
-      throw '[_tryGetArticleFromEhentai] ID:${id} RATE_LIMIT';
+      throw '[_tryGetArticleFromEhentai] ID:$id RATE_LIMIT';
     }
     final articleEh = EHParser.parseArticleData(html);
     List<String> tags = [];
@@ -133,17 +133,17 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     List<String> characters = [];
     if (articleEh.female != null) {
       articleEh.female?.forEach((female) {
-        tags.add('female:${female}');
+        tags.add('female:$female');
       });
     }
     if (articleEh.male != null) {
       articleEh.male?.forEach((male) {
-        tags.add('male:${male}');
+        tags.add('male:$male');
       });
     }
     if (articleEh.misc != null) {
       articleEh.misc?.forEach((misc) {
-        tags.add('tag:${misc}');
+        tags.add('tag:$misc');
       });
     }
     if (articleEh.parody != null) {
@@ -180,15 +180,15 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       headers: {'Cookie': prefs.getString('eh_cookies') ?? ''},
     );
     if (res.statusCode != 200) {
-      throw '[_tryGetArticleFromExhentai] ID:${id} CODE:${res.statusCode}';
+      throw '[_tryGetArticleFromExhentai] ID:$id CODE:${res.statusCode}';
     }
     final html = res.body;
     if (html.contains('This gallery has been removed or is unavailable.')) {
-      throw '[_tryGetArticleFromExhentai] ID:${id} NOT_AVAILABLE';
+      throw '[_tryGetArticleFromExhentai] ID:$id NOT_AVAILABLE';
     }
     if (html.contains(
         'Your IP address has been temporarily banned for excessive pageloads.')) {
-      throw '[_tryGetArticleFromExhentai] ID:${id} RATE_LIMIT';
+      throw '[_tryGetArticleFromExhentai] ID:$id RATE_LIMIT';
     }
     final articleEh = EHParser.parseArticleData(html);
     List<String> tags = [];
@@ -196,17 +196,17 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     List<String> characters = [];
     if (articleEh.female != null) {
       articleEh.female?.forEach((female) {
-        tags.add('female:${female}');
+        tags.add('female:$female');
       });
     }
     if (articleEh.male != null) {
       articleEh.male?.forEach((male) {
-        tags.add('male:${male}');
+        tags.add('male:$male');
       });
     }
     if (articleEh.misc != null) {
       articleEh.misc?.forEach((misc) {
-        tags.add('tag:${misc}');
+        tags.add('tag:$misc');
       });
     }
     if (articleEh.parody != null) {

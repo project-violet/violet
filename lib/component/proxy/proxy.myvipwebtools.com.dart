@@ -11,7 +11,7 @@ class ProxyHttpRequest {
 
   Future<String> getCSRF(String host) async {
     var res = await http.get(
-      Uri.parse('https://www-${host}/'),
+      Uri.parse('https://www-$host/'),
     );
     while (true) {
       if (res?.headers?['location']?.isNotEmpty ?? false) {
@@ -54,22 +54,22 @@ class ProxyHttpRequest {
             if (cookieVal.isEmpty) return;
             final ckTmp = ck
                 .split(';')
-                .where((c) => c.trim().startsWith('${cookieKey}='));
+                .where((c) => c.trim().startsWith('$cookieKey='));
 
             if (ckTmp.isNotEmpty) {
               // when old cookie is exist
               ck = ck.split(';').where((c) => c.trim().isNotEmpty).map((c) {
                 final cKey = c.substring(0, c.indexOf('=')).trim();
                 final cVal = c.substring(c.indexOf('=') + 1).trim();
-                if (cKey != cookieKey) return '${cKey}=${cVal}';
+                if (cKey != cookieKey) return '$cKey=$cVal';
                 // Set new cookie where exist
-                return '${cookieKey}=${cookieVal}';
+                return '$cookieKey=$cookieVal';
               }).join(';');
             } else {
               // Set new cookie where not exist
               var ckArr =
                   ck.split(';').where((c) => c.trim().isNotEmpty).toList();
-              ckArr.add('${cookieKey}=${cookieVal}');
+              ckArr.add('$cookieKey=$cookieVal');
               ck = ckArr.join(';');
             }
             ck = ck.split(';').where((c) => c.trim().isNotEmpty).join(';');
@@ -88,9 +88,9 @@ class ProxyHttpRequest {
       throw Error();
     }
     final resRequests = await http.post(
-        Uri.parse('https://www-${host}/requests'),
+        Uri.parse('https://www-$host/requests'),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'url=${Uri.encodeComponent((target))}&csrf=${csrf}');
+        body: 'url=${Uri.encodeComponent((target))}&csrf=$csrf');
     await setCookie(host, resRequests.headers);
     return resRequests.headers['location'] ?? '';
   }
@@ -118,18 +118,18 @@ class ProxyHttpRequest {
     final targetPath = Uri.parse(target).path;
     final targetProtocol = target.startsWith('http:') ? 'http' : 'https';
     final cpo =
-        base64.encode(utf8.encode('${targetProtocol}://${targetHost}'));
+        base64.encode(utf8.encode('$targetProtocol://$targetHost'));
     var targetQuery = '?';
     Uri.parse(target).queryParameters.forEach((key, value) {
       if (targetQuery != '?') {
         targetQuery += '&';
       }
-      targetQuery += '${key}=${Uri.encodeComponent(value)}';
+      targetQuery += '$key=${Uri.encodeComponent(value)}';
     });
     if (targetQuery != '?') {
       targetQuery += '&';
     }
-    targetQuery += '__cpo=${cpo}';
+    targetQuery += '__cpo=$cpo';
 
     var headersTmp = headers ?? {};
     var cookieStr = headers?['Cookie'] ?? '';
@@ -138,7 +138,7 @@ class ProxyHttpRequest {
             final cKV = cookieKeyVal.trim();
             final cK = cKV.substring(0, cKV.indexOf('=')).trim();
             final cV = cKV.substring(cKV.indexOf('=') + 1).trim();
-            return '${cK}@${targetHost}=${cV}';
+            return '$cK@$targetHost=$cV';
           }).join(';') ??
           '';
     }
@@ -146,7 +146,7 @@ class ProxyHttpRequest {
         .where((c) => c.trim().isNotEmpty)
         .join(';');
     final res = await http.get(
-        Uri.parse('https://${host}${targetPath}${targetQuery}'),
+        Uri.parse('https://$host$targetPath$targetQuery'),
         headers: headersTmp);
     return res;
   }

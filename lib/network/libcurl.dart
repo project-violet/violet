@@ -116,11 +116,11 @@ class Http3Request {
     if (!libraryAbis.contains(targetAbi)) {
       return null;
     }
-    final sharedLibraryPath = 'assets/libcurl/android/$targetAbi/${soName}.so';
+    final sharedLibraryPath = 'assets/libcurl/android/$targetAbi/$soName.so';
     final sharedLibraryContent = await rootBundle.load(sharedLibraryPath);
 
     final tempDir = await getTemporaryDirectory();
-    final libraryFile = File('${tempDir.path}/${soName}.so');
+    final libraryFile = File('${tempDir.path}/$soName.so');
     if (await libraryFile.exists()) {
       return libraryFile.path;
     }

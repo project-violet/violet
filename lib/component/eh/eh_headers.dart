@@ -50,7 +50,7 @@ class EHSession {
             .split(';')
             .where((element) => element.trim().isNotEmpty)
             .toList();
-        ckTmp2.add('${firstCookieKey}=${firstCookieValue}');
+        ckTmp2.add('$firstCookieKey=$firstCookieValue');
         ck = ckTmp2.join(';');
       }
     });
@@ -86,7 +86,7 @@ class EHSession {
             .split(';')
             .where((element) => element.trim().isNotEmpty)
             .toList();
-        ckTmp2.add('${firstCookieKey}=${firstCookieValue}');
+        ckTmp2.add('$firstCookieKey=$firstCookieValue');
         ck = ckTmp2.join(';');
       }
     });
@@ -168,21 +168,21 @@ class EHSession {
       case 'e-hentai.org':
         if (ehEhashCouldNotFound[id] == true) {
           Logger.warning(
-              '[getEHashById] could not found ${id}`s ehash from ${from}');
+              '[getEHashById] could not found $id`s ehash from $from');
           throw 'EHASH_LOCK';
         }
         break;
       case 'exhentai.org':
         if (exEhashCouldNotFound[id] == true) {
           Logger.warning(
-              '[getEHashById] could not found ${id}`s ehash from ${from}');
+              '[getEHashById] could not found $id`s ehash from $from');
           throw 'EHASH_LOCK';
         }
         break;
       default:
         if (ehEhashCouldNotFound[id] == true &&
             exEhashCouldNotFound[id] == true) {
-          Logger.warning('[getEHashById] could not found ${id}`s ehash');
+          Logger.warning('[getEHashById] could not found $id`s ehash');
           throw 'EHASH_LOCK';
         }
         break;
@@ -223,10 +223,10 @@ class EHSession {
         if (ehash != null) return;
         try {
           final listHtml = await EHSession.requestString(
-              'https://${host}/?next=${(int.parse(id) + 1)}');
+              'https://$host/?next=${(int.parse(id) + 1)}');
           final doc = parse(listHtml);
           final url =
-              doc.querySelector('a[href*="/g/${id}"]')?.attributes['href'] ??
+              doc.querySelector('a[href*="/g/$id"]')?.attributes['href'] ??
                   '';
           final foundEhash = Uri.parse(url)
               .path
@@ -251,10 +251,10 @@ class EHSession {
       try {
         final ddg = DuckDuckGoSearch();
         final searchResponse =
-            await ddg.searchProxied('site:e-hentai.org in-url:/g/${id}/');
+            await ddg.searchProxied('site:e-hentai.org in-url:/g/$id/');
         final searchHtml = searchResponse.body;
         var foundEncodedUrls = parse(searchResponse.body)
-            .querySelectorAll('a[href*="${Uri.encodeComponent('/g/${id}')}"]')
+            .querySelectorAll('a[href*="${Uri.encodeComponent('/g/$id')}"]')
             .map((encodedUrl) => encodedUrl.attributes['href']?.trim() ?? '')
             .where((encodedUrl) => encodedUrl.trim().isNotEmpty);
         var url = '';
@@ -262,7 +262,7 @@ class EHSession {
             ?.map((url) => Uri.parse(url ?? '').queryParameters)
             ?.forEach((element) {
           element.forEach((key, value) {
-            if (value.contains('/g/${id}/')) {
+            if (value.contains('/g/$id/')) {
               url = value;
             }
           });
@@ -287,7 +287,7 @@ class EHSession {
         break;
     }
     ehashLock[id] = false;
-    Logger.warning('[getEHashById] Could not found hash of ${id}');
+    Logger.warning('[getEHashById] Could not found hash of $id');
     throw 'NOT_FOUND_EHASH';
   }
 }

@@ -125,9 +125,9 @@ class HentaiManager {
 
     try {
       var galleryUrl, galleryToken;
-      galleryToken = await EHSession.getEHashById('${no}', 'e-hentai.org');
+      galleryToken = await EHSession.getEHashById('$no', 'e-hentai.org');
       var html = await EHSession.requestString(
-          'https://e-hentai.org/g/${no}/${galleryToken}/?p=0&inline_set=ts_m');
+          'https://e-hentai.org/g/$no/$galleryToken/?p=0&inline_set=ts_m');
       var articleEh = EHParser.parseArticleData(html);
       var meta = {
         'Id': no,
@@ -155,9 +155,9 @@ class HentaiManager {
 
     try {
       var galleryUrl, galleryToken;
-      galleryToken = await EHSession.getEHashById('${no}', 'exhentai.org');
+      galleryToken = await EHSession.getEHashById('$no', 'exhentai.org');
       var html = await EHSession.requestString(
-          'https://exhentai.org/g/${no}/${galleryToken}/?p=0&inline_set=ts_m');
+          'https://exhentai.org/g/$no/$galleryToken/?p=0&inline_set=ts_m');
       var articleEh = EHParser.parseArticleData(html);
       var meta = {
         'Id': no,
