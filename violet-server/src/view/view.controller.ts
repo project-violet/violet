@@ -27,7 +27,7 @@ export class ViewController {
   @ApiResponse({
     type: ViewGetResponseDto,
   })
-  @UseGuards(HmacAuthGuard)
+  // @UseGuards(HmacAuthGuard)
   async get(@Query() dto: ViewGetRequestDto) {
     return this.viewService.getView(dto);
   }
