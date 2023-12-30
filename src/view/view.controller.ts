@@ -8,7 +8,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ViewService } from './view.service';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ViewGetRequestDto, ViewGetResponseDto } from './dtos/view-get.dto';
 import { HmacAuthGuard } from 'src/auth/guards/hmac.guard';
 import { ViewPostRequestDto } from './dtos/view-post.dto';
@@ -16,6 +16,7 @@ import { User } from 'src/user/entity/user.entity';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 
+@ApiTags('view')
 @Controller('view')
 export class ViewController {
   constructor(private readonly viewService: ViewService) {}
