@@ -11,9 +11,9 @@ export function setupSwagger(app: INestApplication): void {
     .setTitle('Violet Server API Docs')
     .setDescription('Violet Server API description')
     .setVersion('1.0.0')
-    .setBasePath('api/v1')
+    .setBasePath('api/v2')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('api-docs', app, document);
+  SwaggerModule.setup('api/v2/docs', app, document);
 }
