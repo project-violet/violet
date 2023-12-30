@@ -63,6 +63,7 @@ import 'package:violet/platform/misc.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
+import 'package:violet/util/helper.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
@@ -2254,44 +2255,25 @@ class _SettingsPageState extends State<SettingsPage>
 
               final prefs = await SharedPreferences.getInstance();
               if (dialog == 1) {
-                var result = await Navigator.of(context).push(MaterialPageRoute(
+                var cookie = await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const LoginScreen()));
-                if (result != null) {
-                  var ck = result
-                      .toString()
-                      .split(';')
-                      .where((element) => element.trim().isNotEmpty)
-                      .join(';');
-                  await prefs.setString('eh_cookies', ck);
-                  try {
+
+                if (cookie != null) {
+                  await catchUnwind(() async {
                     final res = await http.get('https://exhentai.org',
-                        headers: {'Cookie': result});
-                    res.headers.forEach((key, value) {
-                      if (key == 'set-cookie') {
-                        final firstCookieString = value.split(';')[0];
-                        final firstCookieKey = firstCookieString
-                            .substring(0, firstCookieString.indexOf('='))
-                            .trim();
-                        final firstCookieValue = firstCookieString
-                            .substring(firstCookieString.indexOf('=') + 1,
-                                firstCookieString.length)
-                            .trim();
-                        if (firstCookieKey == 'igneous' &&
-                            firstCookieValue == 'mystery') return;
-                        var _ck = ck
-                            .split(';')
-                            .where((element) => element.trim().isNotEmpty)
-                            .toList();
-                        _ck.add('${firstCookieKey}=${firstCookieValue}');
-                        ck = _ck.join(';');
-                      }
-                    });
-                    await prefs.setString('eh_cookies', ck);
-                  } catch (e, st) {}
-                  await prefs.setString('eh_cookies', ck);
+                        headers: {'Cookie': cookie});
+
+                    // sk=...; expires=Sun, 29-Dec-2024 07:02:58 GMT; Max-Age=31536000; path=/; domain=.exhentai.org
+                    final setCookie = res.headers['set-cookie'];
+                    if (setCookie != null && setCookie.startsWith('sk=')) {
+                      cookie += ';${setCookie.split(';')[0]}';
+                    }
+                  });
+
+                  await prefs.setString('eh_cookies', cookie);
                 }
 
-                if (result != null) {
+                if (cookie != null) {
                   flutterToast.showToast(
                     child: const ToastWrapper(
                       isCheck: true,
@@ -2380,29 +2362,22 @@ class _SettingsPageState extends State<SettingsPage>
                 );
 
                 if (dialog != null && dialog == true) {
-                  var ck =
-                      'sk=${sController.text};ipb_member_id=${imiController.text};ipb_pass_hash=${iphController.text};${((iController.text.length == 0 || iController.text == 'mystery') ? '' : 'igneous=${iController.text};')}';
-                  await prefs.setString('eh_cookies', ck);
-                  try {
-                    final res = await http
-                        .get('https://exhentai.org', headers: {'Cookie': ck});
-                    res.headers.forEach((key, value) {
-                      if (key == 'set-cookie') {
-                        final firstCookieString = value.split(';')[0];
-                        final firstCookieKey = firstCookieString
-                            .substring(0, firstCookieString.indexOf('='))
-                            .trim();
-                        final firstCookieValue = firstCookieString
-                            .substring(firstCookieString.indexOf('=') + 1,
-                                firstCookieString.length)
-                            .trim();
-                        if (firstCookieKey == 'igneous' &&
-                            firstCookieValue == 'mystery') return;
-                        ck += '${firstCookieKey}=${firstCookieValue};';
-                      }
-                    });
-                  } catch (e, st) {}
-                  await prefs.setString('eh_cookies', ck);
+                  var cookie =
+                      'sk=${sController.text};ipb_member_id=${imiController.text};ipb_pass_hash=${iphController.text};igneous=${iController.text}';
+
+                  await catchUnwind(() async {
+                    final res = await http.get('https://exhentai.org',
+                        headers: {'Cookie': cookie});
+
+                    final setCookie = res.headers['set-cookie'];
+                    if (setCookie != null &&
+                        (setCookie.startsWith('sk=') ||
+                            setCookie.startsWith('igneous='))) {
+                      cookie += ';${setCookie.split(';')[0]}';
+                    }
+                  });
+
+                  await prefs.setString('eh_cookies', cookie);
                 }
               }
 
