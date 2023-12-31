@@ -236,6 +236,7 @@ class EHSession {
             if (host.contains('e-hentai')) ehashs = ehEhashs;
             ehash = foundEhash;
           }
+        // ignore: empty_catches
         } catch (e) {}
       });
     } catch (_) {}

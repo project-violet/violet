@@ -275,6 +275,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
           'Id': int.parse(element.article()),
           'Loading': true,
         }));
+      // ignore: empty_catches
       } catch (e) {}
       queryResult = result;
       _applyFilter();
