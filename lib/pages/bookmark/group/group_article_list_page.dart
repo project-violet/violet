@@ -287,19 +287,12 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       tryHitomi() async {
         article ??= await _tryGetArticleFromHitomi(element.article());
       }
-
-      ;
-
       tryEhentai() async {
         article ??= await _tryGetArticleFromEhentai(element.article());
       }
-
-      ;
       tryExhentai() async {
         article ??= await _tryGetArticleFromExhentai(element.article());
       }
-
-      ;
 
       handleEhentai() async {
         try {
