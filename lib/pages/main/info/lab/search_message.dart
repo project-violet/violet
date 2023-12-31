@@ -17,6 +17,7 @@ import 'package:violet/model/article_info.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
+import 'package:violet/pages/common/utils.dart';
 import 'package:violet/pages/main/info/lab/search_message_rank.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
@@ -173,7 +174,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                     return InkWell(
                       onTap: () async {
                         FocusScope.of(context).unfocus();
-                        _showArticleInfo(e.item2);
+                        showArticleInfo(context, e.item2);
                       },
                       splashColor: Colors.white,
                       child: Column(
@@ -456,53 +457,5 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
       ),
     );
     return completer.future;
-  }
-
-  void _showArticleInfo(int id) async {
-    final height = MediaQuery.of(context).size.height;
-
-    final search = await HentaiManager.idSearch(id.toString());
-    if (search.results.length != 1) return;
-
-    final qr = search.results.first;
-
-    HentaiManager.getImageProvider(qr).then((value) async {
-      var thumbnail = await value.getThumbnailUrl();
-      var headers = await value.getHeader(0);
-      ProviderManager.insert(qr.id(), value);
-
-      var isBookmarked =
-          await (await Bookmark.getInstance()).isBookmark(qr.id());
-
-      Provider<ArticleInfo>? cache;
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (_) {
-          return DraggableScrollableSheet(
-            initialChildSize: 400 / height,
-            minChildSize: 400 / height,
-            maxChildSize: 0.9,
-            expand: false,
-            builder: (_, controller) {
-              cache ??= Provider<ArticleInfo>.value(
-                value: ArticleInfo.fromArticleInfo(
-                  queryResult: qr,
-                  thumbnail: thumbnail,
-                  headers: headers,
-                  heroKey: 'zxcvzxcvzxcv',
-                  isBookmarked: isBookmarked,
-                  controller: controller,
-                ),
-                child: const ArticleInfoPage(
-                  key: ObjectKey('asdfasdf'),
-                ),
-              );
-              return cache!;
-            },
-          );
-        },
-      );
-    });
   }
 }
