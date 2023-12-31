@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:uni_links/uni_links.dart';
@@ -338,6 +339,10 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
         return false;
       },
       child: Scaffold(
+        appBar: AppBar(
+            systemOverlayStyle: Settings.themeWhat
+                ? SystemUiOverlayStyle.dark
+                : SystemUiOverlayStyle.light),
         bottomNavigationBar: _usesBottomNavigationBar
             ? _buildBottomNavigationBar(context)
             : null,
