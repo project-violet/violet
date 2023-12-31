@@ -811,30 +811,30 @@ class _SettingsPageState extends State<SettingsPage>
               },
             ),
           if (!Settings.liteMode) _buildDivider(),
-          // if (!Settings.liteMode)
-          InkWell(
-            child: ListTile(
-              leading: Icon(Mdi.compassOutline, color: Settings.majorColor),
-              title: const Text('Pure Search'),
-              trailing: Switch(
-                value: Settings.searchPure,
-                onChanged: (newValue) async {
-                  await Settings.setSearchPure(newValue);
-                  setState(() {
-                    _shouldReload = true;
-                  });
-                },
-                activeTrackColor: Settings.majorColor,
-                activeColor: Settings.majorAccentColor,
+          if (!Settings.liteMode)
+            InkWell(
+              child: ListTile(
+                leading: Icon(Mdi.compassOutline, color: Settings.majorColor),
+                title: const Text('Pure Search'),
+                trailing: Switch(
+                  value: Settings.searchPure,
+                  onChanged: (newValue) async {
+                    await Settings.setSearchPure(newValue);
+                    setState(() {
+                      _shouldReload = true;
+                    });
+                  },
+                  activeTrackColor: Settings.majorColor,
+                  activeColor: Settings.majorAccentColor,
+                ),
               ),
+              onTap: () async {
+                await Settings.setSearchPure(!Settings.searchPure);
+                setState(() {
+                  _shouldReload = true;
+                });
+              },
             ),
-            onTap: () async {
-              await Settings.setSearchPure(!Settings.searchPure);
-              setState(() {
-                _shouldReload = true;
-              });
-            },
-          ),
           _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
