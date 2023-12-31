@@ -306,5 +306,8 @@
   "realtimeuserrecord": "Real Time User Record",
   "manualupdate": "Manual Update",
   "cannotuseios": "You cannot use update on iOS :(",
-  "exitTheApp": "Exit the app"
+  "exitTheApp": "Exit the app",
+  "deleteoldlogatstart": "Delete Old Log (At App Start)",
+  "ignorehttptimeout": "Ignore Http Timeout",
+  "usehttp3": "Use Http3 (Experimental)"
 }

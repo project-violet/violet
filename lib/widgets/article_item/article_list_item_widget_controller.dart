@@ -10,6 +10,7 @@ import 'package:violet/component/hentai.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
@@ -123,18 +124,30 @@ class ArticleListItemWidgetController extends GetxController {
   }
 
   setProvider() async {
-    VioletImageProvider provider;
+    VioletImageProvider? provider;
 
     if (!ProviderManager.isExists(articleListItem.queryResult.id())) {
-      provider =
-          await HentaiManager.getImageProvider(articleListItem.queryResult);
-      ProviderManager.insert(articleListItem.queryResult.id(), provider);
+      try {
+        provider =
+            await HentaiManager.getImageProvider(articleListItem.queryResult);
+      } catch (e, st) {
+        if (e == 'Loading') {
+          // Logger.warning('loading');
+        } else {
+          Logger.error('[setProvider] $e\n'
+              '$st');
+        }
+      }
+      if (provider != null) {
+        ProviderManager.insert(articleListItem.queryResult.id(), provider);
+      }
     } else {
       provider = await ProviderManager.get(articleListItem.queryResult.id());
     }
-
-    thumbnail.value = await provider.getThumbnailUrl();
-    headers.value = await provider.getHeader(0);
-    imageCount.value = provider.length();
+    if (provider != null) {
+      thumbnail.value = await provider.getThumbnailUrl();
+      headers.value = await provider.getHeader(0);
+      imageCount.value = provider.length();
+    }
   }
 }

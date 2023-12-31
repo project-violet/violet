@@ -97,11 +97,11 @@ class HentaiDonwloadManager {
                 : target.groups() != null
                     ? target.groups().split('|').firstWhere((group) =>
                         group != null && (group as String).isNotEmpty)
-                    : null,
+                    : 'n/a',
             group: target.groups() != null
                 ? target.groups().split('|').firstWhere(
                     (group) => group != null && (group as String).isNotEmpty)
-                : null,
+                : 'n/a',
             extension: page.contains('fullimg.php')
                 ? 'jpg'
                 : path.extension(page.split('/').last).replaceAll('.', ''),

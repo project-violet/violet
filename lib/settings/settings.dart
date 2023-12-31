@@ -20,6 +20,16 @@ import 'package:violet/settings/device_type.dart';
 class Settings {
   static late final SharedPreferences prefs;
 
+  // // Proxy Settings
+  // static late bool useProxy;
+
+  // Logger Settings
+  static late bool deleteOldLogAtStart; // default false
+
+  // Http Settings
+  static late bool ignoreHTTPTimeout; // default false
+  static late bool useHttp3; // default false
+
   // Color Settings
   static late Color themeColor; // default light
   static late bool themeWhat; // default false == light
@@ -201,6 +211,10 @@ class Settings {
     }
     databaseType = databasetype;
 
+    deleteOldLogAtStart = await _getBool('deleteoldlogatstart');
+    ignoreHTTPTimeout = await _getBool('ignorehttptimeout');
+    useHttp3 = await _getBool('usehttp3');
+
     rightToLeft = await _getBool('right2left', true);
     isHorizontal = await _getBool('ishorizontal');
     scrollVertical = await _getBool('scrollvertical');
@@ -301,6 +315,7 @@ class Settings {
         'searchmessageapi', 'https://koromo.xyz/api/search/msg');
 
     useVioletServer = await _getBool('usevioletserver');
+    // useProxy = await _getBool('useproxy');
     useDrawer = await _getBool('usedrawer');
     showArticleProgress = await _getBool('showarticleprogress');
     useOptimizeDatabase = await _getBool('useoptimizedatabase', true);
@@ -467,6 +482,24 @@ class Settings {
     majorAccentColor = accent;
   }
 
+  static Future<void> setDeleteOldLogAtStart(bool nn) async {
+    deleteOldLogAtStart = nn;
+
+    await prefs.setBool('deleteoldlogatstart', nn);
+  }
+
+  static Future<void> setIgnoreHTTPTimeout(bool nn) async {
+    ignoreHTTPTimeout = nn;
+
+    await prefs.setBool('ignorehttptimeout', nn);
+  }
+
+  static Future<void> setUseHttp3(bool nn) async {
+    useHttp3 = nn;
+
+    await prefs.setBool('usehttp3', nn);
+  }
+
   static Future<void> setSearchResultType(int wh) async {
     searchResultType = wh;
 
@@ -628,6 +661,12 @@ class Settings {
 
     await prefs.setBool('usevioletserver', nn);
   }
+
+  // static Future<void> setUseProxy(bool nn) async {
+  //   useProxy = nn;
+
+  //   await prefs.setBool('useproxy', nn);
+  // }
 
   static Future<void> setUseDrawer(bool nn) async {
     useDrawer = nn;

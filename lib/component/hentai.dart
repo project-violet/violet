@@ -1,7 +1,6 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
-import 'package:html/parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
@@ -68,6 +67,22 @@ class HentaiManager {
   }
 
   static Future<SearchResult> idSearch(String what) async {
+    try {
+      return await idSearchHitomi(what);
+    } catch (_) {
+      try {
+        return await idSearchEhentai(what);
+      } catch (_) {
+        try {
+          return await idSearchExhentai(what);
+        } catch (_) {}
+      }
+    }
+
+    return const SearchResult(results: [], offset: -1);
+  }
+
+  static Future<SearchResult> idSearchHitomi(String what) async {
     final queryString = HitomiManager.translate2query(what);
     final queryResult = (await (await DataBaseManager.getInstance())
             .query('$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0'))
@@ -93,34 +108,59 @@ class HentaiManager {
       };
       return SearchResult(results: [QueryResult(result: meta)], offset: -1);
     } catch (e, st) {
-      Logger.error('[hentai-idSearch] E: $e\n'
+      Logger.error('[hentai-idSearchHitomi] E: $e\n'
           '$st');
-      try {
-        final listHtml = await EHSession.requestString(
-            'https://e-hentai.org/?next=${(id + 1)}');
-        final href = parse(listHtml)
-            .querySelector('a[href*="/g/$id/"]')
-            ?.attributes['href'];
-        final hash =
-            href!.split('/').lastWhere((element) => element.isNotEmpty);
-        final html = await EHSession.requestString(
-            'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
-        final articleEh = EHParser.parseArticleData(html);
-        final meta = {
-          'Id': id,
-          'EHash': hash,
-          'Title': articleEh.title,
-          'Artists': articleEh.artist?.join('|') ?? 'N/A',
-        };
-
-        return SearchResult(results: [QueryResult(result: meta)], offset: -1);
-      } catch (e, st) {
-        Logger.error('[hentai-idSearch] E: $e\n'
-            '$st');
-      }
+      rethrow;
     }
+  }
 
-    return const SearchResult(results: [], offset: -1);
+  static idSearchEhentai(String what) async {
+    int no = int.parse(what);
+
+    try {
+      String? galleryToken;
+      galleryToken = await EHSession.getEHashById('$no', 'e-hentai.org');
+      var html = await EHSession.requestString(
+          'https://e-hentai.org/g/$no/$galleryToken/?p=0&inline_set=ts_m');
+      var articleEh = EHParser.parseArticleData(html);
+      var meta = {
+        'Id': no,
+        'Title': articleEh.title,
+        'EHash': galleryToken,
+        'Artists':
+            articleEh.artist == null ? 'N/A' : articleEh.artist?.join('|'),
+        'Language': articleEh.language,
+      };
+      return SearchResult(results: [QueryResult(result: meta)], offset: -1);
+    } catch (e, st) {
+      Logger.error('[hentai-idSearchEhentai] E: $e\n'
+          '$st');
+      rethrow;
+    }
+  }
+
+  static idSearchExhentai(String what) async {
+    int no = int.parse(what);
+
+    try {
+      String? galleryToken;
+      galleryToken = await EHSession.getEHashById('$no', 'exhentai.org');
+      var html = await EHSession.requestString(
+          'https://exhentai.org/g/$no/$galleryToken/?p=0&inline_set=ts_m');
+      var articleEh = EHParser.parseArticleData(html);
+      var meta = {
+        'Id': no,
+        'Title': articleEh.title,
+        'EHash': galleryToken,
+        'Artists':
+            articleEh.artist == null ? 'N/A' : articleEh.artist?.join('|'),
+        'Language': articleEh.language,
+      };
+      return SearchResult(results: [QueryResult(result: meta)], offset: -1);
+    } catch (e, st) {
+      Logger.error('[hentai-idSearchEhentai] E: $e\n'
+          '$st');
+    }
   }
 
   // static double _latestSeed = 0;
@@ -234,17 +274,41 @@ class HentaiManager {
 
   static Future<VioletImageProvider> getImageProvider(QueryResult qr) async {
     final route = Settings.routingRule;
+    final prefs = await SharedPreferences.getInstance();
 
     do {
       final v4 = ScriptManager.enableV4;
 
       for (int i = 0; i < route.length; i++) {
+        String? ehEhash;
+        String? exEhash;
         try {
           switch (route[i]) {
             case 'EHentai':
-              if (qr.ehash() != null) {
-                var html = await EHSession.requestString(
-                    'https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/?p=0&inline_set=ts_m');
+              if (qr.ehash() == null) {
+                try {
+                  ehEhash = await EHSession.getEHashById(
+                      '${qr.id()}', 'e-hentai.org');
+                } catch (_) {
+                  rethrow;
+                }
+              }
+              if (qr.ehash() != null || ehEhash != null) {
+                final res = await http.get(
+                    'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? ehEhash)}/?p=0&inline_set=ts_m',
+                    headers: {'Cookie': prefs.getString('eh_cookies') ?? ''});
+                if (res.statusCode != 200) {
+                  throw '[getImageProvider][EHentai] ID: ${qr.id()} CODE: ${res.statusCode}';
+                }
+                final html = res.body;
+                if (html.contains(
+                    'This gallery has been removed or is unavailable.')) {
+                  throw '[getImageProvider][EHentai] ID:${qr.id()} NOT_AVAILABLE';
+                }
+                if (html.contains(
+                    'Your IP address has been temporarily banned for excessive pageloads.')) {
+                  throw '[getImageProvider][EHentai] ID:${qr.id()} RATE_LIMIT';
+                }
                 var article = EHParser.parseArticleData(html);
                 return EHentaiImageProvider(
                   count: article.length,
@@ -252,15 +316,32 @@ class HentaiManager {
                   pagesUrl: List<String>.generate(
                       (article.length / 40).ceil(),
                       (index) =>
-                          'https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/?p=$index'),
+                          'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? ehEhash)}/?p=$index'),
                   isEHentai: true,
                 );
               }
               break;
             case 'ExHentai':
-              if (qr.ehash() != null) {
-                var html = await EHSession.requestString(
-                    'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/?p=0&inline_set=ts_m');
+              if (qr.ehash() == null) {
+                exEhash =
+                    await EHSession.getEHashById('${qr.id()}', 'exhentai.org');
+              }
+              if (qr.ehash() != null || exEhash != null) {
+                final res = await http.get(
+                    'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? exEhash)}/?p=0&inline_set=ts_m',
+                    headers: {'Cookie': prefs.getString('eh_cookies') ?? ''});
+                if (res.statusCode != 200) {
+                  throw '[getImageProvider][ExHentai] ID: ${qr.id()} CODE: ${res.statusCode}';
+                }
+                final html = res.body;
+                if (html.contains(
+                    'This gallery has been removed or is unavailable.')) {
+                  throw '[getImageProvider][ExHentai] ID:${qr.id()} NOT_AVAILABLE';
+                }
+                if (html.contains(
+                    'Your IP address has been temporarily banned for excessive pageloads.')) {
+                  throw '[getImageProvider][ExHentai] ID:${qr.id()} RATE_LIMIT';
+                }
                 var article = EHParser.parseArticleData(html);
                 return EHentaiImageProvider(
                   count: article.length,
@@ -268,7 +349,7 @@ class HentaiManager {
                   pagesUrl: List<String>.generate(
                       (article.length / 40).ceil(),
                       (index) =>
-                          'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/?p=$index'),
+                          'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? exEhash)}/?p=$index'),
                   isEHentai: false,
                 );
               }
@@ -300,8 +381,15 @@ class HentaiManager {
               break;
           }
         } catch (e, st) {
-          Logger.error('[hentai-getImageProvider] E: $e\n'
-              '$st');
+          if (!qr.loading()) {
+            Logger.error('[hentai-getImageProvider] E: $e\n'
+                '$st');
+          }
+          if (qr.loading()) {
+            Logger.warning(
+                '[getImageProvider] throw \'Loading\'; for loading screen');
+            throw 'Loading';
+          }
         }
       }
 
@@ -342,15 +430,22 @@ class HentaiManager {
       }
 
       var map = {
-        'Id': int.parse(element.url!.split('/')[4]),
-        'EHash': element.url!.split('/')[5],
+        'Id': int.parse(Uri.parse(element.url!)
+            .path
+            .split('/')
+            .firstWhere((e) => int.tryParse(e) is int)),
+        'EHash': Uri.parse(element.url!)
+            .path
+            .split('/')
+            .lastWhere((e) => e.trim().isNotEmpty),
         'Title': element.title,
         'Artists': element.descripts!['artist'] != null
             ? element.descripts!['artist']!.join('|')
             : 'n/a',
         'Groups': element.descripts!['group'] != null
             ? element.descripts!['group']!.join('|')
-            : null,
+            : 'n/a',
+        // ignore: prefer_null_aware_operators
         'Characters': element.descripts!['character'] != null
             ? element.descripts!['character']!.join('|')
             : null,

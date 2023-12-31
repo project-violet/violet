@@ -3,7 +3,6 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:html/parser.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -101,42 +100,134 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       'Id': int.parse(id),
       'Title': article['Title'],
       'Artists': article['Artists'].join('|'),
+      'Language': article['Language'] ?? 'N/A',
+      'Tags': article['Tags']?.join('|') ?? '',
+      'Type': article['Type'] ?? 'N/A',
+      'Series': article['Series']?.join('|') ?? 'N/A',
     };
     return QueryResult(result: meta);
   }
 
   Future<QueryResult> _tryGetArticleFromEhentai(String id) async {
-    final listHtml = await EHSession.requestString(
-        'https://e-hentai.org/?next=${(int.parse(id) + 1)}');
-    final href =
-        parse(listHtml).querySelector('a[href*="/g/$id/"]')?.attributes['href'];
-    final hash = href!.split('/').lastWhere((element) => element.isNotEmpty);
-    final html = await EHSession.requestString(
-        'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
+    final prefs = await SharedPreferences.getInstance();
+    final hash = await EHSession.getEHashById(id, 'e-hentai.org');
+    final res = await http.get(
+      'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m',
+      headers: {'Cookie': prefs.getString('eh_cookies') ?? ''},
+    );
+    if (res.statusCode != 200) {
+      throw '[_tryGetArticleFromEhentai] ID:$id CODE:${res.statusCode}';
+    }
+    final html = res.body;
+    if (html.contains('This gallery has been removed or is unavailable.')) {
+      throw '[_tryGetArticleFromEhentai] ID:$id NOT_AVAILABLE';
+    }
+    if (html.contains(
+        'Your IP address has been temporarily banned for excessive pageloads.')) {
+      throw '[_tryGetArticleFromEhentai] ID:$id RATE_LIMIT';
+    }
     final articleEh = EHParser.parseArticleData(html);
+    List<String> tags = [];
+    List<String> series = [];
+    List<String> characters = [];
+    if (articleEh.female != null) {
+      articleEh.female?.forEach((female) {
+        tags.add('female:$female');
+      });
+    }
+    if (articleEh.male != null) {
+      articleEh.male?.forEach((male) {
+        tags.add('male:$male');
+      });
+    }
+    if (articleEh.misc != null) {
+      articleEh.misc?.forEach((misc) {
+        tags.add('tag:$misc');
+      });
+    }
+    if (articleEh.parody != null) {
+      articleEh.parody?.forEach((parody) {
+        series.add(parody);
+      });
+    }
+    if (articleEh.character != null) {
+      articleEh.character?.forEach((character) {
+        characters.add(character);
+      });
+    }
     final meta = {
       'Id': int.parse(id),
       'EHash': hash,
       'Title': articleEh.title,
       'Artists': articleEh.artist?.join('|') ?? 'N/A',
+      'Language': articleEh.languages?.join('|') ??
+          articleEh.language.trim().toLowerCase(),
+      'Tags': tags.join('|'),
+      'Characters': characters.join('|'),
+      'Type': articleEh.type,
+      'Series': series.join('|'),
     };
     return QueryResult(result: meta);
   }
 
   Future<QueryResult> _tryGetArticleFromExhentai(String id) async {
-    final listHtml = await EHSession.requestString(
-        'https://exhentai.org/?next=${(int.parse(id) + 1)}');
-    final href =
-        parse(listHtml).querySelector('a[href*="/g/$id/"]')?.attributes['href'];
-    final hash = href!.split('/').lastWhere((element) => element.isNotEmpty);
-    final html = await EHSession.requestString(
-        'https://exhentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
+    final prefs = await SharedPreferences.getInstance();
+    final hash = await EHSession.getEHashById(id, 'exhentai.org');
+    final res = await http.get(
+      'https://exhentai.org/g/$id/$hash/?p=0&inline_set=ts_m',
+      headers: {'Cookie': prefs.getString('eh_cookies') ?? ''},
+    );
+    if (res.statusCode != 200) {
+      throw '[_tryGetArticleFromExhentai] ID:$id CODE:${res.statusCode}';
+    }
+    final html = res.body;
+    if (html.contains('This gallery has been removed or is unavailable.')) {
+      throw '[_tryGetArticleFromExhentai] ID:$id NOT_AVAILABLE';
+    }
+    if (html.contains(
+        'Your IP address has been temporarily banned for excessive pageloads.')) {
+      throw '[_tryGetArticleFromExhentai] ID:$id RATE_LIMIT';
+    }
     final articleEh = EHParser.parseArticleData(html);
+    List<String> tags = [];
+    List<String> series = [];
+    List<String> characters = [];
+    if (articleEh.female != null) {
+      articleEh.female?.forEach((female) {
+        tags.add('female:$female');
+      });
+    }
+    if (articleEh.male != null) {
+      articleEh.male?.forEach((male) {
+        tags.add('male:$male');
+      });
+    }
+    if (articleEh.misc != null) {
+      articleEh.misc?.forEach((misc) {
+        tags.add('tag:$misc');
+      });
+    }
+    if (articleEh.parody != null) {
+      articleEh.parody?.forEach((parody) {
+        series.add(parody);
+      });
+    }
+    if (articleEh.character != null) {
+      articleEh.character?.forEach((character) {
+        characters.add(character);
+      });
+    }
     final meta = {
       'Id': int.parse(id),
       'EHash': hash,
       'Title': articleEh.title,
       'Artists': articleEh.artist?.join('|') ?? 'N/A',
+      'Language': articleEh.languages?.join('|') ??
+          articleEh.language.trim().toLowerCase(),
+      'Tags': tags.join('|'),
+      'Characters': characters.join('|'),
+      'Type': articleEh.type,
+      'Series': series.join('|'),
     };
     return QueryResult(result: meta);
   }
@@ -177,18 +268,81 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
     // TODO: fix this hack
     // ignore: avoid_function_literals_in_foreach_calls
-    articleList.forEach((element) async {
-      var article = qr[element.article()];
+    articleList.forEach((element) {
+      if (!mounted) return;
       try {
+        result.add(QueryResult(result: {
+          'Id': int.parse(element.article()),
+          'Loading': true,
+        }));
+        // ignore: empty_catches
+      } catch (e) {}
+      queryResult = result;
+      _applyFilter();
+      _rebuild();
+    });
+    // ignore: avoid_function_literals_in_foreach_calls
+    articleList.forEach((element) async {
+      if (!mounted) return;
+      var article = qr[element.article()];
+
+      tryHitomi() async {
         article ??= await _tryGetArticleFromHitomi(element.article());
-      } catch (_) {
+      }
+
+      tryEhentai() async {
+        article ??= await _tryGetArticleFromEhentai(element.article());
+      }
+
+      tryExhentai() async {
+        article ??= await _tryGetArticleFromExhentai(element.article());
+      }
+
+      handleEhentai() async {
         try {
-          article ??= await _tryGetArticleFromEhentai(element.article());
-        } catch (_) {
-          article ??= await _tryGetArticleFromExhentai(element.article());
+          await tryEhentai();
+        } catch (e) {
+          if (e == 'EHASH_LOCK') {
+          } else {
+            rethrow;
+          }
         }
       }
-      result.add(article);
+
+      handleExhentai() async {
+        try {
+          await tryExhentai();
+        } catch (e) {
+          if (e == 'EHASH_LOCK') {
+          } else {
+            rethrow;
+          }
+        }
+      }
+
+      try {
+        await tryHitomi();
+      } catch (_) {
+        try {
+          await handleEhentai();
+        } catch (_) {
+          await handleExhentai();
+        }
+      }
+      if (article != null) {
+        int i;
+        for (i = 0; i < articleList.length; i++) {
+          if (articleList[i].article() == element.article()) {
+            break;
+          }
+        }
+        if (article != null) {
+          result[i] = article!;
+        }
+        queryResult = result;
+        _applyFilter();
+        _rebuild();
+      }
     });
 
     queryResult = result;
@@ -697,6 +851,11 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
         // 5. Update UI
         _shouldRebuild = true;
+        if (!mounted) {
+          Logger.warning(
+              '[_GroupArticleListPageState] _element was null don\'t do setState');
+          return;
+        }
         setState(() {
           _shouldRebuild = true;
           checkModePre = false;
@@ -704,6 +863,11 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         });
         _shouldRebuild = true;
         Future.delayed(const Duration(milliseconds: 500)).then((value) {
+          if (!mounted) {
+            Logger.warning(
+                '[_GroupArticleListPageState] _element was null don\'t do setState');
+            return;
+          }
           setState(() {
             _shouldRebuild = true;
             checkMode = false;

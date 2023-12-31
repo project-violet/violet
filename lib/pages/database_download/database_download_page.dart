@@ -100,7 +100,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     }
   }
 
-  Future<void> downloadFileAndroidWith(String target, bool _throw) async {
+  Future<void> downloadFileAndroidWith(String target, bool doThrow) async {
     Dio dio = Dio();
     int oneMega = 1024 * 1024;
     int nu = 0;
@@ -115,10 +115,10 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       }
       switch (target) {
         case 'latest':
-          await SyncManager.checkSyncLatest(_throw);
+          await SyncManager.checkSyncLatest(doThrow);
           break;
         case 'old':
-          await SyncManager.checkSyncOld(_throw);
+          await SyncManager.checkSyncOld(doThrow);
           break;
         default:
           {
@@ -222,7 +222,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     } catch (e, st) {
       Logger.error('[DBDownload] E: $e\n'
           '$st');
-      if (_throw) throw e;
+      if (doThrow) rethrow;
     }
 
     setState(() {
@@ -231,7 +231,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     });
   }
 
-  Future<void> downloadFileIOSWith(String target, bool _throw) async {
+  Future<void> downloadFileIOSWith(String target, bool doThrow) async {
     Dio dio = Dio();
     int oneMega = 1024 * 1024;
     int nu = 0;
@@ -246,10 +246,10 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       }
       switch (target) {
         case 'latest':
-          await SyncManager.checkSyncLatest(_throw);
+          await SyncManager.checkSyncLatest(doThrow);
           break;
         case 'old':
-          await SyncManager.checkSyncOld(_throw);
+          await SyncManager.checkSyncOld(doThrow);
           break;
         default:
           {
@@ -331,7 +331,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     } catch (e, st) {
       Logger.error('[DBDownload] E: $e\n'
           '$st');
-      if (_throw) throw e;
+      if (doThrow) rethrow;
     }
 
     setState(() {

@@ -26,6 +26,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/component/eh/eh_bookmark.dart';
+import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/database.dart';
@@ -63,13 +64,11 @@ import 'package:violet/platform/misc.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
-import 'package:violet/util/helper.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
-import 'package:violet/network/wrapper.dart' as http;
 
 class ExCountry extends Country {
   String? language;
@@ -1433,6 +1432,136 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
+          _buildDivider(),
+          InkWell(
+            customBorder: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0))),
+            child: ListTile(
+              leading: Image.asset(
+                'assets/images/logo.png',
+                width: 25,
+                height: 25,
+              ),
+              title:
+                  Text(Translations.of(context).trans('deleteoldlogatstart')),
+              trailing: Switch(
+                value: Settings.deleteOldLogAtStart,
+                onChanged: (newValue) async {
+                  await Settings.setDeleteOldLogAtStart(newValue);
+                  setState(() {
+                    _shouldReload = true;
+                  });
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
+            ),
+            onTap: () async {
+              await Settings.setDeleteOldLogAtStart(
+                  !Settings.deleteOldLogAtStart);
+              setState(() {
+                _shouldReload = true;
+              });
+            },
+          ),
+          _buildDivider(),
+          InkWell(
+            customBorder: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0))),
+            child: ListTile(
+              leading: Image.asset(
+                'assets/images/logo.png',
+                width: 25,
+                height: 25,
+              ),
+              title: Text(Translations.of(context).trans('ignorehttptimeout')),
+              trailing: Switch(
+                value: Settings.ignoreHTTPTimeout,
+                onChanged: (newValue) async {
+                  await Settings.setIgnoreHTTPTimeout(newValue);
+                  setState(() {
+                    _shouldReload = true;
+                  });
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
+            ),
+            onTap: () async {
+              await Settings.setIgnoreHTTPTimeout(!Settings.ignoreHTTPTimeout);
+              setState(() {
+                _shouldReload = true;
+              });
+            },
+          ),
+          _buildDivider(),
+          InkWell(
+            customBorder: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0))),
+            child: ListTile(
+              leading: Image.asset(
+                'assets/images/logo.png',
+                width: 25,
+                height: 25,
+              ),
+              title: Text(Translations.of(context).trans('usehttp3')),
+              trailing: Switch(
+                value: Settings.useHttp3,
+                onChanged: (newValue) async {
+                  await Settings.setUseHttp3(newValue);
+                  setState(() {
+                    _shouldReload = true;
+                  });
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
+            ),
+            onTap: () async {
+              await Settings.setUseHttp3(!Settings.useHttp3);
+              setState(() {
+                _shouldReload = true;
+              });
+            },
+          ),
+          // _buildDivider(),
+          // InkWell(
+          //   customBorder: const RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.only(
+          //           bottomLeft: Radius.circular(8.0),
+          //           bottomRight: Radius.circular(8.0))),
+          //   child: ListTile(
+          //     leading: Image.asset(
+          //       'assets/images/logo.png',
+          //       width: 25,
+          //       height: 25,
+          //     ),
+          //     title: Text(Translations.of(context).trans('useproxy')),
+          //     trailing: Switch(
+          //       value: Settings.useProxy,
+          //       onChanged: (newValue) async {
+          //         await Settings.setUseProxy(newValue);
+          //         setState(() {
+          //           _shouldReload = true;
+          //         });
+          //       },
+          //       activeTrackColor: Settings.majorColor,
+          //       activeColor: Settings.majorAccentColor,
+          //     ),
+          //   ),
+          //   onTap: () async {
+          //     await Settings.setUseProxy(!Settings.useProxy);
+          //     setState(() {
+          //       _shouldReload = true;
+          //     });
+          //   },
+          // ),
         ],
       ),
     ];
@@ -2271,20 +2400,15 @@ class _SettingsPageState extends State<SettingsPage>
               if (dialog == 1) {
                 var cookie = await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const LoginScreen()));
-
                 if (cookie != null) {
-                  await catchUnwind(() async {
-                    final res = await http.get('https://exhentai.org',
-                        headers: {'Cookie': cookie});
-
-                    // sk=...; expires=Sun, 29-Dec-2024 07:02:58 GMT; Max-Age=31536000; path=/; domain=.exhentai.org
-                    final setCookie = res.headers['set-cookie'];
-                    if (setCookie != null && setCookie.startsWith('sk=')) {
-                      cookie += ';${setCookie.split(';')[0]}';
-                    }
-                  });
-
-                  await prefs.setString('eh_cookies', cookie);
+                  final ck = cookie ?? '';
+                  await prefs.setString('eh_cookies', ck);
+                  if (!(await EHSession.hasSkCookie())) {
+                    await EHSession.refreshEhentaiCookie();
+                  }
+                  if (!(await EHSession.hasIgneousCookie())) {
+                    await EHSession.refreshExhentaiCookie();
+                  }
                 }
 
                 if (cookie != null) {
@@ -2377,22 +2501,17 @@ class _SettingsPageState extends State<SettingsPage>
                 );
 
                 if (dialog != null && dialog == true) {
-                  var cookie =
-                      'sk=${sController.text};ipb_member_id=${imiController.text};ipb_pass_hash=${iphController.text};igneous=${iController.text}';
-
-                  await catchUnwind(() async {
-                    final res = await http.get('https://exhentai.org',
-                        headers: {'Cookie': cookie});
-
-                    final setCookie = res.headers['set-cookie'];
-                    if (setCookie != null &&
-                        (setCookie.startsWith('sk=') ||
-                            setCookie.startsWith('igneous='))) {
-                      cookie += ';${setCookie.split(';')[0]}';
-                    }
-                  });
-
-                  await prefs.setString('eh_cookies', cookie);
+                  final ck = ('${sController.text.isEmpty ? '' : 'sk=${sController.text};'}'
+                      '${imiController.text.isEmpty ? '' : 'ipb_member_id=${imiController.text};'}'
+                      '${iphController.text.isEmpty ? '' : 'ipb_pass_hash=${iphController.text};'}'
+                      '${((iController.text.isEmpty || iController.text == 'mystery') ? '' : 'igneous=${iController.text};')}');
+                  await prefs.setString('eh_cookies', ck);
+                  if (!(await EHSession.hasSkCookie())) {
+                    await EHSession.refreshEhentaiCookie();
+                  }
+                  if (!(await EHSession.hasIgneousCookie())) {
+                    await EHSession.refreshExhentaiCookie();
+                  }
                 }
               }
 

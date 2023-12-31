@@ -41,10 +41,15 @@ class ArticleInfo {
     List<QueryResult>? usableTabList,
     bool lockRead = false,
   }) {
-    var artist = (queryResult.artists() as String)
-        .split('|')
-        .where((x) => x.isNotEmpty)
-        .elementAt(0);
+    String artist;
+    try {
+      artist = (queryResult.artists() as String)
+          .split('|')
+          .where((x) => x.isNotEmpty)
+          .elementAt(0);
+    } catch (e) {
+      artist = 'N/A';
+    }
 
     if (artist == 'N/A') {
       var group = queryResult.groups() != null
