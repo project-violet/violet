@@ -275,7 +275,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
           'Id': int.parse(element.article()),
           'Loading': true,
         }));
-      // ignore: empty_catches
+        // ignore: empty_catches
       } catch (e) {}
       queryResult = result;
       _applyFilter();
@@ -289,9 +289,11 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       tryHitomi() async {
         article ??= await _tryGetArticleFromHitomi(element.article());
       }
+
       tryEhentai() async {
         article ??= await _tryGetArticleFromEhentai(element.article());
       }
+
       tryExhentai() async {
         article ??= await _tryGetArticleFromExhentai(element.article());
       }
