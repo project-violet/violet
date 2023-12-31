@@ -3,16 +3,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
-import 'package:violet/component/hentai.dart';
-import 'package:violet/database/user/bookmark.dart';
-import 'package:violet/model/article_info.dart';
-import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/common/utils.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/server/violet.dart';
-import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class LabSearchCommentsAuthor extends StatefulWidget {
   final String author;
