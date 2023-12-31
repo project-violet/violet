@@ -13,6 +13,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/log/act_log.dart';
 import 'package:violet/other/named_color.dart';
 import 'package:violet/pages/bookmark/bookmark_page.dart';
+import 'package:violet/pages/common/utils.dart';
 import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/hot/hot_page.dart';
 import 'package:violet/pages/lock/lock_screen.dart';
@@ -87,7 +88,15 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
     }
   }
 
-  void handleDeeplink(Uri? uri) {}
+  void handleDeeplink(Uri? uri) {
+    if (uri == null) {
+      return;
+    }
+
+    if (int.tryParse(uri.host) != null) {
+      showArticleInfo(context, int.parse(uri.host));
+    }
+  }
 
   final PageController _pageController =
       PageController(initialPage: defaultInitialPage);
