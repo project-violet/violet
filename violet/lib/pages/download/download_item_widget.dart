@@ -21,6 +21,7 @@ import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
+import 'package:violet/pages/common/utils.dart';
 import 'package:violet/pages/download/download_item_menu.dart';
 import 'package:violet/pages/download/download_routine.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
@@ -385,58 +386,10 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
           scale = 1.0;
         });
         if (int.tryParse(widget.item.url()) != null) {
-          _showArticleInfo(int.parse(widget.item.url()));
+          showArticleInfo(context, int.parse(widget.item.url()));
         }
       },
     );
-  }
-
-  void _showArticleInfo(int id) async {
-    final height = MediaQuery.of(context).size.height;
-
-    final search = await HentaiManager.idSearch(id.toString());
-    if (search.results.length != 1) return;
-
-    final qr = search.results.first;
-
-    HentaiManager.getImageProvider(qr).then((value) async {
-      var thumbnail = await value.getThumbnailUrl();
-      var headers = await value.getHeader(0);
-      ProviderManager.insert(qr.id(), value);
-
-      var isBookmarked =
-          await (await Bookmark.getInstance()).isBookmark(qr.id());
-
-      Provider<ArticleInfo>? cache;
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (_) {
-          return DraggableScrollableSheet(
-            initialChildSize: 400 / height,
-            minChildSize: 400 / height,
-            maxChildSize: 0.9,
-            expand: false,
-            builder: (_, controller) {
-              cache ??= Provider<ArticleInfo>.value(
-                value: ArticleInfo.fromArticleInfo(
-                  queryResult: qr,
-                  thumbnail: thumbnail,
-                  headers: headers,
-                  heroKey: 'zxcvzxcvzxcv',
-                  isBookmarked: isBookmarked,
-                  controller: controller,
-                ),
-                child: const ArticleInfoPage(
-                  key: ObjectKey('asdfasdf'),
-                ),
-              );
-              return cache!;
-            },
-          );
-        },
-      );
-    });
   }
 
   _retry() {
