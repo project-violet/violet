@@ -93,6 +93,10 @@ class MyApp extends StatelessWidget {
     return DynamicTheme(
       defaultBrightness: Brightness.light,
       data: (brightness) => ThemeData(
+        appBarTheme: AppBarTheme(
+            systemOverlayStyle: Settings.themeWhat
+                ? SystemUiOverlayStyle.dark
+                : SystemUiOverlayStyle.light),
         useMaterial3: false,
         brightness: brightness,
         bottomSheetTheme:
