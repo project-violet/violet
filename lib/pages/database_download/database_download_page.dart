@@ -222,7 +222,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     } catch (e, st) {
       Logger.error('[DBDownload] E: $e\n'
           '$st');
-      if (doThrow) throw e;
+      if (doThrow) rethrow;
     }
 
     setState(() {
@@ -331,7 +331,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     } catch (e, st) {
       Logger.error('[DBDownload] E: $e\n'
           '$st');
-      if (doThrow) throw e;
+      if (doThrow) rethrow;
     }
 
     setState(() {

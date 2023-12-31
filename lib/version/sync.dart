@@ -133,7 +133,7 @@ class SyncManager {
     } catch (e, st) {
       Logger.error('[Sync-check] E: $e\n'
           '$st');
-      if (doThrow) throw e;
+      if (doThrow) rethrow;
     }
   }
 
