@@ -2501,10 +2501,10 @@ class _SettingsPageState extends State<SettingsPage>
                 );
 
                 if (dialog != null && dialog == true) {
-                  final ck = ('${sController.text.length == 0 ? '' : 'sk=${sController.text};'}'
-                      '${imiController.text.length == 0 ? '' : 'ipb_member_id=${imiController.text};'}'
-                      '${iphController.text.length == 0 ? '' : 'ipb_pass_hash=${iphController.text};'}'
-                      '${((iController.text.length == 0 || iController.text == 'mystery') ? '' : 'igneous=${iController.text};')}');
+                  final ck = ('${sController.text.isEmpty ? '' : 'sk=${sController.text};'}'
+                      '${imiController.text.isEmpty ? '' : 'ipb_member_id=${imiController.text};'}'
+                      '${iphController.text.isEmpty ? '' : 'ipb_pass_hash=${iphController.text};'}'
+                      '${((iController.text.isEmpty || iController.text == 'mystery') ? '' : 'igneous=${iController.text};')}');
                   await prefs.setString('eh_cookies', ck);
                   if (!(await EHSession.hasSkCookie())) {
                     await EHSession.refreshEhentaiCookie();
