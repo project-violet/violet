@@ -93,9 +93,16 @@ class EHParser {
   }
 
   static EHArticle parseArticleData(String html) {
+    if(html.isEmpty){
+      throw 'EMPTY_ARTICLE';
+    }
     var article = EHArticle();
     var h = parse(html);
     var doc = h.querySelector('div.gm');
+    
+    if(h.querySelector('title')?.text.contains('Gallery Not Available')?? false) {
+      throw 'GALLERY_NOT_AVAILABLE';
+    }
 
     try {
       article.thumbnail = _thumbnailPattern
