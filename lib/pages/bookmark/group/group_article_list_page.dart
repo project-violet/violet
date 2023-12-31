@@ -218,10 +218,11 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     articleList.forEach((element) {
       if (!mounted) return;
       try {
-        result.add(QueryResult(result: {
+        final qr = QueryResult(result: {
           'Id': int.parse(element.article()),
-          'Loading': true,
-        }));
+        });
+        qr.loading = true;
+        result.add(qr);
         // ignore: empty_catches
       } catch (e) {}
       queryResult = result;

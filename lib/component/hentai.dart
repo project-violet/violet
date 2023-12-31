@@ -380,11 +380,11 @@ class HentaiManager {
               break;
           }
         } catch (e, st) {
-          if (!qr.loading()) {
+          if (qr.loading != true) {
             Logger.error('[hentai-getImageProvider] E: $e\n'
                 '$st');
           }
-          if (qr.loading()) {
+          if (qr.loading == true) {
             Logger.warning(
                 '[getImageProvider] throw \'Loading\'; for loading screen');
             throw 'Loading';

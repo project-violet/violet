@@ -29,7 +29,7 @@ class QueryResult {
   url() => result['URL'];
 
   // For Loading
-  loading() => result['Loading'] ?? false;
+  bool? loading;
 
   DateTime? getDateTime() {
     if (published() == null || published() == 0) {
