@@ -373,6 +373,10 @@ class _SettingsPageState extends State<SettingsPage>
                   await Settings.setThemeBlack(!Settings.themeBlack);
                   DynamicTheme.of(context)!.setThemeData(
                     ThemeData(
+                      appBarTheme: AppBarTheme(
+                          systemOverlayStyle: Settings.themeWhat
+                              ? SystemUiOverlayStyle.dark
+                              : SystemUiOverlayStyle.light),
                       useMaterial3: false,
                       brightness: Theme.of(context).brightness,
                       bottomSheetTheme: BottomSheetThemeData(
@@ -420,6 +424,10 @@ class _SettingsPageState extends State<SettingsPage>
                       await Settings.setThemeFlat(newValue);
                       DynamicTheme.of(context)!.setThemeData(
                         ThemeData(
+                          appBarTheme: AppBarTheme(
+                              systemOverlayStyle: Settings.themeWhat
+                                  ? SystemUiOverlayStyle.dark
+                                  : SystemUiOverlayStyle.light),
                           useMaterial3: false,
                           brightness: Theme.of(context).brightness,
                           bottomSheetTheme: BottomSheetThemeData(
