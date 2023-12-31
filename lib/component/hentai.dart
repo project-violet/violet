@@ -1,7 +1,6 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
-import 'package:html/parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
@@ -70,18 +69,19 @@ class HentaiManager {
   static Future<SearchResult> idSearch(String what) async {
     try {
       return await idSearchHitomi(what);
-    } catch(_){
+    } catch (_) {
       try {
         return await idSearchEhentai(what);
-      } catch(_){
+      } catch (_) {
         try {
           return await idSearchExhentai(what);
-        } catch(_){}
+        } catch (_) {}
       }
     }
 
     return const SearchResult(results: [], offset: -1);
   }
+
   static Future<SearchResult> idSearchHitomi(String what) async {
     final queryString = HitomiManager.translate2query(what);
     final queryResult = (await (await DataBaseManager.getInstance())
@@ -113,56 +113,51 @@ class HentaiManager {
       rethrow;
     }
   }
-  
+
   static idSearchEhentai(String what) async {
-    final queryString = HitomiManager.translate2query(what);
-    var queryResult = (await (await DataBaseManager.getInstance())
-            .query('$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0'))
-        .map((e) => QueryResult(result: e))
-        .toList();
     int no = int.parse(what);
 
     try {
-      late var gallery_url,gallery_token;
-      gallery_token = await EHSession.getEHashById('${no}','e-hentai.org');
-      var html = await EHSession.requestString('https://e-hentai.org/g/${no}/${gallery_token}/?p=0&inline_set=ts_m');
-      var article_eh = EHParser.parseArticleData(html);
+      late String galleryToken;
+      galleryToken = await EHSession.getEHashById('$no', 'e-hentai.org');
+      var html = await EHSession.requestString(
+          'https://e-hentai.org/g/$no/$galleryToken/?p=0&inline_set=ts_m');
+      var articleEh = EHParser.parseArticleData(html);
       var meta = {
         'Id': no,
-        'Title': article_eh.title,
-        'EHash': gallery_token,
-        'Artists': article_eh.artist == null ? 'N/A' : article_eh.artist?.join('|'),
-        'Language': article_eh.language,
+        'Title': articleEh.title,
+        'EHash': galleryToken,
+        'Artists':
+            articleEh.artist == null ? 'N/A' : articleEh.artist?.join('|'),
+        'Language': articleEh.language,
       };
       return SearchResult(results: [QueryResult(result: meta)], offset: -1);
-    } catch(e,st){
+    } catch (e, st) {
       Logger.error('[hentai-idSearchEhentai] E: $e\n'
           '$st');
       rethrow;
     }
   }
+
   static idSearchExhentai(String what) async {
-    final queryString = HitomiManager.translate2query(what);
-    var queryResult = (await (await DataBaseManager.getInstance())
-            .query('$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0'))
-        .map((e) => QueryResult(result: e))
-        .toList();
     int no = int.parse(what);
 
     try {
-      late var gallery_url,gallery_token;
-      gallery_token = await EHSession.getEHashById('${no}','exhentai.org');
-      var html = await EHSession.requestString('https://exhentai.org/g/${no}/${gallery_token}/?p=0&inline_set=ts_m');
-      var article_eh = EHParser.parseArticleData(html);
+      late String galleryToken;
+      galleryToken = await EHSession.getEHashById('$no', 'exhentai.org');
+      var html = await EHSession.requestString(
+          'https://exhentai.org/g/$no/$galleryToken/?p=0&inline_set=ts_m');
+      var articleEh = EHParser.parseArticleData(html);
       var meta = {
         'Id': no,
-        'Title': article_eh.title,
-        'EHash': gallery_token,
-        'Artists': article_eh.artist == null ? 'N/A' : article_eh.artist?.join('|'),
-        'Language': article_eh.language,
+        'Title': articleEh.title,
+        'EHash': galleryToken,
+        'Artists':
+            articleEh.artist == null ? 'N/A' : articleEh.artist?.join('|'),
+        'Language': articleEh.language,
       };
       return SearchResult(results: [QueryResult(result: meta)], offset: -1);
-    } catch(e,st){
+    } catch (e, st) {
       Logger.error('[hentai-idSearchEhentai] E: $e\n'
           '$st');
     }
@@ -284,21 +279,22 @@ class HentaiManager {
       final v4 = ScriptManager.enableV4;
 
       for (int i = 0; i < route.length; i++) {
-        var eh_ehash;
-        var ex_ehash;
+        String? ehEhash;
+        String? exEhash;
         try {
           switch (route[i]) {
             case 'EHentai':
               if (qr.ehash() == null) {
                 try {
-                  eh_ehash = await EHSession.getEHashById('${qr.id()}','e-hentai.org');
-                } catch(_){
+                  ehEhash = await EHSession.getEHashById(
+                      '${qr.id()}', 'e-hentai.org');
+                } catch (_) {
                   rethrow;
                 }
               }
-              if (qr.ehash() != null || eh_ehash != null) {
+              if (qr.ehash() != null || ehEhash != null) {
                 var html = await EHSession.requestString(
-                    'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? eh_ehash)}/?p=0&inline_set=ts_m');
+                    'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? ehEhash)}/?p=0&inline_set=ts_m');
                 var article = EHParser.parseArticleData(html);
                 return EHentaiImageProvider(
                   count: article.length,
@@ -306,18 +302,19 @@ class HentaiManager {
                   pagesUrl: List<String>.generate(
                       (article.length / 40).ceil(),
                       (index) =>
-                          'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? eh_ehash)}/?p=$index'),
+                          'https://e-hentai.org/g/${qr.id()}/${(qr.ehash() ?? ehEhash)}/?p=$index'),
                   isEHentai: true,
                 );
               }
               break;
             case 'ExHentai':
               if (qr.ehash() == null) {
-                ex_ehash = await EHSession.getEHashById('${qr.id()}','exhentai.org');
+                exEhash =
+                    await EHSession.getEHashById('${qr.id()}', 'exhentai.org');
               }
-              if (qr.ehash() != null || ex_ehash != null) {
+              if (qr.ehash() != null || exEhash != null) {
                 var html = await EHSession.requestString(
-                    'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? ex_ehash)}/?p=0&inline_set=ts_m');
+                    'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? exEhash)}/?p=0&inline_set=ts_m');
                 var article = EHParser.parseArticleData(html);
                 return EHentaiImageProvider(
                   count: article.length,
@@ -325,7 +322,7 @@ class HentaiManager {
                   pagesUrl: List<String>.generate(
                       (article.length / 40).ceil(),
                       (index) =>
-                          'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? ex_ehash)}/?p=$index'),
+                          'https://exhentai.org/g/${qr.id()}/${(qr.ehash() ?? exEhash)}/?p=$index'),
                   isEHentai: false,
                 );
               }
@@ -357,12 +354,13 @@ class HentaiManager {
               break;
           }
         } catch (e, st) {
-          if(!qr.loading()){
+          if (!qr.loading()) {
             Logger.error('[hentai-getImageProvider] E: $e\n'
                 '$st');
           }
-          if(qr.loading()){
-            Logger.warning('[getImageProvider] throw \'Loading\'; for loading screen');
+          if (qr.loading()) {
+            Logger.warning(
+                '[getImageProvider] throw \'Loading\'; for loading screen');
             throw 'Loading';
           }
         }
@@ -405,15 +403,22 @@ class HentaiManager {
       }
 
       var map = {
-        'Id': int.parse(Uri.parse(element.url!).path.split('/').firstWhere((e) => int.tryParse(e) is int)),
-        'EHash': Uri.parse(element.url!).path.split('/').lastWhere((e) => e.trim().isNotEmpty),
+        'Id': int.parse(Uri.parse(element.url!)
+            .path
+            .split('/')
+            .firstWhere((e) => int.tryParse(e) is int)),
+        'EHash': Uri.parse(element.url!)
+            .path
+            .split('/')
+            .lastWhere((e) => e.trim().isNotEmpty),
         'Title': element.title,
         'Artists': element.descripts!['artist'] != null
             ? element.descripts!['artist']!.join('|')
             : 'n/a',
         'Groups': element.descripts!['group'] != null
             ? element.descripts!['group']!.join('|')
-            : null,
+            : 'n/a',
+        // ignore: prefer_null_aware_operators
         'Characters': element.descripts!['character'] != null
             ? element.descripts!['character']!.join('|')
             : null,

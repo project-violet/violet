@@ -3,7 +3,6 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:html/parser.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -110,34 +109,34 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   Future<QueryResult> _tryGetArticleFromEhentai(String id) async {
-    final hash = await EHSession.getEHashById(id,'e-hentai.org');
+    final hash = await EHSession.getEHashById(id, 'e-hentai.org');
     final html = await EHSession.requestString(
         'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
     final articleEh = EHParser.parseArticleData(html);
     List<String> tags = [];
     List<String> series = [];
     List<String> characters = [];
-    if(articleEh.female != null){
+    if (articleEh.female != null) {
       articleEh.female?.forEach((female) {
-        tags.add('female:${female}');
+        tags.add('female:$female');
       });
     }
-    if(articleEh.male != null){
+    if (articleEh.male != null) {
       articleEh.male?.forEach((male) {
-        tags.add('male:${male}');
+        tags.add('male:$male');
       });
     }
-    if(articleEh.misc != null){
+    if (articleEh.misc != null) {
       articleEh.misc?.forEach((misc) {
-        tags.add('tag:${misc}');
+        tags.add('tag:$misc');
       });
     }
-    if(articleEh.parody != null){
+    if (articleEh.parody != null) {
       articleEh.parody?.forEach((parody) {
         series.add(parody);
       });
     }
-    if(articleEh.character != null){
+    if (articleEh.character != null) {
       articleEh.character?.forEach((character) {
         characters.add(character);
       });
@@ -147,7 +146,8 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       'EHash': hash,
       'Title': articleEh.title,
       'Artists': articleEh.artist?.join('|') ?? 'N/A',
-      'Language': articleEh.languages?.join('|') ?? articleEh.language.trim().toLowerCase() ?? 'N/A',
+      'Language': articleEh.languages?.join('|') ??
+          articleEh.language.trim().toLowerCase(),
       'Tags': tags.join('|'),
       'Characters': characters.join('|'),
       'Type': articleEh.type,
@@ -157,34 +157,34 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   Future<QueryResult> _tryGetArticleFromExhentai(String id) async {
-    final hash = await EHSession.getEHashById(id,'exhentai.org');
+    final hash = await EHSession.getEHashById(id, 'exhentai.org');
     final html = await EHSession.requestString(
         'https://exhentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
     final articleEh = EHParser.parseArticleData(html);
     List<String> tags = [];
     List<String> series = [];
     List<String> characters = [];
-    if(articleEh.female != null){
+    if (articleEh.female != null) {
       articleEh.female?.forEach((female) {
-        tags.add('female:${female}');
+        tags.add('female:$female');
       });
     }
-    if(articleEh.male != null){
+    if (articleEh.male != null) {
       articleEh.male?.forEach((male) {
-        tags.add('male:${male}');
+        tags.add('male:$male');
       });
     }
-    if(articleEh.misc != null){
+    if (articleEh.misc != null) {
       articleEh.misc?.forEach((misc) {
-        tags.add('tag:${misc}');
+        tags.add('tag:$misc');
       });
     }
-    if(articleEh.parody != null){
+    if (articleEh.parody != null) {
       articleEh.parody?.forEach((parody) {
         series.add(parody);
       });
     }
-    if(articleEh.character != null){
+    if (articleEh.character != null) {
       articleEh.character?.forEach((character) {
         characters.add(character);
       });
@@ -194,7 +194,8 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       'EHash': hash,
       'Title': articleEh.title,
       'Artists': articleEh.artist?.join('|') ?? 'N/A',
-      'Language': articleEh.languages?.join('|') ?? articleEh.language.trim().toLowerCase() ?? 'N/A',
+      'Language': articleEh.languages?.join('|') ??
+          articleEh.language.trim().toLowerCase(),
       'Tags': tags.join('|'),
       'Characters': characters.join('|'),
       'Type': articleEh.type,
@@ -240,71 +241,74 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     // TODO: fix this hack
     // ignore: avoid_function_literals_in_foreach_calls
     articleList.forEach((element) {
-      if(!mounted) return;
-      try{
+      if (!mounted) return;
+      try {
         result.add(QueryResult(result: {
           'Id': int.parse(element.article()),
           'Loading': true,
         }));
-      } catch(e,st){}
+        // ignore: empty_catches
+      } catch (e) {}
       queryResult = result;
       _applyFilter();
       _rebuild();
     });
     // ignore: avoid_function_literals_in_foreach_calls
     articleList.forEach((element) async {
-      if(!mounted) return;
+      if (!mounted) return;
       var article = qr[element.article()];
 
-      tryHitomi () async {
+      tryHitomi() async {
         article ??= await _tryGetArticleFromHitomi(element.article());
       }
 
-      tryEhentai () async {
+      tryEhentai() async {
         article ??= await _tryGetArticleFromEhentai(element.article());
       }
-      
-      tryExhentai () async {
+
+      tryExhentai() async {
         article ??= await _tryGetArticleFromExhentai(element.article());
       }
 
-      handleEhentai () async {
+      handleEhentai() async {
         try {
           await tryEhentai();
-        } catch(e,st){
-          if(e == 'EHASH_LOCK'){
+        } catch (e) {
+          if (e == 'EHASH_LOCK') {
           } else {
             rethrow;
           }
         }
       }
-      handleExhentai () async {
+
+      handleExhentai() async {
         try {
           await tryExhentai();
-        } catch(e,st){
-          if(e == 'EHASH_LOCK'){
+        } catch (e) {
+          if (e == 'EHASH_LOCK') {
           } else {
             rethrow;
           }
         }
       }
+
       try {
         await tryHitomi();
-      } catch(_){
+      } catch (_) {
         try {
           await handleEhentai();
-        } catch(_){
+        } catch (_) {
           await handleExhentai();
         }
       }
-      if(article != null) {
+      if (article != null) {
         int i;
-        for(i = 0;i < articleList.length;i++){
-          if(articleList[i].article() == element.article()){
+        for (i = 0; i < articleList.length; i++) {
+          if (articleList[i].article() == element.article()) {
             break;
           }
         }
-        if(article != null){
+        if (article != null) {
           result[i] = article!;
         }
         queryResult = result;

@@ -163,9 +163,9 @@ class SearchPageController extends GetxController {
   }
 
   loadNextQuery() async {
-    var _aq = _querySem.acquire();
-    if(!Settings.ignoreHTTPTimeout){ 
-      _aq.timeout(
+    var tmpAq = _querySem.acquire();
+    if (!Settings.ignoreHTTPTimeout) {
+      tmpAq.timeout(
         const Duration(seconds: 5),
         onTimeout: () {
           showErrorToast('Semaphore acquisition failed');
@@ -174,7 +174,7 @@ class SearchPageController extends GetxController {
         },
       );
     }
-    await _aq;
+    await tmpAq;
 
     try {
       if (_queryEnd ||
@@ -182,10 +182,10 @@ class SearchPageController extends GetxController {
         return;
       }
 
-      var next;
+      late SearchResult next;
       var search = HentaiManager.search(latestQuery!.item2,
-              latestQuery!.item1 == null ? 0 : latestQuery!.item1!.offset);
-      if(Settings.ignoreHTTPTimeout){
+          latestQuery!.item1 == null ? 0 : latestQuery!.item1!.offset);
+      if (Settings.ignoreHTTPTimeout) {
         search.timeout(const Duration(seconds: 10), onTimeout: () {
           Logger.error('[Search_loadNextQuery] Search Timeout');
 

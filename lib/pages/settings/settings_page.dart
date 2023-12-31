@@ -1453,7 +1453,8 @@ class _SettingsPageState extends State<SettingsPage>
                 width: 25,
                 height: 25,
               ),
-              title: Text(Translations.of(context).trans('deleteoldlogatstart')),
+              title:
+                  Text(Translations.of(context).trans('deleteoldlogatstart')),
               trailing: Switch(
                 value: Settings.deleteOldLogAtStart,
                 onChanged: (newValue) async {
@@ -1467,7 +1468,8 @@ class _SettingsPageState extends State<SettingsPage>
               ),
             ),
             onTap: () async {
-              await Settings.setDeleteOldLogAtStart(!Settings.deleteOldLogAtStart);
+              await Settings.setDeleteOldLogAtStart(
+                  !Settings.deleteOldLogAtStart);
               setState(() {
                 _shouldReload = true;
               });

@@ -9,11 +9,11 @@ import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
 
 class EHSession {
-  static Map<String,String> ex_ehashs = Map<String,String>();
-  static Map<String,String> eh_ehashs = Map<String,String>();
-  static Map<String,bool> ehash_lock = Map<String,bool>();
-  static Map<String,bool> eh_ehash_could_not_found = Map<String,bool>();
-  static Map<String,bool> ex_ehash_could_not_found = Map<String,bool>();
+  static Map<String, String> exEhashs = <String, String>{};
+  static Map<String, String> ehEhashs = <String, String>{};
+  static Map<String, bool> ehashLock = <String, bool>{};
+  static Map<String, bool> ehEhashCouldNotFound = <String, bool>{};
+  static Map<String, bool> exEhashCouldNotFound = <String, bool>{};
   static EHSession? tryLogin(String id, String pass) {
     return null;
   }
@@ -42,112 +42,126 @@ class EHSession {
             body: 'commenttext_new=${Uri.encodeFull(content)}'))
         .body;
   }
-  static Future<String> getEHashById(String id,[String? from]) async {
-    switch(from){
+
+  static Future<String> getEHashById(String id, [String? from]) async {
+    switch (from) {
       case 'e-hentai.org':
-        if(eh_ehash_could_not_found[id] == true) {
-          Logger.warning('[getEHashById] could not found ${id}`s ehash from ${from}');
+        if (ehEhashCouldNotFound[id] == true) {
+          Logger.warning(
+              '[getEHashById] could not found $id`s ehash from $from');
           throw 'EHASH_LOCK';
         }
       case 'exhentai.org':
-        if(ex_ehash_could_not_found[id] == true) {
-          Logger.warning('[getEHashById] could not found ${id}`s ehash from ${from}');
+        if (exEhashCouldNotFound[id] == true) {
+          Logger.warning(
+              '[getEHashById] could not found $id`s ehash from $from');
           throw 'EHASH_LOCK';
         }
       default:
-        if(eh_ehash_could_not_found[id] == true && ex_ehash_could_not_found == true){
-          Logger.warning('[getEHashById] could not found ${id}`s ehash');
+        if (ehEhashCouldNotFound[id] == true &&
+            exEhashCouldNotFound == true) {
+          Logger.warning('[getEHashById] could not found $id`s ehash');
           throw 'EHASH_LOCK';
         }
     }
-    if(id.isEmpty) throw Error();
-    if(ehash_lock[id] == true){
-      Logger.warning('[getEHashById] ${id} is processing');
+    if (id.isEmpty) throw Error();
+    if (ehashLock[id] == true) {
+      Logger.warning('[getEHashById] $id is processing');
       throw 'EHASH_LOCK';
     } else {
-      ehash_lock[id] = true;
+      ehashLock[id] = true;
     }
     String? ehash;
-    Map<String,String> ehashs = Map<String,String>();
-    switch(from){
+    Map<String, String> ehashs = <String, String>{};
+    switch (from) {
       case 'e-hentai.org':
-        ehashs = eh_ehashs;
+        ehashs = ehEhashs;
         break;
       case 'exhentai.org':
-        ehashs = ex_ehashs;
+        ehashs = exEhashs;
         break;
       default:
-        if(from == null){
-          ehashs = Map<String,String>();
-          ehashs.addAll(ex_ehashs);
-          ehashs.addAll(eh_ehashs);
+        if (from == null) {
+          ehashs = <String, String>{};
+          ehashs.addAll(exEhashs);
+          ehashs.addAll(ehEhashs);
         }
         break;
     }
-    if(ehashs[id]?.isNotEmpty ?? false){
-      ehash_lock[id] = false;
+    if (ehashs[id]?.isNotEmpty ?? false) {
+      ehashLock[id] = false;
       return ehashs[id] ?? '';
     }
     try {
-    await Future.forEach([...(from == null ? ['e-hentai.org','exhentai.org'] : [from])],(host) async { // next?${id + 1} search for {e-/ex}hentai.org
-      if(ehash != null) return;
-      try {
-        final list_html = await EHSession.requestString('https://${host}/?next=${(int.parse(id) + 1)}');
-        final doc = parse(list_html);
-        final _url = doc.querySelector('a[href*="/g/${id}"]')?.attributes['href'] ?? '';
-        final _ehash = Uri.parse(_url).path.split('/').lastWhere((e) => e.trim().isNotEmpty).trim();
-        if(ehash == null && _ehash.isNotEmpty) {
-          if(host.contains('exhentai')) ehashs = ex_ehashs;
-          if(host.contains('e-hentai')) ehashs = eh_ehashs;
-          ehash = _ehash;
-        }
-      } catch(e,st){
-      }
-    });
-    } catch(_){}
-    if(ehash != null) {
-      ehash_lock[id] = false;
+      await Future.forEach([
+        ...(from == null ? ['e-hentai.org', 'exhentai.org'] : [from])
+      ], (host) async {
+        // next?${id + 1} search for {e-/ex}hentai.org
+        if (ehash != null) return;
+        try {
+          final listHtml = await EHSession.requestString(
+              'https://$host/?next=${(int.parse(id) + 1)}');
+          final doc = parse(listHtml);
+          final tmpUrl =
+              doc.querySelector('a[href*="/g/$id"]')?.attributes['href'] ?? '';
+          final tmpEhash = Uri.parse(tmpUrl)
+              .path
+              .split('/')
+              .lastWhere((e) => e.trim().isNotEmpty)
+              .trim();
+          if (ehash == null && tmpEhash.isNotEmpty) {
+            if (host.contains('exhentai')) ehashs = exEhashs;
+            if (host.contains('e-hentai')) ehashs = ehEhashs;
+            ehash = tmpEhash;
+          }
+          // ignore: empty_catches
+        } catch (e) {}
+      });
+    } catch (_) {}
+    if (ehash != null) {
+      ehashLock[id] = false;
       return (ehashs[id] = (ehash ?? ''));
     }
-    if(ehash == null && (from?.contains('e-hentai.org') ?? true)){ // duckduckgo search (only for search e-hentai.org)
-      ehashs = eh_ehashs;
-      try{
+    if (ehash == null && (from?.contains('e-hentai.org') ?? true)) {
+      // duckduckgo search (only for search e-hentai.org)
+      ehashs = ehEhashs;
+      try {
         final ddg = DuckDuckGoSearch();
-        final search_res = await ddg.searchProxied('site:e-hentai.org in-url:/g/${id}/');
-        final search_html = search_res.body;
-        var found_encoded_urls = parse(search_res.body)
-          .querySelectorAll('a[href*="${Uri.encodeComponent('/g/${id}')}"]')
-          .map((encoded_url) => encoded_url.attributes['href']?.trim() ?? '')
-          .where((encoded_url) => encoded_url.trim().isNotEmpty);
+        final searchRes =
+            await ddg.searchProxied('site:e-hentai.org in-url:/g/$id/');
+        var foundEncodedUrls = parse(searchRes.body)
+            .querySelectorAll('a[href*="${Uri.encodeComponent('/g/$id')}"]')
+            .map((encodedUrl) => encodedUrl.attributes['href']?.trim() ?? '')
+            .where((encodedUrl) => encodedUrl.trim().isNotEmpty);
         var url = '';
-        found_encoded_urls
-          ?.map((url) => Uri.parse(url ?? '').queryParameters)
-          ?.forEach((element){
-            element.forEach((key, value) {
-              if(value.contains('/g/${id}/')){
-                url = value;
-              }
-            });
+        foundEncodedUrls
+            .map((url) => Uri.parse(url).queryParameters)
+            .forEach((element) {
+          element.forEach((key, value) {
+            if (value.contains('/g/$id/')) {
+              url = value;
+            }
           });
+        });
         ehashs[id] = ehash = url.split('/').lastWhere((e) => e.isNotEmpty);
-      }catch(_){}
+      } catch (_) {}
     }
-    if(ehash != null){
-      ehash_lock[id] = false;
+    if (ehash != null) {
+      ehashLock[id] = false;
       return ehash ?? '';
     }
-    switch(from){
+    switch (from) {
       case 'e-hentai.org':
-        eh_ehash_could_not_found[id] = true;
+        ehEhashCouldNotFound[id] = true;
         break;
       case 'exhentai.org':
-        ex_ehash_could_not_found[id] = true;
+        exEhashCouldNotFound[id] = true;
       default:
-        eh_ehash_could_not_found[id] = true;
-        ex_ehash_could_not_found[id] = true;
+        ehEhashCouldNotFound[id] = true;
+        exEhashCouldNotFound[id] = true;
     }
-    ehash_lock[id] = false;
-    Logger.warning('[getEHashById] Could not found hash of ${id}');
+    ehashLock[id] = false;
+    Logger.warning('[getEHashById] Could not found hash of $id');
     throw 'NOT_FOUND_EHASH';
   }
 }

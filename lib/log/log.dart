@@ -55,8 +55,8 @@ class Logger {
       logFile = File(join(dir.path, 'log.txt'));
     }
 
-    if(prefs.getBool('deleteoldlogatstart') == true){
-      if(await logFile.exists()){
+    if (prefs.getBool('deleteoldlogatstart') == true) {
+      if (await logFile.exists()) {
         print('Deleting old log');
         await logFile.delete();
       }

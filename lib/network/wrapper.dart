@@ -3,14 +3,10 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:flutter_curl/flutter_curl.dart' as flutter_curl;
-import 'package:path_provider/path_provider.dart';
-import 'package:violet/component/proxy/proxy.myvipwebtools.com.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/libcurl.dart';
 import 'package:violet/settings/settings.dart';
@@ -102,18 +98,18 @@ Future<http.Response> _ehentaiGet(String url,
     StreamedResponse response;
 
     try {
-      late var _sent;
-      if(Settings.useHttp3){
+      late dynamic tmpSent;
+      if (Settings.useHttp3) {
         try {
-          _sent = Http3Request().get(url, headers: headers);
-        } catch(_){
-          _sent = client.send(request);
+          tmpSent = Http3Request().get(url, headers: headers);
+        } catch (_) {
+          tmpSent = client.send(request);
         }
       } else {
-        _sent = client.send(request);
+        tmpSent = client.send(request);
       }
-      if(!Settings.ignoreHTTPTimeout){
-        _sent.timeout(
+      if (!Settings.ignoreHTTPTimeout) {
+        tmpSent.timeout(
           const Duration(seconds: 3),
           onTimeout: () {
             timeout = true;
@@ -121,11 +117,11 @@ Future<http.Response> _ehentaiGet(String url,
           },
         );
       }
-      var _res = await _sent;
-      if(_res is flutter_curl.Response){
-        response = await Http3Request.toStreamedHttpResponse(_res);
+      var tmpRes = await tmpSent;
+      if (tmpRes is flutter_curl.Response) {
+        response = await Http3Request.toStreamedHttpResponse(tmpRes);
       } else {
-        response = _res;
+        response = tmpRes;
       }
     } catch (e, st) {
       Logger.error('[Http Request] GET: $url\n'
@@ -156,9 +152,10 @@ Future<http.Response> _ehentaiGet(String url,
     Logger.info('[Http Request] GETS: $url');
 
     if (!HttpWrapper.cacheResponse.containsKey(url) && res.statusCode == 200) {
-      if(
-       (!res.body.contains('<') && !res.body.contains('>')) // THIS CHECKS HTML TAG EXISTS (if banned respone no cache)
-      ) {
+      if ((!res.body.contains('<') &&
+              !res.body.contains(
+                  '>')) // THIS CHECKS HTML TAG EXISTS (if banned respone no cache)
+          ) {
         Logger.warning('[_ehentaiGet] ${res.body}');
       } else {
         HttpWrapper.cacheResponse[url] = res;
@@ -180,11 +177,11 @@ Future<http.Response> _scriptGet(String url,
 
   Response res;
   if (timeout == null) {
-    if(Settings.useHttp3){
+    if (Settings.useHttp3) {
       try {
-        var _res = await Http3Request().get(url, headers: headers);
-        res = await Http3Request.toHttpResponse(_res);
-      } catch(_){
+        var tmpRes = await Http3Request().get(url, headers: headers);
+        res = await Http3Request.toHttpResponse(tmpRes);
+      } catch (_) {
         res = await http.get(Uri.parse(url), headers: headers);
       }
     }
@@ -194,32 +191,31 @@ Future<http.Response> _scriptGet(String url,
     var retry = 0;
     do {
       isTimeout = false;
-      late var _sent;
-      if(Settings.useHttp3){
+      late dynamic tmpSent;
+      if (Settings.useHttp3) {
         try {
-          _sent = Http3Request().get(url, headers: headers);
-        } catch(_){
-          _sent = http.get(Uri.parse(url), headers: headers);
+          tmpSent = Http3Request().get(url, headers: headers);
+        } catch (_) {
+          tmpSent = http.get(Uri.parse(url), headers: headers);
         }
       } else {
-        _sent = http.get(Uri.parse(url), headers: headers);
+        tmpSent = http.get(Uri.parse(url), headers: headers);
       }
-      if(!Settings.ignoreHTTPTimeout){
-        _sent
-          .timeout(
-            timeout,
-            onTimeout: () {
-              isTimeout = true;
-              retry++;
-              return http.Response('', 200);
-            },
-          );
+      if (!Settings.ignoreHTTPTimeout) {
+        tmpSent.timeout(
+          timeout,
+          onTimeout: () {
+            isTimeout = true;
+            retry++;
+            return http.Response('', 200);
+          },
+        );
       }
-      var _res = await _sent;
-      if(_res is flutter_curl.Response){
-        res = await Http3Request.toHttpResponse(_res);
+      var tmpRes = await tmpSent;
+      if (tmpRes is flutter_curl.Response) {
+        res = await Http3Request.toHttpResponse(tmpRes);
       } else {
-        res = _res;
+        res = tmpRes;
       }
     } while (isTimeout && retry < 10);
   }

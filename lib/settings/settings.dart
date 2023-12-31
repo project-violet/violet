@@ -477,12 +477,13 @@ class Settings {
     await prefs.setInt('majorAccentColor', accent!.value);
     majorAccentColor = accent;
   }
+
   static Future<void> setDeleteOldLogAtStart(bool nn) async {
     deleteOldLogAtStart = nn;
 
     await prefs.setBool('deleteoldlogatstart', nn);
   }
-  
+
   static Future<void> setIgnoreHTTPTimeout(bool nn) async {
     ignoreHTTPTimeout = nn;
 

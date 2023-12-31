@@ -130,19 +130,20 @@ class ArticleListItemWidgetController extends GetxController {
       try {
         provider =
             await HentaiManager.getImageProvider(articleListItem.queryResult);
-      } catch(e,st){
-        if(e == 'Loading'){
+      } catch (e, st) {
+        if (e == 'Loading') {
           Logger.warning('loading');
         } else {
           Logger.error('[setProvider] $e\n'
-            '$st');
+              '$st');
         }
       }
-      if(provider != null) ProviderManager.insert(articleListItem.queryResult.id(), provider);
+      if (provider != null)
+        ProviderManager.insert(articleListItem.queryResult.id(), provider);
     } else {
       provider = await ProviderManager.get(articleListItem.queryResult.id());
     }
-    if(provider != null){
+    if (provider != null) {
       thumbnail.value = await provider.getThumbnailUrl();
       headers.value = await provider.getHeader(0);
       imageCount.value = provider.length();
