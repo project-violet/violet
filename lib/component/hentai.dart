@@ -444,7 +444,8 @@ class HentaiManager {
             : 'n/a',
         'Groups': element.descripts!['group'] != null
             ? element.descripts!['group']!.join('|')
-            : null,
+            : 'n/a',
+        // ignore: prefer_null_aware_operators
         'Characters': element.descripts!['character'] != null
             ? element.descripts!['character']!.join('|')
             : null,
