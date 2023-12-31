@@ -5,8 +5,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:violet/log/log.dart';
-import 'package:violet/server/community/session.dart';
-import 'package:violet/server/violet.dart';
+import 'package:violet/server/v1/community/session.dart';
+import 'package:violet/server/v1/violet.dart';
 import 'package:violet/server/wsalt.dart';
 
 class VioletCommunityArticle {

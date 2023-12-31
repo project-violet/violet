@@ -7,7 +7,7 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
-import 'package:violet/server/community/anon.dart';
+import 'package:violet/server/v1/community/anon.dart';
 
 class LabRecentComments extends StatefulWidget {
   const LabRecentComments({super.key});

@@ -29,7 +29,7 @@ import 'package:violet/pages/main/info/lab/user_bookmark_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/settings/log_page.dart';
-import 'package:violet/server/violet.dart';
+import 'package:violet/server/v1/violet.dart';
 import 'package:violet/server/wsalt.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
