@@ -217,17 +217,11 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     // ignore: avoid_function_literals_in_foreach_calls
     articleList.forEach((element) {
       if (!mounted) return;
-      try {
-        final qr = QueryResult(result: {
-          'Id': int.parse(element.article()),
-        });
-        qr.loading = true;
-        result.add(qr);
-        // ignore: empty_catches
-      } catch (e) {}
-      queryResult = result;
-      _applyFilter();
-      _rebuild();
+      final qr = QueryResult(result: {
+        'Id': int.parse(element.article()),
+      });
+      qr.loading = true;
+      result.add(qr);
     });
     // ignore: avoid_function_literals_in_foreach_calls
     articleList.forEach((element) async {
