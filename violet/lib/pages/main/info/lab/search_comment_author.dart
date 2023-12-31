@@ -3,15 +3,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
-import 'package:violet/component/hentai.dart';
-import 'package:violet/database/user/bookmark.dart';
-import 'package:violet/model/article_info.dart';
-import 'package:violet/pages/article_info/article_info_page.dart';
+import 'package:violet/pages/common/utils.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/server/violet.dart';
-import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class LabSearchCommentsAuthor extends StatefulWidget {
   final String author;
@@ -54,7 +49,7 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
           return InkWell(
             onTap: () async {
               FocusScope.of(context).unfocus();
-              _showArticleInfo(e.item1);
+              showArticleInfo(context, e.item1);
             },
             splashColor: Colors.white,
             child: ListTile(
@@ -105,52 +100,4 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
   //     Navigator.of(context).push(CupertinoPageRoute(builder: (_) => page));
   //   }
   // }
-
-  void _showArticleInfo(int id) async {
-    final height = MediaQuery.of(context).size.height;
-
-    final search = await HentaiManager.idSearch(id.toString());
-    if (search.results.length != 1) return;
-
-    final qr = search.results.first;
-
-    HentaiManager.getImageProvider(qr).then((value) async {
-      var thumbnail = await value.getThumbnailUrl();
-      var headers = await value.getHeader(0);
-      ProviderManager.insert(qr.id(), value);
-
-      var isBookmarked =
-          await (await Bookmark.getInstance()).isBookmark(qr.id());
-
-      Provider<ArticleInfo>? cache;
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (_) {
-          return DraggableScrollableSheet(
-            initialChildSize: 400 / height,
-            minChildSize: 400 / height,
-            maxChildSize: 0.9,
-            expand: false,
-            builder: (_, controller) {
-              cache ??= Provider<ArticleInfo>.value(
-                value: ArticleInfo.fromArticleInfo(
-                  queryResult: qr,
-                  thumbnail: thumbnail,
-                  headers: headers,
-                  heroKey: 'zxcvzxcvzxcv',
-                  isBookmarked: isBookmarked,
-                  controller: controller,
-                ),
-                child: const ArticleInfoPage(
-                  key: ObjectKey('asdfasdf'),
-                ),
-              );
-              return cache!;
-            },
-          );
-        },
-      );
-    });
-  }
 }

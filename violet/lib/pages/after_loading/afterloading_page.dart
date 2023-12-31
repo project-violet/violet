@@ -8,10 +8,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:uni_links/uni_links.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/act_log.dart';
 import 'package:violet/other/named_color.dart';
 import 'package:violet/pages/bookmark/bookmark_page.dart';
+import 'package:violet/pages/common/utils.dart';
 import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/hot/hot_page.dart';
 import 'package:violet/pages/lock/lock_screen.dart';
@@ -45,6 +47,8 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
     WidgetsBinding.instance.addObserver(this);
     fToast = FToast();
     fToast.init(context);
+
+    uriLinkStream.listen(handleDeeplink);
 
     Future.delayed(const Duration(milliseconds: 200))
         .then((value) => UpdateManager.updateCheck(context));
@@ -81,6 +85,16 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
       default:
         // TODO: Implement properly
         break;
+    }
+  }
+
+  void handleDeeplink(Uri? uri) {
+    if (uri == null) {
+      return;
+    }
+
+    if (int.tryParse(uri.host) != null) {
+      showArticleInfo(context, int.parse(uri.host));
     }
   }
 
