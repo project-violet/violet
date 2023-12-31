@@ -105,7 +105,7 @@ class HitomiParser {
                     .replaceAll('%20', ' ');
                 if (tag == null) return;
                 if (!tag.contains(':')) {
-                  tag = 'tag:' + tag;
+                  tag = 'tag:$tag';
                 }
                 tags.add(tag);
               });

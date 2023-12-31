@@ -42,9 +42,7 @@ class SyncInfoRecord {
 
 class SyncManager {
   static String syncInfoURL(String branch) {
-    return 'https://raw.githubusercontent.com/violet-dev/sync-data/' +
-        (branch) +
-        '/syncversion.txt';
+    return 'https://raw.githubusercontent.com/violet-dev/sync-data/$branch/syncversion.txt';
   }
 
   static bool firstSync = false;
