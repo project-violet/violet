@@ -20,12 +20,10 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
-import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/related.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/query.dart';
-import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
@@ -36,6 +34,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/simple_info.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
+import 'package:violet/pages/common/utils.dart';
 import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/main/info/lab/search_comment_author.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
@@ -854,58 +853,10 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
     if (ehPattern.stringMatch(url) == url) {
       var match = ehPattern.allMatches(url);
       var id = match.first.namedGroup('id')!.trim();
-      _showArticleInfo(int.parse(id));
+      showArticleInfo(context, int.parse(id));
     } else if (await canLaunchUrlString(url)) {
       await launchUrlString(url);
     }
-  }
-
-  void _showArticleInfo(int id) async {
-    final height = MediaQuery.of(context).size.height;
-
-    final search = await HentaiManager.idSearch(id.toString());
-    if (search.results.length != 1) return;
-
-    final qr = search.results.first;
-
-    HentaiManager.getImageProvider(qr).then((value) async {
-      var thumbnail = await value.getThumbnailUrl();
-      var headers = await value.getHeader(0);
-      ProviderManager.insert(qr.id(), value);
-
-      var isBookmarked =
-          await (await Bookmark.getInstance()).isBookmark(qr.id());
-
-      Provider<ArticleInfo>? cache;
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (_) {
-          return DraggableScrollableSheet(
-            initialChildSize: 400 / height,
-            minChildSize: 400 / height,
-            maxChildSize: 0.9,
-            expand: false,
-            builder: (_, controller) {
-              cache ??= Provider<ArticleInfo>.value(
-                value: ArticleInfo.fromArticleInfo(
-                  queryResult: qr,
-                  thumbnail: thumbnail,
-                  headers: headers,
-                  heroKey: 'zxcvzxcvzxcv',
-                  isBookmarked: isBookmarked,
-                  controller: controller,
-                ),
-                child: const ArticleInfoPage(
-                  key: ObjectKey('asdfasdf'),
-                ),
-              );
-              return cache!;
-            },
-          );
-        },
-      );
-    });
   }
 
   List<InlineSpan> linkify(String text) {
