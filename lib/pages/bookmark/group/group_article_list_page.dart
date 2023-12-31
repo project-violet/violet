@@ -112,14 +112,14 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     late String hash;
     try {
       hash = await EHSession.getEhashByIdFromDuckduckgo(id);
-    } catch(e,st){
+    } catch (e, st) {
       Logger.error('[_tryGetArticleFromEhentai] $e\n'
-      '$st');
+          '$st');
       try {
         hash = await EHSession.getEhashByIdFromEhentai(id);
-      } catch(e,st){
+      } catch (e, st) {
         Logger.error('[_tryGetArticleFromEhentai] $e\n'
-        '$st');
+            '$st');
       }
     }
     final html = await EHSession.requestString(
@@ -147,14 +147,14 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     String? hash;
     try {
       hash = await EHSession.getEhashByIdFromDuckduckgo(id);
-    } catch(e,st){
+    } catch (e, st) {
       Logger.error('[_tryGetArticleFromExhentai] $e\n'
-      '$st');
+          '$st');
       try {
         hash = await EHSession.getEhashByIdFromExhentai(id);
-      } catch(e,st){
+      } catch (e, st) {
         Logger.error('[_tryGetArticleFromExhentai] $e\n'
-        '$st');
+            '$st');
         rethrow;
       }
     }

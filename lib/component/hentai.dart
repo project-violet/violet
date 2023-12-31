@@ -120,9 +120,9 @@ class HentaiManager {
     try {
       late String galleryToken;
       try {
-        galleryToken = await EHSession.getEhashByIdFromDuckduckgo('${no}');
-      } catch(_){
-        galleryToken = await EHSession.getEhashByIdFromEhentai('${no}');
+        galleryToken = await EHSession.getEhashByIdFromDuckduckgo('$no');
+      } catch (_) {
+        galleryToken = await EHSession.getEhashByIdFromEhentai('$no');
       }
       var html = await EHSession.requestString(
           'https://e-hentai.org/g/$no/$galleryToken/?p=0&inline_set=ts_m');
@@ -149,9 +149,9 @@ class HentaiManager {
     try {
       late String galleryToken;
       try {
-        galleryToken = await EHSession.getEhashByIdFromDuckduckgo('${no}');
-      } catch(_){
-        galleryToken = await EHSession.getEhashByIdFromExhentai('${no}');
+        galleryToken = await EHSession.getEhashByIdFromDuckduckgo('$no');
+      } catch (_) {
+        galleryToken = await EHSession.getEhashByIdFromExhentai('$no');
       }
       var html = await EHSession.requestString(
           'https://exhentai.org/g/$no/$galleryToken/?p=0&inline_set=ts_m');
@@ -294,15 +294,17 @@ class HentaiManager {
             case 'EHentai':
               if (qr.ehash() == null) {
                 try {
-                  ehEhash = await EHSession.getEhashByIdFromDuckduckgo('${qr.id()}');
-                } catch (e,st) {
+                  ehEhash =
+                      await EHSession.getEhashByIdFromDuckduckgo('${qr.id()}');
+                } catch (e, st) {
                   Logger.error('[getImageProvider] $e\n'
-                    '$st');
-                  try {
-                    ehEhash = await EHSession.getEhashByIdFromDuckduckgo('${qr.id()}');
-                  } catch (e,st){
-                    Logger.error('[getImageProvider] $e'
                       '$st');
+                  try {
+                    ehEhash = await EHSession.getEhashByIdFromDuckduckgo(
+                        '${qr.id()}');
+                  } catch (e, st) {
+                    Logger.error('[getImageProvider] $e'
+                        '$st');
                     rethrow;
                   }
                 }
@@ -325,15 +327,17 @@ class HentaiManager {
             case 'ExHentai':
               if (qr.ehash() == null) {
                 try {
-                  exEhash = await EHSession.getEhashByIdFromDuckduckgo('${qr.id()}');
-                } catch(e,st){
+                  exEhash =
+                      await EHSession.getEhashByIdFromDuckduckgo('${qr.id()}');
+                } catch (e, st) {
                   Logger.error('[getImageProvider] $e\n'
-                  '$st');
-                  try{
-                    exEhash = await EHSession.getEhashByIdFromExhentai('${qr.id()}');
-                  } catch(e,st){
+                      '$st');
+                  try {
+                    exEhash =
+                        await EHSession.getEhashByIdFromExhentai('${qr.id()}');
+                  } catch (e, st) {
                     Logger.error('[getImageProvider] $e\n'
-                    '$st');
+                        '$st');
                     rethrow;
                   }
                 }

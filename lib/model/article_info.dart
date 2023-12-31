@@ -42,9 +42,10 @@ class ArticleInfo {
     bool lockRead = false,
   }) {
     var artist = (queryResult.artists() as String)
-        .split('|')
-        .where((x) => x.isNotEmpty)
-        .elementAtOrNull(0) ?? 'N/A';
+            .split('|')
+            .where((x) => x.isNotEmpty)
+            .elementAtOrNull(0) ??
+        'N/A';
 
     if (artist == 'N/A') {
       var group = queryResult.groups() != null

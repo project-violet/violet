@@ -44,20 +44,20 @@ class EHSession {
   }
 
   static Future<String> getEhashByIdFromEhentai(String id) async {
-    if(ehEhashCouldNotFound[id] == true){
+    if (ehEhashCouldNotFound[id] == true) {
       throw 'EHASH_NOT_FOUND e-hentai.org $id';
     }
-    if(ehashLock[id] == true){
+    if (ehashLock[id] == true) {
       bool isLocked = true;
       do {
-        await Future.delayed(Duration.zero,() {
+        await Future.delayed(Duration.zero, () {
           isLocked = ehashLock[id] ?? false;
         });
       } while (isLocked == true);
       return await EHSession.getEhashByIdFromEhentai(id);
       // throw 'EHASH_LOCK e-hentai.org $id';
     }
-    if(ehEhashs[id]?.isNotEmpty ?? false){
+    if (ehEhashs[id]?.isNotEmpty ?? false) {
       return ehEhashs[id]!;
     }
     try {
@@ -76,28 +76,29 @@ class EHSession {
         ehEhashs[id] = tmpEhash;
         return tmpEhash;
       }
-    } catch(e,st){
+    } catch (e, st) {
       Logger.error('[getEhashByIdFromEhentai] $e\n'
-        '$st');
+          '$st');
     } finally {
       ehashLock[id] = false;
     }
     throw 'EHASH_NOT_FOUND e-hentai.org $id';
   }
+
   static Future<String> getEhashByIdFromExhentai(String id) async {
-    if(exEhashCouldNotFound[id] == true){
+    if (exEhashCouldNotFound[id] == true) {
       throw 'EHASH_NOT_FOUND exhentai.org $id';
     }
-    if(ehEhashs[id]?.isNotEmpty ?? false){
+    if (ehEhashs[id]?.isNotEmpty ?? false) {
       return ehEhashs[id]!;
     }
-    if(exEhashs[id]?.isNotEmpty ?? false){
+    if (exEhashs[id]?.isNotEmpty ?? false) {
       return exEhashs[id]!;
     }
-    if(ehashLock[id] == true){
+    if (ehashLock[id] == true) {
       bool isLocked = true;
       do {
-        await Future.delayed(Duration.zero,() {
+        await Future.delayed(Duration.zero, () {
           isLocked = ehashLock[id] ?? false;
         });
       } while (isLocked == true);
@@ -105,7 +106,7 @@ class EHSession {
       // throw 'EHASH_LOCK exhentai.org $id';
     }
     ehashLock[id] = true;
-    try{
+    try {
       final listHtml = await EHSession.requestString(
           'https://exhentai.org/?next=${(int.parse(id) + 1)}');
       final doc = parse(listHtml);
@@ -121,30 +122,31 @@ class EHSession {
         exEhashs[id] = tmpEhash;
         return tmpEhash;
       }
-    }catch(e,st){
+    } catch (e, st) {
       Logger.error('[getEhashByIdFromExhentai] $e\n'
-        '$st');
+          '$st');
     } finally {
       ehashLock[id] = false;
     }
     throw 'EHASH_NOT_FOUND exhentai.org $id';
   }
+
   static Future<String> getEhashByIdFromDuckduckgo(String id) async {
-    try{
-      if(ehashLock[id] == true){
+    try {
+      if (ehashLock[id] == true) {
         bool isLocked = true;
         do {
-          await Future.delayed(Duration.zero,() {
+          await Future.delayed(Duration.zero, () {
             isLocked = ehashLock[id] ?? false;
           });
         } while (isLocked == true);
         return await EHSession.getEhashByIdFromDuckduckgo(id);
         // throw 'EHASH_LOCK duckduckgo.com $id';
       }
-      if(ehEhashs[id]?.isNotEmpty ?? false){
+      if (ehEhashs[id]?.isNotEmpty ?? false) {
         return ehEhashs[id]!;
       }
-      if(exEhashs[id]?.isNotEmpty ?? false){
+      if (exEhashs[id]?.isNotEmpty ?? false) {
         return exEhashs[id]!;
       }
       final ddg = DuckDuckGoSearch();
@@ -166,16 +168,16 @@ class EHSession {
       });
       exEhashs[id] = url.split('/').lastWhere((e) => e.isNotEmpty);
       ehEhashs[id] = url.split('/').lastWhere((e) => e.isNotEmpty);
-      if(exEhashs[id]?.isEmpty ?? true){
+      if (exEhashs[id]?.isEmpty ?? true) {
         throw 'EHASH_NOT_FOUND duckduckgo.com $id';
       }
       ehEhashCouldNotFound[id] = false;
       exEhashCouldNotFound[id] = false;
       ehashLock[id] = false;
       return exEhashs[id]!;
-    } catch(e,st){
+    } catch (e, st) {
       Logger.error('[getEhashByIdFromDuckduckgo] $e\n'
-      '$st');
+          '$st');
     } finally {
       ehashLock[id] = false;
     }
@@ -185,10 +187,10 @@ class EHSession {
   static Future<String> getEhashById(String id) async {
     try {
       return await getEhashByIdFromDuckduckgo(id);
-    } catch(_){
+    } catch (_) {
       try {
         return await getEhashByIdFromEhentai(id);
-      } catch(_){
+      } catch (_) {
         return await getEhashByIdFromExhentai(id);
       }
     }
