@@ -2,10 +2,12 @@
 
 import 'dart:io';
 import 'dart:ui' as ui;
+import 'dart:ui';
 
 class Device {
-  static double devicePixelRatio = ui.window.devicePixelRatio;
-  static ui.Size size = ui.window.physicalSize;
+  static double devicePixelRatio =
+      PlatformDispatcher.instance.views.first.devicePixelRatio;
+  static ui.Size size = PlatformDispatcher.instance.views.first.physicalSize;
   static double width = size.width;
   static double height = size.height;
   static double screenWidth = width / devicePixelRatio;
