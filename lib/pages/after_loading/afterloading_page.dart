@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:uni_links/uni_links.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/act_log.dart';
 import 'package:violet/other/named_color.dart';
@@ -46,6 +47,8 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
     fToast = FToast();
     fToast.init(context);
 
+    uriLinkStream.listen(handleDeeplink);
+
     Future.delayed(const Duration(milliseconds: 200))
         .then((value) => UpdateManager.updateCheck(context));
   }
@@ -83,6 +86,8 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
         break;
     }
   }
+
+  void handleDeeplink(Uri? uri) {}
 
   final PageController _pageController =
       PageController(initialPage: defaultInitialPage);
