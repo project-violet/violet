@@ -157,6 +157,9 @@ Future<http.Response> _ehentaiGet(String url,
                   '>')) // THIS CHECKS HTML TAG EXISTS (if banned respone no cache)
           ) {
         Logger.warning('[_ehentaiGet] ${res.body}');
+        if(res.headers['set-cookie']?.contains('mystery') ?? false){
+          Logger.warning('[_ehentaiGet] ${res.headers['set-cookie']}');
+        }
       } else {
         HttpWrapper.cacheResponse[url] = res;
       }
