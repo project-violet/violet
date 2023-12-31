@@ -119,7 +119,11 @@ class HentaiManager {
 
     try {
       late String galleryToken;
-      galleryToken = await EHSession.getEHashById('$no', 'e-hentai.org');
+      try {
+        galleryToken = await EHSession.getEhashByIdFromDuckduckgo('${no}');
+      } catch(_){
+        galleryToken = await EHSession.getEhashByIdFromEhentai('${no}');
+      }
       var html = await EHSession.requestString(
           'https://e-hentai.org/g/$no/$galleryToken/?p=0&inline_set=ts_m');
       var articleEh = EHParser.parseArticleData(html);
@@ -144,7 +148,11 @@ class HentaiManager {
 
     try {
       late String galleryToken;
-      galleryToken = await EHSession.getEHashById('$no', 'exhentai.org');
+      try {
+        galleryToken = await EHSession.getEhashByIdFromDuckduckgo('${no}');
+      } catch(_){
+        galleryToken = await EHSession.getEhashByIdFromExhentai('${no}');
+      }
       var html = await EHSession.requestString(
           'https://exhentai.org/g/$no/$galleryToken/?p=0&inline_set=ts_m');
       var articleEh = EHParser.parseArticleData(html);
@@ -286,10 +294,17 @@ class HentaiManager {
             case 'EHentai':
               if (qr.ehash() == null) {
                 try {
-                  ehEhash = await EHSession.getEHashById(
-                      '${qr.id()}', 'e-hentai.org');
-                } catch (_) {
-                  rethrow;
+                  ehEhash = await EHSession.getEhashByIdFromDuckduckgo('${qr.id()}');
+                } catch (e,st) {
+                  Logger.error('[getImageProvider] $e\n'
+                    '$st');
+                  try {
+                    ehEhash = await EHSession.getEhashByIdFromDuckduckgo('${qr.id()}');
+                  } catch (e,st){
+                    Logger.error('[getImageProvider] $e'
+                      '$st');
+                    rethrow;
+                  }
                 }
               }
               if (qr.ehash() != null || ehEhash != null) {
@@ -309,8 +324,19 @@ class HentaiManager {
               break;
             case 'ExHentai':
               if (qr.ehash() == null) {
-                exEhash =
-                    await EHSession.getEHashById('${qr.id()}', 'exhentai.org');
+                try {
+                  exEhash = await EHSession.getEhashByIdFromDuckduckgo('${qr.id()}');
+                } catch(e,st){
+                  Logger.error('[getImageProvider] $e\n'
+                  '$st');
+                  try{
+                    exEhash = await EHSession.getEhashByIdFromExhentai('${qr.id()}');
+                  } catch(e,st){
+                    Logger.error('[getImageProvider] $e\n'
+                    '$st');
+                    rethrow;
+                  }
+                }
               }
               if (qr.ehash() != null || exEhash != null) {
                 var html = await EHSession.requestString(

@@ -109,7 +109,19 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   Future<QueryResult> _tryGetArticleFromEhentai(String id) async {
-    final hash = await EHSession.getEHashById(id, 'e-hentai.org');
+    late String hash;
+    try {
+      hash = await EHSession.getEhashByIdFromDuckduckgo(id);
+    } catch(e,st){
+      Logger.error('[_tryGetArticleFromEhentai] $e\n'
+      '$st');
+      try {
+        hash = await EHSession.getEhashByIdFromEhentai(id);
+      } catch(e,st){
+        Logger.error('[_tryGetArticleFromEhentai] $e\n'
+        '$st');
+      }
+    }
     final html = await EHSession.requestString(
         'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
     final articleEh = EHParser.parseArticleData(html);
@@ -157,7 +169,20 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   Future<QueryResult> _tryGetArticleFromExhentai(String id) async {
-    final hash = await EHSession.getEHashById(id, 'exhentai.org');
+    String? hash;
+    try {
+      hash = await EHSession.getEhashByIdFromDuckduckgo(id);
+    } catch(e,st){
+      Logger.error('[_tryGetArticleFromExhentai] $e\n'
+      '$st');
+      try {
+        hash = await EHSession.getEhashByIdFromExhentai(id);
+      } catch(e,st){
+        Logger.error('[_tryGetArticleFromExhentai] $e\n'
+        '$st');
+        rethrow;
+      }
+    }
     final html = await EHSession.requestString(
         'https://exhentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
     final articleEh = EHParser.parseArticleData(html);
@@ -274,7 +299,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         try {
           await tryEhentai();
         } catch (e) {
-          if (e == 'EHASH_LOCK') {
+          if (e.toString().startsWith('EHASH_LOCK')) {
           } else {
             rethrow;
           }
@@ -285,7 +310,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         try {
           await tryExhentai();
         } catch (e) {
-          if (e == 'EHASH_LOCK') {
+          if (e.toString().startsWith('EHASH_LOCK')) {
           } else {
             rethrow;
           }
