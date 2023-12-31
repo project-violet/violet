@@ -43,6 +43,7 @@ class ProxyHttpRequest {
           final setCookie = value
               .split(',')
               .where((c) => c.trim().split(';')[0].contains('='));
+          // ignore: avoid_function_literals_in_foreach_calls
           setCookie.forEach((v) {
             final cookieKeyVal = v.split(';')[0].trim(); // ignores expire etc
             final cookieKey =

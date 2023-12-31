@@ -281,6 +281,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       _applyFilter();
       _rebuild();
     });
+    // ignore: avoid_function_literals_in_foreach_calls
     articleList.forEach((element) async {
       if (!mounted) return;
       var article = qr[element.article()];
