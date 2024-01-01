@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -26,7 +27,7 @@ class ViewerController extends GetxController {
   late final int maxPage;
 
   /// viewer callbacks
-  late Function close;
+  late AsyncCallback close;
   late Function replace;
   late Function stopTimer;
   late Function startTimer;
