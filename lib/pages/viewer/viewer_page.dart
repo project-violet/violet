@@ -131,7 +131,7 @@ class _ViewerPageState extends State<ViewerPage> {
     _initProvider = CallOnce(_initAfterProvider);
     _startsTime = DateTime.now();
 
-    if (!Settings.disableFullScreen || Platform.isIOS) {
+    if (!Settings.disableFullScreen) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     }
 
