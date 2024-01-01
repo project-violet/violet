@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:uni_links/uni_links.dart';
@@ -342,26 +343,31 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             ? _buildBottomNavigationBar(context)
             : null,
         drawer: _usesDrawer ? _buildDrawer(context) : null,
-        body: Stack(
-          children: [
-            if (kReleaseMode) const ScriptWebView(),
-            PageView(
-              controller: _pageController,
-              physics:
-                  _usesDrawer ? const NeverScrollableScrollPhysics() : null,
-              onPageChanged: (newPage) {
-                setState(() {});
-              },
-              children: <Widget>[
-                if (!Settings.liteMode) MainPage(key: _widgetKeys[0]),
-                SearchPage(key: _widgetKeys[1]),
-                if (Settings.liteMode) HotPage(key: _widgetKeys[2]),
-                BookmarkPage(key: _widgetKeys[3]),
-                DownloadPage(key: _widgetKeys[4]),
-                SettingsPage(key: _widgetKeys[5]),
-              ],
-            ),
-          ],
+        body: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: Settings.themeWhat
+              ? SystemUiOverlayStyle.dark
+              : SystemUiOverlayStyle.light,
+          child: Stack(
+            children: [
+              if (kReleaseMode) const ScriptWebView(),
+              PageView(
+                controller: _pageController,
+                physics:
+                    _usesDrawer ? const NeverScrollableScrollPhysics() : null,
+                onPageChanged: (newPage) {
+                  setState(() {});
+                },
+                children: <Widget>[
+                  if (!Settings.liteMode) MainPage(key: _widgetKeys[0]),
+                  SearchPage(key: _widgetKeys[1]),
+                  if (Settings.liteMode) HotPage(key: _widgetKeys[2]),
+                  BookmarkPage(key: _widgetKeys[3]),
+                  DownloadPage(key: _widgetKeys[4]),
+                  SettingsPage(key: _widgetKeys[5]),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
