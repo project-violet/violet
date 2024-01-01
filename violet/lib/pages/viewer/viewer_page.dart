@@ -102,8 +102,9 @@ class _ViewerPageState extends State<ViewerPage> {
       );
     }
 
-    return WillPopScope(
-      onWillPop: _close,
+    return PopScope(
+      canPop: true,
+      onPopInvoked: _handlePopInvoked,
       child: body,
     );
   }
@@ -223,10 +224,13 @@ class _ViewerPageState extends State<ViewerPage> {
     if (Platform.isAndroid) _setupVolume();
   }
 
-  Future<bool> _close() async {
+  Future<void> _close() async {
     c.onSession.value = false;
     await _savePageRead();
-    return Future(() => true);
+  }
+
+  Future<void> _handlePopInvoked(bool didPop) async {
+    await _close();
   }
 
   _setupVolume() {

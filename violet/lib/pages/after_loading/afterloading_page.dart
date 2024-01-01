@@ -309,9 +309,14 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
     Variables.updatePadding((mediaQuery.padding + mediaQuery.viewInsets).top,
         (mediaQuery.padding + mediaQuery.viewInsets).bottom);
 
-    return WillPopScope(
-      onWillPop: () async {
-        DateTime now = DateTime.now();
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        if (didPop) {
+          return;
+        }
+
+        final now = DateTime.now();
 
         if (_lastPopAt != null &&
             now.difference(_lastPopAt!) <= const Duration(seconds: 2)) {
@@ -319,24 +324,22 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             await PlatformMiscMethods.instance.finishMainActivity();
           }
 
-          return true;
+          Navigator.of(context).pop();
+        } else {
+          _lastPopAt = now;
+
+          fToast.showToast(
+            child: ToastWrapper(
+              isCheck: false,
+              isWarning: true,
+              icon: Icons.logout,
+              msg: Translations.of(context).trans('closedoubletap'),
+            ),
+            ignorePointer: true,
+            gravity: ToastGravity.BOTTOM,
+            toastDuration: const Duration(seconds: 4),
+          );
         }
-
-        _lastPopAt = now;
-
-        fToast.showToast(
-          child: ToastWrapper(
-            isCheck: false,
-            isWarning: true,
-            icon: Icons.logout,
-            msg: Translations.of(context).trans('closedoubletap'),
-          ),
-          ignorePointer: true,
-          gravity: ToastGravity.BOTTOM,
-          toastDuration: const Duration(seconds: 4),
-        );
-
-        return false;
       },
       child: Scaffold(
         bottomNavigationBar: _usesBottomNavigationBar
