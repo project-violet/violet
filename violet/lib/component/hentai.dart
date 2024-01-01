@@ -327,41 +327,26 @@ class HentaiManager {
     final result = EHParser.parseReulstPageExtendedListView(html);
 
     return result.map((element) {
-      var tag = <String>[];
+      final tag = <String>[];
 
-      if (element.descripts != null) {
-        if (element.descripts!['female'] != null) {
-          tag.addAll(element.descripts!['female']!.map((e) => 'female:$e'));
-        }
-        if (element.descripts!['male'] != null) {
-          tag.addAll(element.descripts!['male']!.map((e) => 'male:$e'));
-        }
-        if (element.descripts!['misc'] != null) {
-          tag.addAll(element.descripts!['misc']!);
-        }
-      }
+      final descripts = element.descripts;
 
-      var map = {
+      tag.addAll(descripts?['female']?.map((e) => 'female:$e') ?? []);
+      tag.addAll(descripts?['male']?.map((e) => 'male:$e') ?? []);
+      tag.addAll(descripts?['misc'] ?? []);
+
+      final map = {
         'Id': int.parse(element.url!.split('/')[4]),
         'EHash': element.url!.split('/')[5],
         'Title': element.title,
-        'Artists': element.descripts!['artist'] != null
-            ? element.descripts!['artist']!.join('|')
-            : 'n/a',
-        'Groups': element.descripts!['group'] != null
-            ? element.descripts!['group']!.join('|')
-            : null,
-        'Characters': element.descripts!['character'] != null
-            ? element.descripts!['character']!.join('|')
-            : null,
-        'Series': element.descripts!['parody'] != null
-            ? element.descripts!['parody']!.join('|')
-            : 'n/a',
-        'Language': element.descripts!['language'] != null
-            ? element.descripts!['language']!
-                .where((element) => !element.contains('translate'))
-                .join('|')
-            : 'n/a',
+        'Artists': descripts?['artist']?.join('|') ?? 'n/a',
+        'Groups': descripts?['group']?.join('|'),
+        'Characters': descripts?['character']?.join('|'),
+        'Series': descripts?['parody']?.join('|') ?? 'n/a',
+        'Language': descripts?['language']
+                ?.where((element) => !element.contains('translate'))
+                .join('|') ??
+            'n/a',
         'Tags': tag.join('|'),
         'Uploader': element.uploader,
         'PublishedEH': element.published,
