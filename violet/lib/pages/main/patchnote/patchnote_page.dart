@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2023. violet-team. Licensed under the MIT License.
+// Copyright (C) 2020-2024. violet-team. Licensed under the MIT License.
 
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -21,6 +21,14 @@ class PatchModel {
 }
 
 final patches = [
+  PatchModel(
+    dateTime: DateTime(2024, 1, 1),
+    version: '1.30 Minor',
+    contents: [
+      'fix load ehentai bookmark',
+      'fix ios status font color',
+    ],
+  ),
   PatchModel(
     dateTime: DateTime(2023, 12, 10),
     version: '1.29.2 Patch (HotFix)',
