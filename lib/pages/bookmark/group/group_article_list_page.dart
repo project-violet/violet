@@ -146,6 +146,44 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     nowType = prefs.getInt('bookmark_${widget.groupId}') ?? 3;
   }
 
+  Future<QueryResult> getArticleFromWeb(String id) async {
+    try {
+      return await _tryGetArticleFromHitomi(id);
+    } catch (_) {
+      try {
+        return await _tryGetArticleFromEhentai(id);
+      } catch (_) {
+        return await _tryGetArticleFromExhentai(id);
+      }
+    }
+  }
+
+  List<Future<QueryResult>> queryAwaitList = <Future<QueryResult>>[];
+  List<QueryResult> resolvedQueryList = <QueryResult>[];
+
+  void clearToAwait() {
+    queryAwaitList.clear();
+  }
+
+  void addToAwait(String id, Future<QueryResult> articleFuture) {
+    queryAwaitList.add(articleFuture);
+  }
+
+  Future<void> resolveToAwait() async {
+    resolvedQueryList.clear();
+    resolvedQueryList
+        .addAll((await Future.wait<QueryResult>(queryAwaitList)).toList());
+  }
+
+  Future<List<QueryResult>> handleNotInDB(List<String> ids) async {
+    clearToAwait();
+    ids.forEach((id) {
+      addToAwait(id, getArticleFromWeb(id));
+    });
+    await resolveToAwait();
+    return resolvedQueryList;
+  }
+
   Future<void> _refreshAsync() async {
     _loadBookmarkAlignType();
 
@@ -167,6 +205,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
     final queryIds = await QueryManager.queryIds(
         articleList.map((e) => int.parse(e.article())).toList());
+    // It's only in DB only
 
     var qr = <String, QueryResult>{};
     for (var element in queryIds) {
@@ -175,20 +214,28 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
     var result = <QueryResult>[];
 
+    List<String> notInDB = <String>[];
+
+    // It's only in DB
     // TODO: fix this hack
     // ignore: avoid_function_literals_in_foreach_calls
     articleList.forEach((element) async {
       var article = qr[element.article()];
-      try {
-        article ??= await _tryGetArticleFromHitomi(element.article());
-      } catch (_) {
-        try {
-          article ??= await _tryGetArticleFromEhentai(element.article());
-        } catch (_) {
-          article ??= await _tryGetArticleFromExhentai(element.article());
-        }
+      if (article != null) {
+        result.add(article);
+      } else {
+        notInDB.add(element.article());
       }
-      result.add(article);
+    });
+
+    queryResult = result;
+    _applyFilter();
+    _rebuild();
+
+    // It's only not in DB
+    List<QueryResult> queriesForNotInDB = await handleNotInDB(notInDB);
+    queriesForNotInDB.forEach((query) async {
+      result.add(query);
     });
 
     queryResult = result;
