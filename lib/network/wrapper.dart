@@ -161,7 +161,7 @@ Future<http.Response> _scriptGet(String url,
     do {
       isTimeout = false;
       final sent = http.get(Uri.parse(url), headers: headers);
-      if(!Settings.ignoreTimeout){
+      if (!Settings.ignoreTimeout) {
         sent.timeout(
           timeout,
           onTimeout: () {
