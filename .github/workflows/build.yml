@@ -14,7 +14,7 @@ jobs:
         run: | 
           wget -q ${{ secrets.SECRET_SALT }} || echo 'String getValid(String vToken) { return vToken; }' > salt1.dart
           wget -q ${{ secrets.SECRET_WSALT }} || echo 'String getValid(String vToken) { return vToken; }' > wsalt1.dart
-          ls
+          ls -alh
 
           wget -q asdf
           
