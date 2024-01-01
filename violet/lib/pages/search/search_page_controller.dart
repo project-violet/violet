@@ -164,7 +164,7 @@ class SearchPageController extends GetxController {
 
   loadNextQuery() async {
     final aquire = _querySem.acquire();
-    if (!Settings.ignoreTimeout){
+    if (!Settings.ignoreTimeout) {
       aquire.timeout(
         const Duration(seconds: 5),
         onTimeout: () {
@@ -183,8 +183,8 @@ class SearchPageController extends GetxController {
       }
 
       final search = HentaiManager.search(latestQuery!.item2,
-              latestQuery!.item1 == null ? 0 : latestQuery!.item1!.offset);
-      if(!Settings.ignoreTimeout){
+          latestQuery!.item1 == null ? 0 : latestQuery!.item1!.offset);
+      if (!Settings.ignoreTimeout) {
         search.timeout(const Duration(seconds: 10), onTimeout: () {
           Logger.error('[Search_loadNextQuery] Search Timeout');
 
@@ -192,7 +192,6 @@ class SearchPageController extends GetxController {
         });
       }
       var next = await search;
-
 
       latestQuery = Tuple2(next, latestQuery!.item2);
 
