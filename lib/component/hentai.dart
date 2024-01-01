@@ -73,7 +73,6 @@ class HentaiManager {
             .query('$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0'))
         .map((e) => QueryResult(result: e))
         .toList();
-    final id = int.parse(what);
 
     if (queryResult.isNotEmpty) {
       return SearchResult(results: queryResult, offset: -1);
