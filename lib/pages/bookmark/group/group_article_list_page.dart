@@ -223,8 +223,12 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       qr.loading = true;
       result.add(qr);
     });
+    queryResult = result;
+    _applyFilter();
+    _rebuild();
+
     // ignore: avoid_function_literals_in_foreach_calls
-    articleList.forEach((element) async {
+    await Future.forEach(articleList, (element) async {
       if (!mounted) return;
       var article = qr[element.article()];
 
@@ -281,9 +285,6 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         if (article != null) {
           result[i] = article!;
         }
-        queryResult = result;
-        _applyFilter();
-        _rebuild();
       }
     });
 
