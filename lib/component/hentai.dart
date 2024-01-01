@@ -119,13 +119,11 @@ class HentaiManager {
 
   static Future<SearchResult> idSearchEhentai(String what) async {
     final id = int.parse(what);
-    final listHtml = await EHSession.requestString(
-        'https://e-hentai.org/?next=${(id + 1)}');
-    final href = parse(listHtml)
-        .querySelector('a[href*="/g/$id/"]')
-        ?.attributes['href'];
-    final hash =
-        href!.split('/').lastWhere((element) => element.isNotEmpty);
+    final listHtml =
+        await EHSession.requestString('https://e-hentai.org/?next=${(id + 1)}');
+    final href =
+        parse(listHtml).querySelector('a[href*="/g/$id/"]')?.attributes['href'];
+    final hash = href!.split('/').lastWhere((element) => element.isNotEmpty);
     final html = await EHSession.requestString(
         'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
     final articleEh = EHParser.parseArticleData(html);
@@ -141,13 +139,11 @@ class HentaiManager {
 
   static Future<SearchResult> idSearchExhentai(String what) async {
     final id = int.parse(what);
-    final listHtml = await EHSession.requestString(
-        'https://exhentai.org/?next=${(id + 1)}');
-    final href = parse(listHtml)
-        .querySelector('a[href*="/g/$id/"]')
-        ?.attributes['href'];
-    final hash =
-        href!.split('/').lastWhere((element) => element.isNotEmpty);
+    final listHtml =
+        await EHSession.requestString('https://exhentai.org/?next=${(id + 1)}');
+    final href =
+        parse(listHtml).querySelector('a[href*="/g/$id/"]')?.attributes['href'];
+    final hash = href!.split('/').lastWhere((element) => element.isNotEmpty);
     final html = await EHSession.requestString(
         'https://exhentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
     final articleEh = EHParser.parseArticleData(html);
