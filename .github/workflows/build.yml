@@ -12,11 +12,10 @@ jobs:
     steps:
       - name: Preprocess
         run: | 
-          wget -q asdf || echo 'String getValid(String vToken) { return vTo11ken; }' > salt.dart
-          wget -q naver.com || echo 'String getValid(String vTo11ken) { return vToken; }' > wsalt.dart
+          wget -q ${{ secrets.SECRET_SALT }} || echo 'String getValid(String vToken) { return vToken; }' > salt1.dart
+          wget -q ${{ secrets.SECRET_WSALT }} || echo 'String getValid(String vToken) { return vToken; }' > wsalt1.dart
           ls
-          cat salt.dart
-          cat wsalt.dart
+
           wget -q asdf
           
       - name: Analyze
