@@ -94,7 +94,7 @@ class MyApp extends StatelessWidget {
       defaultBrightness: Brightness.light,
       data: (brightness) => ThemeData(
         appBarTheme: AppBarTheme(
-            systemOverlayStyle: Settings.themeWhat
+            systemOverlayStyle: !Settings.themeWhat
                 ? SystemUiOverlayStyle.dark
                 : SystemUiOverlayStyle.light),
         useMaterial3: false,

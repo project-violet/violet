@@ -344,7 +344,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             : null,
         drawer: _usesDrawer ? _buildDrawer(context) : null,
         body: AnnotatedRegion<SystemUiOverlayStyle>(
-          value: Settings.themeWhat
+          value: !Settings.themeWhat
               ? SystemUiOverlayStyle.dark
               : SystemUiOverlayStyle.light,
           child: Stack(
