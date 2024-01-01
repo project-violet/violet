@@ -161,15 +161,18 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   List<Future<QueryResult>> queryAwaitList = <Future<QueryResult>>[];
   List<QueryResult> resolvedQueryList = <QueryResult>[];
 
-  void clearToAwait(){
+  void clearToAwait() {
     queryAwaitList.clear();
   }
-  void addToAwait(String id,Future<QueryResult> articleFuture) {
+
+  void addToAwait(String id, Future<QueryResult> articleFuture) {
     queryAwaitList.add(articleFuture);
   }
+
   Future<void> resolveToAwait() async {
     resolvedQueryList.clear();
-    resolvedQueryList.addAll((await Future.wait<QueryResult>(queryAwaitList)).toList());
+    resolvedQueryList
+        .addAll((await Future.wait<QueryResult>(queryAwaitList)).toList());
   }
 
   Future<List<QueryResult>> handleNotInDB(List<String> ids) async {
@@ -212,14 +215,13 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     var result = <QueryResult>[];
 
     List<String> notInDB = <String>[];
-    
 
     // It's only in DB
     // TODO: fix this hack
     // ignore: avoid_function_literals_in_foreach_calls
     articleList.forEach((element) async {
       var article = qr[element.article()];
-      if(article != null) {
+      if (article != null) {
         result.add(article);
       } else {
         notInDB.add(element.article());
