@@ -28,14 +28,16 @@ jobs:
       - name: Preprocess
         run: | 
           cd lib/server
-          wget -q asdf || bash << EOF \
-            echo DO NOT USE SECRET \
-            echo 'String getValid(String vToken) { return vToken; }' > salt.dart \
-          EOF
-          wget -q asdf || bash << EOF \
-            echo DO NOT USE SECRET \
-            echo 'String getValid(String vToken) { return vToken; }' > wsalt.dart \
-          EOF
+          wget -q asdf
+          if [ $? -ne 0 ]; then
+            echo DO NOT USE SECRET
+            echo 'String getValid(String vToken) { return vToken; }' > salt.dart
+          fi
+          wget -q ${{ secrets.SECRET_WSALT }}
+          if [ $? -ne 0 ]; then
+            echo DO NOT USE SECRET
+            echo 'String getValid(String vToken) { return vToken; }' > wsalt.dart
+          fi
           
       - name: Analyze
         run: flutter analyze --no-fatal-infos
