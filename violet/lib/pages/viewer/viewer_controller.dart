@@ -1,8 +1,6 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -216,14 +214,14 @@ class ViewerController extends GetxController {
     if (!overlay.value) {
       overlay.value = !overlay.value;
       opacity.value = 1.0;
-      if (!Settings.disableFullScreen || Platform.isIOS) {
+      if (!Settings.disableFullScreen) {
         SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
           SystemUiOverlay.top,
           SystemUiOverlay.bottom,
         ]);
       }
     } else {
-      if (!Settings.disableFullScreen || Platform.isIOS) {
+      if (!Settings.disableFullScreen) {
         SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
       }
       opacity.value = 0.0;
