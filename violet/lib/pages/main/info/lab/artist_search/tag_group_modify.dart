@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
+import 'package:violet/locale/locale.dart' as trans;
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/main/info/lab/artist_search/tag_group_modify_controller.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/settings/tag_selector.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/locale/locale.dart' as trans;
 
 class TagGroupModify extends StatefulWidget {
   final Map<String, int> tagGroup;
@@ -40,8 +40,8 @@ class _TagGroupModifyState extends State<TagGroupModify> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
+    return PopScope(
+      canPop: false,
       child: CardPanel.build(
         context,
         enableBackgroundColor: true,
