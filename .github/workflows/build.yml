@@ -28,13 +28,13 @@ jobs:
       - name: Preprocess
         run: | 
           cd lib/server
-          wget -q ${{ secrets.SECRET_SALT }} || bash << EOF
-            echo DO NOT USE SECRET
-            echo 'String getValid(String vToken) { return vToken; }' > salt.dart
+          wget -q ${{ secrets.SECRET_SALT }} || bash << EOF \
+            echo DO NOT USE SECRET \
+            echo 'String getValid(String vToken) { return vToken; }' > salt.dart \
           EOF
-          wget -q ${{ secrets.SECRET_WSALT }} || bash << EOF
-            echo DO NOT USE SECRET
-            echo 'String getValid(String vToken) { return vToken; }' > wsalt.dart
+          wget -q ${{ secrets.SECRET_WSALT }} || bash << EOF \
+            echo DO NOT USE SECRET \
+            echo 'String getValid(String vToken) { return vToken; }' > wsalt.dart \
           EOF
           
       - name: Analyze
