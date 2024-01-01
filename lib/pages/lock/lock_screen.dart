@@ -150,10 +150,8 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
       ),
     );
 
-    return WillPopScope(
-      onWillPop: () async {
-        return widget.isRegisterMode;
-      },
+    return PopScope(
+      canPop: widget.isRegisterMode,
       child: page,
     );
   }
