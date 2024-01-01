@@ -42,9 +42,7 @@ class SyncInfoRecord {
 
 class SyncManager {
   static String syncInfoURL(String branch) {
-    return 'https://raw.githubusercontent.com/violet-dev/sync-data/' +
-        (branch) +
-        '/syncversion.txt';
+    return 'https://raw.githubusercontent.com/violet-dev/sync-data/$branch/syncversion.txt';
   }
 
   static bool firstSync = false;
@@ -54,15 +52,16 @@ class SyncManager {
   static List<SyncInfoRecord>? _rows;
   static int requestSize = 0;
 
-  static Future<void> checkSyncLatest(bool _throw) async {
-    await checkSync('master', _throw);
+  static Future<void> checkSyncLatest(bool propagateException) async {
+    await checkSync('master', propagateException);
   }
 
-  static Future<void> checkSyncOld(bool _throw) async {
-    await checkSync('d2bd5ae068efb26eb4689e5d6281a590e59fc4e2', _throw);
+  static Future<void> checkSyncOld(bool propagateException) async {
+    await checkSync(
+        'd2bd5ae068efb26eb4689e5d6281a590e59fc4e2', propagateException);
   }
 
-  static Future<void> checkSync(String branch, bool _throw) async {
+  static Future<void> checkSync(String branch, bool propagateException) async {
     try {
       var ls = const LineSplitter();
       var infoRaw = (await http.get(syncInfoURL(branch))).body;
@@ -135,7 +134,7 @@ class SyncManager {
     } catch (e, st) {
       Logger.error('[Sync-check] E: $e\n'
           '$st');
-      if (_throw) throw e;
+      if (propagateException) rethrow;
     }
   }
 

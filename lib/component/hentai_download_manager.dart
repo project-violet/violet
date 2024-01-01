@@ -94,14 +94,10 @@ class HentaiDonwloadManager {
             artist: target.artists() != null
                 ? target.artists().split('|').firstWhere(
                     (artist) => artist != null && (artist as String).isNotEmpty)
-                : target.groups() != null
-                    ? target.groups().split('|').firstWhere((group) =>
-                        group != null && (group as String).isNotEmpty)
-                    : null,
-            group: target.groups() != null
-                ? target.groups().split('|').firstWhere(
-                    (group) => group != null && (group as String).isNotEmpty)
-                : null,
+                : target.groups()?.split('|').firstWhere(
+                    (group) => group != null && (group as String).isNotEmpty),
+            group: target.groups()?.split('|').firstWhere(
+                (group) => group != null && (group as String).isNotEmpty),
             extension: page.contains('fullimg.php')
                 ? 'jpg'
                 : path.extension(page.split('/').last).replaceAll('.', ''),

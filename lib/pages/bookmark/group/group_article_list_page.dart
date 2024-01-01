@@ -177,9 +177,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
   Future<List<QueryResult>> handleNotInDB(List<String> ids) async {
     clearToAwait();
-    ids.forEach((id) {
+    for (final id in ids) {
       addToAwait(id, getArticleFromWeb(id));
-    });
+    }
     await resolveToAwait();
     return resolvedQueryList;
   }
@@ -234,9 +234,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
     // It's only not in DB
     List<QueryResult> queriesForNotInDB = await handleNotInDB(notInDB);
-    queriesForNotInDB.forEach((query) async {
+    for (final query in queriesForNotInDB) {
       result.add(query);
-    });
+    }
 
     queryResult = result;
     _applyFilter();
