@@ -28,13 +28,11 @@ jobs:
       - name: Preprocess
         run: | 
           cd lib/server
-          wget -q asdf
-          if [ $? -ne 0 ]; then
+          if wget -q asdf; then
             echo DO NOT USE SECRET
             echo 'String getValid(String vToken) { return vToken; }' > salt.dart
           fi
-          wget -q ${{ secrets.SECRET_WSALT }}
-          if [ $? -ne 0 ]; then
+          if wget -q ${{ secrets.SECRET_WSALT }}; then
             echo DO NOT USE SECRET
             echo 'String getValid(String vToken) { return vToken; }' > wsalt.dart
           fi
