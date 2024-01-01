@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -173,7 +173,7 @@ class _InfoPageState extends State<InfoPage> {
               ),
             ),
             Text(
-              'Copyright (C) 2020-2023 by project-violet',
+              'Copyright (C) 2020-2024 by project-violet',
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 12.0,

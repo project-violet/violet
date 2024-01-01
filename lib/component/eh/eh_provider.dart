@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:html_unescape/html_unescape.dart';
 import 'package:shared_preferences/shared_preferences.dart';

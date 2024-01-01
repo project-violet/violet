@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
 
@@ -14,8 +14,8 @@ class UpdateSyncManager {
 
   // Current version
   static const int majorVersion = 1;
-  static const int minorVersion = 29;
-  static const int patchVersion = 2;
+  static const int minorVersion = 30;
+  static const int patchVersion = 0;
 
   static String get currentVersion =>
       '$majorVersion.$minorVersion.$patchVersion';
