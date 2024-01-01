@@ -374,7 +374,7 @@ class _SettingsPageState extends State<SettingsPage>
                   DynamicTheme.of(context)!.setThemeData(
                     ThemeData(
                       appBarTheme: AppBarTheme(
-                          systemOverlayStyle: Settings.themeWhat
+                          systemOverlayStyle: !Settings.themeWhat
                               ? SystemUiOverlayStyle.dark
                               : SystemUiOverlayStyle.light),
                       useMaterial3: false,
@@ -425,7 +425,7 @@ class _SettingsPageState extends State<SettingsPage>
                       DynamicTheme.of(context)!.setThemeData(
                         ThemeData(
                           appBarTheme: AppBarTheme(
-                              systemOverlayStyle: Settings.themeWhat
+                              systemOverlayStyle: !Settings.themeWhat
                                   ? SystemUiOverlayStyle.dark
                                   : SystemUiOverlayStyle.light),
                           useMaterial3: false,
