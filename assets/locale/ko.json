@@ -307,5 +307,5 @@
   "manualupdate": "수동 업데이트",
   "cannotuseios": "iOS에선 사용할 수 없어요 :(",
   "exitTheApp": "앱 종료하기",
-  "ignoretimeout": "Ignore Timeout"
+  "ignoretimeout": "타임아웃 끄기"
 }
