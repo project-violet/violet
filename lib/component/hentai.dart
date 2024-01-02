@@ -73,54 +73,87 @@ class HentaiManager {
             .query('$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0'))
         .map((e) => QueryResult(result: e))
         .toList();
-    final id = int.parse(what);
 
     if (queryResult.isNotEmpty) {
       return SearchResult(results: queryResult, offset: -1);
     }
 
     try {
-      final headers =
-          await ScriptManager.runHitomiGetHeaderContent(id.toString());
-      final hh = await http.get('https://ltn.hitomi.la/galleryblock/$id.html',
-          headers: headers);
-      final article = await HitomiParser.parseGalleryBlock(hh.body);
-      final meta = {
-        'Id': id,
-        'Title': article['Title'],
-        'Artists': article['Artists']?.join('|'),
-        'Language': article['Language'],
-      };
-      return SearchResult(results: [QueryResult(result: meta)], offset: -1);
+      return await idSearchHitomi(what);
     } catch (e, st) {
       Logger.error('[hentai-idSearch] E: $e\n'
           '$st');
       try {
-        final listHtml = await EHSession.requestString(
-            'https://e-hentai.org/?next=${(id + 1)}');
-        final href = parse(listHtml)
-            .querySelector('a[href*="/g/$id/"]')
-            ?.attributes['href'];
-        final hash =
-            href!.split('/').lastWhere((element) => element.isNotEmpty);
-        final html = await EHSession.requestString(
-            'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
-        final articleEh = EHParser.parseArticleData(html);
-        final meta = {
-          'Id': id,
-          'EHash': hash,
-          'Title': articleEh.title,
-          'Artists': articleEh.artist?.join('|') ?? 'N/A',
-        };
-
-        return SearchResult(results: [QueryResult(result: meta)], offset: -1);
+        return await idSearchEhentai(what);
       } catch (e, st) {
         Logger.error('[hentai-idSearch] E: $e\n'
             '$st');
+        try {
+          return await idSearchExhentai(what);
+        } catch (e, st) {
+          Logger.error('[hentai-idSearch] E: $e\n'
+              '$st');
+        }
       }
     }
 
     return const SearchResult(results: [], offset: -1);
+  }
+
+  static Future<SearchResult> idSearchHitomi(String what) async {
+    final id = int.parse(what);
+    final headers =
+        await ScriptManager.runHitomiGetHeaderContent(id.toString());
+    final hh = await http.get('https://ltn.hitomi.la/galleryblock/$id.html',
+        headers: headers);
+    final article = await HitomiParser.parseGalleryBlock(hh.body);
+    final meta = {
+      'Id': id,
+      'Title': article['Title'],
+      'Artists': article['Artists']?.join('|'),
+      'Language': article['Language'],
+    };
+    return SearchResult(results: [QueryResult(result: meta)], offset: -1);
+  }
+
+  static Future<SearchResult> idSearchEhentai(String what) async {
+    final id = int.parse(what);
+    final listHtml =
+        await EHSession.requestString('https://e-hentai.org/?next=${(id + 1)}');
+    final href =
+        parse(listHtml).querySelector('a[href*="/g/$id/"]')?.attributes['href'];
+    final hash = href!.split('/').lastWhere((element) => element.isNotEmpty);
+    final html = await EHSession.requestString(
+        'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
+    final articleEh = EHParser.parseArticleData(html);
+    final meta = {
+      'Id': id,
+      'EHash': hash,
+      'Title': articleEh.title,
+      'Artists': articleEh.artist?.join('|') ?? 'N/A',
+    };
+
+    return SearchResult(results: [QueryResult(result: meta)], offset: -1);
+  }
+
+  static Future<SearchResult> idSearchExhentai(String what) async {
+    final id = int.parse(what);
+    final listHtml =
+        await EHSession.requestString('https://exhentai.org/?next=${(id + 1)}');
+    final href =
+        parse(listHtml).querySelector('a[href*="/g/$id/"]')?.attributes['href'];
+    final hash = href!.split('/').lastWhere((element) => element.isNotEmpty);
+    final html = await EHSession.requestString(
+        'https://exhentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
+    final articleEh = EHParser.parseArticleData(html);
+    final meta = {
+      'Id': id,
+      'EHash': hash,
+      'Title': articleEh.title,
+      'Artists': articleEh.artist?.join('|') ?? 'N/A',
+    };
+
+    return SearchResult(results: [QueryResult(result: meta)], offset: -1);
   }
 
   // static double _latestSeed = 0;
