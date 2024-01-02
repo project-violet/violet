@@ -306,5 +306,6 @@
   "realtimeuserrecord": "Real Time User Record",
   "manualupdate": "Manual Update",
   "cannotuseios": "You cannot use update on iOS :(",
-  "exitTheApp": "Exit the app"
+  "exitTheApp": "Exit the app",
+  "ignoretimeout": "Ignore Timeout"
 }

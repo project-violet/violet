@@ -20,6 +20,9 @@ import 'package:violet/settings/device_type.dart';
 class Settings {
   static late final SharedPreferences prefs;
 
+  // Timeout Settings
+  static late bool ignoreTimeout; // default false
+
   // Color Settings
   static late Color themeColor; // default light
   static late bool themeWhat; // default false == light
@@ -300,6 +303,7 @@ class Settings {
     searchMessageAPI = await _getString(
         'searchmessageapi', 'https://koromo.xyz/api/search/msg');
 
+    ignoreTimeout = await _getBool('ignoretimeout');
     useVioletServer = await _getBool('usevioletserver');
     useDrawer = await _getBool('usedrawer');
     showArticleProgress = await _getBool('showarticleprogress');
@@ -621,6 +625,12 @@ class Settings {
     searchPure = nn;
 
     await prefs.setBool('searchPure', nn);
+  }
+
+  static Future<void> setIgnoreTimeout(bool nn) async {
+    ignoreTimeout = nn;
+
+    await prefs.setBool('ignoretimeout', nn);
   }
 
   static Future<void> setUseVioletServer(bool nn) async {
