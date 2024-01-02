@@ -82,8 +82,11 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
 
   doInitialSearch() async {
     try {
-      final result = await HentaiManager.search(widget.searchKeyWord ?? '')
-          .timeout(const Duration(seconds: 5));
+      final search = HentaiManager.search(widget.searchKeyWord ?? '');
+      if (!Settings.ignoreTimeout) {
+        search.timeout(const Duration(seconds: 5));
+      }
+      final result = await search;
 
       c.latestQuery = Tuple2(result, widget.searchKeyWord ?? '');
       c.queryResult = c.latestQuery!.item1!.results;
