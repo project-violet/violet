@@ -26,74 +26,87 @@ class BookmarkArticleKeyVal {
 }
 
 class GitBookmark {
-  static Map<BookmarkGroupKeyVal,List<BookmarkArticleKeyVal>>? bookmarkInfo;
-  static Future<Map<BookmarkGroupKeyVal,List<BookmarkArticleKeyVal>>?> process() async {
+  static Map<BookmarkGroupKeyVal, List<BookmarkArticleKeyVal>>? bookmarkInfo;
+  static Future<Map<BookmarkGroupKeyVal, List<BookmarkArticleKeyVal>>?>
+      process() async {
     // https://e-hentai.org/favorites.php?page=0&favcat=0
     // https://exhentai.org/favorites.php?page=0&favcat=0
 
-    Map<BookmarkGroupKeyVal,List<BookmarkArticleKeyVal>> result = <BookmarkGroupKeyVal,List<BookmarkArticleKeyVal>>{};
+    Map<BookmarkGroupKeyVal, List<BookmarkArticleKeyVal>> result =
+        <BookmarkGroupKeyVal, List<BookmarkArticleKeyVal>>{};
 
     final git = BookmarkGit();
-    final gitPath = '${(await getTemporaryDirectory()).path}/_tmp_bookmark_from_git';
-    if(await Directory(gitPath).exists()){
+    final gitPath =
+        '${(await getTemporaryDirectory()).path}/_tmp_bookmark_from_git';
+    if (await Directory(gitPath).exists()) {
       await Directory(gitPath).delete(recursive: true);
     }
     GitRepository gitRepo = await git.clone(gitPath);
-    String getRelatedPath(String absolutePath){
+    String getRelatedPath(String absolutePath) {
       return absolutePath
-        .replaceAll(gitPath, '')
-        .split('/')
-        .where((p) => p.isNotEmpty)
-        .join('/');
+          .replaceAll(gitPath, '')
+          .split('/')
+          .where((p) => p.isNotEmpty)
+          .join('/');
     }
 
-    List<FileSystemEntity> getList(){
+    List<FileSystemEntity> getList() {
       return Directory(gitPath)
-        .listSync(recursive: true, followLinks: false)
-        .where((absolutePath) => getRelatedPath(absolutePath.path)
-          .split('/')
-          .firstOrNull
-          ?.isNotEmpty ?? false)
-        .where((absolutePath) => getRelatedPath(absolutePath.path)
-          .split('/')
-          .firstOrNull != '.git').toList();
+          .listSync(recursive: true, followLinks: false)
+          .where((absolutePath) =>
+              getRelatedPath(absolutePath.path)
+                  .split('/')
+                  .firstOrNull
+                  ?.isNotEmpty ??
+              false)
+          .where((absolutePath) =>
+              getRelatedPath(absolutePath.path).split('/').firstOrNull !=
+              '.git')
+          .toList();
     }
-    if(await Directory(gitPath).exists()){
+
+    if (await Directory(gitPath).exists()) {
       final listInPath = getList();
       print(listInPath);
-      await Future.forEach(listInPath,(absolutePath) async {
+      await Future.forEach(listInPath, (absolutePath) async {
         var bookmark = <BookmarkArticleKeyVal>[];
         var desc = '';
         final relativePath = getRelatedPath(absolutePath.path);
-        if(relativePath.split('/').isNotEmpty){
-          if(relativePath.split('/').firstOrNull != '.git'){
-            if(relativePath.split('/').lastOrNull?.endsWith('.db') ?? false){
+        if (relativePath.split('/').isNotEmpty) {
+          if (relativePath.split('/').firstOrNull != '.git') {
+            if (relativePath.split('/').lastOrNull?.endsWith('.db') ?? false) {
               Database db = await openDatabase(absolutePath.path);
               final bookmarkGroups = await db.query('BookmarkGroup');
-              for(var bookmarkGroup in bookmarkGroups){
+              for (var bookmarkGroup in bookmarkGroups) {
                 BookmarkGroupKeyVal group = BookmarkGroupKeyVal();
                 // "Id", "Name", "DateTime", "Description", "Color", "Gorder"
                 //  Int, String,   String  ,    String    ,   Int  ,   Int
-                bookmarkGroup.forEach((key,value){
-                  if(key == 'Id') group.id = int.tryParse(value.toString());
-                  if(key == 'Name') group.name = value.toString();
-                  if(key == 'DataTime') group.dateTime = value.toString();
-                  if(key == 'Description') group.description = value.toString();
-                  if(key == 'Color') group.color = int.tryParse(value.toString());
-                  if(key == 'Gorder') group.gorder = int.tryParse(value.toString());
+                bookmarkGroup.forEach((key, value) {
+                  if (key == 'Id') group.id = int.tryParse(value.toString());
+                  if (key == 'Name') group.name = value.toString();
+                  if (key == 'DataTime') group.dateTime = value.toString();
+                  if (key == 'Description')
+                    group.description = value.toString();
+                  if (key == 'Color')
+                    group.color = int.tryParse(value.toString());
+                  if (key == 'Gorder')
+                    group.gorder = int.tryParse(value.toString());
                 });
                 final bookmarkArticles = await db.query('BookmarkArticle');
                 // "Id", "Article", "DateTime", "GroupId"
                 //  Int,    Int   ,  String   ,   Int
-                for(final bookmarkArticle in bookmarkArticles){
+                for (final bookmarkArticle in bookmarkArticles) {
                   BookmarkArticleKeyVal article = BookmarkArticleKeyVal();
                   bookmarkArticle.forEach((key, value) {
-                    if(key == 'Id') article.id = int.tryParse(value.toString());
-                    if(key == 'Article') article.article = int.tryParse(value.toString());
-                    if(key == 'DateTime') article.dateTime = value.toString();
-                    if(key == 'GroupId') article.groupId = int.tryParse(value.toString());
+                    if (key == 'Id')
+                      article.id = int.tryParse(value.toString());
+                    if (key == 'Article')
+                      article.article = int.tryParse(value.toString());
+                    if (key == 'DateTime') article.dateTime = value.toString();
+                    if (key == 'GroupId')
+                      article.groupId = int.tryParse(value.toString());
                   });
-                  if(group.gorder == article.groupId){                    
+                  if (group.gorder == article.groupId) {
                     result[group] ??= <BookmarkArticleKeyVal>[];
                     result[group]!.add(article);
                   }

@@ -2123,8 +2123,8 @@ class _SettingsPageState extends State<SettingsPage>
               }
 
               int count = 0;
-              
-              GitBookmark.bookmarkInfo?.forEach((description,bookmark) {
+
+              GitBookmark.bookmarkInfo?.forEach((description, bookmark) {
                 count += bookmark.length;
               });
 
@@ -2135,36 +2135,55 @@ class _SettingsPageState extends State<SettingsPage>
                       .replaceAll('\$1', count.toString()));
               if (qqq) {
                 var bookmark = await Bookmark.getInstance();
-                for(int i = 0;i < (GitBookmark.bookmarkInfo?.keys.length ?? 0);i++){
-                  if(GitBookmark.bookmarkInfo![GitBookmark.bookmarkInfo?.keys.elementAt(i)]?.isEmpty ?? true) continue;
-                  final name = GitBookmark.bookmarkInfo?.keys?.elementAtOrNull(i)?.name ?? 'Favorite $i';
-                  final description = GitBookmark.bookmarkInfo?.keys?.elementAtOrNull(i)?.description ?? '';
-                  final color = Color(GitBookmark.bookmarkInfo?.keys?.elementAtOrNull(i)?.color ?? Colors.deepOrange.value);
+                for (int i = 0;
+                    i < (GitBookmark.bookmarkInfo?.keys.length ?? 0);
+                    i++) {
+                  if (GitBookmark
+                          .bookmarkInfo![
+                              GitBookmark.bookmarkInfo?.keys.elementAt(i)]
+                          ?.isEmpty ??
+                      true) continue;
+                  final name = GitBookmark.bookmarkInfo?.keys
+                          ?.elementAtOrNull(i)
+                          ?.name ??
+                      'Favorite $i';
+                  final description = GitBookmark.bookmarkInfo?.keys
+                          ?.elementAtOrNull(i)
+                          ?.description ??
+                      '';
+                  final color = Color(GitBookmark.bookmarkInfo?.keys
+                          ?.elementAtOrNull(i)
+                          ?.color ??
+                      Colors.deepOrange.value);
                   // final datetime = DateTime.tryParse(GitBookmark.bookmarkInfo?.keys?.elementAtOrNull(i)?.dateTime ?? '') ?? DateTime.now();
                   final datetime = DateTime.now();
                   await bookmark.createGroup(
-                    name,
-                    description,
-                    color,
-                    datetime
-                  );
+                      name, description, color, datetime);
                   var group = (await bookmark.getGroup())
-                      .where((element) => (
-                        element.name() == name &&
-                        element.description() == description &&
-                        // element.color() == color.value &&
-                        DateTime.tryParse(element.datetime()) == datetime
-                      ))
+                      .where((element) => (element.name() == name &&
+                          element.description() == description &&
+                          // element.color() == color.value &&
+                          DateTime.tryParse(element.datetime()) == datetime))
                       .first
                       .id();
-                  for(int j = 0; j < (GitBookmark.bookmarkInfo![GitBookmark.bookmarkInfo?.keys.elementAt(i)]?.length ?? 0);j++){
+                  for (int j = 0;
+                      j <
+                          (GitBookmark
+                                  .bookmarkInfo![GitBookmark.bookmarkInfo?.keys
+                                      .elementAt(i)]
+                                  ?.length ??
+                              0);
+                      j++) {
                     try {
                       await bookmark.insertArticle(
-                        GitBookmark.bookmarkInfo![GitBookmark.bookmarkInfo?.keys.elementAt(i)]!.elementAt(j).article.toString(),
-                        DateTime.now(),
-                        group
-                      );
-                    } catch(_){
+                          GitBookmark.bookmarkInfo![
+                                  GitBookmark.bookmarkInfo?.keys.elementAt(i)]!
+                              .elementAt(j)
+                              .article
+                              .toString(),
+                          DateTime.now(),
+                          group);
+                    } catch (_) {
                       Logger.error('');
                     }
                   }
