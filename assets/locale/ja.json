@@ -229,6 +229,7 @@
   "movetoappbartobottom": "ボタンを下に移動させる",
   "showslider": "スライダー表示",
   "importfromeh": "E/Ex-Hentaiから読み込む",
+  "importfromgit": "Import From Git Repository",
   "setcookiefirst": "クッキーを設定してください！",
   "bookmarkisempty": "ブックマークがありません！",
   "ensurecreatebookmark": "$1個の項目をブックマークに追加しますか？（Favorite別のグループが作成されます。）",

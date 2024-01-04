@@ -229,6 +229,7 @@
   "movetoappbartobottom": "버튼 밑으로 내리기",
   "showslider": "슬라이더 보여주기",
   "importfromeh": "이/익헨에서 불러오기",
+  "importfromgit": "Import From Git Repository",
   "setcookiefirst": "쿠키를 먼저 설정하세요!",
   "bookmarkisempty": "북마크가 비어있어요!",
   "ensurecreatebookmark": "$1개 항목을 북마크에 추가할까요? (각 Favorite별로 그룹이 생성됩니다.)",
