@@ -27,6 +27,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/component/eh/eh_bookmark.dart';
+import 'package:violet/component/git/git_bookmark.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/database.dart';
@@ -50,6 +51,7 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/settings/bookmark_version_select.dart';
 import 'package:violet/pages/settings/db_rebuild_page.dart';
 import 'package:violet/pages/settings/import_from_eh.dart';
+import 'package:violet/pages/settings/import_from_git.dart';
 import 'package:violet/pages/settings/license_page.dart';
 import 'package:violet/pages/settings/lock_setting_page.dart';
 import 'package:violet/pages/settings/log_page.dart';
@@ -2087,6 +2089,97 @@ class _SettingsPageState extends State<SettingsPage>
               await git.push(gitPath);
               if (await Directory(gitPath).exists()) {
                 await Directory(gitPath).delete(recursive: true);
+              }
+            },
+          ),
+          _buildDivider(),
+          InkWell(
+            child: ListTile(
+              leading: Icon(
+                MdiIcons.cloudSearchOutline,
+                color: Settings.majorColor,
+              ),
+              title: Text(Translations.of(context).trans('importfromgit')),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+            ),
+            onTap: () async {
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) => const ImportFromGitPage(),
+              );
+
+              if (GitBookmark.bookmarkInfo == null) {
+                flutterToast.showToast(
+                  child: ToastWrapper(
+                    isCheck: false,
+                    isWarning: true,
+                    msg: Translations.of(context).trans('bookmarkisempty'),
+                  ),
+                  ignorePointer: true,
+                  gravity: ToastGravity.BOTTOM,
+                  toastDuration: const Duration(seconds: 4),
+                );
+                return;
+              }
+
+              int count = 0;
+              
+              GitBookmark.bookmarkInfo?.forEach((description,bookmark) {
+                count += bookmark.length;
+              });
+
+              var qqq = await showYesNoDialog(
+                  context,
+                  Translations.of(context)
+                      .trans('ensurecreatebookmark')
+                      .replaceAll('\$1', count.toString()));
+              if (qqq) {
+                var bookmark = await Bookmark.getInstance();
+                for(int i = 0;i < (GitBookmark.bookmarkInfo?.keys.length ?? 0);i++){
+                  if(GitBookmark.bookmarkInfo![GitBookmark.bookmarkInfo?.keys.elementAt(i)]?.isEmpty ?? true) continue;
+                  final name = GitBookmark.bookmarkInfo?.keys?.elementAtOrNull(i)?.name ?? 'Favorite $i';
+                  final description = GitBookmark.bookmarkInfo?.keys?.elementAtOrNull(i)?.description ?? '';
+                  final color = Color(GitBookmark.bookmarkInfo?.keys?.elementAtOrNull(i)?.color ?? Colors.deepOrange.value);
+                  // final datetime = DateTime.tryParse(GitBookmark.bookmarkInfo?.keys?.elementAtOrNull(i)?.dateTime ?? '') ?? DateTime.now();
+                  final datetime = DateTime.now();
+                  await bookmark.createGroup(
+                    name,
+                    description,
+                    color,
+                    datetime
+                  );
+                  var group = (await bookmark.getGroup())
+                      .where((element) => (
+                        element.name() == name &&
+                        element.description() == description &&
+                        // element.color() == color.value &&
+                        DateTime.tryParse(element.datetime()) == datetime
+                      ))
+                      .first
+                      .id();
+                  for(int j = 0; j < (GitBookmark.bookmarkInfo![GitBookmark.bookmarkInfo?.keys.elementAt(i)]?.length ?? 0);j++){
+                    try {
+                      await bookmark.insertArticle(
+                        GitBookmark.bookmarkInfo![GitBookmark.bookmarkInfo?.keys.elementAt(i)]!.elementAt(j).article.toString(),
+                        DateTime.now(),
+                        group
+                      );
+                    } catch(_){
+                      Logger.error('');
+                    }
+                  }
+                }
+                flutterToast.showToast(
+                  child: ToastWrapper(
+                    isCheck: true,
+                    isWarning: false,
+                    msg: Translations.of(context)
+                        .trans('completeimportbookmark'),
+                  ),
+                  ignorePointer: true,
+                  gravity: ToastGravity.BOTTOM,
+                  toastDuration: const Duration(seconds: 4),
+                );
               }
             },
           ),
