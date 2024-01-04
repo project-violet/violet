@@ -2144,15 +2144,15 @@ class _SettingsPageState extends State<SettingsPage>
                           ?.isEmpty ??
                       true) continue;
                   final name = GitBookmark.bookmarkInfo?.keys
-                          ?.elementAtOrNull(i)
+                          .elementAtOrNull(i)
                           ?.name ??
                       'Favorite $i';
                   final description = GitBookmark.bookmarkInfo?.keys
-                          ?.elementAtOrNull(i)
+                          .elementAtOrNull(i)
                           ?.description ??
                       '';
                   final color = Color(GitBookmark.bookmarkInfo?.keys
-                          ?.elementAtOrNull(i)
+                          .elementAtOrNull(i)
                           ?.color ??
                       Colors.deepOrange.value);
                   // final datetime = DateTime.tryParse(GitBookmark.bookmarkInfo?.keys?.elementAtOrNull(i)?.dateTime ?? '') ?? DateTime.now();
