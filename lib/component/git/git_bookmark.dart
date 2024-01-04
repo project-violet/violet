@@ -4,10 +4,8 @@
 import 'dart:collection';
 import 'dart:io';
 
-import 'package:dart_git/git.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:violet/util/git.dart';
 
 class BookmarkGroupKeyVal {
   int? id;
@@ -35,13 +33,11 @@ class GitBookmark {
     Map<BookmarkGroupKeyVal, List<BookmarkArticleKeyVal>> result =
         <BookmarkGroupKeyVal, List<BookmarkArticleKeyVal>>{};
 
-    final git = BookmarkGit();
     final gitPath =
         '${(await getTemporaryDirectory()).path}/_tmp_bookmark_from_git';
     if (await Directory(gitPath).exists()) {
       await Directory(gitPath).delete(recursive: true);
     }
-    GitRepository gitRepo = await git.clone(gitPath);
     String getRelatedPath(String absolutePath) {
       return absolutePath
           .replaceAll(gitPath, '')
@@ -69,8 +65,6 @@ class GitBookmark {
       final listInPath = getList();
       print(listInPath);
       await Future.forEach(listInPath, (absolutePath) async {
-        var bookmark = <BookmarkArticleKeyVal>[];
-        var desc = '';
         final relativePath = getRelatedPath(absolutePath.path);
         if (relativePath.split('/').isNotEmpty) {
           if (relativePath.split('/').firstOrNull != '.git') {
