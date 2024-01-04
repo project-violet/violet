@@ -152,6 +152,7 @@
   "thisislatestbookmark": "O banco de dados já está atualizado.",
   "importingbookmark": "Importar marcador",
   "exportingbookmark": "Exportar marcador",
+  "exportingbookmarkgit": "Export Bookmark to Git Repository",
   "noauth": "Você não tem permissão para executar isso.",
   "noselectedb": "Nenhum banco de dados selecionado.",
   "importbookmark": "Marcador importado!",
