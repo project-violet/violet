@@ -2143,10 +2143,9 @@ class _SettingsPageState extends State<SettingsPage>
                               GitBookmark.bookmarkInfo?.keys.elementAt(i)]
                           ?.isEmpty ??
                       true) continue;
-                  final name = GitBookmark.bookmarkInfo?.keys
-                          .elementAtOrNull(i)
-                          ?.name ??
-                      'Favorite $i';
+                  final name =
+                      GitBookmark.bookmarkInfo?.keys.elementAtOrNull(i)?.name ??
+                          'Favorite $i';
                   final description = GitBookmark.bookmarkInfo?.keys
                           .elementAtOrNull(i)
                           ?.description ??
