@@ -18,6 +18,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_git_dart/go_git_dart.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mdi/mdi.dart';
 import 'package:path_provider/path_provider.dart';
@@ -63,6 +64,7 @@ import 'package:violet/platform/misc.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
+import 'package:violet/util/git.dart';
 import 'package:violet/util/helper.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
@@ -2057,6 +2059,37 @@ class _SettingsPageState extends State<SettingsPage>
             },
           ),
           _buildDivider(),
+          ListTile(
+            leading: Icon(
+              MdiIcons.export,
+              color: Settings.majorColor,
+            ),
+            title: Text(Translations.of(context).trans('exportingbookmarkgit')),
+            trailing: const Icon(Icons.keyboard_arrow_right),
+            onTap: () async {
+              final dir = Platform.isIOS
+                  ? await getApplicationSupportDirectory()
+                  : (await getApplicationDocumentsDirectory());
+              final bookmarkDatabaseFile = File('${dir.path}/user.db');
+
+              final gitPath = '${(await getTemporaryDirectory()).path}/_tmp_git_bookmark';
+              if(await Directory(gitPath).exists()){
+                await Directory(gitPath).delete(recursive: true);
+              }
+
+              final git = BookmarkGit();
+              await git.clone(gitPath);
+              final extpath = '$gitPath/bookmark.db';
+              await bookmarkDatabaseFile.copy(extpath);
+              await git.addAll(gitPath);
+              await git.commit(gitPath);
+              await git.push(gitPath);
+              if(await Directory(gitPath).exists()){
+                await Directory(gitPath).delete(recursive: true);
+              }
+            },
+          ),
+          _buildDivider(),
           InkWell(
             child: ListTile(
               leading: Icon(
@@ -2440,6 +2473,136 @@ class _SettingsPageState extends State<SettingsPage>
                   'ExHentai|EHentai|Hitomi|NHentai|Hisoki'.split('|');
               await prefs.setString(
                   'searchrule', 'ExHentai|EHentai|Hitomi|NHentai|Hisoki');
+            },
+          ),
+        ],
+      ),
+      _buildItems(
+        [
+          InkWell(
+            customBorder: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            ),
+            child: ListTile(
+              leading: CachedNetworkImage(
+                imageUrl: 'https://git-scm.com/favicon.ico',
+                width: 25,
+              ),
+              title: const Text('Git Config'),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+            ),
+            onTap: () async {
+              final prefs = await SharedPreferences.getInstance();
+              var bookmarkRepository = prefs.getString('bookmarkRepository');
+              var bookmarkHost = prefs.getString('bookmarkHost');
+              var bookmarkPrivateKey = prefs.getString('bookmarkPrivateKey');
+              var bookmarkPublicKey = prefs.getString('bookmarkPublicKey');
+              var bookmarkPrivateKeyPassword = prefs.getString('bookmarkPrivateKeyPassword');
+
+              var rController = TextEditingController(
+                  text: bookmarkRepository);
+              var hController = TextEditingController(
+                  text: bookmarkHost);
+              var kController = TextEditingController(
+                  text: bookmarkPrivateKey);
+              var pkController = TextEditingController(
+                  text: bookmarkPublicKey);
+              var pController = TextEditingController(
+                  text: bookmarkPrivateKeyPassword);
+              Widget okButton = TextButton(
+                style: TextButton.styleFrom(
+                    foregroundColor: Settings.majorColor),
+                child: Text(Translations.of(context).trans('ok')),
+                onPressed: () async {
+                  await Settings.setBookmarkHost(hController.text);
+                  await Settings.setBookmarkRepository(rController.text);
+                  await Settings.setBookmarkPrivateKey(kController.text);
+                  await Settings.setBookmarkPublicKey(pkController.text);
+                  await Settings.setBookmarkPrivateKeyPassword(pController.text);
+                  Navigator.pop(context, true);
+                  flutterToast.showToast(
+                    child: ToastWrapper(
+                      isWarning: true,
+                      msg: Translations.of(context).trans('bookmarkexportgit'),
+                    ),
+                    ignorePointer: true,
+                    gravity: ToastGravity.BOTTOM,
+                    toastDuration: const Duration(seconds: 4),
+                  );
+                },
+              );
+              Widget generateButton = TextButton(
+                style: TextButton.styleFrom(
+                    foregroundColor: Settings.majorColor),
+                child: Text(Translations.of(context).trans('generate')),
+                onPressed: () async {
+                  (String,String) keyPair = GitBindings().generateRsaKeys();
+                  pkController.text = keyPair.$1;
+                  kController.text = keyPair.$2;
+                },
+              );
+
+              Widget cancelButton = TextButton(
+                style: TextButton.styleFrom(
+                    foregroundColor: Settings.majorColor),
+                child: Text(Translations.of(context).trans('cancel')),
+                onPressed: () async {
+                  Navigator.pop(context, false);
+                },
+              );
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  actions: [generateButton, okButton, cancelButton],
+                  title: const Text('Git Config'),
+                  contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Row(children: [
+                        const Text('Repository: '),
+                        Expanded(
+                          child: TextField(
+                            controller: rController,
+                          ),
+                        ),
+                      ]),
+                      Row(children: [
+                        const Text('Host: '),
+                        Expanded(
+                          child: TextField(
+                            controller: hController,
+                          ),
+                        ),
+                      ]),
+                      Row(children: [
+                        const Text('Private Key: '),
+                        Expanded(
+                          child: TextField(
+                            controller: kController,
+                          ),
+                        ),
+                      ]),
+                      Row(children: [
+                        const Text('Public Key: '),
+                        Expanded(
+                          child: TextField(
+                            controller: pkController,
+                          ),
+                        ),
+                      ]),
+                      Row(children: [
+                        const Text('Private Key Password: '),
+                        Expanded(
+                          child: TextField(
+                            controller: pController,
+                          ),
+                        ),
+                      ]),
+                    ],
+                  ),
+                ),
+              );
             },
           ),
         ],

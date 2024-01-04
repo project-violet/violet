@@ -152,6 +152,7 @@
   "thisislatestbookmark": "Il database è aggiornato.",
   "importingbookmark": "Importa Segnalibri",
   "exportingbookmark": "Esporta Segnalibri",
+  "exportingbookmarkgit": "Export Bookmark to Git Repository",
   "noauth": "Non hai il permesso di avviarlo.",
   "noselectedb": "Nessun database selezionato.",
   "importbookmark": "Segnalibri Importati!",
