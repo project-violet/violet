@@ -23,7 +23,8 @@ class Settings {
   // Bookmark Git Settings
   static late String bookmarkRepository; // default 'example/bookmark'
   static late String bookmarkHost; // default 'gitee.com'
-  static late String bookmarkPrivateKey; // default '-----BEGIN OPENSSH PRIVATE KEY-----\n-----END OPENSSH PRIVATE KEY-----'
+  static late String
+      bookmarkPrivateKey; // default '-----BEGIN OPENSSH PRIVATE KEY-----\n-----END OPENSSH PRIVATE KEY-----'
   static late String bookmarkPublicKey; // default ''
   static late String bookmarkPrivateKeyPassword; // default ''
 
@@ -310,10 +311,13 @@ class Settings {
     searchMessageAPI = await _getString(
         'searchmessageapi', 'https://koromo.xyz/api/search/msg');
 
-    bookmarkRepository = await _getString('bookmarkRepository', 'example/bookmark');
+    bookmarkRepository =
+        await _getString('bookmarkRepository', 'example/bookmark');
     bookmarkHost = await _getString('bookmarkHost', 'gitee.com');
-    bookmarkPrivateKey = await _getString('bookmarkPrivateKey','-----BEGIN OPENSSH PRIVATE KEY-----\n-----END OPENSSH PRIVATE KEY-----');
-    bookmarkPrivateKeyPassword = await _getString('bookmarkPrivateKeyPassword', '');
+    bookmarkPrivateKey = await _getString('bookmarkPrivateKey',
+        '-----BEGIN OPENSSH PRIVATE KEY-----\n-----END OPENSSH PRIVATE KEY-----');
+    bookmarkPrivateKeyPassword =
+        await _getString('bookmarkPrivateKeyPassword', '');
     ignoreTimeout = await _getBool('ignoretimeout');
     useVioletServer = await _getBool('usevioletserver');
     useDrawer = await _getBool('usedrawer');
@@ -481,30 +485,36 @@ class Settings {
     await prefs.setInt('majorAccentColor', accent!.value);
     majorAccentColor = accent;
   }
+
   static Future<void> setBookmarkRepository(String value) async {
     bookmarkRepository = value;
 
     await prefs.setString('bookmarkRepository', bookmarkRepository);
   }
+
   static Future<void> setBookmarkHost(String value) async {
     bookmarkHost = value;
 
     await prefs.setString('bookmarkHost', bookmarkHost);
   }
+
   static Future<void> setBookmarkPrivateKey(String value) async {
     bookmarkPrivateKey = value;
 
     await prefs.setString('bookmarkPrivateKey', bookmarkPrivateKey);
   }
+
   static Future<void> setBookmarkPublicKey(String value) async {
     bookmarkPublicKey = value;
 
     await prefs.setString('bookmarkPublicKey', bookmarkPublicKey);
   }
+
   static Future<void> setBookmarkPrivateKeyPassword(String value) async {
     bookmarkPrivateKeyPassword = value;
 
-    await prefs.setString('bookmarkPrivateKeyPassword', bookmarkPrivateKeyPassword);
+    await prefs.setString(
+        'bookmarkPrivateKeyPassword', bookmarkPrivateKeyPassword);
   }
 
   static Future<void> setSearchResultType(int wh) async {
