@@ -457,7 +457,14 @@ class HitomiManager {
         }
       }
     }
+    if(filterExistsOnHitomi){
+      if(where.isEmpty){          
+        where += ' ExistOnHitomi=1 ';
+      } else {
+        where += ' AND ExistOnHitomi=1';
+      }
+    }
 
-    return 'SELECT * FROM HitomiColumnModel WHERE $where ${filterExistsOnHitomi ? ' AND ExistOnHitomi=1' : ''}';
+    return 'SELECT * FROM HitomiColumnModel ${where.isEmpty ? '' : 'WHERE $where'}';
   }
 }
