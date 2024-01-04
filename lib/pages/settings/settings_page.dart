@@ -2072,8 +2072,9 @@ class _SettingsPageState extends State<SettingsPage>
                   : (await getApplicationDocumentsDirectory());
               final bookmarkDatabaseFile = File('${dir.path}/user.db');
 
-              final gitPath = '${(await getTemporaryDirectory()).path}/_tmp_git_bookmark';
-              if(await Directory(gitPath).exists()){
+              final gitPath =
+                  '${(await getTemporaryDirectory()).path}/_tmp_git_bookmark';
+              if (await Directory(gitPath).exists()) {
                 await Directory(gitPath).delete(recursive: true);
               }
 
@@ -2084,7 +2085,7 @@ class _SettingsPageState extends State<SettingsPage>
               await git.addAll(gitPath);
               await git.commit(gitPath);
               await git.push(gitPath);
-              if(await Directory(gitPath).exists()){
+              if (await Directory(gitPath).exists()) {
                 await Directory(gitPath).delete(recursive: true);
               }
             },
@@ -2497,28 +2498,26 @@ class _SettingsPageState extends State<SettingsPage>
               var bookmarkHost = prefs.getString('bookmarkHost');
               var bookmarkPrivateKey = prefs.getString('bookmarkPrivateKey');
               var bookmarkPublicKey = prefs.getString('bookmarkPublicKey');
-              var bookmarkPrivateKeyPassword = prefs.getString('bookmarkPrivateKeyPassword');
+              var bookmarkPrivateKeyPassword =
+                  prefs.getString('bookmarkPrivateKeyPassword');
 
-              var rController = TextEditingController(
-                  text: bookmarkRepository);
-              var hController = TextEditingController(
-                  text: bookmarkHost);
-              var kController = TextEditingController(
-                  text: bookmarkPrivateKey);
-              var pkController = TextEditingController(
-                  text: bookmarkPublicKey);
-              var pController = TextEditingController(
-                  text: bookmarkPrivateKeyPassword);
+              var rController = TextEditingController(text: bookmarkRepository);
+              var hController = TextEditingController(text: bookmarkHost);
+              var kController = TextEditingController(text: bookmarkPrivateKey);
+              var pkController = TextEditingController(text: bookmarkPublicKey);
+              var pController =
+                  TextEditingController(text: bookmarkPrivateKeyPassword);
               Widget okButton = TextButton(
-                style: TextButton.styleFrom(
-                    foregroundColor: Settings.majorColor),
+                style:
+                    TextButton.styleFrom(foregroundColor: Settings.majorColor),
                 child: Text(Translations.of(context).trans('ok')),
                 onPressed: () async {
                   await Settings.setBookmarkHost(hController.text);
                   await Settings.setBookmarkRepository(rController.text);
                   await Settings.setBookmarkPrivateKey(kController.text);
                   await Settings.setBookmarkPublicKey(pkController.text);
-                  await Settings.setBookmarkPrivateKeyPassword(pController.text);
+                  await Settings.setBookmarkPrivateKeyPassword(
+                      pController.text);
                   Navigator.pop(context, true);
                   flutterToast.showToast(
                     child: ToastWrapper(
@@ -2532,19 +2531,19 @@ class _SettingsPageState extends State<SettingsPage>
                 },
               );
               Widget generateButton = TextButton(
-                style: TextButton.styleFrom(
-                    foregroundColor: Settings.majorColor),
+                style:
+                    TextButton.styleFrom(foregroundColor: Settings.majorColor),
                 child: Text(Translations.of(context).trans('generate')),
                 onPressed: () async {
-                  (String,String) keyPair = GitBindings().generateRsaKeys();
+                  (String, String) keyPair = GitBindings().generateRsaKeys();
                   pkController.text = keyPair.$1;
                   kController.text = keyPair.$2;
                 },
               );
 
               Widget cancelButton = TextButton(
-                style: TextButton.styleFrom(
-                    foregroundColor: Settings.majorColor),
+                style:
+                    TextButton.styleFrom(foregroundColor: Settings.majorColor),
                 child: Text(Translations.of(context).trans('cancel')),
                 onPressed: () async {
                   Navigator.pop(context, false);
