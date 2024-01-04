@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:violet/util/git.dart';
 
 class BookmarkGroupKeyVal {
   int? id;
@@ -38,6 +39,8 @@ class GitBookmark {
     if (await Directory(gitPath).exists()) {
       await Directory(gitPath).delete(recursive: true);
     }
+    BookmarkGit git = BookmarkGit();
+    await git.clone(gitPath);
     String getRelatedPath(String absolutePath) {
       return absolutePath
           .replaceAll(gitPath, '')
