@@ -458,7 +458,7 @@ class HitomiManager {
       }
     }
     if(filterExistsOnHitomi){
-      if(where.isEmpty){          
+      if(where.trim().isEmpty){          
         where += ' ExistOnHitomi=1 ';
       } else {
         where += ' AND ExistOnHitomi=1';
