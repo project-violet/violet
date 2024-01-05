@@ -125,6 +125,10 @@ dependencies:
   webview_flutter: ^3.0.0
   collection: ^1.16.0
   octo_image: ^2.0.0
+  dart_git:
+    git: https://github.com/GitJournal/dart-git
+  go_git_dart:
+    git: https://github.com/GitJournal/go_git_dart
 
 dev_dependencies:
   flutter_test:
