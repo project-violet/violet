@@ -221,24 +221,6 @@ class _SettingsPageState extends State<SettingsPage>
     );
   }
 
-  Padding _buildGroup(String name) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(name,
-              style: TextStyle(
-                color: Settings.themeWhat ? Colors.white : Colors.black87,
-                fontSize: 24.0,
-                fontFamily: 'Calibre-Semibold',
-                letterSpacing: 1.0,
-              )),
-        ],
-      ),
-    );
-  }
-
   Container _buildItems(List<Widget> items) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -288,7 +270,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _themeGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('theme')),
+      SettingGroupName(name: Translations.of(context).trans('theme')),
       _buildItems([
         InkWell(
           customBorder: const RoundedRectangleBorder(
@@ -603,7 +585,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _communityGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('community')),
+      SettingGroupName(name: Translations.of(context).trans('community')),
       _buildItems(
         [
           InkWell(
@@ -715,7 +697,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _searchGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('search')),
+      SettingGroupName(name: Translations.of(context).trans('search')),
       _buildItems(
         [
           InkWell(
@@ -877,7 +859,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _systemGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('system')),
+      SettingGroupName(name: Translations.of(context).trans('system')),
       _buildItems(
         [
           InkWell(
@@ -1058,7 +1040,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _securityGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('security')),
+      SettingGroupName(name: Translations.of(context).trans('security')),
       _buildItems(
         [
           InkWell(
@@ -1136,7 +1118,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _databaseGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('database')),
+      SettingGroupName(name: Translations.of(context).trans('database')),
       _buildItems(
         [
           InkWell(
@@ -1299,7 +1281,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _networkingGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('network')),
+      SettingGroupName(name: Translations.of(context).trans('network')),
       _buildItems(
         [
           // InkWell(
@@ -1484,7 +1466,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _downloadGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('download')),
+      SettingGroupName(name: Translations.of(context).trans('download')),
       _buildItems(
         [
           InkWell(
@@ -1809,7 +1791,7 @@ class _SettingsPageState extends State<SettingsPage>
      */
 
     return [
-      _buildGroup(Translations.of(context).trans('bookmark')),
+      SettingGroupName(name: Translations.of(context).trans('bookmark')),
       _buildItems(
         [
           InkWell(
@@ -2406,7 +2388,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _componetGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('component')),
+      SettingGroupName(name: Translations.of(context).trans('component')),
       _buildItems(
         [
           InkWell(
@@ -2722,7 +2704,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _viewGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('view')),
+      SettingGroupName(name: Translations.of(context).trans('view')),
       _buildItems(
         [
           InkWell(
@@ -2762,7 +2744,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _updateGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('update')),
+      SettingGroupName(name: Translations.of(context).trans('update')),
       _buildItems(
         [
           InkWell(
@@ -2866,7 +2848,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _etcGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('etc')),
+      SettingGroupName(name: Translations.of(context).trans('etc')),
       _buildItems(
         [
           if (!Settings.liteMode)
@@ -3057,6 +3039,36 @@ class _SettingsPageState extends State<SettingsPage>
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class SettingGroupName extends StatelessWidget {
+  final String name;
+
+  const SettingGroupName({
+    super.key,
+    required this.name,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text(
+            name,
+            style: TextStyle(
+              color: Settings.themeWhat ? Colors.white : Colors.black87,
+              fontSize: 24.0,
+              fontFamily: 'Calibre-Semibold',
+              letterSpacing: 1.0,
+            ),
+          ),
+        ],
       ),
     );
   }
