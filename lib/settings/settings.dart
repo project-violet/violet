@@ -170,7 +170,7 @@ class Settings {
         language = 'lang:korean';
       } else if (langcode == 'ja') {
         language = 'lang:japanese';
-      } else if (langcode == 'zh') {
+      } else if (langcode.startsWith('zh')) {
         language = 'lang:chinese';
       }
       includetags = '($language)';
@@ -354,6 +354,24 @@ class Settings {
     inViewerMessageSearch = await _getBool('inViewerMessageSearch');
 
     await regacy1_20_2();
+  }
+
+  static Future resetIncludeTags() async {
+    var includetags = prefs.getString('includetags');
+
+    var language = 'lang:english';
+    var langcode = Settings.language!;
+    if (langcode == 'ko') {
+      language = 'lang:korean';
+    } else if (langcode == 'ja') {
+      language = 'lang:japanese';
+    } else if (langcode.startsWith('zh')) {
+      language = 'lang:chinese';
+    }
+    includetags = '($language)';
+    await prefs.setString('includetags', includetags);
+
+    includeTags = includetags;
   }
 
   static Future regacy1_20_2() async {
