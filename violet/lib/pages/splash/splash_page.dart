@@ -666,6 +666,7 @@ class _SplashPageState extends State<SplashPage> {
                       var exc = country as ExCountry;
                       await Translations.of(context).load(exc.toString());
                       await Settings.setLanguage(exc.toString());
+                      await Settings.resetIncludeTags();
                       setState(() {});
                     },
                     itemFilter: (c) => [].contains(c.isoCode),
