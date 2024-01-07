@@ -210,36 +210,13 @@ class _SettingsPageState extends State<SettingsPage>
     );
   }
 
-  Container _buildDivider() {
-    return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 8.0,
-      ),
-      width: double.infinity,
-      height: 1.0,
-      color: Settings.themeWhat ? Colors.grey.shade600 : Colors.grey.shade400,
-    );
-  }
-
-  Padding _buildGroup(String name) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(name,
-              style: TextStyle(
-                color: Settings.themeWhat ? Colors.white : Colors.black87,
-                fontSize: 24.0,
-                fontFamily: 'Calibre-Semibold',
-                letterSpacing: 1.0,
-              )),
-        ],
-      ),
-    );
-  }
-
   Container _buildItems(List<Widget> items) {
+    final itemsWithDividers = items
+        .map((e) => [e, const SettingGroupDivider()])
+        .expand((e) => e)
+        .take(items.length * 2 - 1)
+        .toList();
+
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       width: double.infinity,
@@ -277,9 +254,9 @@ class _SettingsPageState extends State<SettingsPage>
                         ? Palette.blackThemeBackground
                         : Colors.black38
                     : Colors.white,
-                child: Column(children: items),
+                child: Column(children: itemsWithDividers),
               ))
-          : Column(children: items),
+          : Column(children: itemsWithDividers),
     );
   }
 
@@ -288,7 +265,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _themeGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('theme')),
+      SettingGroupName(name: Translations.of(context).trans('theme')),
       _buildItems([
         InkWell(
           customBorder: const RoundedRectangleBorder(
@@ -333,7 +310,6 @@ class _SettingsPageState extends State<SettingsPage>
             });
           },
         ),
-        _buildDivider(),
         ListTile(
           leading: ShaderMask(
             shaderCallback: (bounds) => const RadialGradient(
@@ -370,7 +346,6 @@ class _SettingsPageState extends State<SettingsPage>
             );
           },
         ),
-        _buildDivider(),
         InkWell(
           onTap: _themeSwitch
               ? () async {
@@ -471,7 +446,6 @@ class _SettingsPageState extends State<SettingsPage>
             ),
           ),
         ),
-        if (!Settings.liteMode) _buildDivider(),
         if (!Settings.liteMode)
           InkWell(
             child: ListTile(
@@ -496,7 +470,6 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
-        _buildDivider(),
         InkWell(
           child: ListTile(
             leading: Icon(MdiIcons.tabletDashboard, color: Settings.majorColor),
@@ -520,7 +493,6 @@ class _SettingsPageState extends State<SettingsPage>
             });
           },
         ),
-        if (!Settings.liteMode) _buildDivider(),
         if (!Settings.liteMode)
           InkWell(
             child: ListTile(
@@ -557,7 +529,6 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
-        _buildDivider(),
         InkWell(
           customBorder: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
@@ -603,7 +574,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _communityGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('community')),
+      SettingGroupName(name: Translations.of(context).trans('community')),
       _buildItems(
         [
           InkWell(
@@ -626,7 +597,6 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
           ListTile(
             leading: const Icon(
               MdiIcons.gmail,
@@ -647,7 +617,6 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
           ListTile(
             leading:
                 Icon(MdiIcons.accessPointNetwork, color: Settings.majorColor),
@@ -658,7 +627,6 @@ class _SettingsPageState extends State<SettingsPage>
                   context, const LabRecentRecordsU());
             },
           ),
-          _buildDivider(),
           ListTile(
             leading:
                 Icon(MdiIcons.commentTextMultiple, color: Settings.majorColor),
@@ -669,7 +637,6 @@ class _SettingsPageState extends State<SettingsPage>
                   context, const LabGlobalComments());
             },
           ),
-          _buildDivider(),
           ListTile(
             leading: Icon(MdiIcons.star,
                 color: Settings.themeWhat
@@ -682,7 +649,6 @@ class _SettingsPageState extends State<SettingsPage>
                   context, const ArtistCollectionPage());
             },
           ),
-          _buildDivider(),
           ListTile(
             leading:
                 const Icon(MdiIcons.bookOpenPageVariant, color: Colors.brown),
@@ -692,7 +658,6 @@ class _SettingsPageState extends State<SettingsPage>
               PlatformNavigator.navigateSlide(context, const UserManualPage());
             },
           ),
-          _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -715,7 +680,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _searchGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('search')),
+      SettingGroupName(name: Translations.of(context).trans('search')),
       _buildItems(
         [
           InkWell(
@@ -756,7 +721,6 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
           ListTile(
             leading: Icon(
               MdiIcons.tagOff,
@@ -779,7 +743,6 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          if (!Settings.liteMode) _buildDivider(),
           if (!Settings.liteMode)
             ListTile(
               leading: Icon(
@@ -814,7 +777,6 @@ class _SettingsPageState extends State<SettingsPage>
                 }
               },
             ),
-          if (!Settings.liteMode) _buildDivider(),
           if (!Settings.liteMode)
             InkWell(
               child: ListTile(
@@ -839,7 +801,6 @@ class _SettingsPageState extends State<SettingsPage>
                 });
               },
             ),
-          _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -877,7 +838,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _systemGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('system')),
+      SettingGroupName(name: Translations.of(context).trans('system')),
       _buildItems(
         [
           InkWell(
@@ -894,7 +855,6 @@ class _SettingsPageState extends State<SettingsPage>
               PlatformNavigator.navigateSlide(context, const LogPage());
             },
           ),
-          _buildDivider(),
           ListTile(
             leading: Icon(Icons.language, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('language')),
@@ -946,7 +906,6 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          if (Settings.language == 'ko') _buildDivider(),
           if (Settings.language == 'ko')
             ListTile(
               leading: Icon(Icons.translate, color: Settings.majorColor),
@@ -970,7 +929,6 @@ class _SettingsPageState extends State<SettingsPage>
                 });
               },
             ),
-          _buildDivider(),
           ListTile(
             leading:
                 Icon(MdiIcons.imageSizeSelectLarge, color: Settings.majorColor),
@@ -993,7 +951,6 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
-          if (!Settings.liteMode) _buildDivider(),
           if (!Settings.liteMode)
             ListTile(
               leading: Icon(Mdi.tableArrowRight, color: Settings.majorColor),
@@ -1013,7 +970,6 @@ class _SettingsPageState extends State<SettingsPage>
                 );
               },
             ),
-          _buildDivider(),
           ListTile(
             leading: Icon(Icons.info_outline, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('info')),
@@ -1027,7 +983,6 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          _buildDivider(),
           ListTile(
             leading: const Icon(MdiIcons.fileSign, color: Colors.cyan),
             title: Text(Translations.of(context).trans('patchnote')),
@@ -1036,7 +991,6 @@ class _SettingsPageState extends State<SettingsPage>
               PlatformNavigator.navigateSlide(context, const PatchNotePage());
             },
           ),
-          _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1058,7 +1012,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _securityGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('security')),
+      SettingGroupName(name: Translations.of(context).trans('security')),
       _buildItems(
         [
           InkWell(
@@ -1086,7 +1040,6 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1136,7 +1089,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _databaseGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('database')),
+      SettingGroupName(name: Translations.of(context).trans('database')),
       _buildItems(
         [
           InkWell(
@@ -1159,7 +1112,6 @@ class _SettingsPageState extends State<SettingsPage>
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
           ),
-          _buildDivider(),
           InkWell(
             child: ListTile(
               leading: Icon(
@@ -1192,7 +1144,6 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
           InkWell(
             child: ListTile(
               leading: Icon(
@@ -1220,7 +1171,6 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
-          _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1299,7 +1249,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _networkingGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('network')),
+      SettingGroupName(name: Translations.of(context).trans('network')),
       _buildItems(
         [
           // InkWell(
@@ -1314,7 +1264,7 @@ class _SettingsPageState extends State<SettingsPage>
           //   ),
           //   onTap: () {},
           // ),
-          // _buildDivider(),
+          //
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1341,7 +1291,7 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          _buildDivider(),
+
           ListTile(
             leading: Icon(
               Icons.router,
@@ -1357,7 +1307,7 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          _buildDivider(),
+
           ListTile(
             leading: Icon(
               MdiIcons.commentSearch,
@@ -1413,7 +1363,7 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
+
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1445,7 +1395,7 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
-          _buildDivider(),
+
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1484,7 +1434,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _downloadGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('download')),
+      SettingGroupName(name: Translations.of(context).trans('download')),
       _buildItems(
         [
           InkWell(
@@ -1522,7 +1472,6 @@ class _SettingsPageState extends State<SettingsPage>
               ),
             ),
           ),
-          _buildDivider(),
           ListTile(
             leading: Icon(
               MdiIcons.lan,
@@ -1630,7 +1579,6 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
           InkWell(
             // customBorder: RoundedRectangleBorder(
             //   borderRadius: BorderRadius.all(
@@ -1711,7 +1659,6 @@ class _SettingsPageState extends State<SettingsPage>
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
           ),
-          _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1809,7 +1756,7 @@ class _SettingsPageState extends State<SettingsPage>
      */
 
     return [
-      _buildGroup(Translations.of(context).trans('bookmark')),
+      SettingGroupName(name: Translations.of(context).trans('bookmark')),
       _buildItems(
         [
           InkWell(
@@ -1834,7 +1781,6 @@ class _SettingsPageState extends State<SettingsPage>
               ),
             ),
           ),
-          if (!Settings.liteMode) _buildDivider(),
           if (!Settings.liteMode)
             ListTile(
               leading: Icon(
@@ -1972,7 +1918,6 @@ class _SettingsPageState extends State<SettingsPage>
                 );
               },
             ),
-          _buildDivider(),
           ListTile(
             leading: Icon(MdiIcons.import, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('importingbookmark')),
@@ -2016,7 +1961,6 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          _buildDivider(),
           ListTile(
             leading: Icon(
               MdiIcons.export,
@@ -2060,7 +2004,6 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          _buildDivider(),
           ListTile(
             leading: Icon(
               MdiIcons.export,
@@ -2092,7 +2035,6 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
           InkWell(
             child: ListTile(
               leading: Icon(
@@ -2201,7 +2143,6 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
           InkWell(
             child: ListTile(
               leading: Icon(
@@ -2288,7 +2229,6 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
@@ -2406,7 +2346,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _componetGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('component')),
+      SettingGroupName(name: Translations.of(context).trans('component')),
       _buildItems(
         [
           InkWell(
@@ -2722,7 +2662,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _viewGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('view')),
+      SettingGroupName(name: Translations.of(context).trans('view')),
       _buildItems(
         [
           InkWell(
@@ -2762,7 +2702,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _updateGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('update')),
+      SettingGroupName(name: Translations.of(context).trans('update')),
       _buildItems(
         [
           InkWell(
@@ -2807,7 +2747,6 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -2866,7 +2805,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _etcGroup() {
     return [
-      _buildGroup(Translations.of(context).trans('etc')),
+      SettingGroupName(name: Translations.of(context).trans('etc')),
       _buildItems(
         [
           if (!Settings.liteMode)
@@ -2890,7 +2829,6 @@ class _SettingsPageState extends State<SettingsPage>
                 }
               },
             ),
-          if (!Settings.liteMode) _buildDivider(),
           if (!Settings.liteMode)
             ListTile(
               leading: const Icon(
@@ -2929,7 +2867,6 @@ class _SettingsPageState extends State<SettingsPage>
                 }
               },
             ),
-          if (!Settings.liteMode) _buildDivider(),
           if (!Settings.liteMode)
             ListTile(
               leading: const Icon(
@@ -2951,7 +2888,6 @@ class _SettingsPageState extends State<SettingsPage>
                 }
               },
             ),
-          _buildDivider(),
           ListTile(
             leading: const Icon(
               MdiIcons.heart,
@@ -2968,7 +2904,6 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
           ListTile(
             leading: Icon(
               MdiIcons.humanHandsup,
@@ -2985,7 +2920,6 @@ class _SettingsPageState extends State<SettingsPage>
               // }
             },
           ),
-          _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -3057,6 +2991,54 @@ class _SettingsPageState extends State<SettingsPage>
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class SettingGroupDivider extends StatelessWidget {
+  const SettingGroupDivider({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        horizontal: 8.0,
+      ),
+      width: double.infinity,
+      height: 1.0,
+      color: Settings.themeWhat ? Colors.grey.shade600 : Colors.grey.shade400,
+    );
+  }
+}
+
+class SettingGroupName extends StatelessWidget {
+  final String name;
+
+  const SettingGroupName({
+    super.key,
+    required this.name,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text(
+            name,
+            style: TextStyle(
+              color: Settings.themeWhat ? Colors.white : Colors.black87,
+              fontSize: 24.0,
+              fontFamily: 'Calibre-Semibold',
+              letterSpacing: 1.0,
+            ),
+          ),
+        ],
       ),
     );
   }
