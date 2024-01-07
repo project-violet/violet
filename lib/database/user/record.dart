@@ -55,17 +55,14 @@ class ArticleReadLog {
 }
 
 class User {
-  static User? _instance;
-  static Lock lock = Lock();
-  static Future<User> getInstance() async {
-    await lock.synchronized(() async {
-      if (_instance == null) {
-        var db = await CommonUserDatabase.getInstance();
-        var ee = await db.query(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='ArticleReadLog';");
-        if (ee.isEmpty || ee[0].isEmpty) {
-          try {
-            await db.execute('''CREATE TABLE ArticleReadLog (
+  static late final User _instance;
+  static Future<void> load() async {
+    var db = await CommonUserDatabase.getInstance();
+    var ee = await db.query(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='ArticleReadLog';");
+    if (ee.isEmpty || ee[0].isEmpty) {
+      try {
+        await db.execute('''CREATE TABLE ArticleReadLog (
               Id integer primary key autoincrement, 
               Article text, 
               DateTimeStart text,
@@ -73,24 +70,39 @@ class User {
               LastPage integer,
               Type integer);
               ''');
-          } catch (e, st) {
-            Logger.error('[Record-Instance] E: $e\n'
-                '$st');
-          }
-        }
-        _instance = User();
+      } catch (e, st) {
+        Logger.error('[Record-Instance] E: $e\n'
+            '$st');
       }
-    });
-    return _instance!;
+    }
+    _instance = User();
   }
 
+  static Future<User> getInstance() async {
+    return _instance;
+  }
+
+  List<ArticleReadLog>? cachedReadLog;
+  DateTime? latestLoading;
+  Lock userLogLock = Lock();
   Future<List<ArticleReadLog>> getUserLog() async {
-    return (await (await CommonUserDatabase.getInstance())
-            .query('SELECT * FROM ArticleReadLog'))
-        .map((x) => ArticleReadLog(result: x))
-        .toList()
-        .reversed
-        .toList();
+    await userLogLock.synchronized(() async {
+      latestLoading ??= DateTime.now();
+
+      if (cachedReadLog == null ||
+          latestLoading!.difference(DateTime.now()).abs().inSeconds > 10) {
+        cachedReadLog = (await (await CommonUserDatabase.getInstance())
+                .query('SELECT * FROM ArticleReadLog'))
+            // TODO: 왜 Article에 null이 들어가는지 확인 필요
+            .where((e) => e['Article'] != null)
+            .map((x) => ArticleReadLog(result: x))
+            .toList()
+            .reversed
+            .toList();
+        latestLoading = DateTime.now();
+      }
+    });
+    return cachedReadLog!;
   }
 
   Future<void> insertUserLog(int article, int type,
