@@ -199,9 +199,9 @@ class _SplashPageState extends State<SplashPage> {
     _changeMessage('init settings...');
     await Settings.init();
     _changeMessage('loading bookmark...');
-    await Bookmark.getInstance();
+    await Bookmark.load();
     _changeMessage('loading userdb...');
-    await User.getInstance();
+    await User.load();
     await Variables.init();
     _changeMessage('loading index...');
     await HitomiIndexs.init();

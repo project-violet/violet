@@ -4,6 +4,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:synchronized/synchronized.dart';
 import 'package:violet/database/user/user.dart';
 import 'package:violet/log/log.dart';
 
@@ -112,24 +113,23 @@ class HistoryUser {
 }
 
 class Bookmark {
-  static Bookmark? _instance;
-  static Future<Bookmark> getInstance() async {
-    if (_instance == null) {
-      final db = await CommonUserDatabase.getInstance();
-      final ee = await db.query(
-          "SELECT name FROM sqlite_master WHERE type='table' AND name='BookmarkGroup';");
-      if (ee.isEmpty || ee[0].isEmpty) {
-        try {
-          await db.execute(
-              'CREATE TABLE BookmarkGroup (Id integer primary key autoincrement, Name text, DateTime text, Description text, Color integer, Gorder integer)');
-          await db.execute('''CREATE TABLE BookmarkArticle (
+  static late final Bookmark _instance;
+  static Future<void> load() async {
+    final db = await CommonUserDatabase.getInstance();
+    final ee = await db.query(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='BookmarkGroup';");
+    if (ee.isEmpty || ee[0].isEmpty) {
+      try {
+        await db.execute(
+            'CREATE TABLE BookmarkGroup (Id integer primary key autoincrement, Name text, DateTime text, Description text, Color integer, Gorder integer)');
+        await db.execute('''CREATE TABLE BookmarkArticle (
               Id integer primary key autoincrement, 
               Article text, 
               DateTime text,
               GroupId integer,
               FOREIGN KEY(GroupId) REFERENCES BookmarkGroup(Id));
               ''');
-          await db.execute('''CREATE TABLE BookmarkArtist (
+        await db.execute('''CREATE TABLE BookmarkArtist (
               Id integer primary key autoincrement, 
               Artist text, 
               IsGroup integer,
@@ -138,23 +138,23 @@ class Bookmark {
               FOREIGN KEY(GroupId) REFERENCES BookmarkGroup(Id));
               ''');
 
-          // Insert default bookmark group.
-          await db.insert('BookmarkGroup', {
-            'Name': 'violet_default', // 미분류
-            'Description': 'Unclassified bookmarks.',
-            'DateTime': DateTime.now().toString(),
-            'Color': Colors.grey.value,
-            'Gorder': 1,
-          });
-        } catch (e, st) {
-          Logger.error('[Bookmark Instance] E: $e\n'
-              '$st');
-        }
+        // Insert default bookmark group.
+        await db.insert('BookmarkGroup', {
+          'Name': 'violet_default', // 미분류
+          'Description': 'Unclassified bookmarks.',
+          'DateTime': DateTime.now().toString(),
+          'Color': Colors.grey.value,
+          'Gorder': 1,
+        });
+      } catch (e, st) {
+        Logger.error('[Bookmark Instance] E: $e\n'
+            '$st');
       }
-      final ex = await db.query(
-          "SELECT name FROM sqlite_master WHERE type='table' AND name='BookmarkUser';");
-      if (ex.isEmpty || ex[0].isEmpty) {
-        await db.execute('''CREATE TABLE BookmarkUser (
+    }
+    final ex = await db.query(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='BookmarkUser';");
+    if (ex.isEmpty || ex[0].isEmpty) {
+      await db.execute('''CREATE TABLE BookmarkUser (
               Id integer primary key autoincrement, 
               User text,
               Title text,
@@ -163,19 +163,21 @@ class Bookmark {
               GroupId integer,
               FOREIGN KEY(GroupId) REFERENCES BookmarkGroup(Id));
               ''');
-      }
-      final ex2 = await db.query(
-          "SELECT name FROM sqlite_master WHERE type='table' AND name='HistoryUser';");
-      if (ex2.isEmpty || ex2[0].isEmpty) {
-        await db.execute('''CREATE TABLE HistoryUser (
+    }
+    final ex2 = await db.query(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='HistoryUser';");
+    if (ex2.isEmpty || ex2[0].isEmpty) {
+      await db.execute('''CREATE TABLE HistoryUser (
               Id integer primary key autoincrement, 
               User text,
               DateTime text);
               ''');
-      }
-      _instance = Bookmark();
     }
-    return _instance!;
+    _instance = Bookmark();
+  }
+
+  static Future<Bookmark> getInstance() async {
+    return _instance;
   }
 
   Future<void> insertArticle(String article,
@@ -313,6 +315,8 @@ class Bookmark {
   }
 
   Future<List<BookmarkArticle>> getArticle() async {
+    // TODO: 실제와 다른 테이블을 읽는 경우가 있는데 sqflite 에러인지
+    // DB 손상인지 확인 필요. (Query Async Lock해도 동일한 버그 발생)
     return (await (await CommonUserDatabase.getInstance())
             .query('SELECT * FROM BookmarkArticle'))
         .map((x) => BookmarkArticle(result: x))
@@ -351,14 +355,17 @@ class Bookmark {
   }
 
   HashSet<int>? bookmarkSet;
+  Lock bookmarkSetLock = Lock();
   Future<bool> isBookmark(int id) async {
-    if (bookmarkSet == null) {
-      var article = await getArticle();
-      bookmarkSet = HashSet<int>();
-      for (var element in article) {
-        bookmarkSet!.add(int.parse(element.article()));
+    await bookmarkSetLock.synchronized(() async {
+      if (bookmarkSet == null) {
+        final article = await getArticle();
+        bookmarkSet = HashSet<int>();
+        for (var element in article) {
+          bookmarkSet!.add(int.parse(element.article()));
+        }
       }
-    }
+    });
 
     return bookmarkSet!.contains(id);
   }
