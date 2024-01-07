@@ -166,175 +166,60 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
 
         if (item.tags() == null) continue;
 
-        if (item.artists() != null) {
-          for (var artist in item.artists().split('|')) {
-            if (artist != '') {
-              if (!tagArtist.containsKey(artist)) {
-                tagArtist[artist] = <String, int>{};
+        void updateRelativeTag(targets, updateTo) {
+          if (targets == null) return;
+
+          for (var target in targets.split('|')) {
+            if (target != '') {
+              if (!updateTo.containsKey(target)) {
+                updateTo[target] = <String, int>{};
               }
             }
           }
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
-            var index = tagIndex[tag].toString();
-            for (var artist in item.artists().split('|')) {
-              if (artist == '') continue;
-              if (!tagArtist[artist]!.containsKey(index)) {
-                tagArtist[artist]![index] = 0;
+            final index = tagIndex[tag].toString();
+            for (var target in targets.split('|')) {
+              if (target == '') continue;
+              if (!updateTo[target]!.containsKey(index)) {
+                updateTo[target]![index] = 0;
               }
-              tagArtist[artist]![index] = tagArtist[artist]![index]! + 1;
+              updateTo[target]![index] = updateTo[target]![index]! + 1;
             }
           }
         }
 
-        if (item.groups() != null) {
-          for (var artist in item.groups().split('|')) {
-            if (artist != '') {
-              if (!tagGroup.containsKey(artist)) {
-                tagGroup[artist] = <String, int>{};
-              }
+        updateRelativeTag(item.artists(), tagArtist);
+        updateRelativeTag(item.groups(), tagGroup);
+        updateRelativeTag(item.series(), tagSeries);
+        updateRelativeTag(item.characters(), tagCharacter);
+        updateRelativeTag(item.uploader(), tagUploader);
+
+        void updateRelativeFrom(sources, targets, updateTo, [allowEq = false]) {
+          if (sources == null || targets == null) return;
+
+          for (var source in sources.split('|')) {
+            if (source == '') continue;
+            if (!updateTo.containsKey(source)) {
+              updateTo[source] = <String, int>{};
             }
-          }
-          for (var tag in item.tags().split('|')) {
-            if (tag == null || tag == '') continue;
-            if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
-            var index = tagIndex[tag].toString();
-            for (var artist in item.groups().split('|')) {
-              if (artist == '') continue;
-              if (!tagGroup[artist]!.containsKey(index)) {
-                tagGroup[artist]![index] = 0;
+            for (var target in targets.split('|')) {
+              if (target == '') continue;
+              if (allowEq && (source == target)) continue;
+              if (!updateTo[source]!.containsKey(target)) {
+                updateTo[source]![target] = 0;
               }
-              tagGroup[artist]![index] = tagGroup[artist]![index]! + 1;
+              updateTo[source]![target] = updateTo[source]![target]! + 1;
             }
           }
         }
 
-        if (item.uploader() != null) {
-          if (!tagUploader.containsKey(item.uploader())) {
-            tagUploader[item.uploader()] = <String, int>{};
-          }
-          for (var tag in item.tags().split('|')) {
-            if (tag == null || tag == '') continue;
-            if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
-            var index = tagIndex[tag].toString();
-            if (!tagUploader[item.uploader()]!.containsKey(index)) {
-              tagUploader[item.uploader()]![index] = 0;
-            }
-            tagUploader[item.uploader()]![index] =
-                tagUploader[item.uploader()]![index]! + 1;
-          }
-        }
-
-        if (item.series() != null) {
-          for (var artist in item.series().split('|')) {
-            if (artist != '') {
-              if (!tagSeries.containsKey(artist)) {
-                tagSeries[artist] = <String, int>{};
-              }
-            }
-          }
-          for (var tag in item.tags().split('|')) {
-            if (tag == null || tag == '') continue;
-            if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
-            var index = tagIndex[tag].toString();
-            for (var artist in item.series().split('|')) {
-              if (artist == '') continue;
-              if (!tagSeries[artist]!.containsKey(index)) {
-                tagSeries[artist]![index] = 0;
-              }
-              tagSeries[artist]![index] = tagSeries[artist]![index]! + 1;
-            }
-          }
-        }
-
-        if (item.characters() != null) {
-          for (var artist in item.characters().split('|')) {
-            if (artist != '') {
-              if (!tagCharacter.containsKey(artist)) {
-                tagCharacter[artist] = <String, int>{};
-              }
-            }
-          }
-          for (var tag in item.tags().split('|')) {
-            if (tag == null || tag == '') continue;
-            if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
-            var index = tagIndex[tag].toString();
-            for (var artist in item.characters().split('|')) {
-              if (artist == '') continue;
-              if (!tagCharacter[artist]!.containsKey(index)) {
-                tagCharacter[artist]![index] = 0;
-              }
-              tagCharacter[artist]![index] = tagCharacter[artist]![index]! + 1;
-            }
-          }
-        }
-
-        if (item.series() != null && item.characters() != null) {
-          for (var series in item.series().split('|')) {
-            if (series == '') continue;
-            if (!characterSeries.containsKey(series)) {
-              characterSeries[series] = <String, int>{};
-            }
-            for (var character in item.characters().split('|')) {
-              if (character == '') continue;
-              if (!characterSeries[series]!.containsKey(character)) {
-                characterSeries[series]![character] = 0;
-              }
-              characterSeries[series]![character] =
-                  characterSeries[series]![character]! + 1;
-            }
-          }
-
-          for (var character in item.characters().split('|')) {
-            if (character == '') continue;
-            if (!seriesCharacter.containsKey(character)) {
-              seriesCharacter[character] = <String, int>{};
-            }
-            for (var series in item.series().split('|')) {
-              if (series == '') continue;
-              if (!seriesCharacter[character]!.containsKey(series)) {
-                seriesCharacter[character]![series] = 0;
-              }
-              seriesCharacter[character]![series] =
-                  seriesCharacter[character]![series]! + 1;
-            }
-          }
-        }
-
-        if (item.series() != null) {
-          for (var series in item.series().split('|')) {
-            if (series == '') continue;
-            if (!seriesSeries.containsKey(series)) {
-              seriesSeries[series] = <String, int>{};
-            }
-            for (var series2 in item.series().split('|')) {
-              if (series2 == '' || series == series2) continue;
-              if (!seriesSeries[series]!.containsKey(series2)) {
-                seriesSeries[series]![series2] = 0;
-              }
-              seriesSeries[series]![series2] =
-                  seriesSeries[series]![series2]! + 1;
-            }
-          }
-        }
-
-        if (item.characters() != null) {
-          for (var character in item.characters().split('|')) {
-            if (character == '') continue;
-            if (!characterCharacter.containsKey(character)) {
-              characterCharacter[character] = <String, int>{};
-            }
-            for (var character2 in item.characters().split('|')) {
-              if (character2 == '' || character == character2) continue;
-              if (!characterCharacter[character]!.containsKey(character2)) {
-                characterCharacter[character]![character2] = 0;
-              }
-              characterCharacter[character]![character2] =
-                  characterCharacter[character]![character2]! + 1;
-            }
-          }
-        }
+        updateRelativeFrom(item.series(), item.characters(), characterSeries);
+        updateRelativeFrom(item.characters(), item.series(), seriesCharacter);
+        updateRelativeFrom(item.series(), item.series(), seriesSeries, false);
+        updateRelativeFrom(
+            item.characters(), item.characters(), characterCharacter, false);
       }
 
       if (ll.isEmpty) {
