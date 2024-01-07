@@ -7,10 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:synchronized/synchronized.dart';
 
 class DataBaseManager {
   String? dbPath;
   Database? db;
+  static Lock instanceLock = Lock();
+  static Lock openLock = Lock();
   static DataBaseManager? _instance;
 
   DataBaseManager({this.dbPath});
@@ -28,18 +31,20 @@ class DataBaseManager {
   }
 
   static Future<DataBaseManager> getInstance() async {
-    if (_instance == null) {
-      late final String dbPath;
-      if (Platform.environment.containsKey('FLUTTER_TEST')) {
-        dbPath = join(Directory.current.path, 'test/db/data.db');
-      } else {
-        dbPath = Platform.isAndroid
-            ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
-            : '${await getDatabasesPath()}/data.db';
+    await instanceLock.synchronized(() async {
+      if (_instance == null) {
+        late final String dbPath;
+        if (Platform.environment.containsKey('FLUTTER_TEST')) {
+          dbPath = join(Directory.current.path, 'test/db/data.db');
+        } else {
+          dbPath = Platform.isAndroid
+              ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
+              : '${await getDatabasesPath()}/data.db';
+        }
+        _instance = create(dbPath);
+        await _instance!.open();
       }
-      _instance = create(dbPath);
-      await _instance!.open();
-    }
+    });
     return _instance!;
   }
 
@@ -50,13 +55,17 @@ class DataBaseManager {
   }
 
   Future<void> open() async {
-    db ??= await openDatabase(dbPath!);
+    await openLock.synchronized(() async {
+      db ??= await openDatabase(dbPath!);
+    });
   }
 
   Future<void> checkOpen() async {
-    if (!(db?.isOpen ?? false)) {
-      db = await openDatabase(dbPath!);
-    }
+    await openLock.synchronized(() async {
+      if (!(db?.isOpen ?? false)) {
+        db = await openDatabase(dbPath!);
+      }
+    });
   }
 
   Future<List<Map<String, dynamic>>> query(String str) async {
