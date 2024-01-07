@@ -210,17 +210,6 @@ class _SettingsPageState extends State<SettingsPage>
     );
   }
 
-  Container _buildDivider() {
-    return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 8.0,
-      ),
-      width: double.infinity,
-      height: 1.0,
-      color: Settings.themeWhat ? Colors.grey.shade600 : Colors.grey.shade400,
-    );
-  }
-
   Container _buildItems(List<Widget> items) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -315,7 +304,7 @@ class _SettingsPageState extends State<SettingsPage>
             });
           },
         ),
-        _buildDivider(),
+        const SettingGroupDivider(),
         ListTile(
           leading: ShaderMask(
             shaderCallback: (bounds) => const RadialGradient(
@@ -352,7 +341,7 @@ class _SettingsPageState extends State<SettingsPage>
             );
           },
         ),
-        _buildDivider(),
+        const SettingGroupDivider(),
         InkWell(
           onTap: _themeSwitch
               ? () async {
@@ -453,7 +442,7 @@ class _SettingsPageState extends State<SettingsPage>
             ),
           ),
         ),
-        if (!Settings.liteMode) _buildDivider(),
+        if (!Settings.liteMode) const SettingGroupDivider(),
         if (!Settings.liteMode)
           InkWell(
             child: ListTile(
@@ -478,7 +467,7 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
-        _buildDivider(),
+        const SettingGroupDivider(),
         InkWell(
           child: ListTile(
             leading: Icon(MdiIcons.tabletDashboard, color: Settings.majorColor),
@@ -502,7 +491,7 @@ class _SettingsPageState extends State<SettingsPage>
             });
           },
         ),
-        if (!Settings.liteMode) _buildDivider(),
+        if (!Settings.liteMode) const SettingGroupDivider(),
         if (!Settings.liteMode)
           InkWell(
             child: ListTile(
@@ -539,7 +528,7 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
-        _buildDivider(),
+        const SettingGroupDivider(),
         InkWell(
           customBorder: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
@@ -608,7 +597,7 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading: const Icon(
               MdiIcons.gmail,
@@ -629,7 +618,7 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading:
                 Icon(MdiIcons.accessPointNetwork, color: Settings.majorColor),
@@ -640,7 +629,7 @@ class _SettingsPageState extends State<SettingsPage>
                   context, const LabRecentRecordsU());
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading:
                 Icon(MdiIcons.commentTextMultiple, color: Settings.majorColor),
@@ -651,7 +640,7 @@ class _SettingsPageState extends State<SettingsPage>
                   context, const LabGlobalComments());
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading: Icon(MdiIcons.star,
                 color: Settings.themeWhat
@@ -664,7 +653,7 @@ class _SettingsPageState extends State<SettingsPage>
                   context, const ArtistCollectionPage());
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading:
                 const Icon(MdiIcons.bookOpenPageVariant, color: Colors.brown),
@@ -674,7 +663,7 @@ class _SettingsPageState extends State<SettingsPage>
               PlatformNavigator.navigateSlide(context, const UserManualPage());
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -738,7 +727,7 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading: Icon(
               MdiIcons.tagOff,
@@ -761,7 +750,7 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          if (!Settings.liteMode) _buildDivider(),
+          if (!Settings.liteMode) const SettingGroupDivider(),
           if (!Settings.liteMode)
             ListTile(
               leading: Icon(
@@ -796,7 +785,7 @@ class _SettingsPageState extends State<SettingsPage>
                 }
               },
             ),
-          if (!Settings.liteMode) _buildDivider(),
+          if (!Settings.liteMode) const SettingGroupDivider(),
           if (!Settings.liteMode)
             InkWell(
               child: ListTile(
@@ -821,7 +810,7 @@ class _SettingsPageState extends State<SettingsPage>
                 });
               },
             ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -876,7 +865,7 @@ class _SettingsPageState extends State<SettingsPage>
               PlatformNavigator.navigateSlide(context, const LogPage());
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading: Icon(Icons.language, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('language')),
@@ -928,7 +917,7 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          if (Settings.language == 'ko') _buildDivider(),
+          if (Settings.language == 'ko') const SettingGroupDivider(),
           if (Settings.language == 'ko')
             ListTile(
               leading: Icon(Icons.translate, color: Settings.majorColor),
@@ -952,7 +941,7 @@ class _SettingsPageState extends State<SettingsPage>
                 });
               },
             ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading:
                 Icon(MdiIcons.imageSizeSelectLarge, color: Settings.majorColor),
@@ -975,7 +964,7 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
-          if (!Settings.liteMode) _buildDivider(),
+          if (!Settings.liteMode) const SettingGroupDivider(),
           if (!Settings.liteMode)
             ListTile(
               leading: Icon(Mdi.tableArrowRight, color: Settings.majorColor),
@@ -995,7 +984,7 @@ class _SettingsPageState extends State<SettingsPage>
                 );
               },
             ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading: Icon(Icons.info_outline, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('info')),
@@ -1009,7 +998,7 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading: const Icon(MdiIcons.fileSign, color: Colors.cyan),
             title: Text(Translations.of(context).trans('patchnote')),
@@ -1018,7 +1007,7 @@ class _SettingsPageState extends State<SettingsPage>
               PlatformNavigator.navigateSlide(context, const PatchNotePage());
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1068,7 +1057,7 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1141,7 +1130,7 @@ class _SettingsPageState extends State<SettingsPage>
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           InkWell(
             child: ListTile(
               leading: Icon(
@@ -1174,7 +1163,7 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           InkWell(
             child: ListTile(
               leading: Icon(
@@ -1202,7 +1191,7 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1296,7 +1285,7 @@ class _SettingsPageState extends State<SettingsPage>
           //   ),
           //   onTap: () {},
           // ),
-          // _buildDivider(),
+          // const SettingGroupDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1323,7 +1312,7 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading: Icon(
               Icons.router,
@@ -1339,7 +1328,7 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading: Icon(
               MdiIcons.commentSearch,
@@ -1395,7 +1384,7 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1427,7 +1416,7 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1504,7 +1493,7 @@ class _SettingsPageState extends State<SettingsPage>
               ),
             ),
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading: Icon(
               MdiIcons.lan,
@@ -1612,7 +1601,7 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           InkWell(
             // customBorder: RoundedRectangleBorder(
             //   borderRadius: BorderRadius.all(
@@ -1693,7 +1682,7 @@ class _SettingsPageState extends State<SettingsPage>
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1816,7 +1805,7 @@ class _SettingsPageState extends State<SettingsPage>
               ),
             ),
           ),
-          if (!Settings.liteMode) _buildDivider(),
+          if (!Settings.liteMode) const SettingGroupDivider(),
           if (!Settings.liteMode)
             ListTile(
               leading: Icon(
@@ -1954,7 +1943,7 @@ class _SettingsPageState extends State<SettingsPage>
                 );
               },
             ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading: Icon(MdiIcons.import, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('importingbookmark')),
@@ -1998,7 +1987,7 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading: Icon(
               MdiIcons.export,
@@ -2042,7 +2031,7 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading: Icon(
               MdiIcons.export,
@@ -2074,7 +2063,7 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           InkWell(
             child: ListTile(
               leading: Icon(
@@ -2183,7 +2172,7 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           InkWell(
             child: ListTile(
               leading: Icon(
@@ -2270,7 +2259,7 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
@@ -2789,7 +2778,7 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -2872,7 +2861,7 @@ class _SettingsPageState extends State<SettingsPage>
                 }
               },
             ),
-          if (!Settings.liteMode) _buildDivider(),
+          if (!Settings.liteMode) const SettingGroupDivider(),
           if (!Settings.liteMode)
             ListTile(
               leading: const Icon(
@@ -2911,7 +2900,7 @@ class _SettingsPageState extends State<SettingsPage>
                 }
               },
             ),
-          if (!Settings.liteMode) _buildDivider(),
+          if (!Settings.liteMode) const SettingGroupDivider(),
           if (!Settings.liteMode)
             ListTile(
               leading: const Icon(
@@ -2933,7 +2922,7 @@ class _SettingsPageState extends State<SettingsPage>
                 }
               },
             ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading: const Icon(
               MdiIcons.heart,
@@ -2950,7 +2939,7 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           ListTile(
             leading: Icon(
               MdiIcons.humanHandsup,
@@ -2967,7 +2956,7 @@ class _SettingsPageState extends State<SettingsPage>
               // }
             },
           ),
-          _buildDivider(),
+          const SettingGroupDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -3040,6 +3029,24 @@ class _SettingsPageState extends State<SettingsPage>
           ],
         ),
       ),
+    );
+  }
+}
+
+class SettingGroupDivider extends StatelessWidget {
+  const SettingGroupDivider({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        horizontal: 8.0,
+      ),
+      width: double.infinity,
+      height: 1.0,
+      color: Settings.themeWhat ? Colors.grey.shade600 : Colors.grey.shade400,
     );
   }
 }
