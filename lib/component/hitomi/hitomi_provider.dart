@@ -124,8 +124,6 @@ class HitomiImageProvider extends VioletImageProvider {
       return -1;
     }
 
-    print(info);
-
     final json = jsonDecode(info.split('var galleryinfo = ')[1].split(';')[0]);
 
     for (final file in json['files']) {
