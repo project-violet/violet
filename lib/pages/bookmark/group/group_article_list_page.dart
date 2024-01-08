@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
@@ -89,99 +90,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     });
   }
 
-  Future<QueryResult> _tryGetArticleFromHitomi(String id) async {
-    final headers = await ScriptManager.runHitomiGetHeaderContent(id);
-    final res = await http.get(
-      'https://ltn.hitomi.la/galleryblock/$id.html',
-      headers: headers,
-    );
-
-    final article = await HitomiParser.parseGalleryBlock(res.body);
-    final meta = {
-      'Id': int.parse(id),
-      'Title': article['Title'],
-      'Artists': article['Artists'].join('|'),
-    };
-    return QueryResult(result: meta);
-  }
-
-  Future<QueryResult> _tryGetArticleFromEhentai(String id) async {
-    final listHtml = await EHSession.requestString(
-        'https://e-hentai.org/?next=${(int.parse(id) + 1)}');
-    final href =
-        parse(listHtml).querySelector('a[href*="/g/$id/"]')?.attributes['href'];
-    final hash = href!.split('/').lastWhere((element) => element.isNotEmpty);
-    final html = await EHSession.requestString(
-        'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
-    final articleEh = EHParser.parseArticleData(html);
-    final meta = {
-      'Id': int.parse(id),
-      'EHash': hash,
-      'Title': articleEh.title,
-      'Artists': articleEh.artist?.join('|') ?? 'N/A',
-    };
-    return QueryResult(result: meta);
-  }
-
-  Future<QueryResult> _tryGetArticleFromExhentai(String id) async {
-    final listHtml = await EHSession.requestString(
-        'https://exhentai.org/?next=${(int.parse(id) + 1)}');
-    final href =
-        parse(listHtml).querySelector('a[href*="/g/$id/"]')?.attributes['href'];
-    final hash = href!.split('/').lastWhere((element) => element.isNotEmpty);
-    final html = await EHSession.requestString(
-        'https://exhentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
-    final articleEh = EHParser.parseArticleData(html);
-    final meta = {
-      'Id': int.parse(id),
-      'EHash': hash,
-      'Title': articleEh.title,
-      'Artists': articleEh.artist?.join('|') ?? 'N/A',
-    };
-    return QueryResult(result: meta);
-  }
-
   Future<void> _loadBookmarkAlignType() async {
     final prefs = await SharedPreferences.getInstance();
     nowType = prefs.getInt('bookmark_${widget.groupId}') ?? 3;
-  }
-
-  Future<QueryResult> getArticleFromWeb(String id) async {
-    try {
-      return await _tryGetArticleFromHitomi(id);
-    } catch (_) {
-      try {
-        return await _tryGetArticleFromEhentai(id);
-      } catch (_) {
-        return await _tryGetArticleFromExhentai(id);
-      }
-    }
-  }
-
-  List<Future<QueryResult>> queryAwaitList = <Future<QueryResult>>[];
-  List<QueryResult> resolvedQueryList = <QueryResult>[];
-
-  void clearToAwait() {
-    queryAwaitList.clear();
-  }
-
-  void addToAwait(String id, Future<QueryResult> articleFuture) {
-    queryAwaitList.add(articleFuture);
-  }
-
-  Future<void> resolveToAwait() async {
-    resolvedQueryList.clear();
-    resolvedQueryList
-        .addAll((await Future.wait<QueryResult>(queryAwaitList)).toList());
-  }
-
-  Future<List<QueryResult>> handleNotInDB(List<String> ids) async {
-    clearToAwait();
-    for (final id in ids) {
-      addToAwait(id, getArticleFromWeb(id));
-    }
-    await resolveToAwait();
-    return resolvedQueryList;
   }
 
   Future<void> _refreshAsync() async {
@@ -205,40 +116,15 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
     final queryIds = await QueryManager.queryIds(
         articleList.map((e) => int.parse(e.article())).toList());
-    // It's only in DB only
+    final queryResultById = Map<String, QueryResult>.fromIterable(queryIds,
+        key: (e) => e.id().toString());
 
-    var qr = <String, QueryResult>{};
-    for (var element in queryIds) {
-      qr[element.id().toString()] = element;
-    }
+    queryResult = articleList
+        .map((e) =>
+            queryResultById[e.article()] ??
+            QueryResult(result: {'Id': int.parse(e.article())}))
+        .toList();
 
-    var result = <QueryResult>[];
-
-    List<String> notInDB = <String>[];
-
-    // It's only in DB
-    // TODO: fix this hack
-    // ignore: avoid_function_literals_in_foreach_calls
-    articleList.forEach((element) async {
-      var article = qr[element.article()];
-      if (article != null) {
-        result.add(article);
-      } else {
-        notInDB.add(element.article());
-      }
-    });
-
-    queryResult = result;
-    _applyFilter();
-    _rebuild();
-
-    // It's only not in DB
-    List<QueryResult> queriesForNotInDB = await handleNotInDB(notInDB);
-    for (final query in queriesForNotInDB) {
-      result.add(query);
-    }
-
-    queryResult = result;
     _applyFilter();
     _rebuild();
   }
@@ -563,8 +449,6 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                           bookmarkCallback: longpress,
                           bookmarkCheckCallback: check,
                           usableTabList: filterResult,
-                          // isCheckMode: checkMode,
-                          // isChecked: checked.contains(e.id()),
                         ),
                         child: ArticleListItemWidget(
                           isCheckMode: checkMode,
@@ -604,8 +488,6 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                     bookmarkCallback: longpress,
                     bookmarkCheckCallback: check,
                     usableTabList: filterResult,
-                    // isCheckMode: checkMode,
-                    // isChecked: checked.contains(x.id()),
                   ),
                   child: ArticleListItemWidget(
                     isCheckMode: checkMode,

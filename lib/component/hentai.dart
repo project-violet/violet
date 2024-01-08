@@ -265,83 +265,135 @@ class HentaiManager {
     return count;
   }
 
+  Future<QueryResult> _tryGetArticleFromHitomi(String id) async {
+    final headers = await ScriptManager.runHitomiGetHeaderContent(id);
+    final res = await http.get(
+      'https://ltn.hitomi.la/galleryblock/$id.html',
+      headers: headers,
+    );
+
+    final article = await HitomiParser.parseGalleryBlock(res.body);
+    final meta = {
+      'Id': int.parse(id),
+      'Title': article['Title'],
+      'Artists': article['Artists'].join('|'),
+    };
+    return QueryResult(result: meta);
+  }
+
+  Future<QueryResult> _tryGetArticleFromEhentai(String id) async {
+    final listHtml = await EHSession.requestString(
+        'https://e-hentai.org/?next=${(int.parse(id) + 1)}');
+    final href =
+        parse(listHtml).querySelector('a[href*="/g/$id/"]')?.attributes['href'];
+    final hash = href!.split('/').lastWhere((element) => element.isNotEmpty);
+    final html = await EHSession.requestString(
+        'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
+    final articleEh = EHParser.parseArticleData(html);
+    final meta = {
+      'Id': int.parse(id),
+      'EHash': hash,
+      'Title': articleEh.title,
+      'Artists': articleEh.artist?.join('|') ?? 'N/A',
+    };
+    return QueryResult(result: meta);
+  }
+
+  Future<QueryResult> _tryGetArticleFromExhentai(String id) async {
+    final listHtml = await EHSession.requestString(
+        'https://exhentai.org/?next=${(int.parse(id) + 1)}');
+    final href =
+        parse(listHtml).querySelector('a[href*="/g/$id/"]')?.attributes['href'];
+    final hash = href!.split('/').lastWhere((element) => element.isNotEmpty);
+    final html = await EHSession.requestString(
+        'https://exhentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
+    final articleEh = EHParser.parseArticleData(html);
+    final meta = {
+      'Id': int.parse(id),
+      'EHash': hash,
+      'Title': articleEh.title,
+      'Artists': articleEh.artist?.join('|') ?? 'N/A',
+    };
+    return QueryResult(result: meta);
+  }
+
   static Future<VioletImageProvider> getImageProvider(QueryResult qr) async {
     final route = Settings.routingRule;
 
-    do {
-      final v4 = ScriptManager.enableV4;
+    for (int i = 0; i < route.length; i++) {
+      try {
+        switch (route[i]) {
+          case 'EHentai':
+            {
+              var ehash = qr.ehash();
+              if (ehash == null) {
+                final listHtml = await EHSession.requestString(
+                    'https://e-hentai.org/?next=${(qr.id() + 1)}');
+                final href = parse(listHtml)
+                    .querySelector('a[href*="/g/${qr.id()}/"]')
+                    ?.attributes['href'];
+                ehash =
+                    href!.split('/').lastWhere((element) => element.isNotEmpty);
+              }
+              final html = await EHSession.requestString(
+                  'https://e-hentai.org/g/${qr.id()}/$ehash/?p=0&inline_set=ts_m');
+              final article = EHParser.parseArticleData(html);
+              return EHentaiImageProvider(
+                count: article.length,
+                thumbnail: article.thumbnail,
+                pagesUrl: List<String>.generate(
+                    (article.length / 40).ceil(),
+                    (index) =>
+                        'https://e-hentai.org/g/${qr.id()}/$ehash/?p=$index'),
+                isEHentai: true,
+              );
+            }
 
-      for (int i = 0; i < route.length; i++) {
-        try {
-          switch (route[i]) {
-            case 'EHentai':
-              if (qr.ehash() != null) {
-                var html = await EHSession.requestString(
-                    'https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/?p=0&inline_set=ts_m');
-                var article = EHParser.parseArticleData(html);
-                return EHentaiImageProvider(
-                  count: article.length,
-                  thumbnail: article.thumbnail,
-                  pagesUrl: List<String>.generate(
-                      (article.length / 40).ceil(),
-                      (index) =>
-                          'https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/?p=$index'),
-                  isEHentai: true,
-                );
+          case 'ExHentai':
+            {
+              var ehash = qr.ehash();
+              if (ehash == null) {
+                final listHtml = await EHSession.requestString(
+                    'https://exhentai.org/?next=${(qr.id() + 1)}');
+                final href = parse(listHtml)
+                    .querySelector('a[href*="/g/${qr.id()}/"]')
+                    ?.attributes['href'];
+                ehash =
+                    href!.split('/').lastWhere((element) => element.isNotEmpty);
               }
-              break;
-            case 'ExHentai':
-              if (qr.ehash() != null) {
-                var html = await EHSession.requestString(
-                    'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/?p=0&inline_set=ts_m');
-                var article = EHParser.parseArticleData(html);
-                return EHentaiImageProvider(
-                  count: article.length,
-                  thumbnail: article.thumbnail,
-                  pagesUrl: List<String>.generate(
-                      (article.length / 40).ceil(),
-                      (index) =>
-                          'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/?p=$index'),
-                  isEHentai: false,
-                );
-              }
-              break;
-            case 'Hitomi':
-              {
-                var urls = await HitomiManager.getImageList(qr.id().toString());
-                if (urls.item1.isEmpty || urls.item2.isEmpty) break;
-                return HitomiImageProvider(urls, qr.id().toString());
-              }
+              final html = await EHSession.requestString(
+                  'https://exhentai.org/g/${qr.id()}/$ehash/?p=0&inline_set=ts_m');
+              final article = EHParser.parseArticleData(html);
+              return EHentaiImageProvider(
+                count: article.length,
+                thumbnail: article.thumbnail,
+                pagesUrl: List<String>.generate(
+                    (article.length / 40).ceil(),
+                    (index) =>
+                        'https://exhentai.org/g/${qr.id()}/$ehash()/?p=$index'),
+                isEHentai: false,
+              );
+            }
 
-            case 'Hisoki':
-              {
-                var urls = await HisokiGetter.getImages(qr.id());
-                if (urls == null || urls.isEmpty) break;
-                return HisokiImageProvider(infos: urls, id: qr.id());
-              }
+          case 'Hitomi':
+            {
+              var urls = await HitomiManager.getImageList(qr.id().toString());
+              if (urls.item1.isEmpty || urls.item2.isEmpty) break;
+              return HitomiImageProvider(urls, qr.id().toString());
+            }
 
-            case 'NHentai':
-              if (qr.language() == null) {
-                var lang = qr.language() as String;
-                if (lang == 'english' ||
-                    lang == 'japanese' ||
-                    lang == 'chinese') {
-                  // return HitomiImageProvider(
-                  //     await NHentaiManager.getImageList(qr.id().toString()));
-                }
-              }
-              break;
-          }
-        } catch (e, st) {
-          Logger.error('[hentai-getImageProvider] E: $e\n'
-              '$st');
+          case 'Hisoki':
+            {
+              var urls = await HisokiGetter.getImages(qr.id());
+              if (urls == null || urls.isEmpty) break;
+              return HisokiImageProvider(infos: urls, id: qr.id());
+            }
         }
+      } catch (e, st) {
+        Logger.error('[hentai-getImageProvider] E: $e\n'
+            '$st');
       }
-
-      if (v4) break;
-
-      await Future.delayed(const Duration(milliseconds: 500));
-    } while (true);
+    }
 
     throw Exception('gallery not found');
   }
