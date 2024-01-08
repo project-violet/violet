@@ -83,24 +83,15 @@ class User {
   }
 
   List<ArticleReadLog>? cachedReadLog;
-  DateTime? latestLoading;
   Lock userLogLock = Lock();
   Future<List<ArticleReadLog>> getUserLog() async {
     await userLogLock.synchronized(() async {
-      latestLoading ??= DateTime.now();
-
-      if (cachedReadLog == null ||
-          latestLoading!.difference(DateTime.now()).abs().inSeconds > 10) {
-        cachedReadLog = (await (await CommonUserDatabase.getInstance())
-                .query('SELECT * FROM ArticleReadLog'))
-            // TODO: 왜 Article에 null이 들어가는지 확인 필요
-            .where((e) => e['Article'] != null)
-            .map((x) => ArticleReadLog(result: x))
-            .toList()
-            .reversed
-            .toList();
-        latestLoading = DateTime.now();
-      }
+      cachedReadLog ??= (await (await CommonUserDatabase.getInstance())
+              .query('SELECT * FROM ArticleReadLog ORDER BY Id DESC'))
+          // TODO: 왜 Article에 null이 들어가는지 확인 필요
+          .where((e) => e['Article'] != null)
+          .map((x) => ArticleReadLog(result: x))
+          .toList();
     });
     return cachedReadLog!;
   }
@@ -108,21 +99,23 @@ class User {
   Future<void> insertUserLog(int article, int type,
       [DateTime? datetime]) async {
     datetime ??= DateTime.now();
-    var db = await CommonUserDatabase.getInstance();
-    await db.insert('ArticleReadLog', {
+    final db = await CommonUserDatabase.getInstance();
+    final log = ArticleReadLog(result: {
       'Article': article.toString(),
       'Type': type,
       'DateTimeStart': datetime.toString(),
     });
+    final id = await db.insert('ArticleReadLog', log.result);
+    log.result['Id'] = id;
+    cachedReadLog!.insert(0, log);
   }
 
   Future<void> updateUserLog(int article, int lastpage, [DateTime? end]) async {
     end ??= DateTime.now();
-    var db = await CommonUserDatabase.getInstance();
-    var rr = (await getUserLog())[0];
-    var xx = Map<String, dynamic>.from(rr.result);
-    xx['DateTimeEnd'] = end.toString();
-    xx['LastPage'] = lastpage;
-    await db.update('ArticleReadLog', xx, 'Id=?', [rr.id()]);
+    final db = await CommonUserDatabase.getInstance();
+    var latestLog = cachedReadLog!.first.result;
+    latestLog['DateTimeEnd'] = end.toString();
+    latestLog['LastPage'] = lastpage;
+    await db.update('ArticleReadLog', latestLog, 'Id=?', [latestLog['Id']]);
   }
 }
