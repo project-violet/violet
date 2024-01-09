@@ -40,9 +40,10 @@ class RecordViewPage extends StatelessWidget {
                 }
                 // if(Settings.searchNetwork){
                 // TODO handle this with/without QueryManager
-                return rr.map((e) => // This is not filtering
-                  QueryResult(result: {'Id': int.parse(e.articleId())})
-                ).toList();
+                return rr
+                    .map((e) => // This is not filtering
+                        QueryResult(result: {'Id': int.parse(e.articleId())}))
+                    .toList();
                 // } else {
                 //   return await QueryManager.queryIds( // This is only in db
                 //       rr.map((e) => e.articleId()).toList());
