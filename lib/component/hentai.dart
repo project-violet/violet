@@ -444,4 +444,75 @@ class HentaiManager {
       return QueryResult(result: map);
     }).toList();
   }
+
+  static Future<QueryResult> idQueryHitomi(String what) async {
+    // TODO Integrate to HentaiManager.idQueryHitomi
+    var headers = await ScriptManager.runHitomiGetHeaderContent(
+        what);
+    var hh = await http.get(
+      'https://ltn.hitomi.la/galleryblock/${what}.html',
+      headers: headers,
+    );
+    var article = await HitomiParser.parseGalleryBlock(hh.body);
+    var meta = {
+      'Id': int.parse(what),
+      'Title': article['Title'],
+      'Artists': article['Artists'].join('|'),
+    };
+    return QueryResult(result: meta);
+  }
+
+  static Future<QueryResult> idQueryEhentai(String what) async {
+    // TODO Integrate to HentaiManager.idQueryEhentai
+    final id = int.parse(what);
+    final listHtml =
+        await EHSession.requestString('https://e-hentai.org/?next=${(id + 1)}');
+    final href =
+        parse(listHtml).querySelector('a[href*="/g/$id/"]')?.attributes['href'];
+    final hash = href!.split('/').lastWhere((element) => element.isNotEmpty);
+    final html = await EHSession.requestString(
+        'https://e-hentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
+    final articleEh = EHParser.parseArticleData(html);
+    final meta = {
+      'Id': id,
+      'EHash': hash,
+      'Title': articleEh.title,
+      'Artists': articleEh.artist?.join('|') ?? 'N/A',
+    };
+    return QueryResult(result: meta);
+  }
+
+  static Future<QueryResult> idQueryExhentai(String what) async {
+    // TODO Integrate to HentaiManager.idQueryExhentai
+    final id = int.parse(what);
+    final listHtml =
+        await EHSession.requestString('https://exhentai.org/?next=${(id + 1)}');
+    final href =
+        parse(listHtml).querySelector('a[href*="/g/$id/"]')?.attributes['href'];
+    final hash = href!.split('/').lastWhere((element) => element.isNotEmpty);
+    final html = await EHSession.requestString(
+        'https://exhentai.org/g/$id/$hash/?p=0&inline_set=ts_m');
+    final articleEh = EHParser.parseArticleData(html);
+    final meta = {
+      'Id': id,
+      'EHash': hash,
+      'Title': articleEh.title,
+      'Artists': articleEh.artist?.join('|') ?? 'N/A',
+    };
+    return QueryResult(result: meta);
+  }
+
+  static Future<QueryResult> idQueryWeb(String what) async {
+    // TODO Integrate to HentaiManager.idQueryWeb
+    try {
+      return await idQueryHitomi(what);
+    } catch(_){
+      try {
+        return await idQueryEhentai(what);
+      } catch(_){
+        return await idQueryExhentai(what);
+      }
+    } 
+  }
+
 }
