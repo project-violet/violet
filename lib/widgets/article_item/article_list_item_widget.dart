@@ -158,6 +158,10 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
                             ..scale(c.scale.value)
                             ..translate(-c.thisWidth / 2, -c.thisHeight / 2)),
                       child: FutureBuilder<QueryResult>(
+                        /*
+                         * This checks QueryResult then 
+                         * do idQueryWeb when QueryResult keys was only exists 'Id'
+                         */
                         future: (() {
                           if (_body?.c.articleListItem.queryResult.result.keys
                                       .length ==
@@ -308,6 +312,10 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
           expand: false,
           builder: (_, controller) {
             cache ??= FutureBuilder<QueryResult>(
+              /*
+                * This checks QueryResult then 
+                * do idQueryWeb when QueryResult keys was only exists 'Id'
+                */
               future: (() {
                 if (data.queryResult.result.keys.length == 1 &&
                     data.queryResult.result.keys.lastOrNull == 'Id') {
