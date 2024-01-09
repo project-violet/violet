@@ -16,6 +16,7 @@ import 'package:uuid/uuid.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/context/modal_bottom_sheet_context.dart';
+import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart' as locale;
@@ -222,13 +223,7 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
     final height = MediaQuery.of(context).size.height;
 
     // https://github.com/flutter/flutter/issues/67219
-    Provider<ArticleInfo>? cache;
-    var tmpQueryResult = data.queryResult;
-    if (data.queryResult.result.keys.length == 1 &&
-        data.queryResult.result.keys.lastOrNull == 'Id') {
-      tmpQueryResult =
-          await HentaiManager.idQueryWeb('${data.queryResult.id()}');
-    }
+    FutureBuilder<QueryResult>? cache;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -239,20 +234,38 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
           maxChildSize: 0.9,
           expand: false,
           builder: (_, controller) {
-            cache ??= Provider<ArticleInfo>.value(
-              value: ArticleInfo.fromArticleInfo(
-                queryResult: tmpQueryResult,
-                thumbnail: c.thumbnail.value,
-                headers: c.headers,
-                heroKey: data.thumbnailTag,
-                isBookmarked: c.isBookmarked.value,
-                controller: controller,
-                usableTabList: data.usableTabList,
-              ),
-              child: const ArticleInfoPage(
-                key: ObjectKey('asdfasdf'),
-              ),
-            );
+            cache ??= FutureBuilder<QueryResult>(
+              future: ((){
+                if (data.queryResult.result.keys.length == 1 &&
+                  data.queryResult.result.keys.lastOrNull == 'Id'){
+                    return HentaiManager.idQueryWeb('${data.queryResult.id()}');
+                } else {
+                  return Future.value(data.queryResult);
+                }
+              })(),
+              builder: (context, snapshot) {
+                getBody(queryResult){
+                  return Provider<ArticleInfo>.value(
+                    value: ArticleInfo.fromArticleInfo(
+                      queryResult: queryResult,
+                      thumbnail: c.thumbnail.value,
+                      headers: c.headers,
+                      heroKey: data.thumbnailTag,
+                      isBookmarked: c.isBookmarked.value,
+                      controller: controller,
+                      usableTabList: data.usableTabList,
+                    ),
+                    child: const ArticleInfoPage(
+                      key: ObjectKey('asdfasdf'),
+                    ),
+                  );
+                }
+              if (snapshot.hasData) {
+                return getBody(snapshot.data);
+              } else {
+                return getBody(data.queryResult);
+              }
+            },);
             return cache!;
           },
         );
