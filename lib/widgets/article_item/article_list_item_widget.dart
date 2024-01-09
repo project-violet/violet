@@ -224,8 +224,10 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
     // https://github.com/flutter/flutter/issues/67219
     Provider<ArticleInfo>? cache;
     var tmpQueryResult = data.queryResult;
-    if(data.queryResult.result.keys.length == 1 && data.queryResult.result.keys.lastOrNull == 'Id') {
-      tmpQueryResult = await HentaiManager.idQueryWeb('${data.queryResult.id()}');
+    if (data.queryResult.result.keys.length == 1 &&
+        data.queryResult.result.keys.lastOrNull == 'Id') {
+      tmpQueryResult =
+          await HentaiManager.idQueryWeb('${data.queryResult.id()}');
     }
     showModalBottomSheet(
       context: context,
