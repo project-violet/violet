@@ -38,9 +38,15 @@ class RecordViewPage extends StatelessWidget {
                   rr.add(element);
                   overap.add(element.articleId());
                 }
-
-                return await QueryManager.queryIds(
-                    rr.map((e) => e.articleId()).toList());
+                // if(Settings.searchNetwork){
+                // TODO handle this with/without QueryManager
+                return rr.map((e) => // This is not filtering
+                  QueryResult(result: {'Id': int.parse(e.articleId())})
+                ).toList();
+                // } else {
+                //   return await QueryManager.queryIds( // This is only in db
+                //       rr.map((e) => e.articleId()).toList());
+                // }
               })),
       builder: (context, AsyncSnapshot<List<QueryResult>> snapshot) {
         if (!snapshot.hasData) return Container();
