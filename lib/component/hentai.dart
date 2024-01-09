@@ -447,8 +447,7 @@ class HentaiManager {
 
   static Future<QueryResult> idQueryHitomi(String what) async {
     // TODO Integrate to HentaiManager.idQueryHitomi
-    var headers = await ScriptManager.runHitomiGetHeaderContent(
-        what);
+    var headers = await ScriptManager.runHitomiGetHeaderContent(what);
     var hh = await http.get(
       'https://ltn.hitomi.la/galleryblock/${what}.html',
       headers: headers,
@@ -506,13 +505,12 @@ class HentaiManager {
     // TODO Integrate to HentaiManager.idQueryWeb
     try {
       return await idQueryHitomi(what);
-    } catch(_){
+    } catch (_) {
       try {
         return await idQueryEhentai(what);
-      } catch(_){
+      } catch (_) {
         return await idQueryExhentai(what);
       }
-    } 
+    }
   }
-
 }
