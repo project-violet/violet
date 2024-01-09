@@ -370,7 +370,7 @@ class HentaiManager {
                 pagesUrl: List<String>.generate(
                     (article.length / 40).ceil(),
                     (index) =>
-                        'https://exhentai.org/g/${qr.id()}/$ehash()/?p=$index'),
+                        'https://exhentai.org/g/${qr.id()}/$ehash/?p=$index'),
                 isEHentai: false,
               );
             }
