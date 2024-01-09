@@ -13,6 +13,7 @@ import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
+import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/context/modal_bottom_sheet_context.dart';
 import 'package:violet/database/user/bookmark.dart';
@@ -217,11 +218,15 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
     }
   }
 
-  _showArticleInfo() {
+  Future<void> _showArticleInfo() async {
     final height = MediaQuery.of(context).size.height;
 
     // https://github.com/flutter/flutter/issues/67219
     Provider<ArticleInfo>? cache;
+    var tmpQueryResult = data.queryResult;
+    if(data.queryResult.result.keys.length == 1 && data.queryResult.result.keys.lastOrNull == 'Id') {
+      tmpQueryResult = await HentaiManager.idQueryWeb('${data.queryResult.id()}');
+    }
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -234,7 +239,7 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
           builder: (_, controller) {
             cache ??= Provider<ArticleInfo>.value(
               value: ArticleInfo.fromArticleInfo(
-                queryResult: data.queryResult,
+                queryResult: tmpQueryResult,
                 thumbnail: c.thumbnail.value,
                 headers: c.headers,
                 heroKey: data.thumbnailTag,
