@@ -185,48 +185,48 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
                                 _body?.c.articleListItem.queryResult.result.keys
                                         .lastOrNull ==
                                     'Id') {
+                              final newData = ArticleListItem(
+                                  key: _body!.c.articleListItem.key,
+                                  queryResult: snapshot.data!,
+                                  addBottomPadding:
+                                      _body!.c.articleListItem.addBottomPadding,
+                                  showDetail: _body!.c.articleListItem.showDetail,
+                                  showUltra: _body!.c.articleListItem.showUltra,
+                                  width: _body!.c.articleListItem.width,
+                                  thumbnailTag:
+                                      _body!.c.articleListItem.thumbnailTag,
+                                  bookmarkMode:
+                                      _body!.c.articleListItem.bookmarkMode,
+                                  bookmarkCallback:
+                                      _body!.c.articleListItem.bookmarkCallback,
+                                  bookmarkCheckCallback: _body!
+                                      .c.articleListItem.bookmarkCheckCallback,
+                                  viewed: _body!.c.articleListItem.viewed,
+                                  seconds: _body!.c.articleListItem.seconds,
+                                  disableFilter:
+                                      _body!.c.articleListItem.disableFilter,
+                                  doubleTapCallback:
+                                      _body!.c.articleListItem.doubleTapCallback,
+                                  usableTabList:
+                                      _body!.c.articleListItem.usableTabList,
+                                  selectMode: _body!.c.articleListItem.selectMode,
+                                  selectCallback:
+                                      _body!.c.articleListItem.selectCallback,
+                              );
+                              data = newData;
                               final oldGetxId = _body!.getxId;
-                              final newGetxId = const Uuid().v4();
-                              final tmpC = ArticleListItemWidgetController(
-                                  ArticleListItem(
-                                // key: _body!.c.articleListItem.key,
-                                queryResult: snapshot.data!,
-                                addBottomPadding:
-                                    _body!.c.articleListItem.addBottomPadding,
-                                showDetail: _body!.c.articleListItem.showDetail,
-                                showUltra: _body!.c.articleListItem.showUltra,
-                                width: _body!.c.articleListItem.width,
-                                thumbnailTag:
-                                    _body!.c.articleListItem.thumbnailTag,
-                                bookmarkMode:
-                                    _body!.c.articleListItem.bookmarkMode,
-                                bookmarkCallback:
-                                    _body!.c.articleListItem.bookmarkCallback,
-                                bookmarkCheckCallback: _body!
-                                    .c.articleListItem.bookmarkCheckCallback,
-                                viewed: _body!.c.articleListItem.viewed,
-                                seconds: _body!.c.articleListItem.seconds,
-                                disableFilter:
-                                    _body!.c.articleListItem.disableFilter,
-                                doubleTapCallback:
-                                    _body!.c.articleListItem.doubleTapCallback,
-                                usableTabList:
-                                    _body!.c.articleListItem.usableTabList,
-                                selectMode: _body!.c.articleListItem.selectMode,
-                                selectCallback:
-                                    _body!.c.articleListItem.selectCallback,
-                              ));
+                              final tmpC = ArticleListItemWidgetController(data);
                               c.dispose();
                               c = tmpC;
-
-                              Get.delete(tag: oldGetxId);
-                              Get.put(c, tag: newGetxId);
+                              // https://stackoverflow.com/questions/67250736/flutter-getx-how-to-remove-initialized-controller-every-time-we-navigate-to-oth
+                              Get.delete<ArticleListItemWidgetController>(tag: oldGetxId, force: true);
+                              Get.put(c, tag: oldGetxId);
                               final body = BodyWidget(
                                 key: c.bodyKey,
-                                getxId: newGetxId,
+                                getxId: oldGetxId,
                               );
                               _body = body;
-                              return body;
+                              return _body!;
                             } else {
                               return _body!;
                             }
