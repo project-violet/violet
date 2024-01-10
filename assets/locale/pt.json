@@ -153,6 +153,7 @@
   "importingbookmark": "Importar marcador",
   "exportingbookmark": "Exportar marcador",
   "exportingbookmarkgit": "Export Bookmark to Git Repository",
+  "failexportbookmark": "Failed to export bookmark",
   "noauth": "Você não tem permissão para executar isso.",
   "noselectedb": "Nenhum banco de dados selecionado.",
   "importbookmark": "Marcador importado!",
