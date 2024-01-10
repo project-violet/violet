@@ -153,6 +153,7 @@
   "importingbookmark": "Importa Segnalibri",
   "exportingbookmark": "Esporta Segnalibri",
   "exportingbookmarkgit": "Export Bookmark to Git Repository",
+  "failexportbookmark": "Failed to export bookmark",
   "noauth": "Non hai il permesso di avviarlo.",
   "noselectedb": "Nessun database selezionato.",
   "importbookmark": "Segnalibri Importati!",

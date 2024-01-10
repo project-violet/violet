@@ -2022,17 +2022,45 @@ class _SettingsPageState extends State<SettingsPage>
               if (await Directory(gitPath).exists()) {
                 await Directory(gitPath).delete(recursive: true);
               }
-
-              final git = BookmarkGit();
-              await git.clone(gitPath);
-              final extpath = '$gitPath/bookmark.db';
-              await bookmarkDatabaseFile.copy(extpath);
-              await git.addAll(gitPath);
-              await git.commit(gitPath);
-              await git.push(gitPath);
+              try {
+                final git = BookmarkGit();
+                await git.clone(gitPath);
+                final extpath = '$gitPath/bookmark.db';
+                await bookmarkDatabaseFile.copy(extpath);
+                await git.addAll(gitPath);
+                await git.commit(gitPath);
+                await git.push(gitPath);
+              } catch (e, st) {
+                Logger.error('[exportingbookmarkgit] $e\n'
+                    '$st');
+                flutterToast.showToast(
+                  child: ToastWrapper(
+                    isCheck: true,
+                    isWarning: false,
+                    msg: Translations.of(context).trans('failexportbookmark'),
+                  ),
+                  ignorePointer: true,
+                  gravity: ToastGravity.BOTTOM,
+                  toastDuration: const Duration(seconds: 4),
+                );
+                if (await Directory(gitPath).exists()) {
+                  await Directory(gitPath).delete(recursive: true);
+                }
+                return;
+              }
               if (await Directory(gitPath).exists()) {
                 await Directory(gitPath).delete(recursive: true);
               }
+              flutterToast.showToast(
+                child: ToastWrapper(
+                  isCheck: true,
+                  isWarning: false,
+                  msg: Translations.of(context).trans('exportbookmark'),
+                ),
+                ignorePointer: true,
+                gravity: ToastGravity.BOTTOM,
+                toastDuration: const Duration(seconds: 4),
+              );
             },
           ),
           InkWell(
@@ -2105,7 +2133,7 @@ class _SettingsPageState extends State<SettingsPage>
                           element.description() == description &&
                           // element.color() == color.value &&
                           DateTime.tryParse(element.datetime()) == datetime))
-                      .first
+                      .last
                       .id();
                   for (int j = 0;
                       j <

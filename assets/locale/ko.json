@@ -153,6 +153,7 @@
   "importingbookmark": "북마크 가져오기",
   "exportingbookmark": "북마크 내보내기",
   "exportingbookmarkgit": "Export Bookmark to Git Repository",
+  "failexportbookmark": "Failed to export bookmark",
   "noauth": "권한이 없어서 실행할 수 없습니다.",
   "noselectedb": "선택된 데이터베이스가 없습니다.",
   "importbookmark": "북마크를 가져왔습니다!",
