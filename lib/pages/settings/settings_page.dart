@@ -2133,7 +2133,7 @@ class _SettingsPageState extends State<SettingsPage>
                           element.description() == description &&
                           // element.color() == color.value &&
                           DateTime.tryParse(element.datetime()) == datetime))
-                      .first
+                      .last
                       .id();
                   for (int j = 0;
                       j <
