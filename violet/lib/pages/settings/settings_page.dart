@@ -2030,15 +2030,14 @@ class _SettingsPageState extends State<SettingsPage>
                 await git.addAll(gitPath);
                 await git.commit(gitPath);
                 await git.push(gitPath);
-              } catch(e,st){
+              } catch (e, st) {
                 Logger.error('[exportingbookmarkgit] $e\n'
-                '$st');
+                    '$st');
                 flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
                     isWarning: false,
-                    msg: Translations.of(context)
-                        .trans('failexportbookmark'),
+                    msg: Translations.of(context).trans('failexportbookmark'),
                   ),
                   ignorePointer: true,
                   gravity: ToastGravity.BOTTOM,
@@ -2056,8 +2055,7 @@ class _SettingsPageState extends State<SettingsPage>
                 child: ToastWrapper(
                   isCheck: true,
                   isWarning: false,
-                  msg: Translations.of(context)
-                      .trans('exportbookmark'),
+                  msg: Translations.of(context).trans('exportbookmark'),
                 ),
                 ignorePointer: true,
                 gravity: ToastGravity.BOTTOM,
