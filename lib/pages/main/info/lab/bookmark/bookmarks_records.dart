@@ -41,8 +41,11 @@ class LabRecordViewPage extends StatelessWidget {
           overap.add(element.articleId());
         });
 
-        return await QueryManager.queryIds(
-            rr.map((e) => e.articleId()).toList());
+        return rr
+            .map((e) => (QueryResult(result: {'Id': e.articleId()})))
+            .toList();
+        // return await QueryManager.queryIds(
+        //     rr.map((e) => e.articleId()).toList());
       }),
       builder: (context, AsyncSnapshot<List<QueryResult>> snapshot) {
         if (!snapshot.hasData) return Container();
