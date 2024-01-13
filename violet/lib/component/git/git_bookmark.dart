@@ -82,12 +82,15 @@ class GitBookmark {
                   if (key == 'Id') group.id = int.tryParse(value.toString());
                   if (key == 'Name') group.name = value.toString();
                   if (key == 'DataTime') group.dateTime = value.toString();
-                  if (key == 'Description')
+                  if (key == 'Description') {
                     group.description = value.toString();
-                  if (key == 'Color')
+                  }
+                  if (key == 'Color') {
                     group.color = int.tryParse(value.toString());
-                  if (key == 'Gorder')
+                  }
+                  if (key == 'Gorder') {
                     group.gorder = int.tryParse(value.toString());
+                  }
                 });
                 final bookmarkArticles = await db.query('BookmarkArticle');
                 // "Id", "Article", "DateTime", "GroupId"
@@ -95,13 +98,16 @@ class GitBookmark {
                 for (final bookmarkArticle in bookmarkArticles) {
                   BookmarkArticleKeyVal article = BookmarkArticleKeyVal();
                   bookmarkArticle.forEach((key, value) {
-                    if (key == 'Id')
+                    if (key == 'Id') {
                       article.id = int.tryParse(value.toString());
-                    if (key == 'Article')
+                    }
+                    if (key == 'Article') {
                       article.article = int.tryParse(value.toString());
+                    }
                     if (key == 'DateTime') article.dateTime = value.toString();
-                    if (key == 'GroupId')
+                    if (key == 'GroupId') {
                       article.groupId = int.tryParse(value.toString());
+                    }
                   });
                   if (group.gorder == article.groupId) {
                     result[group] ??= <BookmarkArticleKeyVal>[];
