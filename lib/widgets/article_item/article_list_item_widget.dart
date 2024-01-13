@@ -189,52 +189,10 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
                                         .lastOrNull ==
                                     'Id') {
                               // When queryResult is only id
-                              final newData = ArticleListItem(
-                                // make new ArticleListItem because queryResult was final
-                                key: _body!.c.articleListItem.key,
-                                // Reuse before's
-                                queryResult: snapshot.data!,
-                                // Use future's data
-                                addBottomPadding:
-                                    _body!.c.articleListItem.addBottomPadding,
-                                // Reuse before's
-                                showDetail: _body!.c.articleListItem.showDetail,
-                                // Reuse before's
-                                showUltra: _body!.c.articleListItem.showUltra,
-                                // Reuse before's
-                                width: _body!.c.articleListItem.width,
-                                // Reuse before's
-                                thumbnailTag:
-                                    _body!.c.articleListItem.thumbnailTag,
-                                // Reuse before's
-                                bookmarkMode:
-                                    _body!.c.articleListItem.bookmarkMode,
-                                // Reuse before's
-                                bookmarkCallback:
-                                    _body!.c.articleListItem.bookmarkCallback,
-                                // Reuse before's
-                                bookmarkCheckCallback: _body!
-                                    .c.articleListItem.bookmarkCheckCallback,
-                                // Reuse before's
-                                viewed: _body!.c.articleListItem.viewed,
-                                // Reuse before's
-                                seconds: _body!.c.articleListItem.seconds,
-                                // Reuse before's
-                                disableFilter:
-                                    _body!.c.articleListItem.disableFilter,
-                                // Reuse before's
-                                doubleTapCallback:
-                                    _body!.c.articleListItem.doubleTapCallback,
-                                // Reuse before's
-                                usableTabList:
-                                    _body!.c.articleListItem.usableTabList,
-                                // Reuse before's
-                                selectMode: _body!.c.articleListItem.selectMode,
-                                // Reuse before's
-                                selectCallback:
-                                    _body!.c.articleListItem.selectCallback,
-                                // Reuse before's
-                              );
+                              final newData = ArticleListItem.fromJson({
+                                ..._body!.c.articleListItem.toJson(),
+                                'queryResult': snapshot.data!
+                              });
                               data = newData;
                               // Swap data of new
                               final oldGetxId = _body!.getxId;
