@@ -186,6 +186,7 @@ flutter:
     - assets/p7zip/x86_64/lib7zr.so # @dependent: android
 
     - assets/webview/
+    - shorebird.yaml
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
