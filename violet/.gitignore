@@ -52,6 +52,8 @@ assets/test/*
 *.o
 *.d
 
+.vscode/*
+
 lib/server/salt.dart
 lib/server/wsalt.dart
 lib/game/*
