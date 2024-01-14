@@ -463,16 +463,17 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
               .size
               .height;
 
-      // doubleTapToTopScrollController.jumpTo();
-
       final groupBy = getGroupBy();
       final headerCount =
           groupBy.indexWhere((e) => e.$1[0].toUpperCase() == tag);
       final articleLineCount =
           groupBy.take(headerCount).map((e) => (e.$2.length + 2) ~/ 3).sum;
+      final articleLineSpacingCount =
+          groupBy.take(headerCount).map((e) => (e.$2.length - 1) ~/ 3).sum;
 
-      doubleTapToTopScrollController!.jumpTo(
-          (headerHeight + 22) * headerCount + articleLineCount * articleHeight);
+      doubleTapToTopScrollController!.jumpTo((headerHeight + 20) * headerCount +
+          articleLineSpacingCount * 8 +
+          articleLineCount * articleHeight);
     }
   }
 
