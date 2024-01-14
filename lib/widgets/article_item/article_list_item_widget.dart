@@ -333,17 +333,10 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
                   );
                 }
 
-                Provider<ArticleInfo>? body;
-
                 if (snapshot.hasData) {
-                  if (data.queryResult.result.keys.length == 1 &&
-                      data.queryResult.result.keys.lastOrNull == 'Id') {
-                    return body = createBody(snapshot.data);
-                  } else {
-                    return body!;
-                  }
+                  return createBody(snapshot.data);
                 } else {
-                  return body = createBody(data.queryResult);
+                  return createBody(data.queryResult);
                 }
               },
             );
