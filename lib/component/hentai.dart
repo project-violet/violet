@@ -265,7 +265,7 @@ class HentaiManager {
     return count;
   }
 
-  Future<QueryResult> _tryGetArticleFromHitomi(String id) async {
+  static Future<QueryResult> idQueryHitomi(String id) async {
     final headers = await ScriptManager.runHitomiGetHeaderContent(id);
     final res = await http.get(
       'https://ltn.hitomi.la/galleryblock/$id.html',
@@ -281,7 +281,7 @@ class HentaiManager {
     return QueryResult(result: meta);
   }
 
-  Future<QueryResult> _tryGetArticleFromEhentai(String id) async {
+  static Future<QueryResult> idQueryEhentai(String id) async {
     final listHtml = await EHSession.requestString(
         'https://e-hentai.org/?next=${(int.parse(id) + 1)}');
     final href =
@@ -299,7 +299,7 @@ class HentaiManager {
     return QueryResult(result: meta);
   }
 
-  Future<QueryResult> _tryGetArticleFromExhentai(String id) async {
+  static Future<QueryResult> idQueryExhentai(String id) async {
     final listHtml = await EHSession.requestString(
         'https://exhentai.org/?next=${(int.parse(id) + 1)}');
     final href =
@@ -443,5 +443,17 @@ class HentaiManager {
 
       return QueryResult(result: map);
     }).toList();
+  }
+
+  static Future<QueryResult> idQueryWeb(String what) async {
+    try {
+      return await idQueryHitomi(what);
+    } catch (_) {
+      try {
+        return await idQueryEhentai(what);
+      } catch (_) {
+        return await idQueryExhentai(what);
+      }
+    }
   }
 }
