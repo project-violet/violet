@@ -3,10 +3,13 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:auto_animated/auto_animated.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -202,6 +205,10 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
       for (final element in result) {
         queryResults[element.id()] = element;
       }
+
+      if (Settings.downloadAlignType != 0 && Settings.downloadResultType == 0) {
+        setState(() {});
+      }
     });
   }
 
@@ -268,6 +275,10 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     var windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
 
     if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1) {
+      if (Settings.downloadAlignType != 0 && Settings.downloadResultType == 0) {
+        return _panelGroupBy();
+      }
+
       var mm = Settings.downloadResultType == 0 ? 3 : 2;
       return SliverPadding(
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
@@ -381,6 +392,149 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     }
 
     throw Exception('unreachable');
+  }
+
+  Widget _panelGroupBy() {
+    var windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
+    var mm = Settings.downloadResultType == 0 ? 3 : 2;
+
+    final groups = filterResult.groupListsBy((e) {
+      final qr = queryResults[int.tryParse(e.url()) ?? -1];
+      if (qr == null) return 'none';
+
+      String getFirst(target) {
+        final artists = target as String;
+        if (artists == '' || artists == '|N/A|') return 'none';
+        return artists.split('|').firstWhere((element) => element != '');
+      }
+
+      switch (Settings.downloadAlignType) {
+        case 1: //artist
+          return getFirst(qr.artists());
+
+        case 2: // group
+          return getFirst(qr.groups());
+
+        case 3: // page
+        case 4: // datetime recent
+          return getFirst(qr.groups());
+
+        default:
+          throw Exception('unrechable');
+      }
+    });
+
+    final groupsSorted = groups.entries.map((e) => (e.key, e.value)).toList()
+      ..sortBy((e) => e.$1);
+
+    final groupsWidget = groupsSorted.map((e) {
+      final title = Container(
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+        child: Container(
+          decoration: !Settings.themeFlat
+              ? BoxDecoration(
+                  color: Settings.themeWhat ? Colors.black26 : Colors.white,
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
+                      bottomLeft: Radius.circular(8),
+                      bottomRight: Radius.circular(8)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Settings.themeWhat
+                          ? Colors.black26
+                          : Colors.grey.withOpacity(0.1),
+                      spreadRadius: Settings.themeWhat ? 0 : 5,
+                      blurRadius: 7,
+                      offset: const Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                )
+              : null,
+          color: !Settings.themeFlat
+              ? null
+              : Settings.themeWhat
+                  ? Colors.black26
+                  : Colors.white,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: Material(
+              color: Settings.themeWhat
+                  ? Settings.themeBlack
+                      ? Palette.blackThemeBackground
+                      : Colors.black38
+                  : Colors.white,
+              child: InkWell(
+                customBorder: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                  child: Text(
+                    e.$1.split(' ').map((e) => e.capitalize()).join(' '),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 20.0),
+                  ),
+                ),
+                onTap: () {
+                  // TODO:
+                  print('click');
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final items = GridView(
+        physics: const NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(8, 4, 8, 16),
+        shrinkWrap: true,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: Settings.useTabletMode ? mm * 2 : mm,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+          childAspectRatio: 3 / 4,
+        ),
+        children: e.$2
+            .map((e) => Align(
+                  key: Key('dp${e.id()}${e.url()}'),
+                  alignment: Alignment.bottomCenter,
+                  child: DownloadItemWidget(
+                    key: downloadItemWidgetKeys1[e.id()],
+                    initialStyle: DownloadListItem(
+                      showDetail: false,
+                      addBottomPadding: false,
+                      width: (windowWidth - 4.0) / mm,
+                    ),
+                    item: e,
+                    download: e.download,
+                    refeshCallback: refresh,
+                  ),
+                ))
+            .take(12)
+            .toList(),
+      );
+
+      return Column(
+        children: [
+          SizedBox(
+            width: double.infinity,
+            child: title,
+          ),
+          items,
+        ],
+      );
+    }).toList();
+
+    return SliverPadding(
+      padding: EdgeInsets.zero,
+      sliver: SliverList(
+        key: _listKey,
+        delegate: SliverChildListDelegate(
+          groupsWidget,
+        ),
+      ),
+    );
   }
 
   Widget _urlBar() {
@@ -925,5 +1079,11 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     if (qm.results!.isEmpty) return;
 
     queryResults[int.parse(url)] = qm.results!.first;
+  }
+}
+
+extension StringExtension on String {
+  String capitalize() {
+    return '${this[0].toUpperCase()}${substring(1).toLowerCase()}';
   }
 }
