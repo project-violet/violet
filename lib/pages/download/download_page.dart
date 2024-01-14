@@ -3,13 +3,11 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:auto_animated/auto_animated.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -17,6 +15,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sticky_headers/sticky_headers.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/hitomi_parser.dart';
 import 'package:violet/component/hitomi/population.dart';
@@ -515,14 +514,9 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
             .toList(),
       );
 
-      return Column(
-        children: [
-          SizedBox(
-            width: double.infinity,
-            child: title,
-          ),
-          items,
-        ],
+      return StickyHeader(
+        header: SizedBox(width: double.infinity, child: title),
+        content: items,
       );
     }).toList();
 
