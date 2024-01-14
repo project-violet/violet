@@ -117,6 +117,7 @@ dependencies:
   # scrollable_positioned_list: ^0.3.2
   shared_preferences: ^2.0.15
   sqflite: ^2.0.2
+  sticky_headers: "^0.3.0"
   synchronized:
   timeago:
   tuple:
