@@ -87,4 +87,48 @@ class ArticleListItem {
       doubleTapCallback: doubleTapCallback,
     );
   }
+
+  factory ArticleListItem.fromJson(Map<String, dynamic> json) {
+    return ArticleListItem(
+      key: json['key'],
+      queryResult: json['queryResult'],
+      addBottomPadding: json['addBottomPadding'],
+      showDetail: json['showDetail'],
+      showUltra: json['showUltra'],
+      width: json['width'],
+      thumbnailTag: json['thumbnailTag'],
+      bookmarkMode: json['bookmarkMode'],
+      bookmarkCallback: json['bookmarkCallback'],
+      bookmarkCheckCallback: json['bookmarkCheckCallback'],
+      viewed: json['viewed'],
+      seconds: json['seconds'],
+      disableFilter: json['disableFilter'],
+      doubleTapCallback: json['doubleTapCallback'],
+      usableTabList: json['usableTabList'],
+      selectMode: json['selectMode'],
+      selectCallback: json['selectCallback'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'key': key,
+      'queryResult': queryResult,
+      'addBottomPadding': addBottomPadding,
+      'showDetail': showDetail,
+      'showUltra': showUltra,
+      'width': width,
+      'thumbnailTag': thumbnailTag,
+      'bookmarkMode': bookmarkMode,
+      'bookmarkCallback': bookmarkCallback,
+      'bookmarkCheckCallback': bookmarkCheckCallback,
+      'viewed': viewed,
+      'seconds': seconds,
+      'disableFilter': disableFilter,
+      'doubleTapCallback': doubleTapCallback,
+      'usableTabList': usableTabList,
+      'selectMode': selectMode,
+      'selectCallback': selectCallback,
+    };
+  }
 }

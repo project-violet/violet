@@ -13,8 +13,10 @@ import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
+import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/context/modal_bottom_sheet_context.dart';
+import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart' as locale;
@@ -155,7 +157,72 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
                             ..translate(c.thisWidth / 2, c.thisHeight / 2)
                             ..scale(c.scale.value)
                             ..translate(-c.thisWidth / 2, -c.thisHeight / 2)),
-                      child: _body,
+                      child: FutureBuilder<QueryResult>(
+                        /*
+                         * This checks QueryResult then 
+                         * do idQueryWeb when QueryResult keys was only exists 'Id'
+                         */
+                        future: (() {
+                          if (_body?.c.articleListItem.queryResult.result.keys
+                                      .length ==
+                                  1 &&
+                              _body?.c.articleListItem.queryResult.result.keys
+                                      .lastOrNull ==
+                                  'Id') {
+                            // Do when queryResult was only id
+                            // returns queryResult from idQueryWeb
+                            return HentaiManager.idQueryWeb(
+                                '${_body?.c.articleListItem.queryResult.id()}');
+                          } else {
+                            // Do when queryResult was not only id
+                            // returns queryResult on before body
+                            return Future.value(
+                                _body!.c.articleListItem.queryResult);
+                          }
+                        })(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            if (_body?.c.articleListItem.queryResult.result.keys
+                                        .length ==
+                                    1 &&
+                                _body?.c.articleListItem.queryResult.result.keys
+                                        .lastOrNull ==
+                                    'Id') {
+                              // When queryResult is only id
+                              final newData = ArticleListItem.fromJson({
+                                ..._body!.c.articleListItem.toJson(),
+                                'queryResult': snapshot.data!
+                              });
+                              data = newData;
+                              // Swap data of new
+                              final oldGetxId = _body!.getxId;
+                              final tmpC =
+                                  ArticleListItemWidgetController(data);
+                              c.dispose();
+                              c = tmpC;
+                              // Swap local ArticleListItemWidgetController
+                              // https://stackoverflow.com/questions/67250736/flutter-getx-how-to-remove-initialized-controller-every-time-we-navigate-to-oth
+                              Get.delete<ArticleListItemWidgetController>(
+                                  // Delete old for reuse oldGetxId
+                                  tag: oldGetxId,
+                                  force: true);
+                              Get.put(c, tag: oldGetxId); // Reuse oldGetxId
+                              // Swap ArticleListItemWidgetController with Get.put
+                              final body = BodyWidget(
+                                // new Body with queryResult from idQueryWeb
+                                key: c.bodyKey,
+                                getxId: oldGetxId,
+                              );
+                              _body = body;
+                              return _body!;
+                            } else {
+                              return _body!;
+                            }
+                          } else {
+                            return _body!;
+                          }
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -217,11 +284,14 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
     }
   }
 
-  _showArticleInfo() {
+  Future<void> _showArticleInfo() async {
+    /**
+     * It shows up details with [Download button, Read button]
+     */
     final height = MediaQuery.of(context).size.height;
 
     // https://github.com/flutter/flutter/issues/67219
-    Provider<ArticleInfo>? cache;
+    FutureBuilder<QueryResult>? cache;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -232,19 +302,50 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
           maxChildSize: 0.9,
           expand: false,
           builder: (_, controller) {
-            cache ??= Provider<ArticleInfo>.value(
-              value: ArticleInfo.fromArticleInfo(
-                queryResult: data.queryResult,
-                thumbnail: c.thumbnail.value,
-                headers: c.headers,
-                heroKey: data.thumbnailTag,
-                isBookmarked: c.isBookmarked.value,
-                controller: controller,
-                usableTabList: data.usableTabList,
-              ),
-              child: const ArticleInfoPage(
-                key: ObjectKey('asdfasdf'),
-              ),
+            cache ??= FutureBuilder<QueryResult>(
+              /*
+                * This checks QueryResult then 
+                * do idQueryWeb when QueryResult keys was only exists 'Id'
+                */
+              future: (() {
+                if (data.queryResult.result.keys.length == 1 &&
+                    data.queryResult.result.keys.lastOrNull == 'Id') {
+                  return HentaiManager.idQueryWeb('${data.queryResult.id()}');
+                } else {
+                  return Future.value(data.queryResult);
+                }
+              })(),
+              builder: (context, snapshot) {
+                createBody(queryResult) {
+                  return Provider<ArticleInfo>.value(
+                    value: ArticleInfo.fromArticleInfo(
+                      queryResult: queryResult,
+                      thumbnail: c.thumbnail.value,
+                      headers: c.headers,
+                      heroKey: data.thumbnailTag,
+                      isBookmarked: c.isBookmarked.value,
+                      controller: controller,
+                      usableTabList: data.usableTabList,
+                    ),
+                    child: const ArticleInfoPage(
+                      key: ObjectKey('asdfasdf'),
+                    ),
+                  );
+                }
+
+                Provider<ArticleInfo>? body;
+
+                if (snapshot.hasData) {
+                  if (data.queryResult.result.keys.length == 1 &&
+                      data.queryResult.result.keys.lastOrNull == 'Id') {
+                    return body = createBody(snapshot.data);
+                  } else {
+                    return body!;
+                  }
+                } else {
+                  return body = createBody(data.queryResult);
+                }
+              },
             );
             return cache!;
           },
