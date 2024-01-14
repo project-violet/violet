@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:auto_animated/auto_animated.dart';
+import 'package:azlistview/azlistview.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -91,12 +92,14 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     DownloadPageManager.taskFromQueryResultController!.stream.listen((event) {
       appendTaskFromQueryResult(event);
     });
+    dragListener.dragDetails.addListener(_valueChanged);
   }
 
   @override
   void dispose() {
     DownloadPageManager.taskController!.close();
     DownloadPageManager.taskFromQueryResultController!.close();
+    dragListener.dragDetails.removeListener(_valueChanged);
     super.dispose();
   }
 
@@ -222,26 +225,33 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     return Container(
       padding: EdgeInsets.only(top: statusBarHeight),
       child: GestureDetector(
-        child: CustomScrollView(
-          // key: key,
-          // cacheExtent: height * 100,
-          controller: doubleTapToTopScrollController = ScrollController(),
-          physics: const BouncingScrollPhysics(),
-          slivers: <Widget>[
-            SliverPersistentHeader(
-              floating: true,
-              delegate: AnimatedOpacitySliver(
-                searchBar: Stack(
-                  children: <Widget>[
-                    _urlBar(),
-                    _features(),
-                    _align(),
-                  ],
+        child: Stack(
+          children: [
+            CustomScrollView(
+              controller: doubleTapToTopScrollController = ScrollController(),
+              // ..addListener(() {
+              //   print(doubleTapToTopScrollController!.offset);
+              // }),
+              physics: const BouncingScrollPhysics(),
+              slivers: <Widget>[
+                SliverPersistentHeader(
+                  floating: true,
+                  delegate: AnimatedOpacitySliver(
+                    searchBar: Stack(
+                      children: <Widget>[
+                        _urlBar(),
+                        _features(),
+                        _align(),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+                _panel(),
+              ],
             ),
-            // _cachedPanel,
-            _panel(),
+            if (Settings.downloadAlignType != 0 &&
+                Settings.downloadResultType == 0)
+              indexBar(),
           ],
         ),
       ),
@@ -393,10 +403,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     throw Exception('unreachable');
   }
 
-  Widget _panelGroupBy() {
-    var windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
-    var mm = Settings.downloadResultType == 0 ? 3 : 2;
-
+  List<(String, List<DownloadItemModel>)> getGroupBy() {
     final groups = filterResult.groupListsBy((e) {
       final qr = queryResults[int.tryParse(e.url()) ?? -1];
       if (qr == null) return 'none';
@@ -426,18 +433,100 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     final groupsSorted = groups.entries.map((e) => (e.key, e.value)).toList()
       ..sortBy((e) => e.$1);
 
-    final groupsWidget = groupsSorted.map((e) {
+    return groupsSorted;
+  }
+
+  final dragListener = IndexBarDragListener.create();
+  GlobalKey? heightRefHeader;
+  GlobalKey? heightRefArticle;
+
+  void _valueChanged() {
+    final details = dragListener.dragDetails.value;
+    if (details.action == IndexBarDragDetails.actionDown ||
+        details.action == IndexBarDragDetails.actionUpdate) {
+      final tag = details.tag!;
+      // selectTag = tag;
+      // _scrollTopIndex(tag);
+
+      //  var firstItemHeight = (itemKeys[widget.usableTabList.first.id()]!
+      //         .currentContext!
+      //         .findRenderObject() as RenderBox)
+      //     .size
+      //     .height;
+
+      final headerHeight =
+          (heightRefHeader!.currentContext!.findRenderObject() as RenderBox)
+              .size
+              .height;
+      final articleHeight =
+          (heightRefArticle!.currentContext!.findRenderObject() as RenderBox)
+              .size
+              .height;
+
+      // doubleTapToTopScrollController.jumpTo();
+
+      final groupBy = getGroupBy();
+      final headerCount =
+          groupBy.indexWhere((e) => e.$1[0].toUpperCase() == tag);
+      final articleLineCount =
+          groupBy.take(headerCount).map((e) => (e.$2.length + 2) ~/ 3).sum;
+
+      doubleTapToTopScrollController!.jumpTo(
+          (headerHeight + 22) * headerCount + articleLineCount * articleHeight);
+    }
+  }
+
+  Widget indexBar() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: IndexBar(
+        // data: widget.indexBarData,
+        data: getGroupBy().map((e) => e.$1[0].toUpperCase()).toSet().toList(),
+        // options: const IndexBarOptions(
+        //   needRebuild: true,
+        //   color: Colors.transparent,
+        // ),
+        indexBarDragListener: dragListener,
+        // height: widget.indexBarHeight,
+        // itemHeight: widget.indexBarItemHeight,
+        // margin: widget.indexBarMargin,
+        // indexHintBuilder: widget.indexHintBuilder,
+        // indexBarDragListener: dragListener,
+        // options: widget.indexBarOptions,
+        // controller: indexBarController,
+        options: const IndexBarOptions(
+          needRebuild: true,
+          selectTextStyle: TextStyle(
+              fontSize: 12, color: Colors.white, fontWeight: FontWeight.w500),
+          selectItemDecoration:
+              BoxDecoration(shape: BoxShape.circle, color: Color(0xFF333333)),
+          // indexHintWidth: 96,
+          // indexHintHeight: 97,
+          // indexHintAlignment: Alignment.centerRight,
+          // indexHintTextStyle:
+          //     TextStyle(fontSize: 24.0, color: Colors.black87),
+          // indexHintOffset: Offset(-30, 0),
+        ),
+      ),
+    );
+  }
+
+  Widget _panelGroupBy() {
+    var windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
+    var mm = Settings.downloadResultType == 0 ? 3 : 2;
+
+    heightRefHeader = null;
+    heightRefArticle = null;
+
+    final groupsWidget = getGroupBy().map((e) {
       final title = Container(
+        key: heightRefHeader == null ? heightRefHeader ??= GlobalKey() : null,
         padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
         child: Container(
           decoration: !Settings.themeFlat
               ? BoxDecoration(
                   color: Settings.themeWhat ? Colors.black26 : Colors.white,
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(8),
-                      topRight: Radius.circular(8),
-                      bottomLeft: Radius.circular(8),
-                      bottomRight: Radius.circular(8)),
+                  borderRadius: BorderRadius.circular(8.0),
                   boxShadow: [
                     BoxShadow(
                       color: Settings.themeWhat
@@ -495,7 +584,11 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
           childAspectRatio: 3 / 4,
         ),
         children: e.$2
-            .map((e) => Align(
+            .map((e) => SizedBox(
+                key: heightRefArticle == null
+                    ? heightRefArticle ??= GlobalKey()
+                    : null,
+                child: Align(
                   key: Key('dp${e.id()}${e.url()}'),
                   alignment: Alignment.bottomCenter,
                   child: DownloadItemWidget(
@@ -509,7 +602,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                     download: e.download,
                     refeshCallback: refresh,
                   ),
-                ))
+                )))
             .take(12)
             .toList(),
       );
