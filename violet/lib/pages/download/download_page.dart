@@ -4,6 +4,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:auto_animated/auto_animated.dart';
 import 'package:azlistview/azlistview.dart';
@@ -466,10 +467,14 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
       final groupBy = getGroupBy();
       final headerCount =
           groupBy.indexWhere((e) => e.$1[0].toUpperCase() == tag);
-      final articleLineCount =
-          groupBy.take(headerCount).map((e) => (e.$2.length + 2) ~/ 3).sum;
-      final articleLineSpacingCount =
-          groupBy.take(headerCount).map((e) => (e.$2.length - 1) ~/ 3).sum;
+      final articleLineCount = groupBy
+          .take(headerCount)
+          .map((e) => (min(e.$2.length, 12) + 2) ~/ 3)
+          .sum;
+      final articleLineSpacingCount = groupBy
+          .take(headerCount)
+          .map((e) => (min(e.$2.length, 12) - 1) ~/ 3)
+          .sum;
 
       doubleTapToTopScrollController!.jumpTo((headerHeight + 20) * headerCount +
           articleLineSpacingCount * 8 +
