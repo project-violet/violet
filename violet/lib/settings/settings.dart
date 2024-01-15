@@ -56,6 +56,7 @@ class Settings {
   static late List<String> routingRule; // image routing rule
   static late List<String> searchRule;
   static late bool searchNetwork;
+  static late bool searchExpunged;
 
   // Global? English? Korean?
   static late String databaseType;
@@ -193,6 +194,7 @@ class Settings {
         (await _getString('searchrule', 'Hitomi|EHentai|ExHentai|NHentai'))
             .split('|');
     searchNetwork = await _getBool('searchnetwork');
+    searchExpunged = await _getBool('searchexpunged');
 
     if (!routingRule.contains('Hiyobi')) {
       routingRule.add('Hiyobi');
@@ -683,6 +685,12 @@ class Settings {
     searchNetwork = nn;
 
     await prefs.setBool('searchnetwork', nn);
+  }
+
+  static Future<void> setSearchExpunged(bool nn) async {
+    searchExpunged = nn;
+
+    await prefs.setBool('searchexpunged', nn);
   }
 
   static Future<void> setSearchPure(bool nn) async {

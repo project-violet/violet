@@ -831,6 +831,38 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
+          if (Settings.searchNetwork)
+            InkWell(
+              customBorder: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(8.0),
+                      bottomRight: Radius.circular(8.0))),
+              child: ListTile(
+                leading: Icon(
+                  MdiIcons.searchWeb,
+                  color: Settings.majorColor,
+                ),
+                title:
+                    Text(Translations.of(context).trans('usesearchexpunged')),
+                trailing: Switch(
+                  value: Settings.searchExpunged,
+                  onChanged: (newValue) async {
+                    await Settings.setSearchExpunged(newValue);
+                    setState(() {
+                      _shouldReload = true;
+                    });
+                  },
+                  activeTrackColor: Settings.majorColor,
+                  activeColor: Settings.majorAccentColor,
+                ),
+              ),
+              onTap: () async {
+                await Settings.setSearchExpunged(!Settings.searchExpunged);
+                setState(() {
+                  _shouldReload = true;
+                });
+              },
+            ),
         ],
       ),
     ];
