@@ -831,6 +831,98 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
+          if (Settings.searchNetwork)
+            InkWell(
+              customBorder: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0)),
+              ),
+              child: ListTile(
+                leading: CachedNetworkImage(
+                  imageUrl: 'https://e-hentai.org/favicon.ico',
+                  width: 25,
+                ),
+                title: const Text('Search Categories'),
+                trailing: const Icon(Icons.keyboard_arrow_right),
+              ),
+              onTap: () async {
+                var cats = Settings.searchCategory;
+
+                var catsController = TextEditingController(text: '$cats');
+
+                getButton(String name, int cat) {
+                  return CategoryButton(
+                    name: name,
+                    controller: catsController,
+                    cat: cat,
+                  );
+                }
+
+                final doujinshiButton = getButton('Doujinshi', 1);
+                final mangaButton = getButton('Manga', 2);
+                final artistcgButton = getButton('Artist CG', 3);
+                final gamecgButton = getButton('Game CG', 4);
+                final westernButton = getButton('Western', 9);
+                final nonhButton = getButton('Non-H', 8);
+                final imagesetButton = getButton('Image Set', 5);
+                final cosplayButton = getButton('Cosplay', 6);
+                final asianpornButton = getButton('Asian Porn', 7);
+                final miscButton = getButton('Misc', 0);
+
+                Widget okButton = TextButton(
+                  style: TextButton.styleFrom(
+                      foregroundColor: Settings.majorColor),
+                  child: Text(Translations.of(context).trans('ok')),
+                  onPressed: () {
+                    try {
+                      cats = int.parse(catsController.text);
+                      Settings.setSearchCategory(cats);
+                    } catch (e, st) {
+                      Logger.error('[Search Categories] $e\n'
+                          '$st');
+                    }
+                    Navigator.pop(context);
+                  },
+                );
+                Widget cancelButton = TextButton(
+                  style: TextButton.styleFrom(
+                      foregroundColor: Settings.majorColor),
+                  child: Text(Translations.of(context).trans('cancel')),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                );
+                await showDialog(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    actions: [okButton, cancelButton],
+                    title: const Text('E-Hentai Categories'),
+                    contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        const Text('f_cats: '),
+                        ...[
+                          TextField(
+                            controller: catsController,
+                            readOnly: true,
+                          ),
+                          doujinshiButton,
+                          mangaButton,
+                          artistcgButton,
+                          gamecgButton,
+                          westernButton,
+                          nonhButton,
+                          imagesetButton,
+                          cosplayButton,
+                          asianpornButton,
+                          miscButton,
+                        ].map((e) => Row(children: [Expanded(child: e)])),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
         ],
       ),
     ];
@@ -3068,6 +3160,64 @@ class SettingGroupName extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class CategoryButton extends StatefulWidget {
+  late final String name;
+  late final TextEditingController controller;
+  late final int cat;
+  CategoryButton({
+    super.key,
+    required String name,
+    required TextEditingController controller,
+    required int cat,
+  }) {
+    this.name = name;
+    this.controller = controller;
+    this.cat = cat;
+  }
+
+  @override
+  State<CategoryButton> createState() => _CategoryButtonState();
+}
+
+class _CategoryButtonState extends State<CategoryButton> {
+  bool stat = false;
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      child: ListTile(
+        leading: Icon(Mdi.compassOutline, color: Settings.majorColor),
+        title: Text(widget.name),
+        trailing: Switch(
+          value: (stat =
+              (int.parse(widget.controller.text) & (1 << widget.cat)) == 0),
+          onChanged: (newValue) async {
+            widget.controller.text =
+                ((int.parse(widget.controller.text) ^ (1 << widget.cat))
+                    .toString());
+            final newStat =
+                int.parse(widget.controller.text) & (1 << widget.cat) == 0;
+            setState(() {
+              stat = newStat;
+            });
+          },
+          activeTrackColor: Settings.majorColor,
+          activeColor: Settings.majorAccentColor,
+        ),
+      ),
+      onTap: () async {
+        widget.controller.text =
+            ((int.parse(widget.controller.text) ^ (1 << widget.cat))
+                .toString());
+        final newStat =
+            int.parse(widget.controller.text) & (1 << widget.cat) == 0;
+        setState(() {
+          stat = newStat;
+        });
+      },
     );
   }
 }
