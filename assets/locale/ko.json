@@ -191,6 +191,7 @@
   "mainbookmark": "북마크 수",
   "maindownload": "다운로드 수",
   "usewebsearch": "웹에서 검색하기",
+  "usesearchexpunged": "Search for Expunged",
   "usevioletserver": "바이올렛 서버 사용하기",
   "wouldyouupdate": "업데이트할까요? (업데이트가 제대로 진행되지 않는다면, 설정->수동 업데이트를 통해 업데이트 해주세요!)",
   "violetservermsg": "Violet Server 기능을 활성화하시겠습니까? 이 기능은 사용자 행동 정보을 수집하여 실시간으로 통계 정보를 보여주는 서비스입니다. 사용자를 특정할 수 있는 정보는 수집하지 않습니다.",

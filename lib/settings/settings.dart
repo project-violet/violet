@@ -57,6 +57,7 @@ class Settings {
   static late List<String> searchRule;
   static late bool searchNetwork;
   static late int searchCategory;
+  static late bool searchExpunged;
 
   // Global? English? Korean?
   static late String databaseType;
@@ -195,6 +196,7 @@ class Settings {
             .split('|');
     searchNetwork = await _getBool('searchnetwork');
     searchCategory = await _getInt('searchcategory', 993);
+    searchExpunged = await _getBool('searchexpunged');
 
     if (!routingRule.contains('Hiyobi')) {
       routingRule.add('Hiyobi');
@@ -691,6 +693,12 @@ class Settings {
     searchCategory = nn;
 
     await prefs.setInt('searchcategory', nn);
+  }
+  
+  static Future<void> setSearchExpunged(bool nn) async {
+    searchExpunged = nn;
+
+    await prefs.setBool('searchexpunged', nn);
   }
 
   static Future<void> setSearchPure(bool nn) async {

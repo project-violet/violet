@@ -191,6 +191,7 @@
   "mainbookmark": "ブックマーク数",
   "maindownload": "ダウンロード数",
   "usewebsearch": "ウェブで検索する",
+  "usesearchexpunged": "Search for Expunged",
   "usevioletserver": "Violet サーバーを使用する",
   "wouldyouupdate": "更新しますか？",
   "violetservermsg": "Violet サーバーの機能を有効にしますか？この機能は、ユーザーの行動情報を収集し、リアルタイムで統計情報を表示するサービスです。ユーザーを特定することができる情報は収集しません。",
