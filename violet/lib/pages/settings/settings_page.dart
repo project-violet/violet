@@ -2665,6 +2665,9 @@ class _SettingsPageState extends State<SettingsPage>
                     if (setCookie != null &&
                         (setCookie.startsWith('sk=') ||
                             setCookie.startsWith('igneous='))) {
+                      if (setCookie.contains('=mystery')) {
+                        return;
+                      }
                       cookie += ';${setCookie.split(';')[0]}';
                     }
                   });
