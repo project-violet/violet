@@ -44,7 +44,7 @@ class ArticleInfo {
     var artist = (queryResult.artists() as String)
         .split('|')
         .where((x) => x.isNotEmpty)
-        .elementAt(0);
+        .elementAtOrNull(0) ?? 'N/A';
 
     if (artist == 'N/A') {
       var group = queryResult.groups() != null
