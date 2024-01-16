@@ -182,8 +182,11 @@ class SearchPageController extends GetxController {
         return;
       }
 
-      final search = HentaiManager.search(latestQuery!.item2,
-          latestQuery!.item1 == null ? 0 : latestQuery!.item1!.offset);
+      final search = HentaiManager.search(
+        latestQuery!.item2,
+        latestQuery!.item1 == null ? 0 : latestQuery!.item1!.offset,
+        latestQuery!.item1 == null ? -1 : latestQuery!.item1!.next!,
+      );
       if (!Settings.ignoreTimeout) {
         search.timeout(const Duration(seconds: 10), onTimeout: () {
           Logger.error('[Search_loadNextQuery] Search Timeout');

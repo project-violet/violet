@@ -13,7 +13,7 @@ void main() {
 
   test('EHentai Gallery Parse', () async {
     final result =
-        await HentaiManager.searchEHentai('"female:big breasts"', '0', false);
+        await HentaiManager.searchEHentai('"female:big breasts"', 0, false);
 
     expect(result.length >= 25, true);
   });
