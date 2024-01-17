@@ -440,45 +440,53 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
   final dragListener = IndexBarDragListener.create();
   GlobalKey? heightRefHeader;
   GlobalKey? heightRefArticle;
+  double? cachedHeaderHeight;
+  double? cachedArticleHeight;
 
   void _valueChanged() {
     final details = dragListener.dragDetails.value;
     if (details.action == IndexBarDragDetails.actionDown ||
         details.action == IndexBarDragDetails.actionUpdate) {
       final tag = details.tag!;
-      // selectTag = tag;
-      // _scrollTopIndex(tag);
 
-      //  var firstItemHeight = (itemKeys[widget.usableTabList.first.id()]!
-      //         .currentContext!
-      //         .findRenderObject() as RenderBox)
-      //     .size
-      //     .height;
+      if (cachedHeaderHeight == null || cachedArticleHeight == null) {
+        final headerHeight =
+            (heightRefHeader!.currentContext!.findRenderObject() as RenderBox)
+                .size
+                .height;
+        final articleHeight =
+            (heightRefArticle!.currentContext!.findRenderObject() as RenderBox)
+                .size
+                .height;
 
-      final headerHeight =
-          (heightRefHeader!.currentContext!.findRenderObject() as RenderBox)
-              .size
-              .height;
-      final articleHeight =
-          (heightRefArticle!.currentContext!.findRenderObject() as RenderBox)
-              .size
-              .height;
+        cachedArticleHeight ??= articleHeight;
+        cachedHeaderHeight ??= headerHeight;
+      }
 
       final groupBy = getGroupBy();
       final headerCount =
           groupBy.indexWhere((e) => e.$1[0].toUpperCase() == tag);
+
+      const maxItemCount = 12;
+      const itemPerRow = 3;
+
       final articleLineCount = groupBy
           .take(headerCount)
-          .map((e) => (min(e.$2.length, 12) + 2) ~/ 3)
+          .map((e) =>
+              (min(e.$2.length, maxItemCount) + itemPerRow - 1) ~/ itemPerRow)
           .sum;
       final articleLineSpacingCount = groupBy
           .take(headerCount)
-          .map((e) => (min(e.$2.length, 12) - 1) ~/ 3)
+          .map((e) => (min(e.$2.length, maxItemCount) - 1) ~/ itemPerRow)
           .sum;
 
-      doubleTapToTopScrollController!.jumpTo((headerHeight + 20) * headerCount +
-          articleLineSpacingCount * 8 +
-          articleLineCount * articleHeight);
+      const articleSpacingSize = 8;
+      const headerTopBottomPaddingSize = 20;
+
+      doubleTapToTopScrollController!.jumpTo(
+          (cachedHeaderHeight! + headerTopBottomPaddingSize) * headerCount +
+              articleLineSpacingCount * articleSpacingSize +
+              articleLineCount * cachedArticleHeight!);
     }
   }
 
