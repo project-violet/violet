@@ -175,18 +175,16 @@ void main() {
       'https://tn.hitomi.la/avifsmalltn/7/11/a2b2b56a43124cb96d699140da697be6ce69697259757f505e50cec497cf4117.avif'
     ];
 
-    var downloader = IsolateDownloader();
+    final downloader = IsolateDownloader();
     await downloader.init();
-
-    // while (!downloader.isReady()) {}
-
     await Future.delayed(const Duration(seconds: 1));
+
+    int completeCount = 0;
 
     var tasks = <DownloadTask>[];
     for (int i = 0; i < urls.length; i++) {
-      var task = DownloadTask(
+      final task = DownloadTask(
         url: urls[i],
-        // filename: urls[i].split('/').last,
         downloadPath:
             'test/download/${intToString(i, pad: 3)}.${path.extension(urls[i].split('/').last).replaceAll('.', '')}',
         headers: {
@@ -198,29 +196,13 @@ void main() {
         },
       );
       tasks.add(task);
-      task.startCallback = () => print('$i start');
-      task.completeCallback = () => print('$i complete');
-      task.errorCallback = (e) => print('$i $e');
-      task.sizeCallback = (sz) => print('$i sz $sz');
-      task.downloadCallback = (a) => print('$i d $a');
-    }
-
-    // var tasks = await extractor.createTask(
-    //   '2116987',
-    //   GeneralDownloadProgress(
-    //     simpleInfoCallback: (info) async {},
-    //     thumbnailCallback: (url, header) async {},
-    //     progressCallback: (_, __) async {},
-    //   ),
-    // );
-
-    for (var element in tasks) {
-      print(element.url);
+      task.completeCallback = () => completeCount += 1;
     }
 
     downloader.appendTasks(tasks);
 
-    await Future.delayed(const Duration(seconds: 100));
-    sleep(const Duration(seconds: 10));
+    while (completeCount != tasks.length) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
   });
 }

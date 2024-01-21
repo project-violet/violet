@@ -15,15 +15,15 @@ void main() {
 
     var tests = [
       [
-        'https://github.com/violet-dev/sync-data/releases/download/db_1642385595/data.db',
+        'https://sampletestfile.com/wp-content/uploads/2023/07/5MB-AVI.avi',
         't1.db'
       ],
       [
-        'https://github.com/violet-dev/sync-data/releases/download/db_1642381015/data.db',
+        'https://sampletestfile.com/wp-content/uploads/2023/07/15MB-MP4.mp4',
         't2.db'
       ],
       [
-        'https://github.com/violet-dev/sync-data/releases/download/db_1642375243/data.db',
+        'https://sampletestfile.com/wp-content/uploads/2023/07/10MB-MP4.mp4',
         't3.db'
       ],
     ];
@@ -40,8 +40,8 @@ void main() {
 
         nu = 0;
 
-        var progressString = '${((rec / total) * 100).toStringAsFixed(0)}%';
-        print('$url [${rec ~/ 1024}/${total ~/ 1024}] $progressString');
+        // var progressString = '${((rec / total) * 100).toStringAsFixed(0)}%';
+        // print('$url [${rec ~/ 1024}/${total ~/ 1024}] $progressString');
       });
     }
 
