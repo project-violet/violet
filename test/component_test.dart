@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hentai.dart';
+import 'package:violet/settings/settings.dart';
 
 void main() {
   setUp(() async {
@@ -12,6 +13,7 @@ void main() {
   });
 
   test('EHentai Gallery Parse', () async {
+    Settings.searchCategory = 1;
     final result =
         await HentaiManager.searchEHentai('"female:big breasts"', 0, false);
 

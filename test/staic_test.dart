@@ -51,8 +51,6 @@ void main() {
   test('Test Related', () async {
     await Related.init();
 
-    print(Related.related);
-
     expect(Related.related.isNotEmpty, true);
   });
 }
