@@ -24,8 +24,7 @@ void main() {
     final result =
         await HentaiManager.searchEHentai('"female:big breasts"', 0, false);
 
-    /// TODO: enable this test
-    expect(result.length >= 25, false);
+    expect(result.length >= 25, true);
   });
 
   test('ExHentai Gallery Parse', () async {
