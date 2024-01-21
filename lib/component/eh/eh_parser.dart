@@ -306,7 +306,10 @@ class EHParser {
           print(e);
         }
 
-        result.add(article);
+        // Do not add already contained article
+        if (!result.any((e) => e.url == article.url)) {
+          result.add(article);
+        }
 
         var next = node.querySelectorAll('tr');
 

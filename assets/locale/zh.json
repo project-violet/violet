@@ -191,6 +191,7 @@
   "mainbookmark": "Boomkark",
   "maindownload": "Download",
   "usewebsearch": "Search on Web",
+  "usesearchexpunged": "Search for Expunged",
   "usevioletserver": "Use Violet Server",
   "wouldyouupdate": "Would you update?",
   "violetservermsg": "Would you like to enable the Violet Server function? This function is a service that collects user behavior information and displays statistical information in real time. We do not collect any information that could identify you.",

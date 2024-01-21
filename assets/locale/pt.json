@@ -191,6 +191,7 @@
   "mainbookmark": "Marcador",
   "maindownload": "Download",
   "usewebsearch": "Pesquisar na Web",
+  "usesearchexpunged": "Search for Expunged",
   "usevioletserver": "Usar servido do Violet",
   "wouldyouupdate": "Você atualizaria?",
   "violetservermsg": "Deseja habilitar o servidor do Violet? Esta função é um serviço que coleta informações de comportamento do usuário e exibe informações estatísticas em tempo real. Não coletamos nenhuma informação que possa identificá-lo.",
