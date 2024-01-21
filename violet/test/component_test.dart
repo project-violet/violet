@@ -14,6 +14,7 @@ void main() {
 
   test('EHentai Gallery Parse', () async {
     Settings.searchCategory = 1;
+    Settings.searchExpunged=false;
     final result =
         await HentaiManager.searchEHentai('"female:big breasts"', 0, false);
 
