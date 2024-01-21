@@ -48,7 +48,7 @@ jobs:
           python3 pull-db.py
           sudo apt install p7zip-full
           mv rawdata-korean.7z db.7z
-          7z x db.7z 
+          7z e -odb db.7z
           
       - name: Test
         run: flutter test test
