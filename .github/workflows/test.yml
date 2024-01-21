@@ -9,6 +9,13 @@ jobs:
     if: ${{ github.event.label.name == 'ci/flutter-test' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Unlabel
+        if: success() || failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} --remove-label ${{ github.event.label.name }}
+
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
@@ -21,9 +28,6 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Formatting
-        run: dart format --output=none --set-exit-if-changed .
-
       - name: Preprocess
         run: | 
           cd lib/server
@@ -35,6 +39,12 @@ jobs:
           cmake -S ./linux -B ./build/linux
           cmake --build build/linux
           sudo cp build/linux/libquickjs_c_bridge_plugin.so /usr/lib/libquickjs_c_bridge_plugin.so
+
+          cd test
+          python3 pull-db.py
+          sudo apt install p7zip-full
+          mv rawdata-korean.7z db.7z
+          7z x db.7z 
           
       - name: Test
         run: flutter test test
