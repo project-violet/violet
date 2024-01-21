@@ -28,19 +28,23 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Preprocess
+      - name: Preprocess Salt
         run: | 
           cd lib/server
           wget -q ${{ secrets.SECRET_SALT }} || echo 'String getValid(String vToken) { return vToken; }' > salt.dart
           wget -q ${{ secrets.SECRET_WSALT }} || echo 'String getValid(String vToken) { return vToken; }' > wsalt.dart
 
+      - name: Preprocess JS
+        run: | 
           git clone https://github.com/abner/quickjs-c-bridge
           cd quickjs-c-bridge
           cmake -S ./linux -B ./build/linux
           cmake --build build/linux
           sudo cp build/linux/libquickjs_c_bridge_plugin.so /usr/lib/libquickjs_c_bridge_plugin.so
 
-          cd ../test
+      - name: Preprocess Pull DB
+        run: | 
+          cd test
           python3 pull-db.py
           sudo apt install p7zip-full
           mv rawdata-korean.7z db.7z
