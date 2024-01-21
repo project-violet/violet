@@ -549,10 +549,11 @@ class PreviewAreaWidget extends StatelessWidget {
             mainAxisSpacing: 8,
             children: (snapshot.data!.item1)
                 .take(30)
-                .map((e) => CachedNetworkImage(
-                      imageUrl: e,
-                      httpHeaders: snapshot.data!.item2,
-                    ))
+                .toList()
+                .asMap()
+                .map((i, e) => MapEntry(
+                    i, _buildTappableItem(context, i, e, snapshot.data!.item2)))
+                .values
                 .toList(),
           );
         },
@@ -573,6 +574,45 @@ class PreviewAreaWidget extends StatelessWidget {
           ),
         )
       ],
+    );
+  }
+
+  Widget _buildTappableItem(BuildContext context, int index, String image,
+      Map<String, String> headers) {
+    return SizedBox.expand(
+      child: Stack(
+        children: <Widget>[
+          SizedBox.expand(
+              child: CachedNetworkImage(
+            imageUrl: image,
+            httpHeaders: headers,
+          )),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Container(
+              padding: const EdgeInsets.only(bottom: 1),
+              width: double.infinity,
+              color: Colors.black.withOpacity(0.7),
+              child: Text(
+                '${index + 1} page',
+                textAlign: TextAlign.right,
+                style: const TextStyle(fontSize: 11, color: Colors.white),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                highlightColor: Colors.transparent,
+                onTap: () {
+                  Navigator.pop(context, index);
+                },
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
