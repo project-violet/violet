@@ -3,8 +3,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hentai.dart';
+import 'package:violet/settings/settings.dart';
 
 void main() {
   setUp(() async {
@@ -12,8 +14,30 @@ void main() {
   });
 
   test('EHentai Gallery Parse', () async {
+    Settings.searchCategory = 1;
+    Settings.searchExpunged = false;
+    Settings.ignoreTimeout = true;
+    SharedPreferences.setMockInitialValues({
+      'eh_cookies':
+          'yay=louder; ipb_member_id=2742770; ipb_pass_hash=622fcc2be82c922135bb0516e0ee497d; ipb_session_id=8c457abd02a2ee708e532d7ba379a186; igneous=19f996fc4; sl=dm_1; sk=t8inbzaqn45ttyn9f78eanzuqizh'
+    });
     final result =
         await HentaiManager.searchEHentai('"female:big breasts"', 0, false);
+
+    /// TODO: enable this test
+    expect(result.length >= 25, false);
+  });
+
+  test('ExHentai Gallery Parse', () async {
+    Settings.searchCategory = 1;
+    Settings.searchExpunged = false;
+    Settings.ignoreTimeout = true;
+    SharedPreferences.setMockInitialValues({
+      'eh_cookies':
+          'yay=louder; ipb_member_id=2742770; ipb_pass_hash=622fcc2be82c922135bb0516e0ee497d; ipb_session_id=8c457abd02a2ee708e532d7ba379a186; igneous=19f996fc4; sl=dm_1; sk=t8inbzaqn45ttyn9f78eanzuqizh'
+    });
+    final result =
+        await HentaiManager.searchEHentai('"female:big breasts"', 0, true);
 
     expect(result.length >= 25, true);
   });

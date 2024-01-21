@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/services.dart';
+import 'package:path/path.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/download.dart';
 
@@ -16,7 +17,8 @@ class Population {
     String data;
 
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
-      final file = File('/home/ubuntu/violet/assets/rank/population.json');
+      final file =
+          File(join(Directory.current.path, 'assets/rank/population.json'));
       data = await file.readAsString();
     } else {
       data = await rootBundle.loadString('assets/rank/population.json');

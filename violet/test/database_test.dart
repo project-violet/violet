@@ -11,7 +11,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:violet/settings/settings.dart';
 
 void main() {
-  late final Database db;
+  Database? db;
 
   sqfliteFfiInit();
   databaseFactory = databaseFactoryFfi;
@@ -21,14 +21,14 @@ void main() {
     Settings.includeTags = '';
     Settings.excludeTags = [''];
 
-    db = await databaseFactoryFfi
+    db ??= await databaseFactoryFfi
         .openDatabase(join(Directory.current.path, 'test/db/data.db'));
   });
 
   test('Test korean db search', () async {
     final queryString =
         HitomiManager.translate2query('artist:michiking (lang:korean)');
-    final count = (await db.rawQuery(queryString.replaceAll(
+    final count = (await db!.rawQuery(queryString.replaceAll(
         'SELECT * FROM', 'SELECT COUNT(*) as cnt FROM')));
 
     expect(count[0]['cnt']! as int, isNot(0));

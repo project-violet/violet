@@ -84,18 +84,21 @@ class IsolateDownloader {
   }
 
   Future<void> _initThreadCount() async {
-    final prefs = await SharedPreferences.getInstance();
-    var tc = prefs.getInt('thread_count');
-    if (tc == null) {
-      tc = 4;
-      await prefs.setInt('thread_count', 4);
+    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+      _threadCount = 8;
+    } else {
+      final prefs = await SharedPreferences.getInstance();
+      var tc = prefs.getInt('thread_count');
+      if (tc == null) {
+        tc = 4;
+        await prefs.setInt('thread_count', 4);
+      }
+      if (tc > 128) {
+        tc = 128;
+        await prefs.setInt('thread_count', 128);
+      }
+      _threadCount = tc;
     }
-    if (tc > 128) {
-      tc = 128;
-      await prefs.setInt('thread_count', 128);
-    }
-
-    _threadCount = tc;
   }
 
   bool isReady() => _sendPort != null;

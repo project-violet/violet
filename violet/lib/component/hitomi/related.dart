@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/services.dart';
+import 'package:path/path.dart';
 
 class Related {
   static late Map<int, List<int>> related;
@@ -14,7 +15,8 @@ class Related {
     String data;
 
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
-      final file = File('/home/ubuntu/violet/assets/rank/related.json');
+      final file =
+          File(join(Directory.current.path, 'assets/rank/related.json'));
       data = await file.readAsString();
     } else {
       data = await rootBundle.loadString('assets/rank/related.json');

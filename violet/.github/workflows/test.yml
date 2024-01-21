@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  pull_request:
+    types: [ labeled ]
+
+jobs:
+  test:
+    if: ${{ github.event.label.name == 'ci/flutter-test' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
+          
+      - name: Unlabel
+        if: success() || failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} --remove-label ${{ github.event.label.name }}
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+          
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'stable'
+
+      - name: Preprocess Salt
+        run: | 
+          cd lib/server
+          wget -q ${{ secrets.SECRET_SALT }} || echo 'String getValid(String vToken) { return vToken; }' > salt.dart
+          wget -q ${{ secrets.SECRET_WSALT }} || echo 'String getValid(String vToken) { return vToken; }' > wsalt.dart
+
+      - name: Preprocess JS
+        run: | 
+          git clone https://github.com/abner/quickjs-c-bridge
+          cd quickjs-c-bridge
+          cmake -S ./linux -B ./build/linux
+          cmake --build build/linux
+          sudo cp build/linux/libquickjs_c_bridge_plugin.so /usr/lib/libquickjs_c_bridge_plugin.so
+
+      - name: Preprocess Pull DB
+        run: | 
+          cd test
+          python3 pull-db.py
+          sudo apt install p7zip-full
+          mv rawdata-korean.7z db.7z
+          7z e -odb db.7z
+          
+      - name: Test
+        run: flutter test test
