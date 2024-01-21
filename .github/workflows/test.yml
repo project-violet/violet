@@ -9,6 +9,10 @@ jobs:
     if: ${{ github.event.label.name == 'ci/flutter-test' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
+          
       - name: Unlabel
         if: success() || failure()
         env:
@@ -16,10 +20,6 @@ jobs:
         run: |
           gh pr edit ${{ github.event.pull_request.number }} --remove-label ${{ github.event.label.name }}
 
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
-          
       - uses: actions/setup-java@v1
         with:
           java-version: '12.x'
