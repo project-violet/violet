@@ -1,8 +1,6 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:io';
-
 import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
