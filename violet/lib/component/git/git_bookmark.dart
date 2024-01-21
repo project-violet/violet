@@ -109,7 +109,7 @@ class GitBookmark {
                       article.groupId = int.tryParse(value.toString());
                     }
                   });
-                  if (group.gorder == article.groupId) {
+                  if (group.id == article.groupId) {
                     result[group] ??= <BookmarkArticleKeyVal>[];
                     result[group]!.add(article);
                   }

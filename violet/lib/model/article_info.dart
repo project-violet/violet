@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:violet/database/query.dart';
@@ -42,14 +43,12 @@ class ArticleInfo {
     bool lockRead = false,
   }) {
     var artist = (queryResult.artists() as String)
-        .split('|')
-        .where((x) => x.isNotEmpty)
-        .elementAt(0);
+            .split('|')
+            .firstWhereOrNull((e) => e.isNotEmpty) ??
+        'N/A';
 
     if (artist == 'N/A') {
-      var group = queryResult.groups() != null
-          ? queryResult.groups().split('|')[1]
-          : '';
+      final group = queryResult.groups()?.split('|')[1] ?? '';
       if (group != '') artist = group;
     }
 
