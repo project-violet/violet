@@ -40,7 +40,7 @@ jobs:
           cmake --build build/linux
           sudo cp build/linux/libquickjs_c_bridge_plugin.so /usr/lib/libquickjs_c_bridge_plugin.so
 
-          cd test
+          cd ../test
           python3 pull-db.py
           sudo apt install p7zip-full
           mv rawdata-korean.7z db.7z
