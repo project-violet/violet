@@ -307,11 +307,9 @@ class EHParser {
         }
 
         // Do not add already contained article
-        bool isContains = false;
-        for (final articleFromResult in result) {
-          if (articleFromResult.url == article.url) isContains = true;
+        if (!result.any((e) => e.url == article.url)) {
+          result.add(article);
         }
-        if (!isContains) result.add(article);
 
         var next = node.querySelectorAll('tr');
 
