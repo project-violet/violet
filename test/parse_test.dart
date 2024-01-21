@@ -13,7 +13,7 @@ void main() {
   });
 
   test('Test Parse ExHentai', () async {
-    var html = (await http.get(
+    final html = (await http.get(
             Uri.parse('https://exhentai.org/g/2504057/6757b3c4b8/'),
             headers: {
           'Cookie':
@@ -21,6 +21,6 @@ void main() {
         }))
         .body;
 
-    print(EHParser.parseArticleData(html).comment);
+    expect(EHParser.parseArticleData(html).comment!.isNotEmpty, true);
   });
 }

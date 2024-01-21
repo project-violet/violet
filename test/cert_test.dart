@@ -33,17 +33,17 @@ void main() {
 
     rootCA.data['SignedData'] = CertUtil.l8ToStr(signedData);
 
-    print('--- Verify ROOT CA ---');
-    print(rootCA.verify(rootCA));
+    // print('--- Verify ROOT CA ---');
+    // print(rootCA.verify(rootCA));
     expect(rootCA.verify(rootCA), true);
 
-    print('--- ROOT CA ---');
-    print(rootCA.toBase64());
+    // print('--- ROOT CA ---');
+    // print(rootCA.toBase64());
 
-    print('--- ROOT CA RSA PRIVATE KEY ---');
-    print(CertUtil.exportRSAPrivateKey(pair.item2));
-    print('--- ROOT CA RSA PUBLIC KEY ---');
-    print(CertUtil.exportRSAPublicKey(pair.item1));
+    // print('--- ROOT CA RSA PRIVATE KEY ---');
+    // print(CertUtil.exportRSAPrivateKey(pair.item2));
+    // print('--- ROOT CA RSA PUBLIC KEY ---');
+    // print(CertUtil.exportRSAPublicKey(pair.item1));
 
     var priKey = pair.item2;
     var pubKey = pair.item1;
@@ -64,12 +64,12 @@ void main() {
 
     testCert.data['SignedData'] = CertUtil.l8ToStr(testSignedData);
 
-    print('--- Verify TEST CERT ---');
-    print(testCert.verify(rootCA));
+    // print('--- Verify TEST CERT ---');
+    // print(testCert.verify(rootCA));
     expect(testCert.verify(rootCA), true);
 
-    print('--- TEST CERT ---');
-    print(testCert.toBase64());
+    // print('--- TEST CERT ---');
+    // print(testCert.toBase64());
   });
 
   test('Test Root Cert', () async {
