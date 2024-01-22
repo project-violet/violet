@@ -22,8 +22,16 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2024, 1, 22),
+    version: '1.30.1 Patch',
+    contents: [
+      'fix some performance issues',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2024, 1, 1),
     version: '1.30 Minor',
+    isMinor: true,
     contents: [
       'fix load ehentai bookmark',
       'fix ios status font color',
