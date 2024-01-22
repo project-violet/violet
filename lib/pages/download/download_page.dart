@@ -94,14 +94,14 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     DownloadPageManager.taskFromQueryResultController!.stream.listen((event) {
       appendTaskFromQueryResult(event);
     });
-    dragListener.dragDetails.addListener(_valueChanged);
+    indexBarDragListener.dragDetails.addListener(_indexChanged);
   }
 
   @override
   void dispose() {
     DownloadPageManager.taskController!.close();
     DownloadPageManager.taskFromQueryResultController!.close();
-    dragListener.dragDetails.removeListener(_valueChanged);
+    indexBarDragListener.dragDetails.removeListener(_indexChanged);
     super.dispose();
   }
 
@@ -230,10 +230,8 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
         child: Stack(
           children: [
             CustomScrollView(
-              controller: doubleTapToTopScrollController = ScrollController(),
-              // ..addListener(() {
-              //   print(doubleTapToTopScrollController!.offset);
-              // }),
+              controller: doubleTapToTopScrollController = ScrollController()
+                ..addListener(_scrollChanged),
               physics: const BouncingScrollPhysics(),
               slivers: <Widget>[
                 SliverPersistentHeader(
@@ -440,34 +438,52 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     return groupsSorted;
   }
 
-  final dragListener = IndexBarDragListener.create();
+  final indexBarDragListener = IndexBarDragListener.create();
   GlobalKey? heightRefHeader;
   GlobalKey? heightRefArticle;
   double? cachedHeaderHeight;
   double? cachedArticleHeight;
 
   // TODO: extract this logic to generally
-  void _valueChanged() {
-    final details = dragListener.dragDetails.value;
+  void updateHeights() {
+    if (cachedHeaderHeight == null || cachedArticleHeight == null) {
+      final headerHeight =
+          (heightRefHeader!.currentContext!.findRenderObject() as RenderBox)
+              .size
+              .height;
+      final articleHeight =
+          (heightRefArticle!.currentContext!.findRenderObject() as RenderBox)
+              .size
+              .height;
+
+      cachedArticleHeight ??= articleHeight;
+      cachedHeaderHeight ??= headerHeight;
+    }
+  }
+
+  void _scrollChanged() {
+    if (!(Settings.downloadAlignType != 0 &&
+        Settings.downloadResultType == 0)) {
+      return;
+    }
+
+    // final pos = doubleTapToTopScrollController!.offset;
+
+    // // TODO: Caching
+    // final groupBy = getGroupBy();
+
+    // updateHeights();
+  }
+
+  void _indexChanged() {
+    final details = indexBarDragListener.dragDetails.value;
     if (details.action == IndexBarDragDetails.actionDown ||
         details.action == IndexBarDragDetails.actionUpdate) {
       final tag = details.tag!;
 
-      if (cachedHeaderHeight == null || cachedArticleHeight == null) {
-        final headerHeight =
-            (heightRefHeader!.currentContext!.findRenderObject() as RenderBox)
-                .size
-                .height;
-        final articleHeight =
-            (heightRefArticle!.currentContext!.findRenderObject() as RenderBox)
-                .size
-                .height;
-
-        cachedArticleHeight ??= articleHeight;
-        cachedHeaderHeight ??= headerHeight;
-      }
-
       final groupBy = getGroupBy();
+
+      // TODO: More optimize
       final headerCount =
           groupBy.indexWhere((e) => e.$1[0].toUpperCase() == tag);
 
@@ -487,6 +503,8 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
       const articleSpacingSize = 8;
       const headerTopBottomPaddingSize = 20;
 
+      updateHeights();
+
       doubleTapToTopScrollController!.jumpTo(
           (cachedHeaderHeight! + headerTopBottomPaddingSize) * headerCount +
               articleLineSpacingCount * articleSpacingSize +
@@ -504,7 +522,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
         //   needRebuild: true,
         //   color: Colors.transparent,
         // ),
-        indexBarDragListener: dragListener,
+        indexBarDragListener: indexBarDragListener,
         // height: widget.indexBarHeight,
         // itemHeight: widget.indexBarItemHeight,
         // margin: widget.indexBarMargin,
