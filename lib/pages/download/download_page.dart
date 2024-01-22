@@ -4,8 +4,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:auto_animated/auto_animated.dart';
+import 'package:azlistview/azlistview.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -14,6 +17,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sticky_headers/sticky_headers.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/hitomi_parser.dart';
 import 'package:violet/component/hitomi/population.dart';
@@ -36,6 +40,7 @@ import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 import 'package:violet/util/helper.dart';
+import 'package:violet/widgets/debounce_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
@@ -89,12 +94,14 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     DownloadPageManager.taskFromQueryResultController!.stream.listen((event) {
       appendTaskFromQueryResult(event);
     });
+    indexBarDragListener.dragDetails.addListener(_indexChanged);
   }
 
   @override
   void dispose() {
     DownloadPageManager.taskController!.close();
     DownloadPageManager.taskFromQueryResultController!.close();
+    indexBarDragListener.dragDetails.removeListener(_indexChanged);
     super.dispose();
   }
 
@@ -202,6 +209,10 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
       for (final element in result) {
         queryResults[element.id()] = element;
       }
+
+      if (Settings.downloadAlignType != 0 && Settings.downloadResultType == 0) {
+        setState(() {});
+      }
     });
   }
 
@@ -216,26 +227,31 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     return Container(
       padding: EdgeInsets.only(top: statusBarHeight),
       child: GestureDetector(
-        child: CustomScrollView(
-          // key: key,
-          // cacheExtent: height * 100,
-          controller: doubleTapToTopScrollController = ScrollController(),
-          physics: const BouncingScrollPhysics(),
-          slivers: <Widget>[
-            SliverPersistentHeader(
-              floating: true,
-              delegate: AnimatedOpacitySliver(
-                searchBar: Stack(
-                  children: <Widget>[
-                    _urlBar(),
-                    _features(),
-                    _align(),
-                  ],
+        child: Stack(
+          children: [
+            CustomScrollView(
+              controller: doubleTapToTopScrollController = ScrollController()
+                ..addListener(_scrollChanged),
+              physics: const BouncingScrollPhysics(),
+              slivers: <Widget>[
+                SliverPersistentHeader(
+                  floating: true,
+                  delegate: AnimatedOpacitySliver(
+                    searchBar: Stack(
+                      children: <Widget>[
+                        _urlBar(),
+                        _features(),
+                        _align(),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+                _panel(),
+              ],
             ),
-            // _cachedPanel,
-            _panel(),
+            if (Settings.downloadAlignType != 0 &&
+                Settings.downloadResultType == 0)
+              indexBar(),
           ],
         ),
       ),
@@ -268,6 +284,10 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     var windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
 
     if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1) {
+      if (Settings.downloadAlignType != 0 && Settings.downloadResultType == 0) {
+        return _panelGroupBy();
+      }
+
       var mm = Settings.downloadResultType == 0 ? 3 : 2;
       return SliverPadding(
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
@@ -287,19 +307,21 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                   downloadItemWidgetKeys1[filterResult[index].id()] =
                       GlobalKey<DownloadItemWidgetState>();
                 }
-                return Align(
-                  key: Key('dp${e.id()}${e.url()}'),
-                  alignment: Alignment.bottomCenter,
-                  child: DownloadItemWidget(
-                    key: downloadItemWidgetKeys1[filterResult[index].id()],
-                    initialStyle: DownloadListItem(
-                      showDetail: false,
-                      addBottomPadding: false,
-                      width: (windowWidth - 4.0) / mm,
+                return DebounceWidget(
+                  child: Align(
+                    key: Key('dp${e.id()}${e.url()}'),
+                    alignment: Alignment.bottomCenter,
+                    child: DownloadItemWidget(
+                      key: downloadItemWidgetKeys1[filterResult[index].id()],
+                      initialStyle: DownloadListItem(
+                        showDetail: false,
+                        addBottomPadding: false,
+                        width: (windowWidth - 4.0) / mm,
+                      ),
+                      item: e,
+                      download: e.download,
+                      refeshCallback: refresh,
                     ),
-                    item: e,
-                    download: e.download,
-                    refeshCallback: refresh,
                   ),
                 );
               },
@@ -381,6 +403,263 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     }
 
     throw Exception('unreachable');
+  }
+
+  List<(String, List<DownloadItemModel>)> getGroupBy() {
+    final groups = filterResult.groupListsBy((e) {
+      final qr = queryResults[int.tryParse(e.url()) ?? -1];
+      if (qr == null) return 'none';
+
+      String getFirst(target) {
+        final artists = target as String;
+        if (artists == '' || artists == '|N/A|') return 'none';
+        return artists.split('|').firstWhere((element) => element != '');
+      }
+
+      switch (Settings.downloadAlignType) {
+        case 1: //artist
+          return getFirst(qr.artists());
+
+        case 2: // group
+          return getFirst(qr.groups());
+
+        case 3: // page
+        case 4: // datetime recent
+          return getFirst(qr.groups());
+
+        default:
+          throw Exception('unrechable');
+      }
+    });
+
+    final groupsSorted = groups.entries.map((e) => (e.key, e.value)).toList()
+      ..sortBy((e) => e.$1);
+
+    return groupsSorted;
+  }
+
+  final indexBarDragListener = IndexBarDragListener.create();
+  GlobalKey? heightRefHeader;
+  GlobalKey? heightRefArticle;
+  double? cachedHeaderHeight;
+  double? cachedArticleHeight;
+
+  // TODO: extract this logic to generally
+  void updateHeights() {
+    if (cachedHeaderHeight == null || cachedArticleHeight == null) {
+      final headerHeight =
+          (heightRefHeader!.currentContext!.findRenderObject() as RenderBox)
+              .size
+              .height;
+      final articleHeight =
+          (heightRefArticle!.currentContext!.findRenderObject() as RenderBox)
+              .size
+              .height;
+
+      cachedArticleHeight ??= articleHeight;
+      cachedHeaderHeight ??= headerHeight;
+    }
+  }
+
+  void _scrollChanged() {
+    if (!(Settings.downloadAlignType != 0 &&
+        Settings.downloadResultType == 0)) {
+      return;
+    }
+
+    // final pos = doubleTapToTopScrollController!.offset;
+
+    // // TODO: Caching
+    // final groupBy = getGroupBy();
+
+    // updateHeights();
+  }
+
+  void _indexChanged() {
+    final details = indexBarDragListener.dragDetails.value;
+    if (details.action == IndexBarDragDetails.actionDown ||
+        details.action == IndexBarDragDetails.actionUpdate) {
+      final tag = details.tag!;
+
+      final groupBy = getGroupBy();
+
+      // TODO: More optimize
+      final headerCount =
+          groupBy.indexWhere((e) => e.$1[0].toUpperCase() == tag);
+
+      const maxItemCount = 12;
+      const itemPerRow = 3;
+
+      final articleLineCount = groupBy
+          .take(headerCount)
+          .map((e) =>
+              (min(e.$2.length, maxItemCount) + itemPerRow - 1) ~/ itemPerRow)
+          .sum;
+      final articleLineSpacingCount = groupBy
+          .take(headerCount)
+          .map((e) => (min(e.$2.length, maxItemCount) - 1) ~/ itemPerRow)
+          .sum;
+
+      const articleSpacingSize = 8;
+      const headerTopBottomPaddingSize = 20;
+
+      updateHeights();
+
+      doubleTapToTopScrollController!.jumpTo(
+          (cachedHeaderHeight! + headerTopBottomPaddingSize) * headerCount +
+              articleLineSpacingCount * articleSpacingSize +
+              articleLineCount * cachedArticleHeight!);
+    }
+  }
+
+  Widget indexBar() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: IndexBar(
+        // data: widget.indexBarData,
+        data: getGroupBy().map((e) => e.$1[0].toUpperCase()).toSet().toList(),
+        // options: const IndexBarOptions(
+        //   needRebuild: true,
+        //   color: Colors.transparent,
+        // ),
+        indexBarDragListener: indexBarDragListener,
+        // height: widget.indexBarHeight,
+        // itemHeight: widget.indexBarItemHeight,
+        // margin: widget.indexBarMargin,
+        // indexHintBuilder: widget.indexHintBuilder,
+        // indexBarDragListener: dragListener,
+        // options: widget.indexBarOptions,
+        // controller: indexBarController,
+        options: const IndexBarOptions(
+          needRebuild: true,
+          selectTextStyle: TextStyle(
+              fontSize: 12, color: Colors.white, fontWeight: FontWeight.w500),
+          selectItemDecoration:
+              BoxDecoration(shape: BoxShape.circle, color: Color(0xFF333333)),
+          // indexHintWidth: 96,
+          // indexHintHeight: 97,
+          // indexHintAlignment: Alignment.centerRight,
+          // indexHintTextStyle:
+          //     TextStyle(fontSize: 24.0, color: Colors.black87),
+          // indexHintOffset: Offset(-30, 0),
+        ),
+      ),
+    );
+  }
+
+  Widget _panelGroupBy() {
+    var windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
+    var mm = Settings.downloadResultType == 0 ? 3 : 2;
+
+    heightRefHeader = null;
+    heightRefArticle = null;
+
+    final groupsWidget = getGroupBy().map((e) {
+      final title = Container(
+        key: heightRefHeader == null ? heightRefHeader ??= GlobalKey() : null,
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+        child: Container(
+          decoration: !Settings.themeFlat
+              ? BoxDecoration(
+                  color: Settings.themeWhat ? Colors.black26 : Colors.white,
+                  borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Settings.themeWhat
+                          ? Colors.black26
+                          : Colors.grey.withOpacity(0.1),
+                      spreadRadius: Settings.themeWhat ? 0 : 5,
+                      blurRadius: 7,
+                      offset: const Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                )
+              : null,
+          color: !Settings.themeFlat
+              ? null
+              : Settings.themeWhat
+                  ? Colors.black26
+                  : Colors.white,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: Material(
+              color: Settings.themeWhat
+                  ? Settings.themeBlack
+                      ? Palette.blackThemeBackground
+                      : Colors.black38
+                  : Colors.white,
+              child: InkWell(
+                customBorder: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                  child: Text(
+                    e.$1.split(' ').map((e) => e.capitalize()).join(' '),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 20.0),
+                  ),
+                ),
+                onTap: () {
+                  // TODO:
+                  print('click');
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final items = GridView(
+        physics: const NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(8, 4, 8, 16),
+        shrinkWrap: true,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: Settings.useTabletMode ? mm * 2 : mm,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+          childAspectRatio: 3 / 4,
+        ),
+        children: e.$2
+            .map((e) => SizedBox(
+                key: heightRefArticle == null
+                    ? heightRefArticle ??= GlobalKey()
+                    : null,
+                child: DebounceWidget(
+                  child: Align(
+                    key: Key('dp${e.id()}${e.url()}'),
+                    alignment: Alignment.bottomCenter,
+                    child: DownloadItemWidget(
+                      key: downloadItemWidgetKeys1[e.id()],
+                      initialStyle: DownloadListItem(
+                        showDetail: false,
+                        addBottomPadding: false,
+                        width: (windowWidth - 4.0) / mm,
+                      ),
+                      item: e,
+                      download: e.download,
+                      refeshCallback: refresh,
+                    ),
+                  ),
+                )))
+            .take(12)
+            .toList(),
+      );
+
+      return StickyHeader(
+        header: SizedBox(width: double.infinity, child: title),
+        content: items,
+      );
+    }).toList();
+
+    return SliverPadding(
+      padding: EdgeInsets.zero,
+      sliver: SliverList(
+        key: _listKey,
+        delegate: SliverChildListDelegate(
+          groupsWidget,
+        ),
+      ),
+    );
   }
 
   Widget _urlBar() {
@@ -925,5 +1204,11 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     if (qm.results!.isEmpty) return;
 
     queryResults[int.parse(url)] = qm.results!.first;
+  }
+}
+
+extension StringExtension on String {
+  String capitalize() {
+    return '${this[0].toUpperCase()}${substring(1).toLowerCase()}';
   }
 }

@@ -89,6 +89,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.0"
+  azlistview:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: d656015745a8df72307ff0a4c43b1f582cad28c7
+      url: "https://github.com/violet-dev/azlistview"
+    source: git
+    version: "2.0.0"
   badges:
     dependency: "direct main"
     description:
@@ -1403,13 +1412,13 @@ packages:
     source: hosted
     version: "0.27.7"
   scrollable_positioned_list:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: scrollable_positioned_list
-      sha256: "1b54d5f1329a1e263269abc9e2543d90806131aa14fe7c6062a8054d57249287"
+      sha256: "9566352ab9ba05794ee6c8864f154afba5d36c5637d0e3e32c615ba4ceb92772"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.8"
+    version: "0.2.3"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -1559,6 +1568,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.1"
+  sticky_headers:
+    dependency: "direct main"
+    description:
+      name: sticky_headers
+      sha256: "9b3dd2cb0fd6a7038170af3261f855660cbb241cb56c501452cb8deed7023ede"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0+2"
   stream_channel:
     dependency: transitive
     description:
