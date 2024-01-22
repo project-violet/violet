@@ -40,6 +40,7 @@ import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 import 'package:violet/util/helper.dart';
+import 'package:violet/widgets/debounce_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
@@ -308,19 +309,21 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                   downloadItemWidgetKeys1[filterResult[index].id()] =
                       GlobalKey<DownloadItemWidgetState>();
                 }
-                return Align(
-                  key: Key('dp${e.id()}${e.url()}'),
-                  alignment: Alignment.bottomCenter,
-                  child: DownloadItemWidget(
-                    key: downloadItemWidgetKeys1[filterResult[index].id()],
-                    initialStyle: DownloadListItem(
-                      showDetail: false,
-                      addBottomPadding: false,
-                      width: (windowWidth - 4.0) / mm,
+                return DebounceWidget(
+                  child: Align(
+                    key: Key('dp${e.id()}${e.url()}'),
+                    alignment: Alignment.bottomCenter,
+                    child: DownloadItemWidget(
+                      key: downloadItemWidgetKeys1[filterResult[index].id()],
+                      initialStyle: DownloadListItem(
+                        showDetail: false,
+                        addBottomPadding: false,
+                        width: (windowWidth - 4.0) / mm,
+                      ),
+                      item: e,
+                      download: e.download,
+                      refeshCallback: refresh,
                     ),
-                    item: e,
-                    download: e.download,
-                    refeshCallback: refresh,
                   ),
                 );
               },
@@ -443,6 +446,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
   double? cachedHeaderHeight;
   double? cachedArticleHeight;
 
+  // TODO: extract this logic to generally
   void _valueChanged() {
     final details = dragListener.dragDetails.value;
     if (details.action == IndexBarDragDetails.actionDown ||
@@ -602,19 +606,21 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                 key: heightRefArticle == null
                     ? heightRefArticle ??= GlobalKey()
                     : null,
-                child: Align(
-                  key: Key('dp${e.id()}${e.url()}'),
-                  alignment: Alignment.bottomCenter,
-                  child: DownloadItemWidget(
-                    key: downloadItemWidgetKeys1[e.id()],
-                    initialStyle: DownloadListItem(
-                      showDetail: false,
-                      addBottomPadding: false,
-                      width: (windowWidth - 4.0) / mm,
+                child: DebounceWidget(
+                  child: Align(
+                    key: Key('dp${e.id()}${e.url()}'),
+                    alignment: Alignment.bottomCenter,
+                    child: DownloadItemWidget(
+                      key: downloadItemWidgetKeys1[e.id()],
+                      initialStyle: DownloadListItem(
+                        showDetail: false,
+                        addBottomPadding: false,
+                        width: (windowWidth - 4.0) / mm,
+                      ),
+                      item: e,
+                      download: e.download,
+                      refeshCallback: refresh,
                     ),
-                    item: e,
-                    download: e.download,
-                    refeshCallback: refresh,
                   ),
                 )))
             .take(12)
