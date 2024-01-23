@@ -256,8 +256,8 @@ class _CropImageWidgetState extends State<CropImageWidget> {
         child: AspectRatio(
           aspectRatio: aspectRatio,
           child: Transform.scale(
-            scaleX: 1 / rect.width,
-            scaleY: 1 / rect.width,
+            scaleX: 1 / widget.rect.height,
+            scaleY: 1 / widget.rect.height,
             // scale: 2.0,
             alignment: Alignment.topLeft,
             child: Transform.translate(
