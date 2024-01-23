@@ -150,8 +150,11 @@ class ArticleInfoPage extends StatelessWidget {
                           child:
                               Text(Translations.of(context).trans('preview')),
                         ),
-                        expanded:
-                            PreviewAreaWidget(queryResult: data.queryResult),
+                        expanded: PreviewAreaWidget(
+                          queryResult: data.queryResult,
+                          onPageTapped: (page) async =>
+                              await _readButtonEvent(context, data, page),
+                        ),
                         collapsed: Container(),
                       ),
                     ),
@@ -287,7 +290,7 @@ class ArticleInfoPage extends StatelessWidget {
     Navigator.pop(context);
   }
 
-  _readButtonEvent(context, data) async {
+  _readButtonEvent(BuildContext context, ArticleInfo data, [int? page]) async {
     if (Settings.useVioletServer) {
       Future.delayed(const Duration(milliseconds: 100)).then((value) async {
         await VioletServer.view(data.queryResult.id());
@@ -328,6 +331,7 @@ class ArticleInfoPage extends StatelessWidget {
                 id: data.queryResult.id(),
                 title: data.queryResult.title(),
                 usableTabList: data.usableTabList,
+                jumpPage: page,
               ),
               child: const ViewerPage());
         },

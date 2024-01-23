@@ -10,13 +10,20 @@ import 'package:violet/util/iter_helper.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/dots_indicator.dart';
 
+typedef IntCallback = Future Function(int);
+
 class PreviewAreaWidget extends StatelessWidget {
   final QueryResult queryResult;
   final PageController pageController = PageController(
     initialPage: 0,
   );
+  final IntCallback onPageTapped;
 
-  PreviewAreaWidget({super.key, required this.queryResult});
+  PreviewAreaWidget({
+    super.key,
+    required this.queryResult,
+    required this.onPageTapped,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +114,7 @@ class PreviewAreaWidget extends StatelessWidget {
               child: InkWell(
                 highlightColor: Colors.transparent,
                 onTap: () {
-                  Navigator.pop(context, index);
+                  onPageTapped(index);
                 },
               ),
             ),
