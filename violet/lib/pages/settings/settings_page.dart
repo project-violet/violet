@@ -212,7 +212,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   Container _buildItems(List<Widget> items) {
     final itemsWithDividers = items
-        .map((e) => [e, const SettingGroupDivider()])
+        .map((e) => [e, SettingGroupDivider(key: GlobalKey())])
         .expand((e) => e)
         .take(items.length * 2 - 1)
         .toList();
