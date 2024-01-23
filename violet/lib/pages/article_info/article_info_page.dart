@@ -22,7 +22,6 @@ import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hitomi/related.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
-import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
@@ -31,6 +30,7 @@ import 'package:violet/model/article_info.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/article_info/preview_area.dart';
 import 'package:violet/pages/article_info/simple_info.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
@@ -150,8 +150,11 @@ class ArticleInfoPage extends StatelessWidget {
                           child:
                               Text(Translations.of(context).trans('preview')),
                         ),
-                        expanded:
-                            PreviewAreaWidget(queryResult: data.queryResult),
+                        expanded: PreviewAreaWidget(
+                          queryResult: data.queryResult,
+                          onPageTapped: (page) async =>
+                              await _readButtonEvent(context, data, page),
+                        ),
                         collapsed: Container(),
                       ),
                     ),
@@ -287,7 +290,7 @@ class ArticleInfoPage extends StatelessWidget {
     Navigator.pop(context);
   }
 
-  _readButtonEvent(context, data) async {
+  _readButtonEvent(BuildContext context, ArticleInfo data, [int? page]) async {
     if (Settings.useVioletServer) {
       Future.delayed(const Duration(milliseconds: 100)).then((value) async {
         await VioletServer.view(data.queryResult.id());
@@ -328,6 +331,7 @@ class ArticleInfoPage extends StatelessWidget {
                 id: data.queryResult.id(),
                 title: data.queryResult.title(),
                 usableTabList: data.usableTabList,
+                jumpPage: page,
               ),
               child: const ViewerPage());
         },
@@ -513,65 +517,6 @@ class MultiChipWidget extends StatelessWidget {
                 .toList(),
           ),
         ),
-      ],
-    );
-  }
-}
-
-class PreviewAreaWidget extends StatelessWidget {
-  final QueryResult queryResult;
-
-  const PreviewAreaWidget({super.key, required this.queryResult});
-
-  @override
-  Widget build(BuildContext context) {
-    if (ProviderManager.isExists(queryResult.id())) {
-      return FutureBuilder(
-        future: Future.value(1).then((value) async {
-          VioletImageProvider prov =
-              await ProviderManager.get(queryResult.id());
-
-          return Tuple2(
-              await prov.getSmallImagesUrl(), await prov.getHeader(0));
-        }),
-        builder: (context,
-            AsyncSnapshot<Tuple2<List<String>, Map<String, String>>> snapshot) {
-          if (!snapshot.hasData) {
-            return const CircularProgressIndicator();
-          }
-          return GridView.count(
-            controller: null,
-            physics: const ScrollPhysics(),
-            shrinkWrap: true,
-            crossAxisCount: 3,
-            childAspectRatio: 3 / 4,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            children: (snapshot.data!.item1)
-                .take(30)
-                .map((e) => CachedNetworkImage(
-                      imageUrl: e,
-                      httpHeaders: snapshot.data!.item2,
-                    ))
-                .toList(),
-          );
-        },
-      );
-    }
-    return const Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        SizedBox(
-          width: 100,
-          height: 100,
-          child: Align(
-            child: Text(
-              '??? Unknown Error!',
-              textAlign: TextAlign.center,
-            ),
-          ),
-        )
       ],
     );
   }
