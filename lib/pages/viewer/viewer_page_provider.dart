@@ -14,6 +14,7 @@ class ViewerPageProvider {
   final int id;
   final String title;
   final List<QueryResult>? usableTabList;
+  final int? jumpPage;
 
   ViewerPageProvider({
     this.useFileSystem = false,
@@ -25,5 +26,6 @@ class ViewerPageProvider {
     this.provider,
     this.headers,
     this.usableTabList,
+    this.jumpPage,
   });
 }
