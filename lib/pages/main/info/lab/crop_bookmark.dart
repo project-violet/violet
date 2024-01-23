@@ -54,6 +54,7 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
             mainAxisSpacing: 4,
             crossAxisSpacing: 4,
             itemCount: imgs.length,
+            cacheExtent: double.infinity,
             itemBuilder: (context, index) {
               final e = imgs[index];
               final area =
@@ -131,7 +132,6 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
             headers: snapshot.data!.item2,
             rect: rect,
           ),
-          Text((rect.width / rect.height).toString()),
         ]);
       },
     );
@@ -184,84 +184,107 @@ class _CropImageWidgetState extends State<CropImageWidget> {
           //   aspectRatio: widget.rect.width / widget.rect.height,
           // alignment: Alignment(rect.left - 0.5, rect.top - 0.5),
 
-          child: Transform.scale(
-            scaleX: 1 / widget.rect.width,
-            scaleY: 1 / widget.rect.width,
-            alignment: Alignment.topLeft,
-            child: Transform.translate(
-              offset:
-                  Offset(-width * widget.rect.left, -height * widget.rect.top),
-              child: ClipRect(
-                clipper: RectClipper(widget.rect),
-                child: SizeReportingWidget(
-                  onSizeChange: (size) {
-                    // print(size);
-                    setState(() {
-                      this.height = size.height;
-                      originalAspectRatio = size.width / size.height;
-                    });
-                  },
-                  child: VCachedNetworkImage(
-                    // key: _keys![index],
-                    fit: BoxFit.cover,
-                    alignment: Alignment.topLeft,
-                    fadeInDuration: const Duration(microseconds: 500),
-                    fadeInCurve: Curves.easeIn,
-                    imageUrl: widget.url,
-                    httpHeaders: widget.headers,
-                    progressIndicatorBuilder: (context, string, progress) {
-                      return SizedBox(
-                        height: 300,
-                        child: Center(
-                          child: SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: CircularProgressIndicator(
-                                value: progress.progress),
-                          ),
-                        ),
-                      );
-                    },
-                    // ),
+          // child: Transform.scale(
+          //   scaleX: 1 / widget.rect.width,
+          //   scaleY: 1 / widget.rect.width,
+          //   alignment: Alignment.topLeft,
+          //   child: Transform.translate(
+          //     offset:
+          //         Offset(-width * widget.rect.left, -height * widget.rect.top),
+          //     child: ClipRect(
+          //       clipper: RectClipper(widget.rect),
+          child: SizeReportingWidget(
+            onSizeChange: (size) {
+              // print(size);
+              setState(() {
+                this.height = size.height;
+                originalAspectRatio = size.width / size.height;
+              });
+            },
+            child: VCachedNetworkImage(
+              // key: _keys![index],
+              fit: BoxFit.cover,
+              alignment: Alignment.topLeft,
+              fadeInDuration: const Duration(microseconds: 500),
+              fadeInCurve: Curves.easeIn,
+              imageUrl: widget.url,
+              httpHeaders: widget.headers,
+              progressIndicatorBuilder: (context, string, progress) {
+                return SizedBox(
+                  height: 300,
+                  child: Center(
+                    child: SizedBox(
+                      width: 30,
+                      height: 30,
+                      child:
+                          CircularProgressIndicator(value: progress.progress),
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
+              // ),
             ),
           ),
+          //     ),
+          //   ),
+          // ),
         ),
       );
     }
 
-    final aspectRatio = widget.rect.width / widget.rect.height;
+    // widget.rect는 실제 사진의 너비와 높이를 각각 0~1으로 나타낸 값을 사용한다.
+    final relativeAspectRatio = widget.rect.width / widget.rect.height;
+    final realAspectRatio = relativeAspectRatio * originalAspectRatio!;
 
-    final a = aspectRatio / originalAspectRatio!;
-    final rect = Rect.fromLTRB(
-      widget.rect.left / a,
-      // 0.0,
-      widget.rect.top,
-      widget.rect.right / a,
-      // width,
-      widget.rect.bottom,
-    );
+    final visiableWidth = width;
+    final visiableHeight = width / realAspectRatio;
 
-    print('1 ${aspectRatio}');
-    print('2 ${rect.width / rect.height}');
+    late final Rect rect;
+    late final double scaleX;
+    late final double scaleY;
+
+    // real > original이라면 오른쪽에 여백이 남음
+    if (realAspectRatio > originalAspectRatio!) {
+      rect = Rect.fromLTRB(
+        widget.rect.left * originalAspectRatio!,
+        widget.rect.top,
+        widget.rect.right * originalAspectRatio!,
+        widget.rect.bottom,
+      );
+      scaleX = 1 / rect.width;
+      scaleY = 1 / rect.height;
+    } else {
+      rect = Rect.fromLTRB(
+        widget.rect.left,
+        widget.rect.top * originalAspectRatio!,
+        widget.rect.right,
+        widget.rect.bottom * originalAspectRatio!,
+      );
+      scaleX = 1 / rect.width;
+      scaleY = 1 / rect.height / relativeAspectRatio;
+    }
+
+    // print('1 ${aspectRatio}');
+    // print('2 ${rect.width / rect.height}');
 
     return Material(
       child: InkWell(
         onTap: () async {
+          print(widget.rect);
+          print(rect);
           showArticleInfo(context, widget.articleId);
         },
         splashColor: Colors.white,
         child: AspectRatio(
-          aspectRatio: aspectRatio,
+          aspectRatio: realAspectRatio,
           child: Transform.scale(
-            scaleX: 1 / widget.rect.height,
-            scaleY: 1 / widget.rect.height,
-            // scale: 2.0,
+            scaleX: scaleX,
+            scaleY: scaleY,
+            // scale: 1.0,
             alignment: Alignment.topLeft,
             child: Transform.translate(
-              offset: Offset(-width * rect.left, -height * rect.top / a),
+              offset: Offset(
+                  -visiableWidth * rect.left, -visiableHeight * rect.top),
               child: ClipRect(
                 clipper: RectClipper(rect),
                 child: VCachedNetworkImage(
