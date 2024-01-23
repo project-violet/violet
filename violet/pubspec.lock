@@ -986,6 +986,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
+  image_crop:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "66d174ea34c74e593c41f01728822246ef9d1a9c"
+      url: "https://github.com/litang0908/image_crop"
+    source: git
+    version: "0.4.1"
   image_size_getter:
     dependency: "direct main"
     description:

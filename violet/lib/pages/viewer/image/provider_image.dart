@@ -5,7 +5,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_crop/image_crop.dart';
 import 'package:violet/log/log.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/settings/settings_wrapper.dart';
@@ -65,7 +67,7 @@ class _ProviderImageState extends State<ProviderImage> {
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedImage.network(
+    final image = ExtendedImage.network(
       widget.imgUrl,
       key: widget.imgKey,
       headers: widget.imgHeader,
@@ -79,6 +81,19 @@ class _ProviderImageState extends State<ProviderImage> {
       cacheHeight: Settings.useLowPerf
           ? (MediaQuery.of(context).size.width * 2.0).toInt()
           : null,
+    );
+
+    return GestureDetector(
+      child: image,
+      onLongPress: () {
+        PlatformNavigator.navigateSlide(
+          context,
+          ImageCropBookmark(
+            url: widget.imgUrl,
+            headers: widget.imgHeader,
+          ),
+        );
+      },
     );
   }
 
@@ -145,5 +160,74 @@ class _ProviderImageState extends State<ProviderImage> {
     c.isImageLoaded[widget.index] = true;
 
     return state.completedWidget;
+  }
+}
+
+class ImageCropBookmark extends StatelessWidget {
+  final GlobalKey<CropState> cropKey = GlobalKey<CropState>();
+  final String url;
+  final Map<String, String>? headers;
+
+  ImageCropBookmark({
+    super.key,
+    required this.url,
+    required this.headers,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: Container(
+            color: Colors.black,
+            padding: const EdgeInsets.all(20.0),
+            child: Crop(
+              key: cropKey,
+              image: NetworkImage(url, headers: headers),
+              // aspectRatio: 4.0 / 3.0,
+            ),
+          ),
+        ),
+        TextButton(
+          child: const Text(
+            'Bookmark Image',
+            style: TextStyle(color: Colors.white),
+          ),
+          onPressed: () => bookmarkImage(),
+        ),
+        SizedBox.fromSize(size: const Size.fromHeight(24.0))
+      ],
+    );
+  }
+
+  Future<void> bookmarkImage() async {
+    final scale = cropKey.currentState!.scale;
+    final area = cropKey.currentState!.area;
+    if (area == null) {
+      // cannot crop, widget is not setup
+      return;
+    }
+
+    print(area);
+
+    // scale up to use maximum possible number of pixels
+    // this will sample image in higher resolution to make cropped image larger
+    // final sample = await ImageCrop.sampleImage(
+    //   file: _file,
+    //   preferredSize: (2000 / scale).round(),
+    // );
+
+    // final file = await ImageCrop.cropImage(
+    //   file: sample,
+    //   area: area,
+    // );
+
+    // sample.delete();
+
+    // _lastCropped?.delete();
+    // _lastCropped = file;
+
+    // debugPrint('$file');
   }
 }
