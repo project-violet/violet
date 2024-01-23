@@ -112,6 +112,22 @@ class HistoryUser {
   }
 }
 
+class BookmarkCropImage {
+  Map<String, dynamic> result;
+  BookmarkCropImage({required this.result});
+
+  int id() => result['Id'];
+  String datetime() => result['DateTime'];
+  int article() => result['Article'];
+  int page() => result['Page'];
+  String area() => result['Area'];
+
+  Future<void> update() async {
+    var db = await CommonUserDatabase.getInstance();
+    await db.update('BookmarkCropImage', result, 'Id=?', [id()]);
+  }
+}
+
 class Bookmark {
   static late final Bookmark _instance;
   static Future<void> load() async {
@@ -173,6 +189,17 @@ class Bookmark {
               DateTime text);
               ''');
     }
+    final ex3 = await db.query(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='BookmarkCropImage';");
+    if (ex3.isEmpty || ex3[0].isEmpty) {
+      await db.execute('''CREATE TABLE BookmarkCropImage (
+              Id integer primary key autoincrement, 
+              Article integer,
+              Page integer,
+              Area text,
+              DateTime text);
+              ''');
+    }
     _instance = Bookmark();
   }
 
@@ -226,6 +253,18 @@ class Bookmark {
       'DateTime': datetime.toString(),
     });
     historyUserSet!.add(user);
+  }
+
+  Future<void> insertCropImage(int articleId, int page, String area,
+      [DateTime? datetime]) async {
+    datetime ??= DateTime.now();
+    var db = await CommonUserDatabase.getInstance();
+    await db.insert('BookmarkCropImage', {
+      'Article': articleId,
+      'Page': page,
+      'Area': area,
+      'DateTime': datetime.toString(),
+    });
   }
 
   Future<int> createGroup(String name, String description, Color color,
