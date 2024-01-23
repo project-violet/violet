@@ -1487,7 +1487,24 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-
+          ListTile(
+            leading: Icon(
+              MdiIcons.timerOff,
+              color: Settings.majorColor,
+            ),
+            title: Text(Translations.of(context).trans('ignoretimeout')),
+            trailing: Switch(
+              value: Settings.ignoreTimeout,
+              onChanged: (newValue) async {
+                await Settings.setIgnoreTimeout(newValue);
+                setState(() {
+                  _shouldReload = true;
+                });
+              },
+              activeTrackColor: Settings.majorColor,
+              activeColor: Settings.majorAccentColor,
+            ),
+          ),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1514,38 +1531,6 @@ class _SettingsPageState extends State<SettingsPage>
             ),
             onTap: () async {
               await Settings.setUseVioletServer(!Settings.useVioletServer);
-              setState(() {
-                _shouldReload = true;
-              });
-            },
-          ),
-
-          InkWell(
-            customBorder: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(8.0),
-                    bottomRight: Radius.circular(8.0))),
-            child: ListTile(
-              leading: Image.asset(
-                'assets/images/logo.png',
-                width: 25,
-                height: 25,
-              ),
-              title: Text(Translations.of(context).trans('ignoretimeout')),
-              trailing: Switch(
-                value: Settings.ignoreTimeout,
-                onChanged: (newValue) async {
-                  await Settings.setIgnoreTimeout(newValue);
-                  setState(() {
-                    _shouldReload = true;
-                  });
-                },
-                activeTrackColor: Settings.majorColor,
-                activeColor: Settings.majorAccentColor,
-              ),
-            ),
-            onTap: () async {
-              await Settings.setIgnoreTimeout(!Settings.ignoreTimeout);
               setState(() {
                 _shouldReload = true;
               });
