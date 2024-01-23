@@ -137,12 +137,17 @@ class _ViewerPageState extends State<ViewerPage> {
     }
 
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
-      c.bookmark.value =
-          await (await Bookmark.getInstance()).isBookmark(_pageInfo.id);
+      if (_pageInfo.jumpPage != null) {
+        await Future.delayed(const Duration(milliseconds: 1500))
+            .then((value) => c.jump(_pageInfo.jumpPage!));
+      } else {
+        c.bookmark.value =
+            await (await Bookmark.getInstance()).isBookmark(_pageInfo.id);
 
-      if (Settings.showRecordJumpMessage) {
-        await Future.delayed(const Duration(milliseconds: 100))
-            .then((value) => _checkLatestRead());
+        if (Settings.showRecordJumpMessage) {
+          await Future.delayed(const Duration(milliseconds: 100))
+              .then((value) => _checkLatestRead());
+        }
       }
 
       c.startTimer();
