@@ -191,6 +191,9 @@ class ImageCropBookmark extends StatelessWidget {
       return;
     }
 
+    print('asdfasdfasdfasdf');
+    print((area.width / area.height));
+
     await (await Bookmark.getInstance()).insertCropImage(articleId, page,
         '${area.left},${area.top},${area.right},${area.bottom}');
 

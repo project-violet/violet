@@ -211,7 +211,7 @@ class ImageCropBookmark extends StatelessWidget {
   }
 
   Future<void> bookmarkImage(BuildContext context) async {
-    // final scale = cropKey.currentState!.scale;
+    final scale = cropKey.currentState!.scale;
     final area = cropKey.currentState!.area;
     if (area == null) {
       // cannot crop, widget is not setup
