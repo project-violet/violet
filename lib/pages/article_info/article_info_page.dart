@@ -22,7 +22,6 @@ import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hitomi/related.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
-import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
@@ -31,6 +30,7 @@ import 'package:violet/model/article_info.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/article_info/preview_area.dart';
 import 'package:violet/pages/article_info/simple_info.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
@@ -514,105 +514,6 @@ class MultiChipWidget extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class PreviewAreaWidget extends StatelessWidget {
-  final QueryResult queryResult;
-
-  const PreviewAreaWidget({super.key, required this.queryResult});
-
-  @override
-  Widget build(BuildContext context) {
-    if (ProviderManager.isExists(queryResult.id())) {
-      return FutureBuilder(
-        future: Future.value(1).then((value) async {
-          VioletImageProvider prov =
-              await ProviderManager.get(queryResult.id());
-
-          return Tuple2(
-              await prov.getSmallImagesUrl(), await prov.getHeader(0));
-        }),
-        builder: (context,
-            AsyncSnapshot<Tuple2<List<String>, Map<String, String>>> snapshot) {
-          if (!snapshot.hasData) {
-            return const CircularProgressIndicator();
-          }
-          return GridView.count(
-            controller: null,
-            physics: const ScrollPhysics(),
-            shrinkWrap: true,
-            crossAxisCount: 3,
-            childAspectRatio: 3 / 4,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            children: (snapshot.data!.item1)
-                .take(30)
-                .toList()
-                .asMap()
-                .map((i, e) => MapEntry(
-                    i, _buildTappableItem(context, i, e, snapshot.data!.item2)))
-                .values
-                .toList(),
-          );
-        },
-      );
-    }
-    return const Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        SizedBox(
-          width: 100,
-          height: 100,
-          child: Align(
-            child: Text(
-              '??? Unknown Error!',
-              textAlign: TextAlign.center,
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget _buildTappableItem(BuildContext context, int index, String image,
-      Map<String, String> headers) {
-    return SizedBox.expand(
-      child: Stack(
-        children: <Widget>[
-          SizedBox.expand(
-              child: CachedNetworkImage(
-            imageUrl: image,
-            httpHeaders: headers,
-          )),
-          Align(
-            alignment: Alignment.topCenter,
-            child: Container(
-              padding: const EdgeInsets.only(bottom: 1),
-              width: double.infinity,
-              color: Colors.black.withOpacity(0.7),
-              child: Text(
-                '${index + 1} page',
-                textAlign: TextAlign.right,
-                style: const TextStyle(fontSize: 11, color: Colors.white),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                highlightColor: Colors.transparent,
-                onTap: () {
-                  Navigator.pop(context, index);
-                },
-              ),
-            ),
-          )
-        ],
-      ),
     );
   }
 }
