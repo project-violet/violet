@@ -383,6 +383,13 @@ class Bookmark {
         .toList();
   }
 
+  Future<List<BookmarkCropImage>> getCropImages() async {
+    return (await (await CommonUserDatabase.getInstance())
+            .query('SELECT * FROM BookmarkCropImage'))
+        .map((x) => BookmarkCropImage(result: x))
+        .toList();
+  }
+
   Future<void> modfiyGroup(BookmarkGroup group) async {
     await (await CommonUserDatabase.getInstance())
         .update('BookmarkGroup', group.result, 'Id=?', [group.id()]);
