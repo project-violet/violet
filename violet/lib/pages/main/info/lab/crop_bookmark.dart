@@ -4,12 +4,19 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/database/user/record.dart';
 import 'package:violet/pages/common/utils.dart';
+import 'package:violet/pages/viewer/viewer_page.dart';
+import 'package:violet/pages/viewer/viewer_page_provider.dart';
+import 'package:violet/server/violet.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/v_cached_network_image.dart';
 
@@ -282,6 +289,9 @@ class _CropImageWidgetState extends State<CropImageWidget> {
               onTap: () async {
                 showArticleInfo(context, widget.articleId);
               },
+              onDoubleTap: () async {
+                _showViewer(widget.articleId);
+              },
               highlightColor:
                   Theme.of(context).highlightColor.withOpacity(0.15),
             ),
@@ -289,6 +299,45 @@ class _CropImageWidgetState extends State<CropImageWidget> {
         ),
       ],
     );
+  }
+
+  Future<void> _showViewer(int articleId) async {
+    if (Settings.useVioletServer) {
+      Future.delayed(const Duration(milliseconds: 100)).then((value) async {
+        await VioletServer.view(articleId);
+      });
+    }
+
+    await (await User.getInstance()).insertUserLog(articleId, 0);
+
+    var prov = await ProviderManager.get(articleId);
+
+    await prov.init();
+
+    var headers = await prov.getHeader(0);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) {
+          return Provider<ViewerPageProvider>.value(
+              value: ViewerPageProvider(
+                uris: List<String>.filled(prov.length(), ''),
+                useProvider: true,
+                provider: prov,
+                headers: headers,
+                id: articleId,
+                title: '<No Query>',
+                jumpPage: widget.page,
+              ),
+              child: const ViewerPage());
+        },
+      ),
+    ).then((value) async {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+          overlays: SystemUiOverlay.values);
+    });
   }
 }
 
