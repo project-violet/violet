@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as ui;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:image_crop/image_crop.dart';
@@ -148,6 +149,7 @@ class ImageCropBookmark extends StatelessWidget {
   final String url;
   final int articleId;
   final int page;
+  late final double aspectRatio;
 
   ImageCropBookmark({
     super.key,
@@ -164,10 +166,13 @@ class ImageCropBookmark extends StatelessWidget {
           child: Container(
             color: Colors.black,
             padding: const EdgeInsets.all(20.0),
-            child: Crop.file(
-              File(url),
+            child: Crop(
+              image: ui.FileImage(File(url))
+                ..resolve(ImageConfiguration.empty)
+                    .addListener(ImageStreamListener((imageInfo, _) {
+                  aspectRatio = imageInfo.image.width / imageInfo.image.height;
+                })),
               key: cropKey,
-              // aspectRatio: 4.0 / 3.0,
             ),
           ),
         ),
@@ -184,18 +189,14 @@ class ImageCropBookmark extends StatelessWidget {
   }
 
   Future<void> bookmarkImage(BuildContext context) async {
-    // final scale = cropKey.currentState!.scale;
     final area = cropKey.currentState!.area;
     if (area == null) {
       // cannot crop, widget is not setup
       return;
     }
 
-    print('asdfasdfasdfasdf');
-    print((area.width / area.height));
-
     await (await Bookmark.getInstance()).insertCropImage(articleId, page,
-        '${area.left},${area.top},${area.right},${area.bottom}');
+        '${area.left},${area.top},${area.right},${area.bottom}', aspectRatio);
 
     FToast ftoast = FToast();
     ftoast.init(context);
