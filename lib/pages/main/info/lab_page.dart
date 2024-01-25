@@ -17,6 +17,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/main/info/lab/artist_search/artist_search.dart';
 import 'package:violet/pages/main/info/lab/bookmark_spy.dart';
+import 'package:violet/pages/main/info/lab/crop_bookmark.dart';
 import 'package:violet/pages/main/info/lab/recent_comments.dart';
 import 'package:violet/pages/main/info/lab/recent_record.dart';
 import 'package:violet/pages/main/info/lab/recent_record_u.dart';
@@ -360,6 +361,16 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   _navigate(const ArtistSearch());
                 },
               ),
+              _buildItem(
+                const Icon(MdiIcons.crop, size: 40, color: Colors.amber),
+                '#020 Crop Bookmark Page',
+                'Show cropped image',
+                null,
+                () async {
+                  _navigate(const CropBookmarkPage());
+                },
+              ),
+              SizedBox.fromSize(size: const Size.fromHeight(8.0))
             ],
           ),
         ),
