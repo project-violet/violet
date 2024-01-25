@@ -2,22 +2,15 @@
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
-import 'dart:math';
-import 'dart:typed_data';
 
-import 'package:image/image.dart' as img;
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:image/image.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/pages/article_info/preview_area.dart';
 import 'package:violet/pages/common/utils.dart';
-import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/v_cached_network_image.dart';
 
@@ -31,7 +24,6 @@ class CropBookmarkPage extends StatefulWidget {
 class _CropBookmarkPageState extends State<CropBookmarkPage> {
   List<String>? imagsUrlForEvict;
   List<double>? _height;
-  List<GlobalKey>? _keys;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +39,6 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
 
           _height ??= List<double>.filled(imgs.length, 0);
           imagsUrlForEvict = List<String>.filled(imgs.length, '');
-          _keys = List<GlobalKey>.generate(imgs.length, (index) => GlobalKey());
 
           return MasonryGridView.count(
             crossAxisCount: 2,
@@ -128,6 +119,7 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
         return Column(children: [
           CropImageWidget(
             articleId: articleId,
+            page: page,
             url: snapshot.data!.item1,
             headers: snapshot.data!.item2,
             rect: rect,
@@ -142,6 +134,7 @@ class CropImageWidget extends StatefulWidget {
   final String url;
   final Map<String, String> headers;
   final int articleId;
+  final int page;
   final Rect rect;
 
   const CropImageWidget({
@@ -149,6 +142,7 @@ class CropImageWidget extends StatefulWidget {
     required this.url,
     required this.headers,
     required this.articleId,
+    required this.page,
     required this.rect,
   });
 
@@ -239,50 +233,87 @@ class _CropImageWidgetState extends State<CropImageWidget> {
       cropRawRect.bottom / viewRawSize.height,
     );
 
-    return Material(
-      child: InkWell(
-        onTap: () async {
-          showArticleInfo(context, widget.articleId);
-        },
-        splashColor: Colors.white,
-        child: AspectRatio(
-          aspectRatio: cropRawAspectRatio,
-          child: Transform.scale(
-            scaleX: viewRawSize.width / cropRawRect.width,
-            scaleY: viewRawSize.height / cropRawRect.height,
-            alignment: Alignment.topLeft,
-            child: Transform.translate(
-              offset: Offset(-cropRawRect.left / translateRatio,
-                  -cropRawRect.top / translateRatio),
-              child: ClipRect(
-                clipper: RectClipper(cropRect),
-                child: VCachedNetworkImage(
-                  fit: BoxFit.contain,
-                  alignment: Alignment.topLeft,
-                  fadeInDuration: const Duration(microseconds: 500),
-                  fadeInCurve: Curves.easeIn,
-                  imageUrl: widget.url,
-                  httpHeaders: widget.headers,
-                  progressIndicatorBuilder: (context, string, progress) {
-                    return SizedBox(
-                      height: 300,
-                      child: Center(
-                        child: SizedBox(
-                          width: 30,
-                          height: 30,
-                          child: CircularProgressIndicator(
-                              value: progress.progress),
-                        ),
-                      ),
-                    );
-                  },
+    final imageArea = AspectRatio(
+      aspectRatio: cropRawAspectRatio,
+      child: Transform.scale(
+        scaleX: viewRawSize.width / cropRawRect.width,
+        scaleY: viewRawSize.height / cropRawRect.height,
+        alignment: Alignment.topLeft,
+        child: Transform.translate(
+          offset: Offset(-cropRawRect.left / translateRatio,
+              -cropRawRect.top / translateRatio),
+          child: ClipRect(
+            clipper: RectClipper(cropRect),
+            child: VCachedNetworkImage(
+              fit: BoxFit.contain,
+              alignment: Alignment.topLeft,
+              fadeInDuration: const Duration(microseconds: 500),
+              fadeInCurve: Curves.easeIn,
+              imageUrl: widget.url,
+              httpHeaders: widget.headers,
+              progressIndicatorBuilder: (context, string, progress) {
+                return SizedBox(
+                  height: 300,
+                  child: Center(
+                    child: SizedBox(
+                      width: 30,
+                      height: 30,
+                      child:
+                          CircularProgressIndicator(value: progress.progress),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+
+    return Stack(
+      children: [
+        imageArea,
+        Align(
+          alignment: FractionalOffset.bottomRight,
+          child: Transform(
+            transform: Matrix4.identity()..scale(0.9),
+            child: Theme(
+              data: ThemeData(
+                useMaterial3: false,
+                canvasColor: Colors.transparent,
+              ),
+              child: RawChip(
+                labelPadding: const EdgeInsets.all(0.0),
+                label: Text(
+                  '${widget.articleId} (${widget.page + 1} Page)',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13.0,
+                  ),
+                ),
+                elevation: 6.0,
+                shadowColor: Colors.grey[60],
+                padding: const EdgeInsets.symmetric(
+                  vertical: 6.0,
+                  horizontal: 10.0,
                 ),
               ),
             ),
           ),
         ),
-        // ),
-      ),
+        Positioned.fill(
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () async {
+                showArticleInfo(context, widget.articleId);
+              },
+              highlightColor:
+                  Theme.of(context).highlightColor.withOpacity(0.15),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -298,7 +329,6 @@ class RectClipper extends CustomClipper<Rect> {
     final y1 = size.height * rect.top;
     final x2 = size.width * rect.right;
     final y2 = size.height * rect.bottom;
-    // print(Rect.fromPoints(Offset(x1, y1), Offset(x2 - x1, y2 - y1)));
     return Rect.fromPoints(Offset(x1, y1), Offset(x2, y2));
   }
 
