@@ -120,6 +120,7 @@ class BookmarkCropImage {
   String datetime() => result['DateTime'];
   int article() => result['Article'];
   int page() => result['Page'];
+  double aspectRatio() => result['AspectRatio'];
   String area() => result['Area'];
 
   Future<void> update() async {
@@ -197,6 +198,7 @@ class Bookmark {
               Article integer,
               Page integer,
               Area text,
+              AspectRatio double,
               DateTime text);
               ''');
     }
@@ -255,7 +257,8 @@ class Bookmark {
     historyUserSet!.add(user);
   }
 
-  Future<void> insertCropImage(int articleId, int page, String area,
+  Future<void> insertCropImage(
+      int articleId, int page, String area, double aspectRatio,
       [DateTime? datetime]) async {
     datetime ??= DateTime.now();
     var db = await CommonUserDatabase.getInstance();
@@ -263,6 +266,7 @@ class Bookmark {
       'Article': articleId,
       'Page': page,
       'Area': area,
+      'AspectRatio': aspectRatio,
       'DateTime': datetime.toString(),
     });
   }

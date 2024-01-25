@@ -9,7 +9,6 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/user/bookmark.dart';
-import 'package:violet/pages/article_info/preview_area.dart';
 import 'package:violet/pages/common/utils.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/v_cached_network_image.dart';
@@ -27,6 +26,8 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       body: FutureBuilder(
         future: Bookmark.getInstance().then((value) => value.getCropImages()),
@@ -45,7 +46,7 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
             mainAxisSpacing: 4,
             crossAxisSpacing: 4,
             itemCount: imgs.length,
-            cacheExtent: double.infinity,
+            cacheExtent: height * 3.0,
             itemBuilder: (context, index) {
               final e = imgs[index];
               final area =
@@ -60,6 +61,7 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
                   area[2],
                   area[3],
                 ),
+                e.aspectRatio(),
               );
             },
           );
@@ -73,6 +75,7 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
     int articleId,
     int page,
     Rect rect,
+    double aspectRatio,
   ) {
     return FutureBuilder(
       future:
@@ -95,39 +98,46 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
       }),
       builder: (context,
           AsyncSnapshot<Tuple2<String, Map<String, String>>> snapshot) {
+        final width = (MediaQuery.of(context).size.width - 4) / 2;
+        final cropRawAspectRatio =
+            calculateCropRawAspectRatio(width, aspectRatio, rect);
+
         if (!snapshot.hasData) {
-          return Column(
-            children: [
-              AspectRatio(
-                aspectRatio: rect.width / rect.height,
-                child: const Align(
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
+          return AspectRatio(
+            aspectRatio: cropRawAspectRatio,
+            child: const Align(
+              alignment: Alignment.center,
+              child: SizedBox(
+                width: 50,
+                height: 50,
+                child: CircularProgressIndicator(),
               ),
-              // ListTile(
-              //   title: Text('$articleId (${page + 1} Page)'),
-              // ),
-            ],
+            ),
           );
         }
 
-        return Column(children: [
-          CropImageWidget(
+        return AspectRatio(
+          aspectRatio: cropRawAspectRatio,
+          child: CropImageWidget(
             articleId: articleId,
             page: page,
             url: snapshot.data!.item1,
             headers: snapshot.data!.item2,
             rect: rect,
+            aspectRatio: aspectRatio,
           ),
-        ]);
+        );
       },
     );
   }
+}
+
+double calculateCropRawAspectRatio(
+    double width, double aspectRatio, Rect cropRect) {
+  final height = width / aspectRatio;
+
+  final cropSize = Size(cropRect.width * width, cropRect.height * height);
+  return cropSize.width / cropSize.height;
 }
 
 class CropImageWidget extends StatefulWidget {
@@ -136,6 +146,7 @@ class CropImageWidget extends StatefulWidget {
   final int articleId;
   final int page;
   final Rect rect;
+  final double aspectRatio;
 
   const CropImageWidget({
     super.key,
@@ -144,6 +155,7 @@ class CropImageWidget extends StatefulWidget {
     required this.articleId,
     required this.page,
     required this.rect,
+    required this.aspectRatio,
   });
 
   @override
@@ -157,47 +169,7 @@ class _CropImageWidgetState extends State<CropImageWidget> {
   @override
   Widget build(BuildContext context) {
     final width = (MediaQuery.of(context).size.width - 4) / 2;
-    final height = this.height ?? 0;
-
-    if (height == 0) {
-      return Material(
-        child: InkWell(
-          onTap: () async {
-            showArticleInfo(context, widget.articleId);
-          },
-          splashColor: Colors.white,
-          child: SizeReportingWidget(
-            onSizeChange: (size) {
-              setState(() {
-                this.height = size.height;
-                originalAspectRatio = size.width / size.height;
-              });
-            },
-            child: VCachedNetworkImage(
-              fit: BoxFit.cover,
-              alignment: Alignment.topLeft,
-              fadeInDuration: const Duration(microseconds: 500),
-              fadeInCurve: Curves.easeIn,
-              imageUrl: widget.url,
-              httpHeaders: widget.headers,
-              progressIndicatorBuilder: (context, string, progress) {
-                return SizedBox(
-                  height: 300,
-                  child: Center(
-                    child: SizedBox(
-                      width: 30,
-                      height: 30,
-                      child:
-                          CircularProgressIndicator(value: progress.progress),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-      );
-    }
+    final height = width / widget.aspectRatio;
 
     // 참고: https://github.com/project-violet/violet/pull/363#issuecomment-1908442196
     final cropSize =
@@ -270,37 +242,39 @@ class _CropImageWidgetState extends State<CropImageWidget> {
       ),
     );
 
-    return Stack(
-      children: [
-        imageArea,
-        Align(
-          alignment: FractionalOffset.bottomRight,
-          child: Transform(
-            transform: Matrix4.identity()..scale(0.9),
-            child: Theme(
-              data: ThemeData(
-                useMaterial3: false,
-                canvasColor: Colors.transparent,
+    final pageOverlay = Align(
+      alignment: FractionalOffset.bottomRight,
+      child: Transform(
+        transform: Matrix4.identity()..scale(0.9),
+        child: Theme(
+          data: ThemeData(
+            useMaterial3: false,
+            canvasColor: Colors.transparent,
+          ),
+          child: RawChip(
+            labelPadding: const EdgeInsets.all(0.0),
+            label: Text(
+              '${widget.articleId} (${widget.page + 1} Page)',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13.0,
               ),
-              child: RawChip(
-                labelPadding: const EdgeInsets.all(0.0),
-                label: Text(
-                  '${widget.articleId} (${widget.page + 1} Page)',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 13.0,
-                  ),
-                ),
-                elevation: 6.0,
-                shadowColor: Colors.grey[60],
-                padding: const EdgeInsets.symmetric(
-                  vertical: 6.0,
-                  horizontal: 10.0,
-                ),
-              ),
+            ),
+            elevation: 6.0,
+            shadowColor: Colors.grey[60],
+            padding: const EdgeInsets.symmetric(
+              vertical: 6.0,
+              horizontal: 10.0,
             ),
           ),
         ),
+      ),
+    );
+
+    return Stack(
+      children: [
+        imageArea,
+        pageOverlay,
         Positioned.fill(
           child: Material(
             color: Colors.transparent,

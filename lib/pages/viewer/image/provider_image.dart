@@ -174,6 +174,7 @@ class ImageCropBookmark extends StatelessWidget {
   final Map<String, String>? headers;
   final int articleId;
   final int page;
+  late final double aspectRatio;
 
   ImageCropBookmark({
     super.key,
@@ -193,8 +194,11 @@ class ImageCropBookmark extends StatelessWidget {
             padding: const EdgeInsets.all(20.0),
             child: Crop(
               key: cropKey,
-              image: NetworkImage(url, headers: headers),
-              // aspectRatio: 4.0 / 3.0,
+              image: NetworkImage(url, headers: headers)
+                ..resolve(ImageConfiguration.empty)
+                    .addListener(ImageStreamListener((imageInfo, _) {
+                  aspectRatio = imageInfo.image.width / imageInfo.image.height;
+                })),
             ),
           ),
         ),
@@ -218,7 +222,7 @@ class ImageCropBookmark extends StatelessWidget {
     }
 
     await (await Bookmark.getInstance()).insertCropImage(articleId, page,
-        '${area.left},${area.top},${area.right},${area.bottom}');
+        '${area.left},${area.top},${area.right},${area.bottom}', aspectRatio);
 
     FToast ftoast = FToast();
     ftoast.init(context);
