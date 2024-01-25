@@ -278,6 +278,7 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
         if (snapshot.hasData) {
           return file_image.FileImage(
             getxId: widget.getxId,
+            index: index,
             path: c.provider.uris[index],
             cachedHeight: c.imgHeight[index] != 0 ? c.imgHeight[index] : null,
             heightCallback: c.imgHeight[index] != 0
