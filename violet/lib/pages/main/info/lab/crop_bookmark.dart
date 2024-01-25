@@ -163,14 +163,6 @@ class _CropImageWidgetState extends State<CropImageWidget> {
   @override
   Widget build(BuildContext context) {
     final width = (MediaQuery.of(context).size.width - 4) / 2;
-
-    // print(rect.center);
-
-    // print(image.)
-
-    // final height = _height![index];
-    // print(height);
-
     final height = this.height ?? 0;
 
     if (height == 0) {
@@ -180,29 +172,14 @@ class _CropImageWidgetState extends State<CropImageWidget> {
             showArticleInfo(context, widget.articleId);
           },
           splashColor: Colors.white,
-          // child: AspectRatio(
-          //   aspectRatio: widget.rect.width / widget.rect.height,
-          // alignment: Alignment(rect.left - 0.5, rect.top - 0.5),
-
-          // child: Transform.scale(
-          //   scaleX: 1 / widget.rect.width,
-          //   scaleY: 1 / widget.rect.width,
-          //   alignment: Alignment.topLeft,
-          //   child: Transform.translate(
-          //     offset:
-          //         Offset(-width * widget.rect.left, -height * widget.rect.top),
-          //     child: ClipRect(
-          //       clipper: RectClipper(widget.rect),
           child: SizeReportingWidget(
             onSizeChange: (size) {
-              // print(size);
               setState(() {
                 this.height = size.height;
                 originalAspectRatio = size.width / size.height;
               });
             },
             child: VCachedNetworkImage(
-              // key: _keys![index],
               fit: BoxFit.cover,
               alignment: Alignment.topLeft,
               fadeInDuration: const Duration(microseconds: 500),
@@ -222,71 +199,63 @@ class _CropImageWidgetState extends State<CropImageWidget> {
                   ),
                 );
               },
-              // ),
             ),
           ),
-          //     ),
-          //   ),
-          // ),
         ),
       );
     }
 
-    // widget.rect는 실제 사진의 너비와 높이를 각각 0~1으로 나타낸 값을 사용한다.
-    final relativeAspectRatio = widget.rect.width / widget.rect.height;
-    final realAspectRatio = relativeAspectRatio * originalAspectRatio!;
+    // 참고: https://github.com/project-violet/violet/pull/363#issuecomment-1908442196
+    final cropSize =
+        Size(widget.rect.width * width, widget.rect.height * height);
+    final cropRawAspectRatio = cropSize.width / cropSize.height;
+    final cropRawRect = Rect.fromLTRB(
+      widget.rect.left * width,
+      widget.rect.top * height,
+      widget.rect.right * width,
+      widget.rect.bottom * height,
+    );
 
-    final visiableWidth = width;
-    final visiableHeight = width / realAspectRatio;
+    late final Size viewRawSize;
+    late final double translateRatio;
 
-    late final Rect rect;
-    late final double scaleX;
-    late final double scaleY;
-
-    // real > original이라면 오른쪽에 여백이 남음
-    if (realAspectRatio > originalAspectRatio!) {
-      rect = Rect.fromLTRB(
-        widget.rect.left * originalAspectRatio!,
-        widget.rect.top,
-        widget.rect.right * originalAspectRatio!,
-        widget.rect.bottom,
-      );
-      scaleX = 1 / rect.width;
-      scaleY = 1 / rect.height;
+    final rawAspectRatio = width / height;
+    if (cropRawAspectRatio / rawAspectRatio <= 1.0) {
+      final viewHeight = width / cropRawAspectRatio;
+      viewRawSize = Size(width, viewHeight);
+      translateRatio = 1.0;
     } else {
-      rect = Rect.fromLTRB(
-        widget.rect.left,
-        widget.rect.top * originalAspectRatio!,
-        widget.rect.right,
-        widget.rect.bottom * originalAspectRatio!,
-      );
-      scaleX = 1 / rect.width;
-      scaleY = 1 / rect.height / relativeAspectRatio;
+      // 실제 viewWidth는 width와 같지만 cropRect, scale의 계산 편의를 위해 height에 상대적으로 설정
+      // translateRatio로 후 보정함
+      final viewWidth = height * cropRawAspectRatio;
+      viewRawSize = Size(viewWidth, height);
+      translateRatio = viewWidth / width;
     }
 
-    // print('1 ${aspectRatio}');
-    // print('2 ${rect.width / rect.height}');
+    final cropRect = Rect.fromLTRB(
+      cropRawRect.left / viewRawSize.width,
+      cropRawRect.top / viewRawSize.height,
+      cropRawRect.right / viewRawSize.width,
+      cropRawRect.bottom / viewRawSize.height,
+    );
 
     return Material(
       child: InkWell(
         onTap: () async {
-          print(widget.rect);
-          print(rect);
           showArticleInfo(context, widget.articleId);
         },
         splashColor: Colors.white,
         child: AspectRatio(
-          aspectRatio: realAspectRatio,
+          aspectRatio: cropRawAspectRatio,
           child: Transform.scale(
-            scaleX: scaleX,
-            scaleY: scaleY,
-            // scale: 1.0,
+            scaleX: viewRawSize.width / cropRawRect.width,
+            scaleY: viewRawSize.height / cropRawRect.height,
             alignment: Alignment.topLeft,
             child: Transform.translate(
-              offset: Offset(
-                  -visiableWidth * rect.left, -visiableHeight * rect.top),
+              offset: Offset(-cropRawRect.left / translateRatio,
+                  -cropRawRect.top / translateRatio),
               child: ClipRect(
-                clipper: RectClipper(rect),
+                clipper: RectClipper(cropRect),
                 child: VCachedNetworkImage(
                   fit: BoxFit.contain,
                   alignment: Alignment.topLeft,
@@ -317,54 +286,6 @@ class _CropImageWidgetState extends State<CropImageWidget> {
     );
   }
 }
-
-// const _defaultColor = Color(0xFF34568B);
-
-// class Tile extends StatelessWidget {
-//   const Tile({
-//     Key? key,
-//     required this.index,
-//     this.extent,
-//     this.backgroundColor,
-//     this.bottomSpace,
-//   }) : super(key: key);
-
-//   final int index;
-//   final double? extent;
-//   final double? bottomSpace;
-//   final Color? backgroundColor;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final child = Container(
-//       color: backgroundColor ?? _defaultColor,
-//       height: extent,
-//       child: Center(
-//         child: CircleAvatar(
-//           minRadius: 20,
-//           maxRadius: 20,
-//           backgroundColor: Colors.white,
-//           foregroundColor: Colors.black,
-//           child: Text('$index', style: const TextStyle(fontSize: 20)),
-//         ),
-//       ),
-//     );
-
-//     if (bottomSpace == null) {
-//       return child;
-//     }
-
-//     return Column(
-//       children: [
-//         Expanded(child: child),
-//         Container(
-//           height: bottomSpace,
-//           color: Colors.green,
-//         )
-//       ],
-//     );
-//   }
-// }
 
 class RectClipper extends CustomClipper<Rect> {
   final Rect rect;
