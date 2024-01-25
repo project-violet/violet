@@ -12,6 +12,7 @@ import 'package:violet/component/hentai.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
+import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/common/utils.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
@@ -59,6 +60,7 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
               final area =
                   e.area().split(',').map((e) => double.parse(e)).toList();
               return buildItem(
+                e,
                 index,
                 e.article(),
                 e.page(),
@@ -78,6 +80,7 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
   }
 
   Widget buildItem(
+    BookmarkCropImage crop,
     int index,
     int articleId,
     int page,
@@ -125,17 +128,80 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
 
         return AspectRatio(
           aspectRatio: cropRawAspectRatio,
-          child: CropImageWidget(
-            articleId: articleId,
-            page: page,
-            url: snapshot.data!.item1,
-            headers: snapshot.data!.item2,
-            rect: rect,
-            aspectRatio: aspectRatio,
-          ),
+          child: Stack(children: [
+            CropImageWidget(
+              articleId: articleId,
+              page: page,
+              url: snapshot.data!.item1,
+              headers: snapshot.data!.item2,
+              rect: rect,
+              aspectRatio: aspectRatio,
+            ),
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () async {
+                    showArticleInfo(context, articleId);
+                  },
+                  onDoubleTap: () async {
+                    _showViewer(articleId, page);
+                  },
+                  onLongPress: () async {
+                    if (await showYesNoDialog(context, '북마크를 삭제할까요?')) {
+                      await (await Bookmark.getInstance())
+                          .deleteCropBookmark(crop);
+                      setState(() {});
+                    }
+                  },
+                  highlightColor:
+                      Theme.of(context).highlightColor.withOpacity(0.15),
+                ),
+              ),
+            ),
+          ]),
         );
       },
     );
+  }
+
+  Future<void> _showViewer(int articleId, int page) async {
+    if (Settings.useVioletServer) {
+      Future.delayed(const Duration(milliseconds: 100)).then((value) async {
+        await VioletServer.view(articleId);
+      });
+    }
+
+    await (await User.getInstance()).insertUserLog(articleId, 0);
+
+    var prov = await ProviderManager.get(articleId);
+
+    await prov.init();
+
+    var headers = await prov.getHeader(0);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) {
+          return Provider<ViewerPageProvider>.value(
+              value: ViewerPageProvider(
+                uris: List<String>.filled(prov.length(), ''),
+                useProvider: true,
+                provider: prov,
+                headers: headers,
+                id: articleId,
+                title: '<No Query>',
+                jumpPage: page,
+              ),
+              child: const ViewerPage());
+        },
+      ),
+    ).then((value) async {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+          overlays: SystemUiOverlay.values);
+    });
   }
 }
 
@@ -282,62 +348,8 @@ class _CropImageWidgetState extends State<CropImageWidget> {
       children: [
         imageArea,
         pageOverlay,
-        Positioned.fill(
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () async {
-                showArticleInfo(context, widget.articleId);
-              },
-              onDoubleTap: () async {
-                _showViewer(widget.articleId);
-              },
-              highlightColor:
-                  Theme.of(context).highlightColor.withOpacity(0.15),
-            ),
-          ),
-        ),
       ],
     );
-  }
-
-  Future<void> _showViewer(int articleId) async {
-    if (Settings.useVioletServer) {
-      Future.delayed(const Duration(milliseconds: 100)).then((value) async {
-        await VioletServer.view(articleId);
-      });
-    }
-
-    await (await User.getInstance()).insertUserLog(articleId, 0);
-
-    var prov = await ProviderManager.get(articleId);
-
-    await prov.init();
-
-    var headers = await prov.getHeader(0);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        fullscreenDialog: true,
-        builder: (context) {
-          return Provider<ViewerPageProvider>.value(
-              value: ViewerPageProvider(
-                uris: List<String>.filled(prov.length(), ''),
-                useProvider: true,
-                provider: prov,
-                headers: headers,
-                id: articleId,
-                title: '<No Query>',
-                jumpPage: widget.page,
-              ),
-              child: const ViewerPage());
-        },
-      ),
-    ).then((value) async {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-          overlays: SystemUiOverlay.values);
-    });
   }
 }
 

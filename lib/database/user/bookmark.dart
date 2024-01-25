@@ -301,6 +301,11 @@ class Bookmark {
     //
   }
 
+  Future<void> deleteCropBookmark(BookmarkCropImage cropImage) async {
+    var db = await CommonUserDatabase.getInstance();
+    await db.delete('BookmarkCropImage', 'Id=?', [cropImage.id()]);
+  }
+
   Future<void> fixGroup() async {
     var groups = (await (await CommonUserDatabase.getInstance())
             .query('SELECT * FROM BookmarkGroup'))
