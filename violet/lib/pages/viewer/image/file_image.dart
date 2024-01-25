@@ -212,5 +212,6 @@ class ImageCropBookmark extends StatelessWidget {
       gravity: ToastGravity.BOTTOM,
       toastDuration: const Duration(seconds: 4),
     );
+    Navigator.pop(context);
   }
 }
