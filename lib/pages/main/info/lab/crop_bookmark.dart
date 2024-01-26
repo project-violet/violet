@@ -20,7 +20,6 @@ import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
-import 'package:violet/widgets/v_cached_network_image.dart';
 
 class CropBookmarkPage extends StatefulWidget {
   const CropBookmarkPage({super.key});
