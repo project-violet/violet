@@ -31,9 +31,6 @@ class __DoublePointListener extends State<DoublePointListener> {
     return Listener(
       onPointerDown: (event) {
         _mpPoints++;
-        if (_mpPoints > 2) {
-          _mpPoints = 0;
-        }
         if (_mpPoints >= 2) {
           if (_onStateChanged) {
             _onStateChanged = false;
@@ -43,13 +40,15 @@ class __DoublePointListener extends State<DoublePointListener> {
       },
       onPointerUp: (event) {
         _mpPoints--;
-        if (_mpPoints < 0) {
-          _mpPoints = 0;
-        }
         if (_mpPoints < 1) {
           _onStateChanged = true;
           widget.onStateChanged(true);
         }
+      },
+      onPointerCancel: (event) {
+        _mpPoints = 0;
+        _onStateChanged = true;
+        widget.onStateChanged(true);
       },
       child: widget.child,
     );
