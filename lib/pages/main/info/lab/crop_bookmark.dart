@@ -3,6 +3,7 @@
 
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -289,26 +290,13 @@ class _CropImageWidgetState extends State<CropImageWidget> {
               -cropRawRect.top / translateRatio),
           child: ClipRect(
             clipper: RectClipper(cropRect),
-            child: VCachedNetworkImage(
+            child: CachedNetworkImage(
               fit: BoxFit.contain,
               alignment: Alignment.topLeft,
               fadeInDuration: const Duration(microseconds: 500),
               fadeInCurve: Curves.easeIn,
               imageUrl: widget.url,
               httpHeaders: widget.headers,
-              progressIndicatorBuilder: (context, string, progress) {
-                return SizedBox(
-                  height: 300,
-                  child: Center(
-                    child: SizedBox(
-                      width: 30,
-                      height: 30,
-                      child:
-                          CircularProgressIndicator(value: progress.progress),
-                    ),
-                  ),
-                );
-              },
             ),
           ),
         ),
