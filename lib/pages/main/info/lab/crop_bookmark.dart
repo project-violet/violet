@@ -3,6 +3,7 @@
 
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -19,7 +20,6 @@ import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
-import 'package:violet/widgets/v_cached_network_image.dart';
 
 class CropBookmarkPage extends StatefulWidget {
   const CropBookmarkPage({super.key});
@@ -289,26 +289,13 @@ class _CropImageWidgetState extends State<CropImageWidget> {
               -cropRawRect.top / translateRatio),
           child: ClipRect(
             clipper: RectClipper(cropRect),
-            child: VCachedNetworkImage(
+            child: CachedNetworkImage(
               fit: BoxFit.contain,
               alignment: Alignment.topLeft,
               fadeInDuration: const Duration(microseconds: 500),
               fadeInCurve: Curves.easeIn,
               imageUrl: widget.url,
               httpHeaders: widget.headers,
-              progressIndicatorBuilder: (context, string, progress) {
-                return SizedBox(
-                  height: 300,
-                  child: Center(
-                    child: SizedBox(
-                      width: 30,
-                      height: 30,
-                      child:
-                          CircularProgressIndicator(value: progress.progress),
-                    ),
-                  ),
-                );
-              },
             ),
           ),
         ),
