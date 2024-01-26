@@ -134,6 +134,7 @@ class ArticleInfoPage extends StatelessWidget {
                 ),
                 const DividerWidget(),
                 ExpandableNotifier(
+                  initialExpanded: true,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: ScrollOnExpand(
