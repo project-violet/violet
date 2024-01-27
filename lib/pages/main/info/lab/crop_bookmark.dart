@@ -33,83 +33,79 @@ class CropBookmarkPage extends StatefulWidget {
 
 class _CropBookmarkPageState extends State<CropBookmarkPage> {
   List<String>? imagsUrlForEvict;
-  List<double>? _height;
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
 
+    final listView = FutureBuilder(
+      future: Bookmark.getInstance().then((value) => value.getCropImages()),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Container();
+        }
+
+        final imgs = snapshot.data!;
+
+        imagsUrlForEvict = List<String>.filled(imgs.length, '');
+
+        return MasonryGridView.count(
+          physics: const BouncingScrollPhysics(),
+          crossAxisCount: 2,
+          mainAxisSpacing: 4,
+          crossAxisSpacing: 4,
+          itemCount: imgs.length,
+          cacheExtent: height * 3.0,
+          itemBuilder: (context, index) {
+            print(index);
+            final e = imgs[index];
+            final area =
+                e.area().split(',').map((e) => double.parse(e)).toList();
+            return buildItem(
+              e,
+              index,
+              e.article(),
+              e.page(),
+              Rect.fromLTRB(
+                area[0],
+                area[1],
+                area[2],
+                area[3],
+              ),
+              e.aspectRatio(),
+            );
+          },
+        );
+      },
+    );
+
     return CupertinoPageScaffold(
-      child: SafeArea(
-        child: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              CupertinoSliverNavigationBar(
-                leading: const CupertinoTheme(
-                  data: CupertinoThemeData(brightness: Brightness.light),
-                  child: Icon(MdiIcons.crop),
-                ),
-                largeTitle: const Text('Crop Bookmark'),
-                trailing: CupertinoTheme(
-                  data: const CupertinoThemeData(brightness: Brightness.light),
-                  child: CropSettingMenu(
-                    builder: (_, showMenu) => CupertinoButton(
-                      onPressed: showMenu,
-                      padding: EdgeInsets.zero,
-                      pressedOpacity: 1,
-                      borderRadius: BorderRadius.zero,
-                      alignment: Alignment.centerRight,
-                      child: const Icon(CupertinoIcons.ellipsis_circle),
-                    ),
+      child: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            CupertinoSliverNavigationBar(
+              leading: const CupertinoTheme(
+                data: CupertinoThemeData(brightness: Brightness.light),
+                child: Icon(MdiIcons.crop),
+              ),
+              largeTitle: const Text('Crop Bookmark'),
+              trailing: CupertinoTheme(
+                data: const CupertinoThemeData(brightness: Brightness.light),
+                child: CropSettingMenu(
+                  builder: (_, showMenu) => CupertinoButton(
+                    onPressed: showMenu,
+                    padding: EdgeInsets.zero,
+                    pressedOpacity: 1,
+                    borderRadius: BorderRadius.zero,
+                    alignment: Alignment.centerRight,
+                    child: const Icon(CupertinoIcons.ellipsis_circle),
                   ),
                 ),
               ),
-            ];
-          },
-          body: FutureBuilder(
-            future:
-                Bookmark.getInstance().then((value) => value.getCropImages()),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return Container();
-              }
-
-              final imgs = snapshot.data!;
-
-              _height ??= List<double>.filled(imgs.length, 0);
-              imagsUrlForEvict = List<String>.filled(imgs.length, '');
-
-              final masonry = MasonryGridView.count(
-                physics: const BouncingScrollPhysics(),
-                crossAxisCount: 2,
-                mainAxisSpacing: 4,
-                crossAxisSpacing: 4,
-                itemCount: imgs.length,
-                cacheExtent: height * 3.0,
-                itemBuilder: (context, index) {
-                  final e = imgs[index];
-                  final area =
-                      e.area().split(',').map((e) => double.parse(e)).toList();
-                  return buildItem(
-                    e,
-                    index,
-                    e.article(),
-                    e.page(),
-                    Rect.fromLTRB(
-                      area[0],
-                      area[1],
-                      area[2],
-                      area[3],
-                    ),
-                    e.aspectRatio(),
-                  );
-                },
-              );
-
-              return masonry;
-            },
-          ),
-        ),
+            ),
+          ];
+        },
+        body: SafeArea(child: listView),
       ),
     );
   }
