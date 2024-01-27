@@ -3,10 +3,13 @@
 
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/image_provider.dart';
@@ -36,45 +39,77 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      body: FutureBuilder(
-        future: Bookmark.getInstance().then((value) => value.getCropImages()),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Container();
-          }
-
-          final imgs = snapshot.data!;
-
-          _height ??= List<double>.filled(imgs.length, 0);
-          imagsUrlForEvict = List<String>.filled(imgs.length, '');
-
-          return MasonryGridView.count(
-            crossAxisCount: 2,
-            mainAxisSpacing: 4,
-            crossAxisSpacing: 4,
-            itemCount: imgs.length,
-            cacheExtent: height * 3.0,
-            itemBuilder: (context, index) {
-              final e = imgs[index];
-              final area =
-                  e.area().split(',').map((e) => double.parse(e)).toList();
-              return buildItem(
-                e,
-                index,
-                e.article(),
-                e.page(),
-                Rect.fromLTRB(
-                  area[0],
-                  area[1],
-                  area[2],
-                  area[3],
+    return CupertinoPageScaffold(
+      child: SafeArea(
+        child: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              CupertinoSliverNavigationBar(
+                leading: const CupertinoTheme(
+                  data: CupertinoThemeData(brightness: Brightness.light),
+                  child: Icon(MdiIcons.crop),
                 ),
-                e.aspectRatio(),
+                largeTitle: const Text('Crop Bookmark'),
+                trailing: CupertinoTheme(
+                  data: const CupertinoThemeData(brightness: Brightness.light),
+                  child: CropSettingMenu(
+                    builder: (_, showMenu) => CupertinoButton(
+                      onPressed: showMenu,
+                      padding: EdgeInsets.zero,
+                      pressedOpacity: 1,
+                      borderRadius: BorderRadius.zero,
+                      alignment: Alignment.centerRight,
+                      child: const Icon(CupertinoIcons.ellipsis_circle),
+                    ),
+                  ),
+                ),
+              ),
+            ];
+          },
+          body: FutureBuilder(
+            future:
+                Bookmark.getInstance().then((value) => value.getCropImages()),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Container();
+              }
+
+              final imgs = snapshot.data!;
+
+              _height ??= List<double>.filled(imgs.length, 0);
+              imagsUrlForEvict = List<String>.filled(imgs.length, '');
+
+              final masonry = MasonryGridView.count(
+                physics: const BouncingScrollPhysics(),
+                crossAxisCount: 2,
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
+                itemCount: imgs.length,
+                cacheExtent: height * 3.0,
+                itemBuilder: (context, index) {
+                  final e = imgs[index];
+                  final area =
+                      e.area().split(',').map((e) => double.parse(e)).toList();
+                  return buildItem(
+                    e,
+                    index,
+                    e.article(),
+                    e.page(),
+                    Rect.fromLTRB(
+                      area[0],
+                      area[1],
+                      area[2],
+                      area[3],
+                    ),
+                    e.aspectRatio(),
+                  );
+                },
               );
+
+              return masonry;
             },
-          );
-        },
+          ),
+        ),
       ),
     );
   }
@@ -126,40 +161,44 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
           );
         }
 
-        return AspectRatio(
-          aspectRatio: cropRawAspectRatio,
-          child: Stack(children: [
-            CropImageWidget(
-              articleId: articleId,
-              page: page,
-              url: snapshot.data!.item1,
-              headers: snapshot.data!.item2,
-              rect: rect,
-              aspectRatio: aspectRatio,
-            ),
-            Positioned.fill(
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () async {
-                    showArticleInfo(context, articleId);
-                  },
-                  onDoubleTap: () async {
-                    _showViewer(articleId, page);
-                  },
-                  onLongPress: () async {
-                    if (await showYesNoDialog(context, '북마크를 삭제할까요?')) {
-                      await (await Bookmark.getInstance())
-                          .deleteCropBookmark(crop);
-                      setState(() {});
-                    }
-                  },
-                  highlightColor:
-                      Theme.of(context).highlightColor.withOpacity(0.15),
+        return Material(
+          child: AspectRatio(
+            aspectRatio: cropRawAspectRatio,
+            child: Stack(
+              children: [
+                CropImageWidget(
+                  articleId: articleId,
+                  page: page,
+                  url: snapshot.data!.item1,
+                  headers: snapshot.data!.item2,
+                  rect: rect,
+                  aspectRatio: aspectRatio,
                 ),
-              ),
+                Positioned.fill(
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () async {
+                        showArticleInfo(context, articleId);
+                      },
+                      onDoubleTap: () async {
+                        _showViewer(articleId, page);
+                      },
+                      onLongPress: () async {
+                        if (await showYesNoDialog(context, '북마크를 삭제할까요?')) {
+                          await (await Bookmark.getInstance())
+                              .deleteCropBookmark(crop);
+                          setState(() {});
+                        }
+                      },
+                      highlightColor:
+                          Theme.of(context).highlightColor.withOpacity(0.15),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ]),
+          ),
         );
       },
     );
@@ -367,4 +406,84 @@ class RectClipper extends CustomClipper<Rect> {
   bool shouldReclip(CustomClipper<Rect> oldClipper) {
     return true;
   }
+}
+
+@immutable
+class CropSettingMenu extends StatelessWidget {
+  const CropSettingMenu({
+    super.key,
+    required this.builder,
+  });
+
+  final PullDownMenuButtonBuilder builder;
+
+  @override
+  Widget build(BuildContext context) => PullDownButton(
+        itemBuilder: (context) => [
+          PullDownMenuActionsRow.medium(
+            items: [
+              PullDownMenuItem(
+                onTap: () {},
+                title: 'Export',
+                icon: CupertinoIcons.arrowshape_turn_up_left,
+              ),
+              PullDownMenuItem(
+                onTap: () {},
+                title: 'Import',
+                icon: CupertinoIcons.square_arrow_down,
+              ),
+            ],
+          ),
+          const PullDownMenuTitle(title: Text('Column Align (2)')),
+          SliderMenuItem(
+            initialValue: 2,
+            onChanged: (int value) {},
+          ),
+          const PullDownMenuDivider.large(),
+          const PullDownMenuDivider.large(),
+          PullDownMenuItem(
+            title: 'Select',
+            onTap: () {},
+            icon: CupertinoIcons.checkmark_circle,
+          ),
+        ],
+        animationBuilder: null,
+        position: PullDownMenuPosition.automatic,
+        buttonBuilder: builder,
+      );
+}
+
+class SliderMenuItem extends StatefulWidget implements PullDownMenuEntry {
+  const SliderMenuItem({
+    super.key,
+    required this.initialValue,
+    required this.onChanged,
+  });
+
+  final int initialValue;
+  final ValueChanged<int> onChanged;
+
+  @override
+  State<SliderMenuItem> createState() => _SliderMenuItemState();
+}
+
+class _SliderMenuItemState extends State<SliderMenuItem> {
+  late int value = widget.initialValue;
+
+  void onChanged(double v) {
+    setState(() => value = v.toInt());
+
+    widget.onChanged(v.toInt());
+  }
+
+  @override
+  Widget build(BuildContext context) => CupertinoTheme(
+        data: const CupertinoThemeData(brightness: Brightness.light),
+        child: CupertinoSlider(
+          value: value.toDouble(),
+          min: 1,
+          max: 8,
+          onChanged: onChanged,
+        ),
+      );
 }
