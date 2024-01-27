@@ -297,15 +297,11 @@ class _CropImageWidgetState extends State<CropImageWidget> {
               imageUrl: widget.url,
               httpHeaders: widget.headers,
               progressIndicatorBuilder: (context, string, progress) {
-                return SizedBox(
-                  height: 300,
-                  child: Center(
-                    child: SizedBox(
-                      width: 30,
-                      height: 30,
-                      child:
-                          CircularProgressIndicator(value: progress.progress),
-                    ),
+                return Center(
+                  child: SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: CircularProgressIndicator(value: progress.progress),
                   ),
                 );
               },
