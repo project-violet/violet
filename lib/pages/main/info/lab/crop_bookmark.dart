@@ -80,23 +80,26 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
     );
 
     return CupertinoPageScaffold(
-      child: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            CupertinoSliverNavigationBar(
-              leading: const CupertinoTheme(
-                data: CupertinoThemeData(brightness: Brightness.light),
-                child: Icon(MdiIcons.crop),
+      child: SafeArea(
+        bottom: false,
+        child: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              CupertinoSliverNavigationBar(
+                leading: const CupertinoTheme(
+                  data: CupertinoThemeData(brightness: Brightness.light),
+                  child: Icon(MdiIcons.crop),
+                ),
+                largeTitle: const Text('Crop Bookmark'),
+                trailing: CupertinoTheme(
+                  data: const CupertinoThemeData(brightness: Brightness.light),
+                  child: settingMenu(),
+                ),
               ),
-              largeTitle: const Text('Crop Bookmark'),
-              trailing: CupertinoTheme(
-                data: const CupertinoThemeData(brightness: Brightness.light),
-                child: settingMenu(),
-              ),
-            ),
-          ];
-        },
-        body: listView,
+            ];
+          },
+          body: listView,
+        ),
       ),
     );
   }
@@ -272,7 +275,6 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
       buttonBuilder: (_, showMenu) => CupertinoButton(
         onPressed: showMenu,
         padding: EdgeInsets.zero,
-        pressedOpacity: 1,
         borderRadius: BorderRadius.zero,
         alignment: Alignment.centerRight,
         child: const Icon(CupertinoIcons.ellipsis_circle),
