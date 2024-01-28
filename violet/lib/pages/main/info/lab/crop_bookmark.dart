@@ -265,7 +265,7 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
         ),
         const PullDownMenuTitle(title: Text('Column Align')),
         SliderMenuItem(
-          initialValue: 2,
+          initialValue: columnCount.value,
           onChanged: (int value) {
             setState(() {
               columnCount.value = value;
