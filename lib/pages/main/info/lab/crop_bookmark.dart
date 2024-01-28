@@ -3,10 +3,13 @@
 
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/image_provider.dart';
@@ -18,7 +21,9 @@ import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/util/evict_image_urls.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
+import 'package:violet/widgets/cupertino_switch_list_tile.dart';
 import 'package:violet/widgets/v_cached_network_image.dart';
 
 class CropBookmarkPage extends StatefulWidget {
@@ -29,52 +34,80 @@ class CropBookmarkPage extends StatefulWidget {
 }
 
 class _CropBookmarkPageState extends State<CropBookmarkPage> {
-  List<String>? imagsUrlForEvict;
-  List<double>? _height;
+  final ValueNotifier<int> columnCount = ValueNotifier(2);
+  final ValueNotifier<bool> showOverlay = ValueNotifier(true);
+
+  List<String>? imagesUrlForEvict;
+
+  @override
+  void dispose() {
+    super.dispose();
+    evictImageUrls(imagesUrlForEvict);
+  }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      body: FutureBuilder(
-        future: Bookmark.getInstance().then((value) => value.getCropImages()),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Container();
-          }
+    final listView = FutureBuilder(
+      future: Bookmark.getInstance().then((value) => value.getCropImages()),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Container();
+        }
 
-          final imgs = snapshot.data!;
+        final imgs = snapshot.data!;
 
-          _height ??= List<double>.filled(imgs.length, 0);
-          imagsUrlForEvict = List<String>.filled(imgs.length, '');
+        imagesUrlForEvict = List<String>.filled(imgs.length, '');
 
-          return MasonryGridView.count(
-            crossAxisCount: 2,
-            mainAxisSpacing: 4,
-            crossAxisSpacing: 4,
-            itemCount: imgs.length,
-            cacheExtent: height * 3.0,
-            itemBuilder: (context, index) {
-              final e = imgs[index];
-              final area =
-                  e.area().split(',').map((e) => double.parse(e)).toList();
-              return buildItem(
-                e,
-                index,
-                e.article(),
-                e.page(),
-                Rect.fromLTRB(
-                  area[0],
-                  area[1],
-                  area[2],
-                  area[3],
-                ),
-                e.aspectRatio(),
-              );
-            },
-          );
+        return MasonryGridView.count(
+          physics: const BouncingScrollPhysics(),
+          crossAxisCount: columnCount.value,
+          mainAxisSpacing: 4,
+          crossAxisSpacing: 4,
+          itemCount: imgs.length,
+          cacheExtent: height * 3.0,
+          padding: EdgeInsets.zero,
+          itemBuilder: (context, index) {
+            final e = imgs[index];
+            final area =
+                e.area().split(',').map((e) => double.parse(e)).toList();
+            return buildItem(
+              e,
+              index,
+              e.article(),
+              e.page(),
+              Rect.fromLTRB(
+                area[0],
+                area[1],
+                area[2],
+                area[3],
+              ),
+              e.aspectRatio(),
+            );
+          },
+        );
+      },
+    );
+
+    return CupertinoPageScaffold(
+      child: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            CupertinoSliverNavigationBar(
+              leading: const CupertinoTheme(
+                data: CupertinoThemeData(brightness: Brightness.light),
+                child: Icon(MdiIcons.crop),
+              ),
+              largeTitle: const Text('Crop Bookmark'),
+              trailing: CupertinoTheme(
+                data: const CupertinoThemeData(brightness: Brightness.light),
+                child: settingMenu(),
+              ),
+            ),
+          ];
         },
+        body: listView,
       ),
     );
   }
@@ -103,12 +136,14 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
         }
 
         return Tuple2(
-            imagsUrlForEvict![index] = await provider.getImageUrl(page),
+            imagesUrlForEvict![index] = await provider.getImageUrl(page),
             await provider.getHeader(page));
       }),
       builder: (context,
           AsyncSnapshot<Tuple2<String, Map<String, String>>> snapshot) {
-        final width = (MediaQuery.of(context).size.width - 4) / 2;
+        final width =
+            (MediaQuery.of(context).size.width - 4 * (columnCount.value - 1)) /
+                columnCount.value;
         final cropRawAspectRatio =
             calculateCropRawAspectRatio(width, aspectRatio, rect);
 
@@ -126,40 +161,46 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
           );
         }
 
-        return AspectRatio(
-          aspectRatio: cropRawAspectRatio,
-          child: Stack(children: [
-            CropImageWidget(
-              articleId: articleId,
-              page: page,
-              url: snapshot.data!.item1,
-              headers: snapshot.data!.item2,
-              rect: rect,
-              aspectRatio: aspectRatio,
-            ),
-            Positioned.fill(
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () async {
-                    showArticleInfo(context, articleId);
-                  },
-                  onDoubleTap: () async {
-                    _showViewer(articleId, page);
-                  },
-                  onLongPress: () async {
-                    if (await showYesNoDialog(context, '북마크를 삭제할까요?')) {
-                      await (await Bookmark.getInstance())
-                          .deleteCropBookmark(crop);
-                      setState(() {});
-                    }
-                  },
-                  highlightColor:
-                      Theme.of(context).highlightColor.withOpacity(0.15),
+        return Material(
+          child: AspectRatio(
+            aspectRatio: cropRawAspectRatio,
+            child: Stack(
+              children: [
+                CropImageWidget(
+                  articleId: articleId,
+                  page: page,
+                  url: snapshot.data!.item1,
+                  headers: snapshot.data!.item2,
+                  rect: rect,
+                  aspectRatio: aspectRatio,
+                  columnCount: columnCount.value,
+                  showOverlay: showOverlay,
                 ),
-              ),
+                Positioned.fill(
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () async {
+                        showArticleInfo(context, articleId);
+                      },
+                      onDoubleTap: () async {
+                        _showViewer(articleId, page);
+                      },
+                      onLongPress: () async {
+                        if (await showYesNoDialog(context, '북마크를 삭제할까요?')) {
+                          await (await Bookmark.getInstance())
+                              .deleteCropBookmark(crop);
+                          setState(() {});
+                        }
+                      },
+                      highlightColor:
+                          Theme.of(context).highlightColor.withOpacity(0.15),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ]),
+          ),
         );
       },
     );
@@ -203,6 +244,58 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
           overlays: SystemUiOverlay.values);
     });
   }
+
+  Widget settingMenu() {
+    return PullDownButton(
+      itemBuilder: (context) => [
+        PullDownMenuActionsRow.medium(
+          items: [
+            PullDownMenuItem(
+              onTap: () {},
+              title: 'Export',
+              icon: CupertinoIcons.arrowshape_turn_up_left,
+            ),
+            PullDownMenuItem(
+              onTap: () {},
+              title: 'Import',
+              icon: CupertinoIcons.square_arrow_down,
+            ),
+          ],
+        ),
+        const PullDownMenuTitle(title: Text('Column Align')),
+        SliderMenuItem(
+          initialValue: columnCount.value,
+          onChanged: (int value) {
+            setState(() {
+              columnCount.value = value;
+            });
+          },
+        ),
+        SwitchMenuItem(
+          title: 'Show Overlay',
+          initialValue: showOverlay.value,
+          onChanged: (bool value) {
+            showOverlay.value = value;
+          },
+        ),
+        const PullDownMenuDivider.large(),
+        PullDownMenuItem(
+          title: 'Select',
+          onTap: () {},
+          icon: CupertinoIcons.checkmark_circle,
+        ),
+      ],
+      animationBuilder: null,
+      position: PullDownMenuPosition.automatic,
+      buttonBuilder: (_, showMenu) => CupertinoButton(
+        onPressed: showMenu,
+        padding: EdgeInsets.zero,
+        borderRadius: BorderRadius.zero,
+        alignment: Alignment.centerRight,
+        child: const Icon(CupertinoIcons.ellipsis_circle),
+      ),
+    );
+  }
 }
 
 double calculateCropRawAspectRatio(
@@ -220,6 +313,8 @@ class CropImageWidget extends StatefulWidget {
   final int page;
   final Rect rect;
   final double aspectRatio;
+  final int columnCount;
+  final ValueNotifier<bool> showOverlay;
 
   const CropImageWidget({
     super.key,
@@ -229,6 +324,8 @@ class CropImageWidget extends StatefulWidget {
     required this.page,
     required this.rect,
     required this.aspectRatio,
+    required this.columnCount,
+    required this.showOverlay,
   });
 
   @override
@@ -241,7 +338,9 @@ class _CropImageWidgetState extends State<CropImageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final width = (MediaQuery.of(context).size.width - 4) / 2;
+    final width =
+        (MediaQuery.of(context).size.width - 4 * (widget.columnCount - 1)) /
+            widget.columnCount;
     final height = width / widget.aspectRatio;
 
     // 참고: https://github.com/project-violet/violet/pull/363#issuecomment-1908442196
@@ -297,15 +396,11 @@ class _CropImageWidgetState extends State<CropImageWidget> {
               imageUrl: widget.url,
               httpHeaders: widget.headers,
               progressIndicatorBuilder: (context, string, progress) {
-                return SizedBox(
-                  height: 300,
-                  child: Center(
-                    child: SizedBox(
-                      width: 30,
-                      height: 30,
-                      child:
-                          CircularProgressIndicator(value: progress.progress),
-                    ),
+                return Center(
+                  child: SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: CircularProgressIndicator(value: progress.progress),
                   ),
                 );
               },
@@ -347,7 +442,15 @@ class _CropImageWidgetState extends State<CropImageWidget> {
     return Stack(
       children: [
         imageArea,
-        pageOverlay,
+        ValueListenableBuilder(
+          valueListenable: widget.showOverlay,
+          builder: (context, value, child) {
+            return Visibility(
+              visible: value,
+              child: pageOverlay,
+            );
+          },
+        ),
       ],
     );
   }
@@ -370,5 +473,87 @@ class RectClipper extends CustomClipper<Rect> {
   @override
   bool shouldReclip(CustomClipper<Rect> oldClipper) {
     return true;
+  }
+}
+
+@immutable
+class SliderMenuItem extends StatefulWidget implements PullDownMenuEntry {
+  const SliderMenuItem({
+    super.key,
+    required this.initialValue,
+    required this.onChanged,
+  });
+
+  final int initialValue;
+  final ValueChanged<int> onChanged;
+
+  @override
+  State<SliderMenuItem> createState() => _SliderMenuItemState();
+}
+
+class _SliderMenuItemState extends State<SliderMenuItem> {
+  late int value = widget.initialValue;
+
+  void onChanged(double v) {
+    setState(() => value = v.toInt());
+
+    widget.onChanged(v.toInt());
+  }
+
+  @override
+  Widget build(BuildContext context) => CupertinoTheme(
+        data: const CupertinoThemeData(brightness: Brightness.light),
+        child: CupertinoSlider(
+          value: value.toDouble(),
+          min: 1,
+          max: 8,
+          onChanged: onChanged,
+        ),
+      );
+}
+
+@immutable
+class SwitchMenuItem extends StatefulWidget implements PullDownMenuEntry {
+  const SwitchMenuItem({
+    super.key,
+    required this.title,
+    required this.initialValue,
+    required this.onChanged,
+  });
+
+  final String title;
+  final bool initialValue;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  State<SwitchMenuItem> createState() => _SwitchMenuItemState();
+}
+
+class _SwitchMenuItemState extends State<SwitchMenuItem> {
+  late bool value = widget.initialValue;
+
+  void onChanged(bool v) {
+    setState(() => value = v);
+
+    widget.onChanged(v);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fontSize = Theme.of(context).textTheme.titleMedium!.fontSize!;
+
+    return Material(
+      color: Colors.transparent,
+      child: CupertinoSwitchListTile(
+        title: Text(
+          widget.title,
+          style: TextStyle(fontSize: fontSize),
+        ),
+        activeColor: CupertinoColors.activeGreen,
+        value: value,
+        onChanged: onChanged,
+        dense: true,
+      ),
+    );
   }
 }
