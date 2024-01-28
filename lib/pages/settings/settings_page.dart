@@ -3185,19 +3185,16 @@ class SettingGroupName extends StatelessWidget {
 }
 
 class CategoryButton extends StatefulWidget {
-  late final String name;
-  late final TextEditingController controller;
-  late final int cat;
-  CategoryButton({
+  final String name;
+  final TextEditingController controller;
+  final int cat;
+
+  const CategoryButton({
     super.key,
-    required String name,
-    required TextEditingController controller,
-    required int cat,
-  }) {
-    this.name = name;
-    this.controller = controller;
-    this.cat = cat;
-  }
+    required this.name,
+    required this.controller,
+    required this.cat,
+  });
 
   @override
   State<CategoryButton> createState() => _CategoryButtonState();
