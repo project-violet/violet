@@ -66,6 +66,7 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
           crossAxisSpacing: 4,
           itemCount: imgs.length,
           cacheExtent: height * 3.0,
+          padding: EdgeInsets.zero,
           itemBuilder: (context, index) {
             final e = imgs[index];
             final area =
@@ -89,26 +90,23 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
     );
 
     return CupertinoPageScaffold(
-      child: SafeArea(
-        bottom: false,
-        child: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              CupertinoSliverNavigationBar(
-                leading: const CupertinoTheme(
-                  data: CupertinoThemeData(brightness: Brightness.light),
-                  child: Icon(MdiIcons.crop),
-                ),
-                largeTitle: const Text('Crop Bookmark'),
-                trailing: CupertinoTheme(
-                  data: const CupertinoThemeData(brightness: Brightness.light),
-                  child: settingMenu(),
-                ),
+      child: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            CupertinoSliverNavigationBar(
+              leading: const CupertinoTheme(
+                data: CupertinoThemeData(brightness: Brightness.light),
+                child: Icon(MdiIcons.crop),
               ),
-            ];
-          },
-          body: listView,
-        ),
+              largeTitle: const Text('Crop Bookmark'),
+              trailing: CupertinoTheme(
+                data: const CupertinoThemeData(brightness: Brightness.light),
+                child: settingMenu(),
+              ),
+            ),
+          ];
+        },
+        body: listView,
       ),
     );
   }
