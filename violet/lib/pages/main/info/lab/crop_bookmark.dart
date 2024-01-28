@@ -21,6 +21,7 @@ import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/util/evict_image_urls.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/v_cached_network_image.dart';
 
@@ -32,7 +33,16 @@ class CropBookmarkPage extends StatefulWidget {
 }
 
 class _CropBookmarkPageState extends State<CropBookmarkPage> {
-  List<String>? imagsUrlForEvict;
+  final ValueNotifier<int> columnCount = ValueNotifier(2);
+  final ValueNotifier<bool> showOverlay = ValueNotifier(true);
+
+  List<String>? imagesUrlForEvict;
+
+  @override
+  void dispose() {
+    super.dispose();
+    evictImageUrls(imagesUrlForEvict);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +57,7 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
 
         final imgs = snapshot.data!;
 
-        imagsUrlForEvict = List<String>.filled(imgs.length, '');
+        imagesUrlForEvict = List<String>.filled(imgs.length, '');
 
         return MasonryGridView.count(
           physics: const BouncingScrollPhysics(),
@@ -57,7 +67,6 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
           itemCount: imgs.length,
           cacheExtent: height * 3.0,
           itemBuilder: (context, index) {
-            print(index);
             final e = imgs[index];
             final area =
                 e.area().split(',').map((e) => double.parse(e)).toList();
@@ -128,12 +137,14 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
         }
 
         return Tuple2(
-            imagsUrlForEvict![index] = await provider.getImageUrl(page),
+            imagesUrlForEvict![index] = await provider.getImageUrl(page),
             await provider.getHeader(page));
       }),
       builder: (context,
           AsyncSnapshot<Tuple2<String, Map<String, String>>> snapshot) {
-        final width = (MediaQuery.of(context).size.width - 4) / 2;
+        final width =
+            (MediaQuery.of(context).size.width - 4 * (columnCount.value - 1)) /
+                columnCount.value;
         final cropRawAspectRatio =
             calculateCropRawAspectRatio(width, aspectRatio, rect);
 
@@ -164,6 +175,7 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
                   rect: rect,
                   aspectRatio: aspectRatio,
                   columnCount: columnCount.value,
+                  showOverlay: showOverlay,
                 ),
                 Positioned.fill(
                   child: Material(
@@ -234,8 +246,6 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
     });
   }
 
-  final ValueNotifier<int> columnCount = ValueNotifier(2);
-
   Widget settingMenu() {
     return PullDownButton(
       itemBuilder: (context) => [
@@ -262,7 +272,13 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
             });
           },
         ),
-        const PullDownMenuDivider.large(),
+        SwitchMenuItem(
+          title: 'Show Overlay',
+          initialValue: showOverlay.value,
+          onChanged: (bool value) {
+            showOverlay.value = value;
+          },
+        ),
         const PullDownMenuDivider.large(),
         PullDownMenuItem(
           title: 'Select',
@@ -299,6 +315,7 @@ class CropImageWidget extends StatefulWidget {
   final Rect rect;
   final double aspectRatio;
   final int columnCount;
+  final ValueNotifier<bool> showOverlay;
 
   const CropImageWidget({
     super.key,
@@ -309,6 +326,7 @@ class CropImageWidget extends StatefulWidget {
     required this.rect,
     required this.aspectRatio,
     required this.columnCount,
+    required this.showOverlay,
   });
 
   @override
@@ -321,7 +339,9 @@ class _CropImageWidgetState extends State<CropImageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final width = (MediaQuery.of(context).size.width - 4) / widget.columnCount;
+    final width =
+        (MediaQuery.of(context).size.width - 4 * (widget.columnCount - 1)) /
+            widget.columnCount;
     final height = width / widget.aspectRatio;
 
     // 참고: https://github.com/project-violet/violet/pull/363#issuecomment-1908442196
@@ -423,7 +443,15 @@ class _CropImageWidgetState extends State<CropImageWidget> {
     return Stack(
       children: [
         imageArea,
-        pageOverlay,
+        ValueListenableBuilder(
+          valueListenable: widget.showOverlay,
+          builder: (context, value, child) {
+            return Visibility(
+              visible: value,
+              child: pageOverlay,
+            );
+          },
+        ),
       ],
     );
   }
@@ -449,6 +477,7 @@ class RectClipper extends CustomClipper<Rect> {
   }
 }
 
+@immutable
 class SliderMenuItem extends StatefulWidget implements PullDownMenuEntry {
   const SliderMenuItem({
     super.key,
@@ -482,4 +511,170 @@ class _SliderMenuItemState extends State<SliderMenuItem> {
           onChanged: onChanged,
         ),
       );
+}
+
+@immutable
+class SwitchMenuItem extends StatefulWidget implements PullDownMenuEntry {
+  const SwitchMenuItem({
+    super.key,
+    required this.title,
+    required this.initialValue,
+    required this.onChanged,
+  });
+
+  final String title;
+  final bool initialValue;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  State<SwitchMenuItem> createState() => _SwitchMenuItemState();
+}
+
+class _SwitchMenuItemState extends State<SwitchMenuItem> {
+  late bool value = widget.initialValue;
+
+  void onChanged(bool v) {
+    setState(() => value = v);
+
+    widget.onChanged(v);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fontSize = Theme.of(context).textTheme.titleMedium!.fontSize!;
+
+    return Material(
+      color: Colors.transparent,
+      child: CupertinoSwitchListTile(
+        title: Text(
+          widget.title,
+          style: TextStyle(fontSize: fontSize),
+        ),
+        activeColor: CupertinoColors.activeGreen,
+        value: value,
+        onChanged: onChanged,
+        dense: true,
+      ),
+    );
+  }
+}
+
+// https://stackoverflow.com/a/50105816/3355656
+class CupertinoSwitchListTile extends StatelessWidget {
+  /// This has been shamelessly copied from Material/SwitchListTile.
+  /// The applicable license applies.
+  const CupertinoSwitchListTile({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    this.activeColor,
+    this.title,
+    this.subtitle,
+    this.isThreeLine = false,
+    this.dense,
+    this.secondary,
+    this.selected = false,
+  }) : assert(!isThreeLine || subtitle != null);
+
+  /// Whether this switch is checked.
+  ///
+  /// This property must not be null.
+  final bool value;
+
+  /// Called when the user toggles the switch on or off.
+  ///
+  /// The switch passes the new value to the callback but does not actually
+  /// Change state until the parent widget rebuilds the switch tile with the
+  /// new value.
+  ///
+  /// If null, the switch will be displayed as disabled.
+  ///
+  /// The callback provided to [onChanged] should update the state of the parent
+  /// [StatefulWidget] using the [State.setState] method, so that the parent
+  /// gets rebuilt; for example:
+  ///
+  /// ```dart
+  /// new SwitchListTile(
+  ///   value: _lights,
+  ///   onChanged: (bool newValue) {
+  ///     setState(() {
+  ///       _lights = newValue;
+  ///     });
+  ///   },
+  ///   title: new Text('Lights'),
+  /// )
+  /// ```
+  final ValueChanged<bool>? onChanged;
+
+  /// The color to use when this switch is on.
+  ///
+  /// Defaults to accent color of the current [Theme].
+  final Color? activeColor;
+
+  /// The primary content of the list tile.
+  ///
+  /// Typically a [Text] widget.
+  final Widget? title;
+
+  /// Additional content displayed below the title.
+  ///
+  /// Typically a [Text] widget.
+  final Widget? subtitle;
+
+  /// A widget to display on the opposite side of the tile from the switch.
+  ///
+  /// Typically an [Icon] widget.
+  final Widget? secondary;
+
+  /// Whether this list tile is intended to display three lines of text.
+  ///
+  /// If false, the list tile is treated as having one line if the subtitle is
+  /// null and treated as having two lines if the subtitle is non-null.
+  final bool isThreeLine;
+
+  /// Whether this list tile is part of a vertically dense list.
+  ///
+  /// If this property is null then its value is based on [ListTileTheme.dense].
+  final bool? dense;
+
+  /// Whether to render icons and text in the [activeColor].
+  ///
+  /// No effort is made to automatically coordinate the [selected] state and the
+  /// [value] state. To have the list tile appear selected when the switch is
+  /// on, pass the same value to both.
+  ///
+  /// Normally, this property is left to its default value, false.
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final Widget control = Transform.translate(
+      offset: const Offset(4.0, 0),
+      child: CupertinoSwitch(
+        value: value,
+        onChanged: onChanged,
+        activeColor: activeColor ?? Theme.of(context).colorScheme.secondary,
+      ),
+    );
+    return MergeSemantics(
+      child: ListTileTheme.merge(
+        selectedColor: activeColor ?? Theme.of(context).colorScheme.secondary,
+        child: ListTile(
+          leading: secondary,
+          title: title,
+          subtitle: subtitle,
+          trailing: control,
+          isThreeLine: isThreeLine,
+          dense: dense,
+          enabled: onChanged != null,
+          onTap: onChanged != null
+              ? () {
+                  onChanged!(!value);
+                }
+              : null,
+          selected: selected,
+        ),
+      ),
+    );
+  }
 }
