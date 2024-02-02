@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
@@ -34,6 +35,8 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
   void initState() {
     super.initState();
     c = Get.find(tag: widget.getxId);
+    sizes = List.generate(
+        c.maxPage ~/ 2 + (c.maxPage % 2), (_) => ValueNotifier(Size.zero));
   }
 
   @override
@@ -124,87 +127,138 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
     }
   }
 
-  PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
-    if (c.provider.useFileSystem) {
-      return PhotoViewGalleryPageOptions.customChild(
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          child: PhotoView(
-            imageProvider: FileImage(File(c.provider.uris[index])),
-            filterQuality: SettingsWrapper.imageQuality,
-            initialScale: PhotoViewComputedScale.contained,
-            minScale: PhotoViewComputedScale.contained * 1.0,
-            maxScale: PhotoViewComputedScale.contained * 5.0,
-            gestureDetectorBehavior: HitTestBehavior.opaque,
-          ),
-          onLongPress: () {
-            PlatformNavigator.navigateSlide(
-              context,
-              f.ImageCropBookmark(
-                url: c.provider.uris[index],
-                articleId: c.articleId,
-                page: index,
-              ),
-            );
-          },
-        ),
-      );
-    } else if (c.provider.useProvider) {
-      return PhotoViewGalleryPageOptions.customChild(
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          child: FutureBuilder(
-            future: c.load(index),
-            builder: (context, snapshot) {
-              if (c.urlCache[index] != null && c.headerCache[index] != null) {
-                return Obx(
-                  () => PhotoView(
-                    imageProvider: ExtendedNetworkImageProvider(
-                      c.urlCache[index]!.value,
-                      headers: c.headerCache[index],
-                      cache: true,
-                      retries: 10,
-                      timeRetry: const Duration(milliseconds: 300),
-                    ),
-                    filterQuality:
-                        SettingsWrapper.getImageQuality(c.imgQuality.value),
-                    initialScale: PhotoViewComputedScale.contained,
-                    minScale: PhotoViewComputedScale.contained * 1.0,
-                    maxScale: PhotoViewComputedScale.contained * 5.0,
-                    gestureDetectorBehavior: HitTestBehavior.opaque,
-                  ),
-                );
-              }
+  double firstAspectRatio = 0.0;
+  double secondAspectRatio = 0.0;
 
-              return const SizedBox(
-                height: 300,
-                child: Center(
-                  child: SizedBox(
-                    width: 30,
-                    height: 30,
-                    child: CircularProgressIndicator(),
-                  ),
+  late List<ValueNotifier<Size>> sizes;
+
+  PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
+    late final Widget viewWidget;
+    final height = MediaQuery.of(context).size.height;
+
+    if (c.provider.useFileSystem) {
+      if (MediaQuery.of(context).orientation == Orientation.landscape) {
+        viewWidget = Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image(
+              image: FileImage(File(c.provider.uris[index * 2]))
+                ..resolve(ImageConfiguration.empty)
+                    .addListener(ImageStreamListener((imageInfo, _) {
+                  final width = sizes[index ~/ 2].value.width +
+                      imageInfo.image.width / imageInfo.image.height * height;
+                  sizes[index].value = Size(
+                    width,
+                    height,
+                  );
+                })),
+            ),
+            Image(
+              image: FileImage(File(c.provider.uris[index * 2 + 1]))
+                ..resolve(ImageConfiguration.empty)
+                    .addListener(ImageStreamListener((imageInfo, _) {
+                  final width = sizes[index].value.width +
+                      imageInfo.image.width / imageInfo.image.height * height;
+                  sizes[index].value = Size(
+                    width,
+                    height,
+                  );
+                })),
+            ),
+          ],
+        );
+      } else {
+        viewWidget = PhotoView(
+          imageProvider: FileImage(File(c.provider.uris[index])),
+          filterQuality: SettingsWrapper.imageQuality,
+          initialScale: PhotoViewComputedScale.contained,
+          minScale: PhotoViewComputedScale.contained * 1.0,
+          maxScale: PhotoViewComputedScale.contained * 5.0,
+          gestureDetectorBehavior: HitTestBehavior.opaque,
+        );
+      }
+    } else if (c.provider.useProvider) {
+      viewWidget = FutureBuilder(
+        future: c.load(index),
+        builder: (context, snapshot) {
+          if (c.urlCache[index] != null && c.headerCache[index] != null) {
+            return Obx(
+              () => PhotoView(
+                imageProvider: ExtendedNetworkImageProvider(
+                  c.urlCache[index]!.value,
+                  headers: c.headerCache[index],
+                  cache: true,
+                  retries: 10,
+                  timeRetry: const Duration(milliseconds: 300),
                 ),
-              );
-            },
-          ),
-          onLongPress: () {
-            PlatformNavigator.navigateSlide(
-              context,
-              p.ImageCropBookmark(
-                url: c.provider.uris[index],
-                headers: c.headerCache[index],
-                articleId: c.articleId,
-                page: index,
+                filterQuality:
+                    SettingsWrapper.getImageQuality(c.imgQuality.value),
+                initialScale: PhotoViewComputedScale.contained,
+                minScale: PhotoViewComputedScale.contained * 1.0,
+                maxScale: PhotoViewComputedScale.contained * 5.0,
+                gestureDetectorBehavior: HitTestBehavior.opaque,
               ),
             );
-          },
-        ),
+          }
+
+          return const SizedBox(
+            height: 300,
+            child: Center(
+              child: SizedBox(
+                width: 30,
+                height: 30,
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      throw Exception('Dead Reaching');
+    }
+
+    final gestureDetector = GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      child: viewWidget,
+      onLongPress: () {
+        if (c.provider.useFileSystem) {
+          PlatformNavigator.navigateSlide(
+            context,
+            f.ImageCropBookmark(
+              url: c.provider.uris[index],
+              articleId: c.articleId,
+              page: index,
+            ),
+          );
+        } else if (c.provider.useProvider) {
+          PlatformNavigator.navigateSlide(
+            context,
+            p.ImageCropBookmark(
+              url: c.provider.uris[index],
+              headers: c.headerCache[index],
+              articleId: c.articleId,
+              page: index,
+            ),
+          );
+        }
+      },
+    );
+
+    if (MediaQuery.of(context).orientation == Orientation.landscape) {
+      final width = MediaQuery.of(context).size.width;
+
+      return PhotoViewGalleryPageOptions.customChild(
+        childSize: Size(width, height),
         initialScale: PhotoViewComputedScale.contained,
         minScale: PhotoViewComputedScale.contained * 1.0,
         maxScale: PhotoViewComputedScale.contained * 5.0,
+        gestureDetectorBehavior: HitTestBehavior.opaque,
+        child: gestureDetector,
+      );
+    } else {
+      return PhotoViewGalleryPageOptions.customChild(
+        child: gestureDetector,
       );
     }
-    throw Exception('Dead Reaching');
   }
 }
