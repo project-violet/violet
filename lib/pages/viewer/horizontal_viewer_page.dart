@@ -9,6 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
+import 'package:violet/pages/viewer/image/file_image.dart' as f;
+import 'package:violet/pages/viewer/image/provider_image.dart' as p;
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
 import 'package:violet/settings/settings_wrapper.dart';
@@ -123,46 +126,76 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
 
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
     if (c.provider.useFileSystem) {
-      return PhotoViewGalleryPageOptions(
-        imageProvider: FileImage(File(c.provider.uris[index])),
-        filterQuality: SettingsWrapper.imageQuality,
-        initialScale: PhotoViewComputedScale.contained,
-        minScale: PhotoViewComputedScale.contained * 1.0,
-        maxScale: PhotoViewComputedScale.contained * 5.0,
+      return PhotoViewGalleryPageOptions.customChild(
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          child: PhotoView(
+            imageProvider: FileImage(File(c.provider.uris[index])),
+            filterQuality: SettingsWrapper.imageQuality,
+            initialScale: PhotoViewComputedScale.contained,
+            minScale: PhotoViewComputedScale.contained * 1.0,
+            maxScale: PhotoViewComputedScale.contained * 5.0,
+            gestureDetectorBehavior: HitTestBehavior.opaque,
+          ),
+          onLongPress: () {
+            PlatformNavigator.navigateSlide(
+              context,
+              f.ImageCropBookmark(
+                url: c.provider.uris[index],
+                articleId: c.articleId,
+                page: index,
+              ),
+            );
+          },
+        ),
       );
     } else if (c.provider.useProvider) {
       return PhotoViewGalleryPageOptions.customChild(
-        child: FutureBuilder(
-          future: c.load(index),
-          builder: (context, snapshot) {
-            if (c.urlCache[index] != null && c.headerCache[index] != null) {
-              return Obx(
-                () => PhotoView(
-                  imageProvider: ExtendedNetworkImageProvider(
-                    c.urlCache[index]!.value,
-                    headers: c.headerCache[index],
-                    cache: true,
-                    retries: 10,
-                    timeRetry: const Duration(milliseconds: 300),
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          child: FutureBuilder(
+            future: c.load(index),
+            builder: (context, snapshot) {
+              if (c.urlCache[index] != null && c.headerCache[index] != null) {
+                return Obx(
+                  () => PhotoView(
+                    imageProvider: ExtendedNetworkImageProvider(
+                      c.urlCache[index]!.value,
+                      headers: c.headerCache[index],
+                      cache: true,
+                      retries: 10,
+                      timeRetry: const Duration(milliseconds: 300),
+                    ),
+                    filterQuality:
+                        SettingsWrapper.getImageQuality(c.imgQuality.value),
+                    initialScale: PhotoViewComputedScale.contained,
+                    minScale: PhotoViewComputedScale.contained * 1.0,
+                    maxScale: PhotoViewComputedScale.contained * 5.0,
+                    gestureDetectorBehavior: HitTestBehavior.opaque,
                   ),
-                  filterQuality:
-                      SettingsWrapper.getImageQuality(c.imgQuality.value),
-                  initialScale: PhotoViewComputedScale.contained,
-                  minScale: PhotoViewComputedScale.contained * 1.0,
-                  maxScale: PhotoViewComputedScale.contained * 5.0,
-                  gestureDetectorBehavior: HitTestBehavior.opaque,
+                );
+              }
+
+              return const SizedBox(
+                height: 300,
+                child: Center(
+                  child: SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
               );
-            }
-
-            return const SizedBox(
-              height: 300,
-              child: Center(
-                child: SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: CircularProgressIndicator(),
-                ),
+            },
+          ),
+          onLongPress: () {
+            PlatformNavigator.navigateSlide(
+              context,
+              p.ImageCropBookmark(
+                url: c.provider.uris[index],
+                headers: c.headerCache[index],
+                articleId: c.articleId,
+                page: index,
               ),
             );
           },
