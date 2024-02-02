@@ -2,7 +2,6 @@
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:io';
-import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
@@ -126,9 +125,6 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
       await c.precache(context, page.toInt() + 1);
     }
   }
-
-  double firstAspectRatio = 0.0;
-  double secondAspectRatio = 0.0;
 
   late List<ValueNotifier<Size>> sizes;
 
