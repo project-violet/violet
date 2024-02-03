@@ -14,7 +14,6 @@ import 'package:violet/pages/viewer/image/file_image.dart' as f;
 import 'package:violet/pages/viewer/image/provider_image.dart' as p;
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
-import 'package:violet/settings/settings.dart';
 import 'package:violet/settings/settings_wrapper.dart';
 
 class HorizontalViewerPage extends StatefulWidget {
@@ -43,7 +42,8 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
   }
 
   bool onTwoPageMode() {
-    return MediaQuery.of(context).orientation == Orientation.landscape;
+    return c.onTwoPage =
+        MediaQuery.of(context).orientation == Orientation.landscape;
   }
 
   @override
@@ -161,7 +161,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                   );
                 })),
             ),
-            if (landscapeMaxPage() > index * 2 + 1)
+            if (c.maxPage > index * 2 + 1)
               Image(
                 image: FileImage(File(c.provider.uris[index * 2 + 1]))
                   ..resolve(ImageConfiguration.empty)
@@ -205,7 +205,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                         timeRetry: const Duration(milliseconds: 300),
                       ),
                     ),
-                    if (landscapeMaxPage() > index * 2 + 1)
+                    if (c.maxPage > index * 2 + 1)
                       Image(
                         image: ExtendedNetworkImageProvider(
                           c.urlCache[index * 2 + 1]!.value,
