@@ -65,8 +65,8 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
         return MasonryGridView.count(
           physics: const BouncingScrollPhysics(),
           crossAxisCount: columnCount.value,
-          mainAxisSpacing: 4,
-          crossAxisSpacing: 4,
+          mainAxisSpacing: 6.0 / columnCount.value,
+          crossAxisSpacing: 6.0 / columnCount.value,
           itemCount: imgs.length,
           cacheExtent: height * 3.0,
           padding: EdgeInsets.zero,
@@ -143,9 +143,9 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
       }),
       builder: (context,
           AsyncSnapshot<Tuple2<String, Map<String, String>>> snapshot) {
-        final width =
-            (MediaQuery.of(context).size.width - 4 * (columnCount.value - 1)) /
-                columnCount.value;
+        final width = (MediaQuery.of(context).size.width -
+                (6.0 / columnCount.value) * (columnCount.value - 1)) /
+            columnCount.value;
         final cropRawAspectRatio =
             calculateCropRawAspectRatio(width, aspectRatio, rect);
 
@@ -343,9 +343,9 @@ class _CropImageWidgetState extends State<CropImageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final width =
-        (MediaQuery.of(context).size.width - 4 * (widget.columnCount - 1)) /
-            widget.columnCount;
+    final width = (MediaQuery.of(context).size.width -
+            (6.0 / widget.columnCount) * (widget.columnCount - 1)) /
+        widget.columnCount;
     final height = width / widget.aspectRatio;
 
     // 참고: https://github.com/project-violet/violet/pull/363#issuecomment-1908442196
