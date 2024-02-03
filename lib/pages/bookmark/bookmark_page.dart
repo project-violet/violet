@@ -11,6 +11,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/bookmark/crop_bookmark.dart';
 import 'package:violet/pages/bookmark/group/group_article_list_page.dart';
 import 'package:violet/pages/bookmark/group_modify.dart';
 import 'package:violet/pages/bookmark/record_view_page.dart';
@@ -32,13 +33,13 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
     with AutomaticKeepAliveClientMixin<BookmarkPage>, DoubleTapToTopMixin {
   @override
   bool get wantKeepAlive => true;
-  // List<Widget> _rows;
   bool reorder = false;
 
   @override
   VoidCallback? get shouldReloadCallback => null;
 
   late final FToast fToast;
+  static const int _kReservedPreIndex = 2;
 
   @override
   void initState() {
@@ -148,16 +149,21 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
             padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
             physics: const BouncingScrollPhysics(),
             controller: scrollController,
-            itemCount: snapshot.data!.length + 1,
+            itemCount: snapshot.data!.length + _kReservedPreIndex,
             itemBuilder: (BuildContext ctxt, int index) {
               return _buildItem(
-                  index, index == 0 ? null : snapshot.data![index - 1]);
+                  index,
+                  index < _kReservedPreIndex
+                      ? null
+                      : snapshot.data![index - _kReservedPreIndex]);
             },
           );
   }
 
   _onReorder(int oldIndex, int newIndex) async {
-    if (oldIndex * newIndex <= 1 || oldIndex == 1 || newIndex == 1) {
+    if (oldIndex * newIndex <= _kReservedPreIndex ||
+        oldIndex <= _kReservedPreIndex ||
+        newIndex <= _kReservedPreIndex) {
       fToast.showToast(
         child: const ToastWrapper(
           isCheck: false,
@@ -172,13 +178,14 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
     }
 
     var bookmark = await Bookmark.getInstance();
-    if (oldIndex < newIndex) newIndex -= 1;
-    await bookmark.positionSwap(oldIndex - 1, newIndex - 1);
+    if (oldIndex < newIndex) newIndex -= _kReservedPreIndex;
+    await bookmark.positionSwap(
+        oldIndex - _kReservedPreIndex, newIndex - _kReservedPreIndex);
     setState(() {});
   }
 
   _buildItem(int index, BookmarkGroup? data, [bool reorder = false]) {
-    index -= 1;
+    index -= _kReservedPreIndex;
 
     String name;
     String oname = '';
@@ -186,9 +193,13 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
     String date = '';
     int id;
 
-    if (index == -1) {
+    if (index == -2) {
       name = Translations.of(context).trans('readrecord');
       desc = Translations.of(context).trans('readrecorddesc');
+      id = -2;
+    } else if (index == -1) {
+      name = Translations.of(context).trans('cropbookmark');
+      desc = Translations.of(context).trans('cropbookmarkdesc');
       id = -1;
     } else {
       name = data!.name();
@@ -250,9 +261,12 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
                     : () {
                         PlatformNavigator.navigateSlide(
                           context,
-                          id == -1
+                          id == -2
                               ? const RecordViewPage()
-                              : GroupArticleListPage(groupId: id, name: name),
+                              : id == -1
+                                  ? const CropBookmarkPage()
+                                  : GroupArticleListPage(
+                                      groupId: id, name: name),
                           opaque: false,
                         );
                       },
@@ -271,7 +285,7 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
 
   _onLongPressBookmarkItem(
       int index, String oname, String name, BookmarkGroup? data) async {
-    if (index == -1 || (oname == 'violet_default' && index == 0)) {
+    if (index < 0 || (oname == 'violet_default' && index == 0)) {
       await showOkDialog(
           context,
           Translations.of(context).trans('cannotmodifydefaultgroup'),
@@ -307,8 +321,14 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
 
   _buildRowItems(List<BookmarkGroup> data, [bool reorder = false]) {
     var ll = <Widget>[];
-    for (int index = 0; index <= data.length; index++) {
-      ll.add(_buildItem(index, index == 0 ? null : data[index - 1], reorder));
+    for (int index = 0; index < data.length + _kReservedPreIndex; index++) {
+      ll.add(
+        _buildItem(
+          index,
+          index < _kReservedPreIndex ? null : data[index - _kReservedPreIndex],
+          reorder,
+        ),
+      );
     }
 
     return ll;
