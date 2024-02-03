@@ -43,8 +43,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
   }
 
   bool onTwoPageMode() {
-    return Settings.useTabletMode &&
-        MediaQuery.of(context).orientation == Orientation.landscape;
+    return MediaQuery.of(context).orientation == Orientation.landscape;
   }
 
   @override
@@ -293,9 +292,6 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
         minScale: PhotoViewComputedScale.contained * 1.0,
         maxScale: PhotoViewComputedScale.contained * 5.0,
         gestureDetectorBehavior: HitTestBehavior.opaque,
-        filterQuality: c.provider.useFileSystem
-            ? SettingsWrapper.imageQuality
-            : SettingsWrapper.getImageQuality(c.imgQuality.value),
         child: gestureDetector,
       );
     } else {
