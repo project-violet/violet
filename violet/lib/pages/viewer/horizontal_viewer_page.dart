@@ -201,7 +201,15 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
             ? Future.wait([c.load(index * 2), c.load(index * 2 + 1)])
             : c.load(index),
         builder: (context, snapshot) {
-          if (c.urlCache[index] != null && c.headerCache[index] != null) {
+          final checkLoad = onTwoPageMode()
+              ? c.urlCache[index * 2] != null &&
+                  c.headerCache[index * 2] != null &&
+                  (c.maxPage <= index * 2 + 1 ||
+                      (c.urlCache[index * 2 + 1] != null &&
+                          c.headerCache[index * 2 + 1] != null))
+              : c.urlCache[index] != null && c.headerCache[index] != null;
+
+          if (checkLoad) {
             if (onTwoPageMode()) {
               var firstIndex = index * 2;
               var secondIndex = index * 2 + 1;
