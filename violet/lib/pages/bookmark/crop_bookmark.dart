@@ -34,8 +34,10 @@ class CropBookmarkPage extends StatefulWidget {
 }
 
 class _CropBookmarkPageState extends State<CropBookmarkPage> {
-  final ValueNotifier<int> columnCount = ValueNotifier(2);
-  final ValueNotifier<bool> showOverlay = ValueNotifier(true);
+  final ValueNotifier<int> columnCount =
+      ValueNotifier(Settings.cropBookmarkAlign);
+  final ValueNotifier<bool> showOverlay =
+      ValueNotifier(Settings.cropBookmarkShowOverlay);
 
   List<String>? imagesUrlForEvict;
 
@@ -265,7 +267,8 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
         const PullDownMenuTitle(title: Text('Column Align')),
         SliderMenuItem(
           initialValue: columnCount.value,
-          onChanged: (int value) {
+          onChanged: (int value) async {
+            await Settings.setCropBookmarkAlign(value);
             setState(() {
               columnCount.value = value;
             });
@@ -274,16 +277,18 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
         SwitchMenuItem(
           title: 'Show Overlay',
           initialValue: showOverlay.value,
-          onChanged: (bool value) {
+          onChanged: (bool value) async {
+            await Settings.setCropBookmarkShowOverlay(value);
             showOverlay.value = value;
           },
         ),
-        const PullDownMenuDivider.large(),
-        PullDownMenuItem(
-          title: 'Select',
-          onTap: () {},
-          icon: CupertinoIcons.checkmark_circle,
-        ),
+        // TODO: enable select mode
+        // const PullDownMenuDivider.large(),
+        // PullDownMenuItem(
+        //   title: 'Select',
+        //   onTap: () {},
+        //   icon: CupertinoIcons.checkmark_circle,
+        // ),
       ],
       animationBuilder: null,
       position: PullDownMenuPosition.automatic,
