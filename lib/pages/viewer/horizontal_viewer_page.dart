@@ -197,7 +197,9 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
       }
     } else if (c.provider.useProvider) {
       viewWidget = FutureBuilder(
-        future: c.load(index),
+        future: onTwoPageMode()
+            ? Future.wait([c.load(index * 2), c.load(index * 2 + 1)])
+            : c.load(index),
         builder: (context, snapshot) {
           if (c.urlCache[index] != null && c.headerCache[index] != null) {
             if (onTwoPageMode()) {
