@@ -27,6 +27,14 @@ class PreviewAreaWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var columnLength = 3;
+
+    if (MediaQuery.of(context).orientation == Orientation.landscape) {
+      columnLength = 6;
+    } else {
+      columnLength = 3;
+    }
+
     if (ProviderManager.isExists(queryResult.id())) {
       return FutureBuilder(
         future: Future.value(1).then((value) async {
@@ -48,7 +56,7 @@ class PreviewAreaWidget extends StatelessWidget {
                     controller: null,
                     physics: const ScrollPhysics(),
                     shrinkWrap: true,
-                    crossAxisCount: 3,
+                    crossAxisCount: columnLength,
                     childAspectRatio: 3 / 4,
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 8,
