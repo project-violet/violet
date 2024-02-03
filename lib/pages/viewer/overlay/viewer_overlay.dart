@@ -560,7 +560,8 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
                 alignment: 0.12,
               );
             } else {
-              c.horizontalPageController.jumpToPage(value.toInt() - 1);
+              c.horizontalPageController.jumpToPage(
+                  c.onTwoPage ? value.toInt() ~/ 2 : value.toInt() - 1);
             }
           }
         },
