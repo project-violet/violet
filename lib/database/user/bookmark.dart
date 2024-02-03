@@ -127,6 +127,13 @@ class BookmarkCropImage {
     var db = await CommonUserDatabase.getInstance();
     await db.update('BookmarkCropImage', result, 'Id=?', [id()]);
   }
+
+  Map<String, dynamic> toJson() => {
+        'article': article(),
+        'page': page(),
+        'aspectRatio': aspectRatio(),
+        'area': area(),
+      };
 }
 
 class Bookmark {
