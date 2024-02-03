@@ -13,7 +13,6 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/viewer/image/file_image.dart' as f;
 import 'package:violet/pages/viewer/image/provider_image.dart' as p;
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
-import 'package:violet/pages/viewer/others/preload_page_view.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
 import 'package:violet/settings/settings_wrapper.dart';
 
