@@ -311,5 +311,7 @@
   "manualupdate": "Manual Update",
   "cannotuseios": "You cannot use update on iOS :(",
   "exitTheApp": "Exit the app",
-  "ignoretimeout": "Ignore Timeout"
+  "ignoretimeout": "Ignore Timeout",
+  "cropbookmark": "Crop Bookmark",
+  "cropbookmarkdesc": "Expore your crop images!"
 }
