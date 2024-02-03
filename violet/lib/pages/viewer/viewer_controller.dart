@@ -182,8 +182,12 @@ class ViewerController extends GetxController {
   prev() => move(page.value - (onTwoPage ? 2 : 1));
   next() => move(page.value + (onTwoPage ? 2 : 1));
 
-  load(int index) async {
+  Future<void> load(int index) async {
     if (provider.useProvider) {
+      if (index >= maxPage) {
+        return;
+      }
+
       if (headerCache[index] == null) {
         var header = await provider.provider!.getHeader(index);
         headerCache[index] = header;
