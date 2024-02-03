@@ -14,6 +14,7 @@ import 'package:violet/pages/viewer/image/file_image.dart' as f;
 import 'package:violet/pages/viewer/image/provider_image.dart' as p;
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/settings/settings_wrapper.dart';
 
 class HorizontalViewerPage extends StatefulWidget {
@@ -34,8 +35,16 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
   void initState() {
     super.initState();
     c = Get.find(tag: widget.getxId);
-    sizes = List.generate(
-        c.maxPage ~/ 2 + (c.maxPage % 2), (_) => ValueNotifier(Size.zero));
+    sizes = List.generate(landscapeMaxPage(), (_) => ValueNotifier(Size.zero));
+  }
+
+  int landscapeMaxPage() {
+    return c.maxPage ~/ 2 + (c.maxPage % 2);
+  }
+
+  bool onTwoPageMode() {
+    return Settings.useTabletMode &&
+        MediaQuery.of(context).orientation == Orientation.landscape;
   }
 
   @override
@@ -56,7 +65,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
             child: VPhotoViewGallery.builder(
               scrollPhysics: const AlwaysScrollableScrollPhysics(),
               builder: _buildItem,
-              itemCount: c.maxPage,
+              itemCount: onTwoPageMode() ? landscapeMaxPage() : c.maxPage,
               backgroundDecoration: const BoxDecoration(
                 color: Colors.black,
               ),
@@ -112,7 +121,11 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
   }
 
   Future<void> _onPageChanged(int page) async {
-    c.page.value = page;
+    if (onTwoPageMode()) {
+      c.page.value = page * 2;
+    } else {
+      c.page.value = page;
+    }
     if (c.provider.useProvider) {
       if (page.toInt() - 2 >= 0 && c.urlCache[page.toInt() - 2] != null) {
         CachedNetworkImage.evictFromCache(c.urlCache[page.toInt() - 2]!.value);
@@ -133,7 +146,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
     final height = MediaQuery.of(context).size.height;
 
     if (c.provider.useFileSystem) {
-      if (MediaQuery.of(context).orientation == Orientation.landscape) {
+      if (onTwoPageMode()) {
         viewWidget = Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -149,18 +162,19 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                   );
                 })),
             ),
-            Image(
-              image: FileImage(File(c.provider.uris[index * 2 + 1]))
-                ..resolve(ImageConfiguration.empty)
-                    .addListener(ImageStreamListener((imageInfo, _) {
-                  final width = sizes[index].value.width +
-                      imageInfo.image.width / imageInfo.image.height * height;
-                  sizes[index].value = Size(
-                    width,
-                    height,
-                  );
-                })),
-            ),
+            if (landscapeMaxPage() > index * 2 + 1)
+              Image(
+                image: FileImage(File(c.provider.uris[index * 2 + 1]))
+                  ..resolve(ImageConfiguration.empty)
+                      .addListener(ImageStreamListener((imageInfo, _) {
+                    final width = sizes[index].value.width +
+                        imageInfo.image.width / imageInfo.image.height * height;
+                    sizes[index].value = Size(
+                      width,
+                      height,
+                    );
+                  })),
+              ),
           ],
         );
       } else {
@@ -178,23 +192,52 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
         future: c.load(index),
         builder: (context, snapshot) {
           if (c.urlCache[index] != null && c.headerCache[index] != null) {
-            return Obx(
-              () => PhotoView(
-                imageProvider: ExtendedNetworkImageProvider(
-                  c.urlCache[index]!.value,
-                  headers: c.headerCache[index],
-                  cache: true,
-                  retries: 10,
-                  timeRetry: const Duration(milliseconds: 300),
+            if (onTwoPageMode()) {
+              return Obx(
+                () => Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image(
+                      image: ExtendedNetworkImageProvider(
+                        c.urlCache[index * 2]!.value,
+                        headers: c.headerCache[index * 2],
+                        cache: true,
+                        retries: 10,
+                        timeRetry: const Duration(milliseconds: 300),
+                      ),
+                    ),
+                    if (landscapeMaxPage() > index * 2 + 1)
+                      Image(
+                        image: ExtendedNetworkImageProvider(
+                          c.urlCache[index * 2 + 1]!.value,
+                          headers: c.headerCache[index * 2 + 1],
+                          cache: true,
+                          retries: 10,
+                          timeRetry: const Duration(milliseconds: 300),
+                        ),
+                      ),
+                  ],
                 ),
-                filterQuality:
-                    SettingsWrapper.getImageQuality(c.imgQuality.value),
-                initialScale: PhotoViewComputedScale.contained,
-                minScale: PhotoViewComputedScale.contained * 1.0,
-                maxScale: PhotoViewComputedScale.contained * 5.0,
-                gestureDetectorBehavior: HitTestBehavior.opaque,
-              ),
-            );
+              );
+            } else {
+              return Obx(
+                () => PhotoView(
+                  imageProvider: ExtendedNetworkImageProvider(
+                    c.urlCache[index]!.value,
+                    headers: c.headerCache[index],
+                    cache: true,
+                    retries: 10,
+                    timeRetry: const Duration(milliseconds: 300),
+                  ),
+                  filterQuality:
+                      SettingsWrapper.getImageQuality(c.imgQuality.value),
+                  initialScale: PhotoViewComputedScale.contained,
+                  minScale: PhotoViewComputedScale.contained * 1.0,
+                  maxScale: PhotoViewComputedScale.contained * 5.0,
+                  gestureDetectorBehavior: HitTestBehavior.opaque,
+                ),
+              );
+            }
           }
 
           return const SizedBox(
@@ -240,15 +283,19 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
       },
     );
 
-    if (MediaQuery.of(context).orientation == Orientation.landscape) {
+    if (onTwoPageMode()) {
       final width = MediaQuery.of(context).size.width;
 
+      // TODO: supports real image size based width for supporting double tap zoom
       return PhotoViewGalleryPageOptions.customChild(
         childSize: Size(width, height),
         initialScale: PhotoViewComputedScale.contained,
         minScale: PhotoViewComputedScale.contained * 1.0,
         maxScale: PhotoViewComputedScale.contained * 5.0,
         gestureDetectorBehavior: HitTestBehavior.opaque,
+        filterQuality: c.provider.useFileSystem
+            ? SettingsWrapper.imageQuality
+            : SettingsWrapper.getImageQuality(c.imgQuality.value),
         child: gestureDetector,
       );
     } else {
