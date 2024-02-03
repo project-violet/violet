@@ -282,12 +282,13 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
             showOverlay.value = value;
           },
         ),
-        const PullDownMenuDivider.large(),
-        PullDownMenuItem(
-          title: 'Select',
-          onTap: () {},
-          icon: CupertinoIcons.checkmark_circle,
-        ),
+        // TODO: enable select mode
+        // const PullDownMenuDivider.large(),
+        // PullDownMenuItem(
+        //   title: 'Select',
+        //   onTap: () {},
+        //   icon: CupertinoIcons.checkmark_circle,
+        // ),
       ],
       animationBuilder: null,
       position: PullDownMenuPosition.automatic,
