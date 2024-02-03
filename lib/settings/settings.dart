@@ -108,6 +108,10 @@ class Settings {
 
   static late bool autobackupBookmark;
 
+  // Crop Bookmark
+  static late int cropBookmarkAlign;
+  static late bool cropBookmarkShowOverlay;
+
   // Lab
   static late bool simpleItemWidgetLoadingIcon;
   static late bool showNewViewerWhenArtistArticleListItemTap;
@@ -342,6 +346,10 @@ class Settings {
     autobackupBookmark = await _getBool('autobackupbookmark', false);
 
     useTabletMode = await _getBool('usetabletmode', Device.get().isTablet);
+
+    cropBookmarkAlign =
+        await _getInt('cropBookmarkAlign', useTabletMode ? 3 : 2);
+    cropBookmarkShowOverlay = await _getBool('cropBookmarkShowOverlay', true);
 
     simpleItemWidgetLoadingIcon =
         await _getBool('simpleItemWidgetLoadingIcon', true);
@@ -801,6 +809,18 @@ class Settings {
     useTabletMode = nn;
 
     await prefs.setBool('usetabletmode', nn);
+  }
+
+  static Future<void> setCropBookmarkAlign(int nn) async {
+    cropBookmarkAlign = nn;
+
+    await prefs.setInt('cropBookmarkAlign', nn);
+  }
+
+  static Future<void> setCropBookmarkShowOverlay(bool nn) async {
+    cropBookmarkShowOverlay = nn;
+
+    await prefs.setBool('cropBookmarkShowOverlay', nn);
   }
 
   static Future<void> setSimpleItemWidgetLoadingIcon(bool nn) async {

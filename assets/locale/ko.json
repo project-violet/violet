@@ -311,5 +311,7 @@
   "manualupdate": "수동 업데이트",
   "cannotuseios": "iOS에선 사용할 수 없어요 :(",
   "exitTheApp": "앱 종료하기",
-  "ignoretimeout": "타임아웃 끄기"
+  "ignoretimeout": "타임아웃 끄기",
+  "cropbookmark": "크롭 북마크",
+  "cropbookmarkdesc": "북마크한 크롭 이미지들을 한 번에 살펴보세요!"
 }
