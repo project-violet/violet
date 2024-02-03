@@ -25,6 +25,7 @@ class ViewerController extends GetxController {
   final ViewerPageProvider provider;
   late final int articleId;
   late final int maxPage;
+  bool onTwoPage = false;
 
   /// viewer callbacks
   late AsyncCallback close;
@@ -138,7 +139,7 @@ class ViewerController extends GetxController {
         alignment: 0.12,
       );
     } else {
-      horizontalPageController.jumpToPage(page);
+      horizontalPageController.jumpToPage(onTwoPage ? page ~/ 2 : page);
     }
   }
 
@@ -171,15 +172,15 @@ class ViewerController extends GetxController {
           );
     } else {
       horizontalPageController.animateToPage(
-        page,
+        onTwoPage ? page ~/ 2 : page,
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
       );
     }
   }
 
-  prev() => move(page.value - 1);
-  next() => move(page.value + 1);
+  prev() => move(page.value - (onTwoPage ? 2 : 1));
+  next() => move(page.value + (onTwoPage ? 2 : 1));
 
   load(int index) async {
     if (provider.useProvider) {
