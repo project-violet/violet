@@ -146,29 +146,38 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
 
     if (c.provider.useFileSystem) {
       if (onTwoPageMode()) {
+        var firstIndex = index * 2;
+        var secondIndex = index * 2 + 1;
+
+        if (c.rightToLeft.value) {
+          firstIndex += 1;
+          secondIndex -= 1;
+        }
+
         viewWidget = Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image(
-              image: FileImage(File(c.provider.uris[index * 2]))
-                ..resolve(ImageConfiguration.empty)
-                    .addListener(ImageStreamListener((imageInfo, _) {
-                  final width = sizes[index ~/ 2].value.width +
-                      imageInfo.image.width / imageInfo.image.height * height;
-                  sizes[index].value = Size(
-                    width,
-                    height,
-                  );
-                })),
-            ),
-            if (c.maxPage > index * 2 + 1)
+            if (c.maxPage > firstIndex)
               Image(
-                image: FileImage(File(c.provider.uris[index * 2 + 1]))
+                image: FileImage(File(c.provider.uris[firstIndex]))
                   ..resolve(ImageConfiguration.empty)
                       .addListener(ImageStreamListener((imageInfo, _) {
-                    final width = sizes[index].value.width +
+                    final width = sizes[firstIndex].value.width +
                         imageInfo.image.width / imageInfo.image.height * height;
-                    sizes[index].value = Size(
+                    sizes[firstIndex].value = Size(
+                      width,
+                      height,
+                    );
+                  })),
+              ),
+            if (c.maxPage > secondIndex)
+              Image(
+                image: FileImage(File(c.provider.uris[secondIndex]))
+                  ..resolve(ImageConfiguration.empty)
+                      .addListener(ImageStreamListener((imageInfo, _) {
+                    final width = sizes[secondIndex].value.width +
+                        imageInfo.image.width / imageInfo.image.height * height;
+                    sizes[secondIndex].value = Size(
                       width,
                       height,
                     );
@@ -188,28 +197,47 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
       }
     } else if (c.provider.useProvider) {
       viewWidget = FutureBuilder(
-        future: c.load(index),
+        future: onTwoPageMode()
+            ? Future.wait([c.load(index * 2), c.load(index * 2 + 1)])
+            : c.load(index),
         builder: (context, snapshot) {
-          if (c.urlCache[index] != null && c.headerCache[index] != null) {
+          final checkLoad = onTwoPageMode()
+              ? c.urlCache[index * 2] != null &&
+                  c.headerCache[index * 2] != null &&
+                  (c.maxPage <= index * 2 + 1 ||
+                      (c.urlCache[index * 2 + 1] != null &&
+                          c.headerCache[index * 2 + 1] != null))
+              : c.urlCache[index] != null && c.headerCache[index] != null;
+
+          if (checkLoad) {
             if (onTwoPageMode()) {
+              var firstIndex = index * 2;
+              var secondIndex = index * 2 + 1;
+
+              if (c.rightToLeft.value) {
+                firstIndex += 1;
+                secondIndex -= 1;
+              }
+
               return Obx(
                 () => Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image(
-                      image: ExtendedNetworkImageProvider(
-                        c.urlCache[index * 2]!.value,
-                        headers: c.headerCache[index * 2],
-                        cache: true,
-                        retries: 10,
-                        timeRetry: const Duration(milliseconds: 300),
-                      ),
-                    ),
-                    if (c.maxPage > index * 2 + 1)
+                    if (c.maxPage > firstIndex)
                       Image(
                         image: ExtendedNetworkImageProvider(
-                          c.urlCache[index * 2 + 1]!.value,
-                          headers: c.headerCache[index * 2 + 1],
+                          c.urlCache[firstIndex]!.value,
+                          headers: c.headerCache[firstIndex],
+                          cache: true,
+                          retries: 10,
+                          timeRetry: const Duration(milliseconds: 300),
+                        ),
+                      ),
+                    if (c.maxPage > secondIndex)
+                      Image(
+                        image: ExtendedNetworkImageProvider(
+                          c.urlCache[secondIndex]!.value,
+                          headers: c.headerCache[secondIndex],
                           cache: true,
                           retries: 10,
                           timeRetry: const Duration(milliseconds: 300),
