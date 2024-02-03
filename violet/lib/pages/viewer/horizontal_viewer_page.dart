@@ -34,7 +34,6 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
   void initState() {
     super.initState();
     c = Get.find(tag: widget.getxId);
-    sizes = List.generate(landscapeMaxPage(), (_) => ValueNotifier(Size.zero));
   }
 
   int landscapeMaxPage() {
@@ -138,11 +137,38 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
     }
   }
 
-  late List<ValueNotifier<Size>> sizes;
-
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
     late final Widget viewWidget;
     final height = MediaQuery.of(context).size.height;
+
+    Widget wrappingGestureDetector(Widget child, int index) {
+      return GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        child: child,
+        onLongPress: () {
+          if (c.provider.useFileSystem) {
+            PlatformNavigator.navigateSlide(
+              context,
+              f.ImageCropBookmark(
+                url: c.provider.uris[index],
+                articleId: c.articleId,
+                page: index,
+              ),
+            );
+          } else if (c.provider.useProvider) {
+            PlatformNavigator.navigateSlide(
+              context,
+              p.ImageCropBookmark(
+                url: c.urlCache[index]!.value,
+                headers: c.headerCache[index],
+                articleId: c.articleId,
+                page: index,
+              ),
+            );
+          }
+        },
+      );
+    }
 
     if (c.provider.useFileSystem) {
       if (onTwoPageMode()) {
@@ -158,36 +184,33 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (c.maxPage > firstIndex)
-              Image(
-                image: FileImage(File(c.provider.uris[firstIndex]))
-                  ..resolve(ImageConfiguration.empty)
-                      .addListener(ImageStreamListener((imageInfo, _) {
-                    final width = sizes[firstIndex].value.width +
-                        imageInfo.image.width / imageInfo.image.height * height;
-                    sizes[firstIndex].value = Size(
-                      width,
-                      height,
-                    );
-                  })),
+              wrappingGestureDetector(
+                Image(
+                  image: ExtendedFileImageProvider(
+                    File(c.provider.uris[firstIndex]),
+                    imageCacheName: c.provider.uris[firstIndex],
+                  ),
+                ),
+                secondIndex,
               ),
             if (c.maxPage > secondIndex)
-              Image(
-                image: FileImage(File(c.provider.uris[secondIndex]))
-                  ..resolve(ImageConfiguration.empty)
-                      .addListener(ImageStreamListener((imageInfo, _) {
-                    final width = sizes[secondIndex].value.width +
-                        imageInfo.image.width / imageInfo.image.height * height;
-                    sizes[secondIndex].value = Size(
-                      width,
-                      height,
-                    );
-                  })),
+              wrappingGestureDetector(
+                Image(
+                  image: ExtendedFileImageProvider(
+                    File(c.provider.uris[secondIndex]),
+                    imageCacheName: c.provider.uris[secondIndex],
+                  ),
+                ),
+                secondIndex,
               ),
           ],
         );
       } else {
         viewWidget = PhotoView(
-          imageProvider: FileImage(File(c.provider.uris[index])),
+          imageProvider: ExtendedFileImageProvider(
+            File(c.provider.uris[index]),
+            imageCacheName: c.provider.uris[index],
+          ),
           filterQuality: SettingsWrapper.imageQuality,
           initialScale: PhotoViewComputedScale.contained,
           minScale: PhotoViewComputedScale.contained * 1.0,
@@ -224,24 +247,30 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (c.maxPage > firstIndex)
-                      Image(
-                        image: ExtendedNetworkImageProvider(
-                          c.urlCache[firstIndex]!.value,
-                          headers: c.headerCache[firstIndex],
-                          cache: true,
-                          retries: 10,
-                          timeRetry: const Duration(milliseconds: 300),
+                      wrappingGestureDetector(
+                        Image(
+                          image: ExtendedNetworkImageProvider(
+                            c.urlCache[firstIndex]!.value,
+                            headers: c.headerCache[firstIndex],
+                            cache: true,
+                            retries: 10,
+                            timeRetry: const Duration(milliseconds: 300),
+                          ),
                         ),
+                        firstIndex,
                       ),
                     if (c.maxPage > secondIndex)
-                      Image(
-                        image: ExtendedNetworkImageProvider(
-                          c.urlCache[secondIndex]!.value,
-                          headers: c.headerCache[secondIndex],
-                          cache: true,
-                          retries: 10,
-                          timeRetry: const Duration(milliseconds: 300),
+                      wrappingGestureDetector(
+                        Image(
+                          image: ExtendedNetworkImageProvider(
+                            c.urlCache[secondIndex]!.value,
+                            headers: c.headerCache[secondIndex],
+                            cache: true,
+                            retries: 10,
+                            timeRetry: const Duration(milliseconds: 300),
+                          ),
                         ),
+                        secondIndex,
                       ),
                   ],
                 ),
@@ -283,33 +312,6 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
       throw Exception('Dead Reaching');
     }
 
-    final gestureDetector = GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      child: viewWidget,
-      onLongPress: () {
-        if (c.provider.useFileSystem) {
-          PlatformNavigator.navigateSlide(
-            context,
-            f.ImageCropBookmark(
-              url: c.provider.uris[index],
-              articleId: c.articleId,
-              page: index,
-            ),
-          );
-        } else if (c.provider.useProvider) {
-          PlatformNavigator.navigateSlide(
-            context,
-            p.ImageCropBookmark(
-              url: c.provider.uris[index],
-              headers: c.headerCache[index],
-              articleId: c.articleId,
-              page: index,
-            ),
-          );
-        }
-      },
-    );
-
     if (onTwoPageMode()) {
       final width = MediaQuery.of(context).size.width;
 
@@ -320,11 +322,11 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
         minScale: PhotoViewComputedScale.contained * 1.0,
         maxScale: PhotoViewComputedScale.contained * 5.0,
         gestureDetectorBehavior: HitTestBehavior.opaque,
-        child: gestureDetector,
+        child: viewWidget,
       );
     } else {
       return PhotoViewGalleryPageOptions.customChild(
-        child: gestureDetector,
+        child: wrappingGestureDetector(viewWidget, index),
       );
     }
   }
