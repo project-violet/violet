@@ -33,6 +33,8 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
   List<GlobalKey> itemKeys = <GlobalKey>[];
   final ScrollController _scrollController = ScrollController();
 
+  var columnLength = 3;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -41,6 +43,12 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
     itemKeys.addAll(
       Iterable.generate(_pageInfo.uris.length, (index) => GlobalKey()),
     );
+
+    if (MediaQuery.of(context).orientation == Orientation.landscape) {
+      columnLength = 6;
+    } else {
+      columnLength = 3;
+    }
 
     if (_pageInfo.useFileSystem) _jumpToViewedPage();
   }
@@ -51,7 +59,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
     if (_alreadyJumped) return;
     _alreadyJumped = true;
     Future.value(1).then((value) {
-      var row = widget.viewedPage ~/ 3;
+      var row = widget.viewedPage ~/ columnLength;
       if (row == 0) return;
       var firstItemHeight =
           (itemKeys[0].currentContext!.findRenderObject() as RenderBox)
@@ -105,7 +113,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
       controller: _scrollController,
       physics: const BouncingScrollPhysics(),
       shrinkWrap: true,
-      crossAxisCount: 3,
+      crossAxisCount: columnLength,
       childAspectRatio: 3 / 4,
       crossAxisSpacing: 8,
       mainAxisSpacing: 8,
@@ -166,7 +174,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
             controller: _scrollController,
             physics: const BouncingScrollPhysics(),
             shrinkWrap: true,
-            crossAxisCount: 3,
+            crossAxisCount: columnLength,
             childAspectRatio: 3 / 4,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,

@@ -2,11 +2,13 @@
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -15,6 +17,7 @@ import 'package:violet/component/hentai.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/common/utils.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
@@ -24,6 +27,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/util/evict_image_urls.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/cupertino_switch_list_tile.dart';
+import 'package:violet/widgets/toast.dart';
 import 'package:violet/widgets/v_cached_network_image.dart';
 
 class CropBookmarkPage extends StatefulWidget {
@@ -65,8 +69,8 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
         return MasonryGridView.count(
           physics: const BouncingScrollPhysics(),
           crossAxisCount: columnCount.value,
-          mainAxisSpacing: 4,
-          crossAxisSpacing: 4,
+          mainAxisSpacing: 6.0 / columnCount.value,
+          crossAxisSpacing: 6.0 / columnCount.value,
           itemCount: imgs.length,
           cacheExtent: height * 3.0,
           padding: EdgeInsets.zero,
@@ -143,9 +147,9 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
       }),
       builder: (context,
           AsyncSnapshot<Tuple2<String, Map<String, String>>> snapshot) {
-        final width =
-            (MediaQuery.of(context).size.width - 4 * (columnCount.value - 1)) /
-                columnCount.value;
+        final width = (MediaQuery.of(context).size.width -
+                (6.0 / columnCount.value) * (columnCount.value - 1)) /
+            columnCount.value;
         final cropRawAspectRatio =
             calculateCropRawAspectRatio(width, aspectRatio, rect);
 
@@ -253,14 +257,75 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
         PullDownMenuActionsRow.medium(
           items: [
             PullDownMenuItem(
-              onTap: () {},
               title: 'Export',
               icon: CupertinoIcons.arrowshape_turn_up_left,
+              onTap: () async {
+                final crops =
+                    await (await Bookmark.getInstance()).getCropImages();
+                await showOkDialog(
+                    context, jsonEncode(crops), 'Export Crop Bookmarks');
+              },
             ),
             PullDownMenuItem(
-              onTap: () {},
               title: 'Import',
               icon: CupertinoIcons.square_arrow_down,
+              onTap: () async {
+                final text = TextEditingController();
+                if (await showOkCancelDialog(
+                  titleText: 'Import Crop Bookmarks',
+                  context: context,
+                  contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                  contentBuilder: (_) => TextField(
+                    controller: text,
+                    autofocus: true,
+                    minLines: 3,
+                    maxLines: 999,
+                  ),
+                )) {
+                  try {
+                    var arr = jsonDecode(text.text);
+                    if (arr is Map<String, dynamic>) {
+                      arr = <dynamic>[arr];
+                    }
+
+                    final bookmark = await Bookmark.getInstance();
+
+                    for (var e in arr as List<dynamic>) {
+                      final elem = e as Map<String, dynamic>;
+                      await bookmark.insertCropImage(elem['article'],
+                          elem['page'], elem['area'], elem['aspectRatio']);
+                    }
+
+                    FToast ftoast = FToast();
+                    ftoast.init(context);
+                    ftoast.showToast(
+                      child: const ToastWrapper(
+                        isCheck: true,
+                        isWarning: false,
+                        msg: 'Successful Importing!',
+                      ),
+                      ignorePointer: true,
+                      gravity: ToastGravity.BOTTOM,
+                      toastDuration: const Duration(seconds: 4),
+                    );
+                    setState(() {});
+                  } catch (e) {
+                    FToast ftoast = FToast();
+                    ftoast.init(context);
+                    ftoast.showToast(
+                      child: const ToastWrapper(
+                        isCheck: false,
+                        isWarning: false,
+                        msg: 'Import Error! Check Log!',
+                      ),
+                      ignorePointer: true,
+                      gravity: ToastGravity.BOTTOM,
+                      toastDuration: const Duration(seconds: 4),
+                    );
+                    Logger.error('[Import Crop] $e');
+                  }
+                }
+              },
             ),
           ],
         ),
@@ -343,9 +408,9 @@ class _CropImageWidgetState extends State<CropImageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final width =
-        (MediaQuery.of(context).size.width - 4 * (widget.columnCount - 1)) /
-            widget.columnCount;
+    final width = (MediaQuery.of(context).size.width -
+            (6.0 / widget.columnCount) * (widget.columnCount - 1)) /
+        widget.columnCount;
     final height = width / widget.aspectRatio;
 
     // 참고: https://github.com/project-violet/violet/pull/363#issuecomment-1908442196
