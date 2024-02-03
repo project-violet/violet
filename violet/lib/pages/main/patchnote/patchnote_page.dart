@@ -22,6 +22,15 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2024, 2, 3),
+    version: '1.31 Minor',
+    isMinor: true,
+    contents: [
+      'supports table(landspace) ui',
+      'supports two page viewer',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2024, 1, 26),
     version: '1.30.2 Patch',
     contents: [
