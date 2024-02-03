@@ -44,9 +44,6 @@ class ViewerTabPanel extends StatefulWidget {
 class _ViewerTabPanelState extends State<ViewerTabPanel> {
   final PageController _pageController = PageController(initialPage: 0);
 
-  // static const _kDuration = const Duration(milliseconds: 300);
-  // static const _kCurve = Curves.ease;
-
   static const _kDuration = Duration(milliseconds: 300);
   static const _kCurve = Curves.ease;
 
@@ -147,6 +144,19 @@ class __UsableTabListState extends State<_UsableTabList>
   final ScrollController _scrollController = ScrollController();
   Map<int, GlobalKey> itemKeys = <int, GlobalKey>{};
 
+  var columnLength = 3;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (MediaQuery.of(context).orientation == Orientation.landscape) {
+      columnLength = 6;
+    } else {
+      columnLength = 3;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -158,7 +168,7 @@ class __UsableTabListState extends State<_UsableTabList>
     Future.value(1).then((value) {
       var row = widget.usableTabList
               .indexWhere((element) => element.id() == widget.articleId) ~/
-          3;
+          columnLength;
       if (row == 0) return;
       var firstItemHeight = (itemKeys[widget.usableTabList.first.id()]!
               .currentContext!
@@ -182,8 +192,8 @@ class __UsableTabListState extends State<_UsableTabList>
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
           sliver: SliverGrid(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: columnLength,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
               childAspectRatio: 3 / 4,
@@ -201,7 +211,7 @@ class __UsableTabListState extends State<_UsableTabList>
                           queryResult: e,
                           addBottomPadding: false,
                           showDetail: false,
-                          width: (windowWidth - 4.0) / 3.0,
+                          width: (windowWidth - 4.0) / columnLength,
                           thumbnailTag: const Uuid().v4(),
                           selectMode: true,
                           selectCallback: () {
@@ -245,6 +255,19 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
   bool isLoaded = false;
   bool isJumped = false;
   List<QueryResult> articleList = [];
+
+  var columnLength = 3;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (MediaQuery.of(context).orientation == Orientation.landscape) {
+      columnLength = 6;
+    } else {
+      columnLength = 3;
+    }
+  }
 
   @override
   void initState() {
@@ -305,7 +328,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
       Future.delayed(const Duration(milliseconds: 50)).then((value) {
         var row = articleList
                 .indexWhere((element) => element.id() == widget.articleId) ~/
-            3;
+            columnLength;
         if (row == 0) return;
         var firstItemHeight = (itemKeys[articleList.first.id()]!
                 .currentContext!
@@ -342,8 +365,8 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
                 sliver: SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: columnLength,
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 8,
                     childAspectRatio: 3 / 4,
@@ -361,7 +384,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                                 queryResult: e,
                                 addBottomPadding: false,
                                 showDetail: false,
-                                width: (windowWidth - 4.0) / 3.0,
+                                width: (windowWidth - 4.0) / columnLength,
                                 thumbnailTag: const Uuid().v4(),
                                 selectMode: true,
                                 selectCallback: () async {
