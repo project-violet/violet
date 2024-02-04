@@ -162,6 +162,8 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
     final statusBarHeight =
         Settings.disableFullScreen ? MediaQuery.of(context).padding.top : 0;
     final height = MediaQuery.of(context).size.height;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     return Obx(
       () => AnimatedOpacity(
         opacity: c.opacity.value,
@@ -220,6 +222,9 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
                             _appBarTab(),
                             _appBarHistory(),
                             _appBarTimer(),
+                            if (c.viewType.value == ViewType.horizontal &&
+                                isLandscape)
+                              _appBarTwoPage(),
                             _appBarGallery(),
                             _appBarSettings(),
                           ],
@@ -438,6 +443,26 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
     );
   }
 
+  _appBarTwoPage() {
+    return IconButton(
+      icon: Obx(() => Icon(
+          c.onTwoPage.value ? MdiIcons.cardOutline : MdiIcons.cardOffOutline)),
+      color: Colors.white,
+      onPressed: () async {
+        await Settings.setDisableTwoPageView(!Settings.disableTwoPageView);
+        final curPage = c.page.value;
+        c.onTwoPageJump = true;
+        c.page.value = c.onTwoPage.value ? curPage ~/ 2 * 2 : curPage;
+        c.onTwoPage.value = !Settings.disableTwoPageView;
+        c.horizontalPageController
+            .jumpToPage(c.onTwoPage.value ? curPage ~/ 2 : curPage);
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => c.onTwoPageJump = false,
+        );
+      },
+    );
+  }
+
   _appBarGallery() {
     return IconButton(
       icon: const Icon(MdiIcons.folderImage),
@@ -561,7 +586,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
               );
             } else {
               c.horizontalPageController.jumpToPage(
-                  c.onTwoPage ? value.toInt() ~/ 2 : value.toInt() - 1);
+                  c.onTwoPage.value ? value.toInt() ~/ 2 : value.toInt() - 1);
             }
           }
         },

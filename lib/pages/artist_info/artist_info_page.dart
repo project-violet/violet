@@ -710,7 +710,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   }
 
   Widget articleArea() {
-    var windowWidth = MediaQuery.of(context).size.width;
+    final windowWidth = MediaQuery.of(context).size.width;
+    final columnCount =
+        MediaQuery.of(context).orientation == Orientation.landscape ? 4 : 3;
     return LiveGrid(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -719,8 +721,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       showItemDuration: const Duration(milliseconds: 150),
       visibleFraction: 0.001,
       itemCount: min(cc.length, 6),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: columnCount,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
         childAspectRatio: 3 / 4,
@@ -746,7 +748,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                       queryResult: cc[index],
                       showDetail: false,
                       addBottomPadding: false,
-                      width: (windowWidth - 4.0) / 3,
+                      width: (windowWidth - 4.0) / columnCount,
                       thumbnailTag: const Uuid().v4(),
                       usableTabList: cc,
                     ),
