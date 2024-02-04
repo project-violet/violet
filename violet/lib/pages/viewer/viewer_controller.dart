@@ -26,6 +26,9 @@ class ViewerController extends GetxController {
   late final int articleId;
   late final int maxPage;
   var onTwoPage = false.obs;
+
+  /// this variable used in [_appBarTwoPage] and [_HorizontalViewerPageState]
+  /// if true, then lock the [_onPageChanged] method on [_HorizontalViewerPageState]
   var onTwoPageJump = false;
 
   /// viewer callbacks

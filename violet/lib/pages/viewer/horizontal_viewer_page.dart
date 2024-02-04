@@ -47,11 +47,32 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
+    // orientation 변경 감지를 위한 콜백
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // orientation 변경이 아닌 twoPage 설정 변경인 경우에도 트리거됨
+      if (c.onTwoPageJump) return;
+
+      final orientation = MediaQuery.of(context).orientation;
       final candidate = (!Settings.disableTwoPageView &&
-          MediaQuery.of(context).orientation == Orientation.landscape);
+          orientation == Orientation.landscape);
+
+      // orientation이 변경되고, twoPage 설정이 바뀌는 경우라면 페이지 재설정이 필요함
       if (c.onTwoPage.value != candidate) {
         c.onTwoPage.value = candidate;
+        c.onTwoPageJump = true;
+
+        final curPage = c.page.value;
+        if (c.onTwoPage.value) {
+          c.page.value = curPage ~/ 2 * 2;
+          c.horizontalPageController.jumpToPage(curPage ~/ 2);
+        } else {
+          c.page.value = curPage;
+          c.horizontalPageController.jumpToPage(curPage);
+        }
+
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => c.onTwoPageJump = false,
+        );
       }
     });
   }
