@@ -450,7 +450,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
       color: Colors.white,
       onPressed: () async {
         await Settings.setDisableTwoPageView(!Settings.disableTwoPageView);
-        c.onTwoPage.value = Settings.disableTwoPageView;
+        c.onTwoPage.value = !Settings.disableTwoPageView;
       },
     );
   }
