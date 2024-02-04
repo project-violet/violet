@@ -26,7 +26,9 @@ class RecordViewPage extends StatelessWidget {
   }
 
   Widget future(context, double width) {
-    var windowWidth = MediaQuery.of(context).size.width;
+    final windowWidth = MediaQuery.of(context).size.width;
+    final columnCount =
+        MediaQuery.of(context).orientation == Orientation.landscape ? 4 : 3;
     return FutureBuilder(
       future: User.getInstance()
           .then((value) => value.getUserLog().then((value) async {
@@ -50,8 +52,8 @@ class RecordViewPage extends StatelessWidget {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
               sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: columnCount,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
                   childAspectRatio: 3 / 4,
@@ -74,7 +76,8 @@ class RecordViewPage extends StatelessWidget {
                                         queryResult: e,
                                         addBottomPadding: false,
                                         showDetail: false,
-                                        width: (windowWidth - 4.0 - 48) / 3,
+                                        width: (windowWidth - 4.0 - 48) /
+                                            columnCount,
                                         thumbnailTag: const Uuid().v4(),
                                         usableTabList: snapshot.data,
                                       ),

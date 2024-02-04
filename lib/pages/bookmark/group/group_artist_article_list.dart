@@ -36,7 +36,9 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    var windowWidth = MediaQuery.of(context).size.width;
+    final windowWidth = MediaQuery.of(context).size.width;
+    final columnCount =
+        MediaQuery.of(context).orientation == Orientation.landscape ? 4 : 3;
     return FutureBuilder(
       future:
           Future.delayed(const Duration(milliseconds: 1)).then((value) async {
@@ -93,9 +95,8 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
                   // padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
                   padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
                   sliver: SliverGrid(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: columnCount,
                       crossAxisSpacing: 8,
                       mainAxisSpacing: 8,
                       childAspectRatio: 3 / 4,
@@ -119,7 +120,8 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
                                         queryResult: e,
                                         addBottomPadding: false,
                                         showDetail: false,
-                                        width: (windowWidth - 4.0 - 52) / 3,
+                                        width: (windowWidth - 4.0 - 52) /
+                                            columnCount,
                                         thumbnailTag: const Uuid().v4(),
                                         usableTabList: snapshot.data,
                                       ),

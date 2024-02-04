@@ -80,7 +80,7 @@ class _GroupArtistListState extends State<GroupArtistList>
       'character'
     ][type]}:$postfix ${Settings.includeTags}');
     final qm = QueryManager.queryPagination(queryString);
-    qm.itemsPerPage = 3;
+    qm.itemsPerPage = 4;
     return await qm.next();
   }
 
@@ -230,7 +230,16 @@ class _GroupArtistListState extends State<GroupArtistList>
 
   Widget _listItem(
       BuildContext context, BookmarkArtist e, List<QueryResult> qq) {
-    var windowWidth = MediaQuery.of(context).size.width;
+    final windowWidth = MediaQuery.of(context).size.width;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    final columnCount = isLandscape ? 4 : 3;
+    final subItemWidth = (windowWidth - 16 - 4.0 - 1.0) / columnCount;
+
+    const kHeaderHeight = 33;
+    const childAspectRatio = 3 / 4;
+    final height = windowWidth / columnCount / childAspectRatio;
+
     return Container(
       color: checkMode &&
               checked
@@ -271,7 +280,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                 longpress(e.type(), e.artist());
               },
         child: SizedBox(
-          height: 195,
+          height: height + kHeaderHeight,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
             child: Column(
@@ -298,14 +307,15 @@ class _GroupArtistListState extends State<GroupArtistList>
                   ],
                 ),
                 SizedBox(
-                  height: 162,
+                  height: height,
                   child: DebounceWidget(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        _image(qq, 0, windowWidth),
-                        _image(qq, 1, windowWidth),
-                        _image(qq, 2, windowWidth),
+                        _image(qq, 0, subItemWidth),
+                        _image(qq, 1, subItemWidth),
+                        _image(qq, 2, subItemWidth),
+                        if (isLandscape) _image(qq, 3, subItemWidth),
                       ],
                     ),
                   ),
@@ -318,7 +328,7 @@ class _GroupArtistListState extends State<GroupArtistList>
     );
   }
 
-  Widget _image(List<QueryResult> qq, int index, double windowWidth) {
+  Widget _image(List<QueryResult> qq, int index, double subItemWidth) {
     return Expanded(
         flex: 1,
         child: qq.length > index
@@ -330,7 +340,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                     queryResult: qq[index],
                     showDetail: false,
                     addBottomPadding: false,
-                    width: (windowWidth - 16 - 4.0 - 16.0) / 3,
+                    width: subItemWidth,
                     thumbnailTag: const Uuid().v4(),
                     disableFilter: true,
                     usableTabList: qq,
