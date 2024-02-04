@@ -66,19 +66,22 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
             child: ValueListenableBuilder(
               valueListenable: sizeNoti,
               builder: (_, __, ___) {
-                return VPhotoViewGallery.builder(
-                  scrollPhysics: const AlwaysScrollableScrollPhysics(),
-                  builder: _buildItem,
-                  itemCount: c.onTwoPage.value ? landscapeMaxPage() : c.maxPage,
-                  backgroundDecoration: const BoxDecoration(
-                    color: Colors.black,
+                return Obx(
+                  () => VPhotoViewGallery.builder(
+                    scrollPhysics: const AlwaysScrollableScrollPhysics(),
+                    builder: _buildItem,
+                    itemCount:
+                        c.onTwoPage.value ? landscapeMaxPage() : c.maxPage,
+                    backgroundDecoration: const BoxDecoration(
+                      color: Colors.black,
+                    ),
+                    scrollDirection: c.viewScrollType.value == ViewType.vertical
+                        ? Axis.vertical
+                        : Axis.horizontal,
+                    pageController: c.horizontalPageController,
+                    reverse: c.rightToLeft.value,
+                    onPageChanged: _onPageChanged,
                   ),
-                  scrollDirection: c.viewScrollType.value == ViewType.vertical
-                      ? Axis.vertical
-                      : Axis.horizontal,
-                  pageController: c.horizontalPageController,
-                  reverse: c.rightToLeft.value,
-                  onPageChanged: _onPageChanged,
                 );
               },
             ),
