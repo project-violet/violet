@@ -450,10 +450,15 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
       color: Colors.white,
       onPressed: () async {
         await Settings.setDisableTwoPageView(!Settings.disableTwoPageView);
+        final curPage = c.page.value;
+        c.onTwoPageJump = true;
+        c.page.value = c.onTwoPage.value ? curPage ~/ 2 * 2 : curPage;
         c.onTwoPage.value = !Settings.disableTwoPageView;
-        c.horizontalPageController.jumpToPage(c.onTwoPage.value
-            ? c.page.value.toInt() ~/ 2
-            : c.page.value.toInt());
+        c.horizontalPageController
+            .jumpToPage(c.onTwoPage.value ? curPage ~/ 2 : curPage);
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => c.onTwoPageJump = false,
+        );
       },
     );
   }

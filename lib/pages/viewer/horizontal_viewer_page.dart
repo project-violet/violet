@@ -144,6 +144,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
   }
 
   Future<void> _onPageChanged(int page) async {
+    if (c.onTwoPageJump) return;
     if (c.onTwoPage.value) {
       c.page.value = page * 2;
     } else {
