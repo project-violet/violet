@@ -182,6 +182,22 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
       );
     }
 
+    void sizeNotification(int imageIndex, ImageInfo imageInfo) {
+      if (alreadyCalculated[imageIndex]) return;
+      alreadyCalculated[imageIndex] = true;
+      final width = sizes[index].value.width +
+          imageInfo.image.width / imageInfo.image.height * height;
+      sizes[index].value = Size(
+        width,
+        height,
+      );
+
+      // TODO: how to optimize this logic?
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => sizeNoti.value = !sizeNoti.value,
+      );
+    }
+
     if (c.provider.useFileSystem) {
       if (c.onTwoPage.value) {
         var firstIndex = index * 2;
@@ -203,22 +219,10 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                     imageCacheName: c.provider.uris[firstIndex],
                   )..resolve(ImageConfiguration.empty)
                         .addListener(ImageStreamListener((imageInfo, _) {
-                      if (alreadyCalculated[firstIndex]) return;
-                      alreadyCalculated[firstIndex] = true;
-                      final width = sizes[index].value.width +
-                          imageInfo.image.width /
-                              imageInfo.image.height *
-                              height;
-                      sizes[index].value = Size(
-                        width,
-                        height,
-                      );
-                      WidgetsBinding.instance.addPostFrameCallback(
-                        (_) => sizeNoti.value = !sizeNoti.value,
-                      );
+                      sizeNotification(firstIndex, imageInfo);
                     })),
                 ),
-                secondIndex,
+                firstIndex,
               ),
             if (c.maxPage > secondIndex)
               wrappingGestureDetector(
@@ -228,19 +232,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                     imageCacheName: c.provider.uris[secondIndex],
                   )..resolve(ImageConfiguration.empty)
                         .addListener(ImageStreamListener((imageInfo, _) {
-                      if (alreadyCalculated[secondIndex]) return;
-                      alreadyCalculated[secondIndex] = true;
-                      final width = sizes[index].value.width +
-                          imageInfo.image.width /
-                              imageInfo.image.height *
-                              height;
-                      sizes[index].value = Size(
-                        width,
-                        height,
-                      );
-                      WidgetsBinding.instance.addPostFrameCallback(
-                        (_) => sizeNoti.value = !sizeNoti.value,
-                      );
+                      sizeNotification(secondIndex, imageInfo);
                     })),
                 ),
                 secondIndex,
@@ -299,19 +291,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                             timeRetry: const Duration(milliseconds: 300),
                           )..resolve(ImageConfiguration.empty).addListener(
                                 ImageStreamListener((imageInfo, _) {
-                              if (alreadyCalculated[firstIndex]) return;
-                              alreadyCalculated[firstIndex] = true;
-                              final width = sizes[index].value.width +
-                                  imageInfo.image.width /
-                                      imageInfo.image.height *
-                                      height;
-                              sizes[index].value = Size(
-                                width,
-                                height,
-                              );
-                              WidgetsBinding.instance.addPostFrameCallback(
-                                (_) => sizeNoti.value = !sizeNoti.value,
-                              );
+                              sizeNotification(firstIndex, imageInfo);
                             })),
                         ),
                         firstIndex,
@@ -327,19 +307,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                             timeRetry: const Duration(milliseconds: 300),
                           )..resolve(ImageConfiguration.empty).addListener(
                                 ImageStreamListener((imageInfo, _) {
-                              if (alreadyCalculated[secondIndex]) return;
-                              alreadyCalculated[secondIndex] = true;
-                              final width = sizes[index].value.width +
-                                  imageInfo.image.width /
-                                      imageInfo.image.height *
-                                      height;
-                              sizes[index].value = Size(
-                                width,
-                                height,
-                              );
-                              WidgetsBinding.instance.addPostFrameCallback(
-                                (_) => sizeNoti.value = !sizeNoti.value,
-                              );
+                              sizeNotification(secondIndex, imageInfo);
                             })),
                         ),
                         secondIndex,
@@ -393,7 +361,6 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
           ? sizes[index].value
           : Size(width, height);
 
-      // TODO: supports real image size based width for supporting double tap zoom
       return PhotoViewGalleryPageOptions.customChild(
         childSize: size,
         initialScale: PhotoViewComputedScale.contained,
