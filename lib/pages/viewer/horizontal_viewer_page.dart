@@ -14,6 +14,7 @@ import 'package:violet/pages/viewer/image/file_image.dart' as f;
 import 'package:violet/pages/viewer/image/provider_image.dart' as p;
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/settings/settings_wrapper.dart';
 
 class HorizontalViewerPage extends StatefulWidget {
@@ -40,11 +41,6 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
     return c.maxPage ~/ 2 + (c.maxPage % 2);
   }
 
-  bool onTwoPageMode() {
-    return c.onTwoPage =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-  }
-
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -69,7 +65,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
             child: VPhotoViewGallery.builder(
               scrollPhysics: const AlwaysScrollableScrollPhysics(),
               builder: _buildItem,
-              itemCount: onTwoPageMode() ? landscapeMaxPage() : c.maxPage,
+              itemCount: c.onTwoPage.value ? landscapeMaxPage() : c.maxPage,
               backgroundDecoration: const BoxDecoration(
                 color: Colors.black,
               ),
@@ -125,7 +121,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
   }
 
   Future<void> _onPageChanged(int page) async {
-    if (onTwoPageMode()) {
+    if (c.onTwoPage.value) {
       c.page.value = page * 2;
     } else {
       c.page.value = page;
@@ -177,7 +173,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
     }
 
     if (c.provider.useFileSystem) {
-      if (onTwoPageMode()) {
+      if (c.onTwoPage.value) {
         var firstIndex = index * 2;
         var secondIndex = index * 2 + 1;
 
@@ -226,11 +222,11 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
       }
     } else if (c.provider.useProvider) {
       viewWidget = FutureBuilder(
-        future: onTwoPageMode()
+        future: c.onTwoPage.value
             ? Future.wait([c.load(index * 2), c.load(index * 2 + 1)])
             : c.load(index),
         builder: (context, snapshot) {
-          final checkLoad = onTwoPageMode()
+          final checkLoad = c.onTwoPage.value
               ? c.urlCache[index * 2] != null &&
                   c.headerCache[index * 2] != null &&
                   (c.maxPage <= index * 2 + 1 ||
@@ -239,7 +235,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
               : c.urlCache[index] != null && c.headerCache[index] != null;
 
           if (checkLoad) {
-            if (onTwoPageMode()) {
+            if (c.onTwoPage.value) {
               var firstIndex = index * 2;
               var secondIndex = index * 2 + 1;
 
@@ -318,7 +314,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
       throw Exception('Dead Reaching');
     }
 
-    if (onTwoPageMode()) {
+    if (c.onTwoPage.value) {
       final width = MediaQuery.of(context).size.width;
 
       // TODO: supports real image size based width for supporting double tap zoom

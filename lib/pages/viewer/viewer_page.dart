@@ -215,6 +215,7 @@ class _ViewerPageState extends State<ViewerPage> {
     getxId = const Uuid().v4();
     c = Get.put(
       ViewerController(
+        context,
         _pageInfo,
         close: _close,
         replace: _replace,
