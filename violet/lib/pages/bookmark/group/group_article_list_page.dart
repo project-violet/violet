@@ -406,8 +406,10 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   int nowType = 3;
 
   Widget buildList() {
-    var mm = nowType == 0 ? 3 : 2;
-    var windowWidth = MediaQuery.of(context).size.width;
+    final columnCount =
+        MediaQuery.of(context).orientation == Orientation.landscape ? 4 : 3;
+    final mm = nowType == 0 ? columnCount : 2;
+    final windowWidth = MediaQuery.of(context).size.width;
     switch (nowType) {
       case 0:
       case 1:

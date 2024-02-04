@@ -25,7 +25,11 @@ class ViewerController extends GetxController {
   final ViewerPageProvider provider;
   late final int articleId;
   late final int maxPage;
-  bool onTwoPage = false;
+  var onTwoPage = false.obs;
+
+  /// this variable used in [_appBarTwoPage] and [_HorizontalViewerPageState]
+  /// if true, then lock the [_onPageChanged] method on [_HorizontalViewerPageState]
+  var onTwoPageJump = false;
 
   /// viewer callbacks
   late AsyncCallback close;
@@ -103,6 +107,7 @@ class ViewerController extends GetxController {
   bool onJump = false;
 
   ViewerController(
+    BuildContext context,
     this.provider, {
     required this.close,
     required this.replace,
@@ -114,6 +119,10 @@ class ViewerController extends GetxController {
     thumb = provider.useFileSystem.obs;
     isImageLoaded =
         List.filled(provider.uris.length, provider.useFileSystem).obs;
+
+    onTwoPage = (!Settings.disableTwoPageView &&
+            MediaQuery.of(context).orientation == Orientation.landscape)
+        .obs;
 
     headerCache = List<Map<String, String>?>.filled(maxPage, null);
     urlCache = List<RxString?>.filled(maxPage, null);
@@ -139,7 +148,7 @@ class ViewerController extends GetxController {
         alignment: 0.12,
       );
     } else {
-      horizontalPageController.jumpToPage(onTwoPage ? page ~/ 2 : page);
+      horizontalPageController.jumpToPage(onTwoPage.value ? page ~/ 2 : page);
     }
   }
 
@@ -172,15 +181,15 @@ class ViewerController extends GetxController {
           );
     } else {
       horizontalPageController.animateToPage(
-        onTwoPage ? page ~/ 2 : page,
+        onTwoPage.value ? page ~/ 2 : page,
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
       );
     }
   }
 
-  prev() => move(page.value - (onTwoPage ? 2 : 1));
-  next() => move(page.value + (onTwoPage ? 2 : 1));
+  prev() => move(page.value - (onTwoPage.value ? 2 : 1));
+  next() => move(page.value + (onTwoPage.value ? 2 : 1));
 
   Future<void> load(int index) async {
     if (provider.useProvider) {

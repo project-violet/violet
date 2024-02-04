@@ -72,6 +72,7 @@ class Settings {
   static late bool disableFullScreen;
   static late bool enableTimer;
   static late double timerTick;
+  static late bool disableTwoPageView;
   static late bool moveToAppBarToBottom;
   static late bool showSlider;
   static late int imageQuality;
@@ -229,6 +230,7 @@ class Settings {
     disableFullScreen = await _getBool('disablefullscreen');
     enableTimer = await _getBool('enabletimer');
     timerTick = await _getDouble('timertick', 1.0);
+    disableTwoPageView = await _getBool('disableTwoPageView');
     moveToAppBarToBottom =
         await _getBool('movetoappbartobottom', Platform.isIOS);
     showSlider = await _getBool('showslider');
@@ -647,6 +649,12 @@ class Settings {
     timerTick = nn;
 
     await prefs.setDouble('timertick', timerTick);
+  }
+
+  static Future<void> setDisableTwoPageView(bool nn) async {
+    disableTwoPageView = nn;
+
+    await prefs.setBool('onTwoPageView', disableTwoPageView);
   }
 
   static Future<void> setMoveToAppBarToBottom(bool nn) async {

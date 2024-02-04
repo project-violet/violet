@@ -26,12 +26,20 @@ class ThreeArticlePanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var windowWidth = MediaQuery.of(context).size.width;
-    var subItemWidth = (windowWidth - 16 - 4.0 - 1.0) / 3;
+    final windowWidth = MediaQuery.of(context).size.width;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    final columnCount = isLandscape ? 4 : 3;
+    final subItemWidth = (windowWidth - 16 - 4.0 - 1.0) / columnCount;
+
+    const kHeaderHeight = 33;
+    const childAspectRatio = 3 / 4;
+    final height = windowWidth / columnCount / childAspectRatio;
+
     return InkWell(
       onTap: () => _onTap(context),
       child: SizedBox(
-        height: 195,
+        height: height + kHeaderHeight,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
           child: Column(
@@ -52,13 +60,14 @@ class ThreeArticlePanel extends StatelessWidget {
                 ],
               ),
               SizedBox(
-                height: 162,
+                height: height,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     _SubItem(subItemWidth, articles, 0),
                     _SubItem(subItemWidth, articles, 1),
                     _SubItem(subItemWidth, articles, 2),
+                    if (isLandscape) _SubItem(subItemWidth, articles, 3),
                   ],
                 ),
               ),
