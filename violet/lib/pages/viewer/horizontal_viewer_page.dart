@@ -34,6 +34,8 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
   void initState() {
     super.initState();
     c = Get.find(tag: widget.getxId);
+    sizes = List.generate(landscapeMaxPage(), (_) => ValueNotifier(Size.zero));
+    alreadyCalculated = List.filled(c.maxPage, false);
   }
 
   int landscapeMaxPage() {
@@ -61,19 +63,24 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
             constraints: BoxConstraints.expand(
               height: MediaQuery.of(context).size.height,
             ),
-            child: VPhotoViewGallery.builder(
-              scrollPhysics: const AlwaysScrollableScrollPhysics(),
-              builder: _buildItem,
-              itemCount: c.onTwoPage.value ? landscapeMaxPage() : c.maxPage,
-              backgroundDecoration: const BoxDecoration(
-                color: Colors.black,
-              ),
-              scrollDirection: c.viewScrollType.value == ViewType.vertical
-                  ? Axis.vertical
-                  : Axis.horizontal,
-              pageController: c.horizontalPageController,
-              reverse: c.rightToLeft.value,
-              onPageChanged: _onPageChanged,
+            child: ValueListenableBuilder(
+              valueListenable: sizeNoti,
+              builder: (_, __, ___) {
+                return VPhotoViewGallery.builder(
+                  scrollPhysics: const AlwaysScrollableScrollPhysics(),
+                  builder: _buildItem,
+                  itemCount: c.onTwoPage.value ? landscapeMaxPage() : c.maxPage,
+                  backgroundDecoration: const BoxDecoration(
+                    color: Colors.black,
+                  ),
+                  scrollDirection: c.viewScrollType.value == ViewType.vertical
+                      ? Axis.vertical
+                      : Axis.horizontal,
+                  pageController: c.horizontalPageController,
+                  reverse: c.rightToLeft.value,
+                  onPageChanged: _onPageChanged,
+                );
+              },
             ),
           ),
           if (c.overlayButton.value)
@@ -138,6 +145,10 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
     }
   }
 
+  late List<ValueNotifier<Size>> sizes;
+  late List<bool> alreadyCalculated;
+  late ValueNotifier<bool> sizeNoti = ValueNotifier(false);
+
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
     late final Widget viewWidget;
     final height = MediaQuery.of(context).size.height;
@@ -190,7 +201,22 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                   image: ExtendedFileImageProvider(
                     File(c.provider.uris[firstIndex]),
                     imageCacheName: c.provider.uris[firstIndex],
-                  ),
+                  )..resolve(ImageConfiguration.empty)
+                        .addListener(ImageStreamListener((imageInfo, _) {
+                      if (alreadyCalculated[firstIndex]) return;
+                      alreadyCalculated[firstIndex] = true;
+                      final width = sizes[index].value.width +
+                          imageInfo.image.width /
+                              imageInfo.image.height *
+                              height;
+                      sizes[index].value = Size(
+                        width,
+                        height,
+                      );
+                      WidgetsBinding.instance.addPostFrameCallback(
+                        (_) => sizeNoti.value = !sizeNoti.value,
+                      );
+                    })),
                 ),
                 secondIndex,
               ),
@@ -200,7 +226,22 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                   image: ExtendedFileImageProvider(
                     File(c.provider.uris[secondIndex]),
                     imageCacheName: c.provider.uris[secondIndex],
-                  ),
+                  )..resolve(ImageConfiguration.empty)
+                        .addListener(ImageStreamListener((imageInfo, _) {
+                      if (alreadyCalculated[secondIndex]) return;
+                      alreadyCalculated[secondIndex] = true;
+                      final width = sizes[index].value.width +
+                          imageInfo.image.width /
+                              imageInfo.image.height *
+                              height;
+                      sizes[index].value = Size(
+                        width,
+                        height,
+                      );
+                      WidgetsBinding.instance.addPostFrameCallback(
+                        (_) => sizeNoti.value = !sizeNoti.value,
+                      );
+                    })),
                 ),
                 secondIndex,
               ),
@@ -256,7 +297,22 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                             cache: true,
                             retries: 10,
                             timeRetry: const Duration(milliseconds: 300),
-                          ),
+                          )..resolve(ImageConfiguration.empty).addListener(
+                                ImageStreamListener((imageInfo, _) {
+                              if (alreadyCalculated[firstIndex]) return;
+                              alreadyCalculated[firstIndex] = true;
+                              final width = sizes[index].value.width +
+                                  imageInfo.image.width /
+                                      imageInfo.image.height *
+                                      height;
+                              sizes[index].value = Size(
+                                width,
+                                height,
+                              );
+                              WidgetsBinding.instance.addPostFrameCallback(
+                                (_) => sizeNoti.value = !sizeNoti.value,
+                              );
+                            })),
                         ),
                         firstIndex,
                       ),
@@ -269,7 +325,22 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                             cache: true,
                             retries: 10,
                             timeRetry: const Duration(milliseconds: 300),
-                          ),
+                          )..resolve(ImageConfiguration.empty).addListener(
+                                ImageStreamListener((imageInfo, _) {
+                              if (alreadyCalculated[secondIndex]) return;
+                              alreadyCalculated[secondIndex] = true;
+                              final width = sizes[index].value.width +
+                                  imageInfo.image.width /
+                                      imageInfo.image.height *
+                                      height;
+                              sizes[index].value = Size(
+                                width,
+                                height,
+                              );
+                              WidgetsBinding.instance.addPostFrameCallback(
+                                (_) => sizeNoti.value = !sizeNoti.value,
+                              );
+                            })),
                         ),
                         secondIndex,
                       ),
@@ -315,10 +386,16 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
 
     if (c.onTwoPage.value) {
       final width = MediaQuery.of(context).size.width;
+      final firstIndex = index * 2;
+      final secondIndex = index * 2 + 1;
+      final size = alreadyCalculated[firstIndex] &&
+              (c.maxPage <= secondIndex || alreadyCalculated[secondIndex])
+          ? sizes[index].value
+          : Size(width, height);
 
       // TODO: supports real image size based width for supporting double tap zoom
       return PhotoViewGalleryPageOptions.customChild(
-        childSize: Size(width, height),
+        childSize: size,
         initialScale: PhotoViewComputedScale.contained,
         minScale: PhotoViewComputedScale.contained * 1.0,
         maxScale: PhotoViewComputedScale.contained * 5.0,
