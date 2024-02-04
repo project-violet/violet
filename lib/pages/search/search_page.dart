@@ -633,7 +633,7 @@ class ResultPanelWidget extends StatelessWidget {
                   index,
                   mm,
                   windowWidth,
-                  windowWidth - 4.0,
+                  (windowWidth - 4.0) / kDetailModeColumnCount,
                   showDetail: Settings.searchResultType >= 3,
                   showUltra: Settings.searchResultType == 4,
                   addBottomPadding: true,
