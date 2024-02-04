@@ -26,6 +26,7 @@ class ViewerController extends GetxController {
   late final int articleId;
   late final int maxPage;
   var onTwoPage = false.obs;
+  var onTwoPageJump = false;
 
   /// viewer callbacks
   late AsyncCallback close;
