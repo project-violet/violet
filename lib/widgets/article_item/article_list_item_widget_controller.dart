@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:math';
+
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -64,7 +66,12 @@ class ArticleListItemWidgetController extends GetxController {
       } else {
         Future.delayed(const Duration(milliseconds: 500)).then((value) {
           if (bodyKey.currentContext != null && !disposed) {
-            thisHeight.value = bodyKey.currentContext!.size!.height;
+            if (Settings.useTabletMode) {
+              thisHeight.value =
+                  max(220.0, bodyKey.currentContext!.size!.height);
+            } else {
+              thisHeight.value = bodyKey.currentContext!.size!.height;
+            }
           }
         });
       }

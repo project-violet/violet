@@ -3,6 +3,7 @@
 
 import 'dart:async';
 
+import 'package:extended_wrap/extended_wrap.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -614,7 +615,8 @@ class _DetailWidget extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            if (c.articleListItem.showUltra) tagArea() else const Spacer(),
+            if (c.articleListItem.showUltra) tagArea(),
+            const Spacer(),
             Row(
               children: [
                 const Icon(Icons.date_range, size: 18),
@@ -674,12 +676,22 @@ class _DetailWidget extends StatelessWidget {
             e.contains(':') ? e.split(':')[1] : e))
         .toList();
 
-    return Wrap(
-      spacing: 3.0,
-      runSpacing: -10.0,
-      children:
-          tags.map((x) => TagChip(group: x.item1, name: x.item2)).toList(),
-    );
+    if (Settings.useTabletMode) {
+      return ExtendedWrap(
+        spacing: 3.0,
+        maxLines: 3,
+        runSpacing: -10.0,
+        children:
+            tags.map((x) => TagChip(group: x.item1, name: x.item2)).toList(),
+      );
+    } else {
+      return Wrap(
+        spacing: 3.0,
+        runSpacing: -10.0,
+        children:
+            tags.map((x) => TagChip(group: x.item1, name: x.item2)).toList(),
+      );
+    }
   }
 }
 
