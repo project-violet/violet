@@ -451,6 +451,9 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
       onPressed: () async {
         await Settings.setDisableTwoPageView(!Settings.disableTwoPageView);
         c.onTwoPage.value = !Settings.disableTwoPageView;
+        c.horizontalPageController.jumpToPage(c.onTwoPage.value
+            ? c.page.value.toInt() ~/ 2
+            : c.page.value.toInt());
       },
     );
   }

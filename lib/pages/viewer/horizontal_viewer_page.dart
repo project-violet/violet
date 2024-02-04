@@ -14,6 +14,7 @@ import 'package:violet/pages/viewer/image/file_image.dart' as f;
 import 'package:violet/pages/viewer/image/provider_image.dart' as p;
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/settings/settings_wrapper.dart';
 
 class HorizontalViewerPage extends StatefulWidget {
@@ -40,6 +41,19 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
 
   int landscapeMaxPage() {
     return c.maxPage ~/ 2 + (c.maxPage % 2);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final candidate = (!Settings.disableTwoPageView &&
+          MediaQuery.of(context).orientation == Orientation.landscape);
+      if (c.onTwoPage.value != candidate) {
+        c.onTwoPage.value = candidate;
+      }
+    });
   }
 
   @override
@@ -136,15 +150,41 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
       c.page.value = page;
     }
     if (c.provider.useProvider) {
-      if (page.toInt() - 2 >= 0 && c.urlCache[page.toInt() - 2] != null) {
-        CachedNetworkImage.evictFromCache(c.urlCache[page.toInt() - 2]!.value);
+      if (c.onTwoPage.value) {
+        const evict = [-4, -3, 4, 5];
+        for (final i in evict) {
+          final target = c.page.value + i;
+
+          if (target < 0 || c.maxPage <= target || c.urlCache[target] == null) {
+            continue;
+          }
+
+          CachedNetworkImage.evictFromCache(c.urlCache[target]!.value);
+        }
+
+        const precache = [-2, -1, 2, 3];
+        for (final i in precache) {
+          final target = c.page.value + i;
+
+          if (target < 0 || c.maxPage <= target || c.urlCache[target] == null) {
+            continue;
+          }
+
+          await c.precache(context, target);
+        }
+      } else {
+        if (page.toInt() - 2 >= 0 && c.urlCache[page.toInt() - 2] != null) {
+          CachedNetworkImage.evictFromCache(
+              c.urlCache[page.toInt() - 2]!.value);
+        }
+        if (page.toInt() + 2 < c.maxPage &&
+            c.urlCache[page.toInt() + 2] != null) {
+          CachedNetworkImage.evictFromCache(
+              c.urlCache[page.toInt() + 2]!.value);
+        }
+        await c.precache(context, page.toInt() - 1);
+        await c.precache(context, page.toInt() + 1);
       }
-      if (page.toInt() + 2 < c.maxPage &&
-          c.urlCache[page.toInt() + 2] != null) {
-        CachedNetworkImage.evictFromCache(c.urlCache[page.toInt() + 2]!.value);
-      }
-      await c.precache(context, page.toInt() - 1);
-      await c.precache(context, page.toInt() + 1);
     }
   }
 
