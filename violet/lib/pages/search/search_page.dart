@@ -606,6 +606,12 @@ class ResultPanelWidget extends StatelessWidget {
       case 4:
         if (Settings.useTabletMode ||
             MediaQuery.of(context).orientation == Orientation.landscape) {
+          const kDetailModeColumnCount = 2;
+          final aspectRatioHeight =
+              Settings.useTabletMode && Settings.searchResultType == 4
+                  ? 220
+                  : 130;
+
           return SliverPadding(
             padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
             sliver: LiveSliverGrid(
@@ -616,10 +622,11 @@ class ResultPanelWidget extends StatelessWidget {
               visibleFraction: 0.001,
               itemCount: resultList.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
+                crossAxisCount: kDetailModeColumnCount,
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
-                childAspectRatio: (windowWidth / 2) / 130,
+                childAspectRatio:
+                    (windowWidth / kDetailModeColumnCount) / aspectRatioHeight,
               ),
               itemBuilder: (context, index, animation) {
                 return articleItem(
