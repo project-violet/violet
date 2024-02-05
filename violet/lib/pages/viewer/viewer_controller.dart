@@ -26,6 +26,7 @@ class ViewerController extends GetxController {
   late final int articleId;
   late final int maxPage;
   var onTwoPage = false.obs;
+  var secondPageToSecondPage = Settings.secondPageToSecondPage.obs;
 
   /// this variable used in [_appBarTwoPage] and [_HorizontalViewerPageState]
   /// if true, then lock the [_onPageChanged] method on [_HorizontalViewerPageState]
@@ -137,7 +138,8 @@ class ViewerController extends GetxController {
 
   jump(int page) {
     if (page < 0) return;
-    if (page >= maxPage) return;
+    if (page >= maxPage &&
+        (!secondPageToSecondPage.value || page >= maxPage + 1)) return;
 
     this.page.value = page;
 
@@ -154,7 +156,8 @@ class ViewerController extends GetxController {
 
   move(int page) {
     if (page < 0) return;
-    if (page >= maxPage) return;
+    if (page >= maxPage &&
+        (!secondPageToSecondPage.value || page >= maxPage + 1)) return;
 
     if (!animation.value) {
       jump(page);
