@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
@@ -14,6 +15,7 @@ import 'package:violet/pages/viewer/image/file_image.dart' as f;
 import 'package:violet/pages/viewer/image/provider_image.dart' as p;
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
+import 'package:violet/pages/viewer/widget/tap_litstener.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/settings/settings_wrapper.dart';
 
@@ -132,9 +134,13 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                 color: null,
                 width: width / 3,
                 height: height,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: c.leftButton,
+                child: Obx(
+                  () => CustomDelayTapListener(
+                    onTap: c.leftButton,
+                    delay: c.onTwoPage.value
+                        ? const Duration(milliseconds: 1)
+                        : const Duration(milliseconds: 200),
+                  ),
                 ),
               ),
             ),
@@ -157,9 +163,13 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                 color: null,
                 width: width / 3,
                 height: height,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: c.rightButton,
+                child: Obx(
+                  () => CustomDelayTapListener(
+                    onTap: c.rightButton,
+                    delay: c.onTwoPage.value
+                        ? const Duration(milliseconds: 1)
+                        : const Duration(milliseconds: 200),
+                  ),
                 ),
               ),
             ),
@@ -523,6 +533,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
         maxScale: PhotoViewComputedScale.contained * 5.0,
         gestureDetectorBehavior: HitTestBehavior.opaque,
         child: viewWidget,
+        scaleStateCycle: (actual) => actual,
       );
     } else {
       return PhotoViewGalleryPageOptions.customChild(
