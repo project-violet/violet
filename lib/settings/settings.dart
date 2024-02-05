@@ -73,6 +73,7 @@ class Settings {
   static late bool enableTimer;
   static late double timerTick;
   static late bool disableTwoPageView;
+  static late bool secondPageToSecondPage;
   static late bool moveToAppBarToBottom;
   static late bool showSlider;
   static late int imageQuality;
@@ -231,6 +232,7 @@ class Settings {
     enableTimer = await _getBool('enabletimer');
     timerTick = await _getDouble('timertick', 1.0);
     disableTwoPageView = await _getBool('disableTwoPageView');
+    secondPageToSecondPage = await _getBool('secondPageToSecondPage');
     moveToAppBarToBottom =
         await _getBool('movetoappbartobottom', Platform.isIOS);
     showSlider = await _getBool('showslider');
@@ -655,6 +657,12 @@ class Settings {
     disableTwoPageView = nn;
 
     await prefs.setBool('onTwoPageView', disableTwoPageView);
+  }
+
+  static Future<void> setSecondPageToSecondPage(bool nn) async {
+    secondPageToSecondPage = nn;
+
+    await prefs.setBool('secondPageToSecondPage', secondPageToSecondPage);
   }
 
   static Future<void> setMoveToAppBarToBottom(bool nn) async {
