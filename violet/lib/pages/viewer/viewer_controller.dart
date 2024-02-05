@@ -196,7 +196,7 @@ class ViewerController extends GetxController {
 
   Future<void> load(int index) async {
     if (provider.useProvider) {
-      if (index >= maxPage) {
+      if (index < 0 || index >= maxPage) {
         return;
       }
 

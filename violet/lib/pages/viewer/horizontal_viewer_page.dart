@@ -343,18 +343,21 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
         );
       }
     } else if (c.provider.useProvider) {
+      var indexPad = 0;
+      if (c.onTwoPage.value && c.secondPageToSecondPage.value) {
+        indexPad = 1;
+      }
+
       viewWidget = FutureBuilder(
         future: c.onTwoPage.value
-            ? Future.wait([c.load(index * 2), c.load(index * 2 + 1)])
+            ? Future.wait([
+                c.load(index * 2 - indexPad),
+                c.load(index * 2 + 1 - indexPad)
+              ])
             : c.load(index),
         builder: (context, snapshot) {
           var twoPageLoaded = true;
           if (c.onTwoPage.value) {
-            var indexPad = 0;
-            if (c.onTwoPage.value && c.secondPageToSecondPage.value) {
-              indexPad = 1;
-            }
-
             final firstIndex = index * 2 - indexPad;
             final firstLoaded = (firstIndex < 0 ||
                 c.urlCache[firstIndex] != null &&
