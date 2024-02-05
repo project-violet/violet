@@ -224,6 +224,9 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
                             _appBarTimer(),
                             if (c.viewType.value == ViewType.horizontal &&
                                 isLandscape)
+                              _appBarS2S(),
+                            if (c.viewType.value == ViewType.horizontal &&
+                                isLandscape)
                               _appBarTwoPage(),
                             _appBarGallery(),
                             _appBarSettings(),
@@ -439,6 +442,20 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
         await Settings.setEnableTimer(!Settings.enableTimer);
         c.timer.value = Settings.enableTimer;
         c.startTimer();
+      },
+    );
+  }
+
+  _appBarS2S() {
+    return IconButton(
+      icon: Obx(() => Icon(c.secondPageToSecondPage.value
+          ? MdiIcons.homeFloor1
+          : MdiIcons.homeFloor2)),
+      color: Colors.white,
+      onPressed: () async {
+        await Settings.setSecondPageToSecondPage(
+            !Settings.secondPageToSecondPage);
+        c.secondPageToSecondPage.value = Settings.secondPageToSecondPage;
       },
     );
   }

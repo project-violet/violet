@@ -35,12 +35,16 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
   void initState() {
     super.initState();
     c = Get.find(tag: widget.getxId);
-    sizes = List.generate(landscapeMaxPage(), (_) => ValueNotifier(Size.zero));
+    sizes = List.filled(c.maxPage, Size.zero);
     alreadyCalculated = List.filled(c.maxPage, false);
   }
 
   int landscapeMaxPage() {
-    return c.maxPage ~/ 2 + (c.maxPage % 2);
+    var maxPage = c.maxPage;
+    if (c.secondPageToSecondPage.value) {
+      maxPage += 1;
+    }
+    return maxPage ~/ 2 + (maxPage % 2);
   }
 
   @override
@@ -210,7 +214,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
     }
   }
 
-  late List<ValueNotifier<Size>> sizes;
+  late List<Size> sizes;
   late List<bool> alreadyCalculated;
   late ValueNotifier<bool> sizeNoti = ValueNotifier(false);
 
@@ -250,12 +254,8 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
     void sizeNotification(int imageIndex, ImageInfo imageInfo) {
       if (alreadyCalculated[imageIndex]) return;
       alreadyCalculated[imageIndex] = true;
-      final width = sizes[index].value.width +
-          imageInfo.image.width / imageInfo.image.height * height;
-      sizes[index].value = Size(
-        width,
-        height,
-      );
+      sizes[imageIndex] = Size(
+          imageInfo.image.width.toDouble(), imageInfo.image.height.toDouble());
 
       // TODO: how to optimize this logic?
       WidgetsBinding.instance.addPostFrameCallback(
@@ -268,6 +268,11 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
         var firstIndex = index * 2;
         var secondIndex = index * 2 + 1;
 
+        if (c.secondPageToSecondPage.value) {
+          firstIndex -= 1;
+          secondIndex -= 1;
+        }
+
         if (c.rightToLeft.value) {
           firstIndex += 1;
           secondIndex -= 1;
@@ -276,7 +281,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
         viewWidget = Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (c.maxPage > firstIndex)
+            if (c.maxPage > firstIndex && firstIndex >= 0)
               wrappingGestureDetector(
                 Image(
                   image: ExtendedFileImageProvider(
@@ -288,8 +293,18 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                     })),
                 ),
                 firstIndex,
+              )
+            else if (c.secondPageToSecondPage.value && firstIndex == -1)
+              SizedBox(
+                width: sizes[0].aspectRatio * height,
+                height: sizes[0].height,
+              )
+            else if (c.maxPage <= firstIndex)
+              SizedBox(
+                width: sizes.last.aspectRatio * height,
+                height: sizes.last.height,
               ),
-            if (c.maxPage > secondIndex)
+            if (c.maxPage > secondIndex && secondIndex >= 0)
               wrappingGestureDetector(
                 Image(
                   image: ExtendedFileImageProvider(
@@ -301,6 +316,16 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                     })),
                 ),
                 secondIndex,
+              )
+            else if (c.secondPageToSecondPage.value && secondIndex == -1)
+              SizedBox(
+                width: sizes[0].aspectRatio * height,
+                height: sizes[0].height,
+              )
+            else if (c.maxPage <= secondIndex)
+              SizedBox(
+                width: sizes.last.aspectRatio * height,
+                height: sizes.last.height,
               ),
           ],
         );
@@ -318,23 +343,46 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
         );
       }
     } else if (c.provider.useProvider) {
+      var indexPad = 0;
+      if (c.onTwoPage.value && c.secondPageToSecondPage.value) {
+        indexPad = 1;
+      }
+
       viewWidget = FutureBuilder(
         future: c.onTwoPage.value
-            ? Future.wait([c.load(index * 2), c.load(index * 2 + 1)])
+            ? Future.wait([
+                c.load(index * 2 - indexPad),
+                c.load(index * 2 + 1 - indexPad)
+              ])
             : c.load(index),
         builder: (context, snapshot) {
+          var twoPageLoaded = true;
+          if (c.onTwoPage.value) {
+            final firstIndex = index * 2 - indexPad;
+            final firstLoaded = (firstIndex < 0 ||
+                c.urlCache[firstIndex] != null &&
+                    c.headerCache[firstIndex] != null);
+            final secondIndex = index * 2 + 1 - indexPad;
+            final secondLoaded = c.maxPage <= secondIndex ||
+                (c.urlCache[secondIndex] != null &&
+                    c.headerCache[secondIndex] != null);
+
+            twoPageLoaded = firstLoaded && secondLoaded;
+          }
+
           final checkLoad = c.onTwoPage.value
-              ? c.urlCache[index * 2] != null &&
-                  c.headerCache[index * 2] != null &&
-                  (c.maxPage <= index * 2 + 1 ||
-                      (c.urlCache[index * 2 + 1] != null &&
-                          c.headerCache[index * 2 + 1] != null))
+              ? twoPageLoaded
               : c.urlCache[index] != null && c.headerCache[index] != null;
 
           if (checkLoad) {
             if (c.onTwoPage.value) {
               var firstIndex = index * 2;
               var secondIndex = index * 2 + 1;
+
+              if (c.secondPageToSecondPage.value) {
+                firstIndex -= 1;
+                secondIndex -= 1;
+              }
 
               if (c.rightToLeft.value) {
                 firstIndex += 1;
@@ -345,7 +393,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                 () => Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (c.maxPage > firstIndex)
+                    if (c.maxPage > firstIndex && firstIndex >= 0)
                       wrappingGestureDetector(
                         Image(
                           image: ExtendedNetworkImageProvider(
@@ -360,8 +408,18 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                             })),
                         ),
                         firstIndex,
+                      )
+                    else if (c.secondPageToSecondPage.value && firstIndex == -1)
+                      SizedBox(
+                        width: sizes[0].aspectRatio * height,
+                        height: sizes[0].height,
+                      )
+                    else if (c.maxPage <= firstIndex)
+                      SizedBox(
+                        width: sizes.last.aspectRatio * height,
+                        height: sizes.last.height,
                       ),
-                    if (c.maxPage > secondIndex)
+                    if (c.maxPage > secondIndex && secondIndex >= 0)
                       wrappingGestureDetector(
                         Image(
                           image: ExtendedNetworkImageProvider(
@@ -376,6 +434,17 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                             })),
                         ),
                         secondIndex,
+                      )
+                    else if (c.secondPageToSecondPage.value &&
+                        secondIndex == -1)
+                      SizedBox(
+                        width: sizes[0].aspectRatio * height,
+                        height: sizes[0].height,
+                      )
+                    else if (c.maxPage <= secondIndex)
+                      SizedBox(
+                        width: sizes.last.aspectRatio * height,
+                        height: sizes.last.height,
                       ),
                   ],
                 ),
@@ -419,12 +488,33 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
 
     if (c.onTwoPage.value) {
       final width = MediaQuery.of(context).size.width;
-      final firstIndex = index * 2;
-      final secondIndex = index * 2 + 1;
-      final size = alreadyCalculated[firstIndex] &&
-              (c.maxPage <= secondIndex || alreadyCalculated[secondIndex])
-          ? sizes[index].value
-          : Size(width, height);
+      var firstIndex = index * 2;
+      var secondIndex = index * 2 + 1;
+
+      var size = Size(width, height);
+      var calculatedWidth = 0.0;
+
+      if (c.secondPageToSecondPage.value) {
+        firstIndex -= 1;
+        secondIndex -= 1;
+      }
+
+      if (0 <= firstIndex && alreadyCalculated[firstIndex]) {
+        calculatedWidth += sizes[firstIndex].aspectRatio * height;
+        if (c.maxPage <= secondIndex) {
+          calculatedWidth *= 2;
+        }
+      }
+      if (secondIndex < c.maxPage && alreadyCalculated[secondIndex]) {
+        calculatedWidth += sizes[secondIndex].aspectRatio * height;
+        if (firstIndex == -1) {
+          calculatedWidth *= 2;
+        }
+      }
+
+      if (calculatedWidth != 0.0) {
+        size = Size(calculatedWidth, height);
+      }
 
       return PhotoViewGalleryPageOptions.customChild(
         childSize: size,
