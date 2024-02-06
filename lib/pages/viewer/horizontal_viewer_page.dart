@@ -136,7 +136,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                 child: Obx(
                   () => CustomDelayTapListener(
                     onTap: c.leftButton,
-                    delay: c.onTwoPage.value
+                    delay: c.onTwoPage.value || Settings.useTabletMode
                         ? const Duration(milliseconds: 1)
                         : const Duration(milliseconds: 200),
                   ),
@@ -165,7 +165,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                 child: Obx(
                   () => CustomDelayTapListener(
                     onTap: c.rightButton,
-                    delay: c.onTwoPage.value
+                    delay: c.onTwoPage.value || Settings.useTabletMode
                         ? const Duration(milliseconds: 1)
                         : const Duration(milliseconds: 200),
                   ),
