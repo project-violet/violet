@@ -587,8 +587,10 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
   }
 
   Widget _panelGroupBy(List<(String, List<DownloadItemModel>)> groupBy) {
-    var windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
-    var mm = Settings.downloadResultType == 0 ? 3 : 2;
+    final windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
+    final columnCount = Settings.downloadResultType == 0 ? 3 : 2;
+    final effectiveColumnCount =
+        Settings.useTabletMode ? columnCount * 2 : columnCount;
 
     heightRefHeader = null;
     heightRefArticle = null;
@@ -653,7 +655,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
         padding: const EdgeInsets.fromLTRB(8, 4, 8, 16),
         shrinkWrap: true,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: Settings.useTabletMode ? mm * 2 : mm,
+          crossAxisCount: effectiveColumnCount,
           crossAxisSpacing: 8,
           mainAxisSpacing: 8,
           childAspectRatio: 3 / 4,
@@ -672,7 +674,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                       initialStyle: DownloadListItem(
                         showDetail: false,
                         addBottomPadding: false,
-                        width: (windowWidth - 4.0) / mm,
+                        width: (windowWidth - 4.0) / effectiveColumnCount,
                       ),
                       item: e,
                       download: e.download,
