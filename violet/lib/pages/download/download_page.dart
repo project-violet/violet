@@ -12,6 +12,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -285,7 +286,16 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
 
     if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1) {
       if (Settings.downloadAlignType != 0 && Settings.downloadResultType == 0) {
-        return _panelGroupBy();
+        return FutureBuilder(
+          future: getGroupBy(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const SliverToBoxAdapter(child: SizedBox.shrink());
+            }
+
+            return _panelGroupBy(snapshot.data!);
+          },
+        );
       }
 
       var mm = Settings.downloadResultType == 0 ? 3 : 2;
@@ -405,7 +415,29 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     throw Exception('unreachable');
   }
 
-  List<(String, List<DownloadItemModel>)> getGroupBy() {
+  Future<List<(String, List<DownloadItemModel>)>> getGroupBy() async {
+    final user = await User.getInstance();
+    final userlog = await user.getUserLog();
+    final articlereadlog = <int, DateTime>{};
+
+    for (var element in userlog) {
+      final id = int.tryParse(element.articleId());
+      if (id == null) {
+        Logger.warning(
+            '[download-_applyFilter] articleId is not int type: ${element.articleId()}');
+        continue;
+      }
+      if (!articlereadlog.containsKey(id)) {
+        final dt = DateTime.tryParse(element.datetimeStart());
+        if (dt != null) {
+          articlereadlog[id] = dt;
+        } else {
+          Logger.warning(
+              '[download-_applyFilter] datetimeStart is not DateTime type: ${element.datetimeStart()}');
+        }
+      }
+    }
+
     final groups = filterResult.groupListsBy((e) {
       final qr = queryResults[int.tryParse(e.url()) ?? -1];
       if (qr == null) return 'none';
@@ -424,16 +456,29 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
           return getFirst(qr.groups());
 
         case 3: // page
+          final pageGroup = e.filesWithoutThumbnail().length ~/ 10;
+          return '${pageGroup * 10} ~ ${(pageGroup + 1) * 10} Page';
+
         case 4: // datetime recent
-          return getFirst(qr.groups());
+          if (!articlereadlog.containsKey(qr.id())) {
+            final downoadDateTime = DateTime.parse(e.dateTime()!);
+            return DateFormat('yyyy.MM.dd').format(downoadDateTime);
+          }
+          return DateFormat('yyyy.MM.dd').format(articlereadlog[qr.id()]!);
 
         default:
           throw Exception('unrechable');
       }
     });
 
-    final groupsSorted = groups.entries.map((e) => (e.key, e.value)).toList()
+    var groupsSorted = groups.entries.map((e) => (e.key, e.value)).toList()
       ..sortBy((e) => e.$1);
+
+    final reverseOrder =
+        Settings.downloadAlignType == 3 || Settings.downloadAlignType == 4;
+    if (reverseOrder) {
+      groupsSorted = groupsSorted.reversed.toList();
+    }
 
     return groupsSorted;
   }
@@ -475,13 +520,13 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     // updateHeights();
   }
 
-  void _indexChanged() {
+  Future<void> _indexChanged() async {
     final details = indexBarDragListener.dragDetails.value;
     if (details.action == IndexBarDragDetails.actionDown ||
         details.action == IndexBarDragDetails.actionUpdate) {
       final tag = details.tag!;
 
-      final groupBy = getGroupBy();
+      final groupBy = await getGroupBy();
 
       // TODO: More optimize
       final headerCount =
@@ -515,46 +560,40 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
   Widget indexBar() {
     return Align(
       alignment: Alignment.centerRight,
-      child: IndexBar(
-        // data: widget.indexBarData,
-        data: getGroupBy().map((e) => e.$1[0].toUpperCase()).toSet().toList(),
-        // options: const IndexBarOptions(
-        //   needRebuild: true,
-        //   color: Colors.transparent,
-        // ),
-        indexBarDragListener: indexBarDragListener,
-        // height: widget.indexBarHeight,
-        // itemHeight: widget.indexBarItemHeight,
-        // margin: widget.indexBarMargin,
-        // indexHintBuilder: widget.indexHintBuilder,
-        // indexBarDragListener: dragListener,
-        // options: widget.indexBarOptions,
-        // controller: indexBarController,
-        options: const IndexBarOptions(
-          needRebuild: true,
-          selectTextStyle: TextStyle(
-              fontSize: 12, color: Colors.white, fontWeight: FontWeight.w500),
-          selectItemDecoration:
-              BoxDecoration(shape: BoxShape.circle, color: Color(0xFF333333)),
-          // indexHintWidth: 96,
-          // indexHintHeight: 97,
-          // indexHintAlignment: Alignment.centerRight,
-          // indexHintTextStyle:
-          //     TextStyle(fontSize: 24.0, color: Colors.black87),
-          // indexHintOffset: Offset(-30, 0),
-        ),
+      child: FutureBuilder(
+        future: getGroupBy(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return Container();
+
+          return IndexBar(
+            data: snapshot.data!
+                .map((e) => e.$1[0].toUpperCase())
+                .toSet()
+                .toList(),
+            indexBarDragListener: indexBarDragListener,
+            options: const IndexBarOptions(
+              needRebuild: true,
+              selectTextStyle: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500),
+              selectItemDecoration: BoxDecoration(
+                  shape: BoxShape.circle, color: Color(0xFF333333)),
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _panelGroupBy() {
+  Widget _panelGroupBy(List<(String, List<DownloadItemModel>)> groupBy) {
     var windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
     var mm = Settings.downloadResultType == 0 ? 3 : 2;
 
     heightRefHeader = null;
     heightRefArticle = null;
 
-    final groupsWidget = getGroupBy().map((e) {
+    final groupsWidget = groupBy.map((e) {
       final title = Container(
         key: heightRefHeader == null ? heightRefHeader ??= GlobalKey() : null,
         padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
