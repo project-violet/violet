@@ -186,9 +186,14 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
     }
     if (c.provider.useProvider) {
       if (c.onTwoPage.value) {
+        var indexPad = 0;
+        if (c.secondPageToSecondPage.value) {
+          indexPad = 1;
+        }
+
         const evict = [-4, -3, 4, 5];
         for (final i in evict) {
-          final target = c.page.value + i;
+          final target = c.page.value + i - indexPad;
 
           if (target < 0 || c.maxPage <= target || c.urlCache[target] == null) {
             continue;
@@ -199,7 +204,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
 
         const precache = [-2, -1, 2, 3];
         for (final i in precache) {
-          final target = c.page.value + i;
+          final target = c.page.value + i - indexPad;
 
           if (target < 0 || c.maxPage <= target || c.urlCache[target] == null) {
             continue;

@@ -289,6 +289,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
             ),
             trailing: Text(
               [
+                locale.Translations.of(context).trans('verylarge'),
                 locale.Translations.of(context).trans('large'),
                 locale.Translations.of(context).trans('middle'),
                 locale.Translations.of(context).trans('small')
