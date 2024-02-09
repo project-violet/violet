@@ -106,7 +106,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
     final statusBarHeight =
         Settings.disableFullScreen ? MediaQuery.of(context).padding.top : 0;
     final height = MediaQuery.of(context).size.height;
-    final thumbHeight = [140, 120, 96][c.thumbSize.value];
+    final thumbHeight = [180, 140, 120, 96][c.thumbSize.value];
 
     return Obx(
       () => AnimatedOpacity(
@@ -638,7 +638,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
       },
     );
 
-    final thumbHeight = [140.0, 120.0, 96.0][c.thumbSize.value];
+    final thumbHeight = [180.0, 140.0, 120.0, 96.0][c.thumbSize.value];
 
     return Obx(
       () => AnimatedOpacity(
@@ -739,7 +739,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
   }
 
   _preprocessImageInfoForFileImage() {
-    final thumbHeight = [140, 120, 96][c.thumbSize.value];
+    final thumbHeight = [180, 140, 120, 96][c.thumbSize.value];
     c.thumb.value = Settings.enableThumbSlider;
 
     var imageSizes = c.provider.uris.map((e) {
@@ -820,7 +820,8 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
                         height: double.infinity,
                         isAntiAlias: true,
                         cacheHeight:
-                            ([140, 120, 96][c.thumbSize.value] * 2.0).toInt(),
+                            ([180, 140, 120, 96][c.thumbSize.value] * 2.0)
+                                .toInt(),
                         filterQuality: FilterQuality.high,
                       ),
                     ),

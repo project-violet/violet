@@ -463,14 +463,16 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
 
   Widget queryResult() {
     final width = MediaQuery.of(context).size.width;
-    var axis1 = charts.AxisSpec<String>(
+    final maxItemCount =
+        MediaQuery.of(context).orientation == Orientation.landscape ? 8 : 6;
+    final axis1 = charts.AxisSpec<String>(
         renderSpec: charts.GridlineRendererSpec(
             labelStyle: charts.TextStyleSpec(
                 fontSize: isExpanded ? 10 : 14,
                 color: charts.MaterialPalette.white),
             lineStyle: const charts.LineStyleSpec(
                 color: charts.MaterialPalette.transparent)));
-    var axis2 = const charts.NumericAxisSpec(
+    const axis2 = charts.NumericAxisSpec(
         renderSpec: charts.GridlineRendererSpec(
       labelStyle: charts.TextStyleSpec(
           fontSize: 10, color: charts.MaterialPalette.white),
@@ -566,7 +568,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 expanded: Column(children: <Widget>[
                   articleArea(),
                   Visibility(
-                      visible: cc.length > 6,
+                      visible: cc.length > maxItemCount,
                       child: more(() => ArticleListPage(
                           cc: cc,
                           name: (widget.isGroup
@@ -713,6 +715,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     final windowWidth = MediaQuery.of(context).size.width;
     final columnCount =
         MediaQuery.of(context).orientation == Orientation.landscape ? 4 : 3;
+    final maxItemCount =
+        MediaQuery.of(context).orientation == Orientation.landscape ? 8 : 6;
     return LiveGrid(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -720,7 +724,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       showItemInterval: const Duration(milliseconds: 50),
       showItemDuration: const Duration(milliseconds: 150),
       visibleFraction: 0.001,
-      itemCount: min(cc.length, 6),
+      itemCount: min(cc.length, maxItemCount),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: columnCount,
         crossAxisSpacing: 8,
