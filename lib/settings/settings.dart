@@ -237,7 +237,7 @@ class Settings {
         await _getBool('movetoappbartobottom', Platform.isIOS);
     showSlider = await _getBool('showslider');
     imageQuality = await _getInt('imagequality', 3);
-    thumbSize = await _getInt('imageQuality', 0);
+    thumbSize = await _getInt('imageQuality', 1);
     enableThumbSlider = await _getBool('enableThumbSlider');
     showPageNumberIndicator = await _getBool('showPageNumberIndicator', true);
     showRecordJumpMessage = await _getBool('showRecordJumpMessage', true);
