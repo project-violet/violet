@@ -571,18 +571,20 @@ class ResultPanelWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mm = Settings.searchResultType == 0 ? 3 : 2;
+    final columnCount = Settings.searchResultType == 0 ? 3 : 2;
     final windowWidth = MediaQuery.of(context).size.width;
 
     switch (Settings.searchResultType) {
       case 0:
       case 1:
+        final simpleModeColumnCount =
+            Settings.useTabletMode ? columnCount * 2 : columnCount;
         return SliverPadding(
             padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
             sliver: SliverGrid(
               key: sliverKey,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: Settings.useTabletMode ? mm * 2 : mm,
+                crossAxisCount: simpleModeColumnCount,
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
                 childAspectRatio: 3 / 4,
@@ -591,9 +593,8 @@ class ResultPanelWidget extends StatelessWidget {
                 (BuildContext context, int index) {
                   return articleItem(
                     index,
-                    mm,
                     windowWidth,
-                    (windowWidth - 4.0) / mm,
+                    (windowWidth - 4.0) / simpleModeColumnCount,
                     alignment: Alignment.bottomCenter,
                   );
                 },
@@ -631,7 +632,6 @@ class ResultPanelWidget extends StatelessWidget {
               itemBuilder: (context, index, animation) {
                 return articleItem(
                   index,
-                  mm,
                   windowWidth,
                   (windowWidth - 4.0) / kDetailModeColumnCount,
                   showDetail: Settings.searchResultType >= 3,
@@ -648,7 +648,6 @@ class ResultPanelWidget extends StatelessWidget {
               (BuildContext context, int index) {
                 return articleItem(
                   index,
-                  mm,
                   windowWidth,
                   windowWidth - 4.0,
                   showDetail: Settings.searchResultType >= 3,
@@ -669,7 +668,6 @@ class ResultPanelWidget extends StatelessWidget {
 
   articleItem(
     int index,
-    int mm,
     double windowWidth,
     double width, {
     bool showDetail = false,
