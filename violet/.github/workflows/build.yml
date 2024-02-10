@@ -74,7 +74,7 @@ jobs:
           
       - name: Build
         run: |
-          flutter build ios --release --no-codesign -v
+          flutter build ios --release --no-codesign
           mkdir -p Payload
           mv ./build/ios/iphoneos/Runner.app Payload
           zip -r -y Payload.zip Payload/Runner.app
@@ -119,7 +119,7 @@ jobs:
       - name: Build
         run: |
           flutter clean
-          flutter build apk --release -v
+          flutter build apk --release
           
       - name: Upload APK
         uses: actions/upload-artifact@v2
