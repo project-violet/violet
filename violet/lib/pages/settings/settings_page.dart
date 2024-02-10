@@ -18,7 +18,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:go_git_dart/go_git_dart.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mdi/mdi.dart';
 import 'package:path_provider/path_provider.dart';
@@ -27,7 +26,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/component/eh/eh_bookmark.dart';
-import 'package:violet/component/git/git_bookmark.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/database.dart';
@@ -51,7 +49,6 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/settings/bookmark_version_select.dart';
 import 'package:violet/pages/settings/db_rebuild_page.dart';
 import 'package:violet/pages/settings/import_from_eh.dart';
-import 'package:violet/pages/settings/import_from_git.dart';
 import 'package:violet/pages/settings/license_page.dart';
 import 'package:violet/pages/settings/lock_setting_page.dart';
 import 'package:violet/pages/settings/log_page.dart';
@@ -66,7 +63,6 @@ import 'package:violet/platform/misc.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
-import 'package:violet/util/git.dart';
 import 'package:violet/util/helper.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
@@ -2113,173 +2109,6 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          ListTile(
-            leading: Icon(
-              MdiIcons.export,
-              color: Settings.majorColor,
-            ),
-            title: Text(Translations.of(context).trans('exportingbookmarkgit')),
-            trailing: const Icon(Icons.keyboard_arrow_right),
-            onTap: () async {
-              final dir = Platform.isIOS
-                  ? await getApplicationSupportDirectory()
-                  : (await getApplicationDocumentsDirectory());
-              final bookmarkDatabaseFile = File('${dir.path}/user.db');
-
-              final gitPath =
-                  '${(await getTemporaryDirectory()).path}/_tmp_git_bookmark';
-              if (await Directory(gitPath).exists()) {
-                await Directory(gitPath).delete(recursive: true);
-              }
-              try {
-                final git = BookmarkGit();
-                await git.clone(gitPath);
-                final extpath = '$gitPath/bookmark.db';
-                await bookmarkDatabaseFile.copy(extpath);
-                await git.addAll(gitPath);
-                await git.commit(gitPath);
-                await git.push(gitPath);
-              } catch (e, st) {
-                Logger.error('[exportingbookmarkgit] $e\n'
-                    '$st');
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: true,
-                    isWarning: false,
-                    msg: Translations.of(context).trans('failexportbookmark'),
-                  ),
-                  ignorePointer: true,
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
-                );
-                if (await Directory(gitPath).exists()) {
-                  await Directory(gitPath).delete(recursive: true);
-                }
-                return;
-              }
-              if (await Directory(gitPath).exists()) {
-                await Directory(gitPath).delete(recursive: true);
-              }
-              flutterToast.showToast(
-                child: ToastWrapper(
-                  isCheck: true,
-                  isWarning: false,
-                  msg: Translations.of(context).trans('exportbookmark'),
-                ),
-                ignorePointer: true,
-                gravity: ToastGravity.BOTTOM,
-                toastDuration: const Duration(seconds: 4),
-              );
-            },
-          ),
-          InkWell(
-            child: ListTile(
-              leading: Icon(
-                MdiIcons.cloudSearchOutline,
-                color: Settings.majorColor,
-              ),
-              title: Text(Translations.of(context).trans('importfromgit')),
-              trailing: const Icon(Icons.keyboard_arrow_right),
-            ),
-            onTap: () async {
-              await showDialog(
-                context: context,
-                builder: (BuildContext context) => const ImportFromGitPage(),
-              );
-
-              if (GitBookmark.bookmarkInfo == null) {
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: false,
-                    isWarning: true,
-                    msg: Translations.of(context).trans('bookmarkisempty'),
-                  ),
-                  ignorePointer: true,
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
-                );
-                return;
-              }
-
-              int count = 0;
-
-              GitBookmark.bookmarkInfo?.forEach((description, bookmark) {
-                count += bookmark.length;
-              });
-
-              var qqq = await showYesNoDialog(
-                  context,
-                  Translations.of(context)
-                      .trans('ensurecreatebookmark')
-                      .replaceAll('\$1', count.toString()));
-              if (qqq) {
-                var bookmark = await Bookmark.getInstance();
-                for (int i = 0;
-                    i < (GitBookmark.bookmarkInfo?.keys.length ?? 0);
-                    i++) {
-                  if (GitBookmark
-                          .bookmarkInfo![
-                              GitBookmark.bookmarkInfo?.keys.elementAt(i)]
-                          ?.isEmpty ??
-                      true) continue;
-                  final name =
-                      GitBookmark.bookmarkInfo?.keys.elementAtOrNull(i)?.name ??
-                          'Favorite $i';
-                  final description = GitBookmark.bookmarkInfo?.keys
-                          .elementAtOrNull(i)
-                          ?.description ??
-                      '';
-                  final color = Color(GitBookmark.bookmarkInfo?.keys
-                          .elementAtOrNull(i)
-                          ?.color ??
-                      Colors.deepOrange.value);
-                  // final datetime = DateTime.tryParse(GitBookmark.bookmarkInfo?.keys?.elementAtOrNull(i)?.dateTime ?? '') ?? DateTime.now();
-                  final datetime = DateTime.now();
-                  await bookmark.createGroup(
-                      name, description, color, datetime);
-                  var group = (await bookmark.getGroup())
-                      .where((element) => (element.name() == name &&
-                          element.description() == description &&
-                          // element.color() == color.value &&
-                          DateTime.tryParse(element.datetime()) == datetime))
-                      .last
-                      .id();
-                  for (int j = 0;
-                      j <
-                          (GitBookmark
-                                  .bookmarkInfo![GitBookmark.bookmarkInfo?.keys
-                                      .elementAt(i)]
-                                  ?.length ??
-                              0);
-                      j++) {
-                    try {
-                      await bookmark.insertArticle(
-                          GitBookmark.bookmarkInfo![
-                                  GitBookmark.bookmarkInfo?.keys.elementAt(i)]!
-                              .elementAt(j)
-                              .article
-                              .toString(),
-                          DateTime.now(),
-                          group);
-                    } catch (_) {
-                      Logger.error('');
-                    }
-                  }
-                }
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: true,
-                    isWarning: false,
-                    msg: Translations.of(context)
-                        .trans('completeimportbookmark'),
-                  ),
-                  ignorePointer: true,
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
-                );
-              }
-            },
-          ),
           InkWell(
             child: ListTile(
               leading: Icon(
@@ -2665,134 +2494,6 @@ class _SettingsPageState extends State<SettingsPage>
                   'ExHentai|EHentai|Hitomi|NHentai|Hisoki'.split('|');
               await prefs.setString(
                   'searchrule', 'ExHentai|EHentai|Hitomi|NHentai|Hisoki');
-            },
-          ),
-        ],
-      ),
-      _buildItems(
-        [
-          InkWell(
-            customBorder: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(8.0)),
-            ),
-            child: ListTile(
-              leading: CachedNetworkImage(
-                imageUrl: 'https://git-scm.com/favicon.ico',
-                width: 25,
-              ),
-              title: const Text('Git Config'),
-              trailing: const Icon(Icons.keyboard_arrow_right),
-            ),
-            onTap: () async {
-              final prefs = await SharedPreferences.getInstance();
-              var bookmarkRepository = prefs.getString('bookmarkRepository');
-              var bookmarkHost = prefs.getString('bookmarkHost');
-              var bookmarkPrivateKey = prefs.getString('bookmarkPrivateKey');
-              var bookmarkPublicKey = prefs.getString('bookmarkPublicKey');
-              var bookmarkPrivateKeyPassword =
-                  prefs.getString('bookmarkPrivateKeyPassword');
-
-              var rController = TextEditingController(text: bookmarkRepository);
-              var hController = TextEditingController(text: bookmarkHost);
-              var kController = TextEditingController(text: bookmarkPrivateKey);
-              var pkController = TextEditingController(text: bookmarkPublicKey);
-              var pController =
-                  TextEditingController(text: bookmarkPrivateKeyPassword);
-              Widget okButton = TextButton(
-                style:
-                    TextButton.styleFrom(foregroundColor: Settings.majorColor),
-                child: Text(Translations.of(context).trans('ok')),
-                onPressed: () async {
-                  await Settings.setBookmarkHost(hController.text);
-                  await Settings.setBookmarkRepository(rController.text);
-                  await Settings.setBookmarkPrivateKey(kController.text);
-                  await Settings.setBookmarkPublicKey(pkController.text);
-                  await Settings.setBookmarkPrivateKeyPassword(
-                      pController.text);
-                  Navigator.pop(context, true);
-                  flutterToast.showToast(
-                    child: ToastWrapper(
-                      isWarning: true,
-                      msg: Translations.of(context).trans('bookmarkexportgit'),
-                    ),
-                    ignorePointer: true,
-                    gravity: ToastGravity.BOTTOM,
-                    toastDuration: const Duration(seconds: 4),
-                  );
-                },
-              );
-              Widget generateButton = TextButton(
-                style:
-                    TextButton.styleFrom(foregroundColor: Settings.majorColor),
-                child: Text(Translations.of(context).trans('generate')),
-                onPressed: () async {
-                  (String, String) keyPair = GitBindings().generateRsaKeys();
-                  pkController.text = keyPair.$1;
-                  kController.text = keyPair.$2;
-                },
-              );
-
-              Widget cancelButton = TextButton(
-                style:
-                    TextButton.styleFrom(foregroundColor: Settings.majorColor),
-                child: Text(Translations.of(context).trans('cancel')),
-                onPressed: () async {
-                  Navigator.pop(context, false);
-                },
-              );
-              await showDialog(
-                context: context,
-                builder: (BuildContext context) => AlertDialog(
-                  actions: [generateButton, okButton, cancelButton],
-                  title: const Text('Git Config'),
-                  contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Row(children: [
-                        const Text('Repository: '),
-                        Expanded(
-                          child: TextField(
-                            controller: rController,
-                          ),
-                        ),
-                      ]),
-                      Row(children: [
-                        const Text('Host: '),
-                        Expanded(
-                          child: TextField(
-                            controller: hController,
-                          ),
-                        ),
-                      ]),
-                      Row(children: [
-                        const Text('Private Key: '),
-                        Expanded(
-                          child: TextField(
-                            controller: kController,
-                          ),
-                        ),
-                      ]),
-                      Row(children: [
-                        const Text('Public Key: '),
-                        Expanded(
-                          child: TextField(
-                            controller: pkController,
-                          ),
-                        ),
-                      ]),
-                      Row(children: [
-                        const Text('Private Key Password: '),
-                        Expanded(
-                          child: TextField(
-                            controller: pController,
-                          ),
-                        ),
-                      ]),
-                    ],
-                  ),
-                ),
-              );
             },
           ),
         ],
