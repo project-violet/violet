@@ -21,6 +21,8 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
+          
+      - uses: dtolnay/rust-toolchain@stable
 
       - name: Formatting
         run: dart format --output=none --set-exit-if-changed .
@@ -50,6 +52,8 @@ jobs:
         with:
           python-version: '3.8'
           
+      - uses: dtolnay/rust-toolchain@stable
+
       - name: Preprocess
         run: | 
           cd lib/server
@@ -102,6 +106,8 @@ jobs:
         with:
           python-version: '3.8'
           
+      - uses: dtolnay/rust-toolchain@stable
+
       - name: Preprocess
         run: | 
           cd lib/server

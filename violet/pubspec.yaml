@@ -134,6 +134,9 @@ dependencies:
   webview_flutter: ^3.0.0
   collection: ^1.16.0
   octo_image: ^2.0.0
+  rust_lib_violet:
+    path: rust_builder
+  flutter_rust_bridge: 2.0.0-dev.24
 
 dev_dependencies:
   flutter_test:
@@ -144,6 +147,8 @@ dev_dependencies:
   drift_sqflite: ^2.0.0
   sqflite_common_ffi:
   flutter_lints: ^3.0.0
+  integration_test:
+    sdk: flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
