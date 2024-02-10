@@ -10,7 +10,6 @@ import 'package:expandable/expandable.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -35,7 +34,6 @@ import 'package:violet/server/community/anon.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
-import 'package:violet/widgets/toast.dart';
 
 class ArtistInfoPage extends StatefulWidget {
   final String artist;

@@ -11,7 +11,6 @@ import 'package:azlistview/azlistview.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -45,7 +44,6 @@ import 'package:violet/util/helper.dart';
 import 'package:violet/widgets/debounce_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
-import 'package:violet/widgets/toast.dart';
 
 typedef StringCallback = Future Function(String);
 

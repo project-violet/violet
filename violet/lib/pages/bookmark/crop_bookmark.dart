@@ -8,7 +8,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -28,7 +27,6 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/util/evict_image_urls.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/cupertino_switch_list_tile.dart';
-import 'package:violet/widgets/toast.dart';
 import 'package:violet/widgets/v_cached_network_image.dart';
 
 class CropBookmarkPage extends StatefulWidget {
