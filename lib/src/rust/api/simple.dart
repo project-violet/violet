@@ -3,8 +3,11 @@
 
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
-import 'package:violet/src/rust/frb_generated.dart';
+import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 String greet({required String name, dynamic hint}) =>
     RustLib.instance.api.greet(name: name, hint: hint);
+
+void decompress7Z({required String src, required String dest, dynamic hint}) =>
+    RustLib.instance.api.decompress7Z(src: src, dest: dest, hint: hint);

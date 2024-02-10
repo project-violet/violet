@@ -189,12 +189,7 @@ flutter:
     - assets/lottie/28446-floward-gift-box.json
 
     - assets/icons/pixiv.ico
-
-    - assets/p7zip/arm64-v8a/lib7zr.so # @dependent: android
-    - assets/p7zip/armeabi-v7a/lib7zr.so # @dependent: android
-    - assets/p7zip/x86/lib7zr.so # @dependent: android
-    - assets/p7zip/x86_64/lib7zr.so # @dependent: android
-
+    
     - assets/webview/
     - shorebird.yaml
 

@@ -19,9 +19,9 @@ import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
-import 'package:violet/pages/database_download/decompress.dart';
 import 'package:violet/platform/misc.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/src/rust/api/simple.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 
@@ -167,14 +167,10 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
         downloading = false;
       });
 
-      final p7zip = P7zip();
       if (await Directory('${dir.path}/data2').exists()) {
         await Directory('${dir.path}/data2').delete(recursive: true);
       }
-      await p7zip.decompress(
-        ['${dir.path}/db.sql.7z'],
-        path: '${dir.path}/data2',
-      );
+      decompress7Z(src: '${dir.path}/db.sql.7z', dest: '${dir.path}/data2');
       Variables.databaseDecompressed = true;
       if (await Directory('${dir.path}/data').exists()) {
         await Directory('${dir.path}/data').delete(recursive: true);

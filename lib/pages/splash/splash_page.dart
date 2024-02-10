@@ -136,6 +136,8 @@ class SplashPage extends StatefulWidget {
 
 enum Database { userLanguage, all }
 
+bool globalInitialized = false;
+
 class _SplashPageState extends State<SplashPage> {
   bool showFirst = false;
   bool animateBox = false;
@@ -192,51 +194,56 @@ class _SplashPageState extends State<SplashPage> {
       showMessage = true;
     });
 
-    _changeMessage('init logger...');
-    await Logger.init();
-    _changeMessage('init act-logger...');
-    await ActLogger.init();
-    _changeMessage('init settings...');
-    await Settings.init();
-    _changeMessage('loading bookmark...');
-    await Bookmark.load();
-    _changeMessage('loading userdb...');
-    await User.load();
-    await Variables.init();
-    _changeMessage('loading index...');
-    await HitomiIndexs.init();
-    _changeMessage('loading translate...');
-    await TagTranslate.init();
-    _changeMessage('init population...');
-    await Population.init();
-    _changeMessage('init related...');
-    await Related.init();
-    // await HisokiHash.init();
-    _changeMessage('init downloader...');
-    await IsolateDownloader.getInstance();
+    final connectivityResult = await (Connectivity().checkConnectivity());
 
-    // this may be slow down to loading
-    _changeMessage('check network...');
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult != ConnectivityResult.none) {
-      _changeMessage('loading script...');
-      await ScriptManager.init();
+    if (!globalInitialized) {
+      _changeMessage('init logger...');
+      await Logger.init();
+      _changeMessage('init act-logger...');
+      await ActLogger.init();
+      _changeMessage('init settings...');
+      await Settings.init();
+      _changeMessage('loading bookmark...');
+      await Bookmark.load();
+      _changeMessage('loading userdb...');
+      await User.load();
+      await Variables.init();
+      _changeMessage('loading index...');
+      await HitomiIndexs.init();
+      _changeMessage('loading translate...');
+      await TagTranslate.init();
+      _changeMessage('init population...');
+      await Population.init();
+      _changeMessage('init related...');
+      await Related.init();
+      // await HisokiHash.init();
+      _changeMessage('init downloader...');
+      await IsolateDownloader.getInstance();
+
+      // this may be slow down to loading
+      _changeMessage('check network...');
+      if (connectivityResult != ConnectivityResult.none) {
+        _changeMessage('loading script...');
+        await ScriptManager.init();
+      }
+
+      globalInitialized = true;
+
+      // if (Settings.autobackupBookmark) {
+      //   setState(() {
+      //     backupBookmark = true;
+      //   });
+      //   await VioletServer.uploadBookmark();
+      //   setState(() {
+      //     backupBookmark = false;
+      //   });
+      // }
+
+      // if (Platform.isAndroid)
+      //   try {
+      //     await Logger.exportLog();
+      //   } catch (_) {}
     }
-
-    // if (Settings.autobackupBookmark) {
-    //   setState(() {
-    //     backupBookmark = true;
-    //   });
-    //   await VioletServer.uploadBookmark();
-    //   setState(() {
-    //     backupBookmark = false;
-    //   });
-    // }
-
-    // if (Platform.isAndroid)
-    //   try {
-    //     await Logger.exportLog();
-    //   } catch (_) {}
 
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getInt('db_exists') == 1 && !widget.switching) {
