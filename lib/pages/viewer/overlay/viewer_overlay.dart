@@ -50,7 +50,6 @@ class ViewerOverlay extends StatefulWidget {
 
 class _ViewerOverlayState extends State<ViewerOverlay> {
   late final ViewerController c;
-  late final FToast fToast;
 
   /// these are used for thumbnail slider
   late List<double> _thumbImageWidth;
@@ -59,9 +58,6 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
   @override
   void initState() {
     super.initState();
-
-    fToast = FToast();
-    fToast.init(context);
 
     c = Get.find(tag: widget.getxId);
 
@@ -276,7 +272,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
           if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
         }
 
-        fToast.showToast(
+        FToast().showToast(
           child: ToastWrapper(
             icon: c.bookmark.value ? Icons.delete_forever : Icons.check,
             color: c.bookmark.value

@@ -414,9 +414,7 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
     }
 
     if (!c.disposed) {
-      final fToast = FToast();
-      fToast.init(context);
-      fToast.showToast(
+      FToast().showToast(
         child: ToastWrapper(
           icon: c.isBookmarked.value ? Icons.delete_forever : Icons.check,
           color: c.isBookmarked.value

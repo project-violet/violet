@@ -17,14 +17,13 @@ import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/context/modal_bottom_sheet_context.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/log/log.dart';
+import 'package:violet/pages/common/toast.dart';
 import 'package:violet/pages/segment/filter_page_controller.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/thread/semaphore.dart';
 
 class SearchPageController extends GetxController {
-  final FToast fToast = FToast();
-
   final FlareControls heroFlareControls = FlareControls();
   late AssetFlare asset;
 
@@ -55,8 +54,6 @@ class SearchPageController extends GetxController {
   SearchPageController({required this.reloadForce});
 
   init(BuildContext context) {
-    fToast.init(context);
-
     asset = AssetFlare(
       bundle: rootBundle,
       name: 'assets/flare/search_close.flr',
@@ -148,7 +145,7 @@ class SearchPageController extends GetxController {
   resetItemHeight() => _itemHeight = 0.0;
 
   showErrorToast(String message) {
-    fToast.showToast(
+    FToast().showToast(
       toastDuration: const Duration(seconds: 10),
       child: Container(
         padding: const EdgeInsets.all(8.0),

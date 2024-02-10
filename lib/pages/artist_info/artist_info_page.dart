@@ -28,6 +28,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/artist_info/series_list_page.dart';
 import 'package:violet/pages/artist_info/similar_list_page.dart';
+import 'package:violet/pages/common/toast.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/segment/three_article_panel.dart';
 import 'package:violet/server/community/anon.dart';
@@ -88,13 +89,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   bool isBookmarked = false;
   FlareControls flareController = FlareControls();
 
-  late FToast fToast;
-
   @override
   void initState() {
     super.initState();
-    fToast = FToast();
-    fToast.init(context);
 
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       //
@@ -434,16 +431,10 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                     : widget.isCharacter
                         ? 4
                         : 0;
-
-        fToast.showToast(
-          child: ToastWrapper(
-            isCheck: true,
-            msg:
-                '${widget.artist}${Translations.of(context).trans(isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
-          ),
-          ignorePointer: true,
-          gravity: ToastGravity.BOTTOM,
-          toastDuration: const Duration(seconds: 4),
+        showToast(
+          level: ToastLevel.check,
+          message:
+              '${widget.artist}${Translations.of(context).trans(isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
         );
 
         if (!isBookmarked) {
