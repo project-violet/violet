@@ -19,7 +19,6 @@ import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
-import 'package:violet/pages/database_download/decompress.dart';
 import 'package:violet/platform/misc.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/src/rust/api/simple.dart';
