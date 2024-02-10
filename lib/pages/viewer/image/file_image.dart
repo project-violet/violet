@@ -6,16 +6,15 @@ import 'dart:io';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as ui;
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:image_crop/image_crop.dart';
 import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/pages/common/toast.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/viewer/vertical_viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/settings/settings_wrapper.dart';
-import 'package:violet/widgets/toast.dart';
 
 class FileImage extends StatefulWidget {
   final String getxId;
@@ -198,19 +197,10 @@ class ImageCropBookmark extends StatelessWidget {
     await (await Bookmark.getInstance()).insertCropImage(articleId, page,
         '${area.left},${area.top},${area.right},${area.bottom}', aspectRatio);
 
-    FToast ftoast = FToast();
-    ftoast.init(context);
-    ftoast.showToast(
-      child: ToastWrapper(
-        isCheck: true,
-        isWarning: false,
-        icon: Icons.check,
-        msg:
-            '$articleId(${page}p): [${area.toString().split('(')[1].split(')')[0]}] Saved!',
-      ),
-      ignorePointer: true,
-      gravity: ToastGravity.BOTTOM,
-      toastDuration: const Duration(seconds: 4),
+    showToast(
+      level: ToastLevel.check,
+      message:
+          '$articleId(${page}p): [${area.toString().split('(')[1].split(')')[0]}] Saved!',
     );
     Navigator.pop(context);
   }

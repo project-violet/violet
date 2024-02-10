@@ -10,7 +10,6 @@ import 'package:badges/badges.dart' as badges;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:open_file/open_file.dart';
@@ -26,6 +25,7 @@ import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/common/toast.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/main/artist_collection/artist_collection_page.dart';
 import 'package:violet/pages/main/buttons/carousel_button.dart';
@@ -45,7 +45,6 @@ import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
-import 'package:violet/widgets/toast.dart';
 
 final _discordUri = Uri.tryParse('https://discord.gg/K8qny6E');
 final _contactUri = Uri(
@@ -317,13 +316,10 @@ class _VersionAreaWidget extends StatefulWidget {
 
 class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
   bool syncAvailable = false;
-  late final FToast fToast;
 
   @override
   void initState() {
     super.initState();
-    fToast = FToast();
-    fToast.init(context);
 
     Future.delayed(const Duration(milliseconds: 200)).then((value) async {
       if (SyncManager.syncRequire) {
@@ -481,14 +477,9 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
 
     if (lastDB != null &&
         latestDB.difference(DateTime.parse(lastDB)).inHours < 1) {
-      fToast.showToast(
-        child: ToastWrapper(
-          isCheck: true,
-          msg: Translations.of(context).trans('thisislatestbookmark'),
-        ),
-        ignorePointer: true,
-        gravity: ToastGravity.BOTTOM,
-        toastDuration: const Duration(seconds: 4),
+      showToast(
+        level: ToastLevel.check,
+        message: Translations.of(context).trans('thisislatestbookmark'),
       );
       return;
     }
@@ -519,14 +510,9 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
       HitomiManager.tagmap = jsonDecode(text);
       await DataBaseManager.reloadInstance();
 
-      fToast.showToast(
-        child: ToastWrapper(
-          isCheck: true,
-          msg: Translations.of(context).trans('synccomplete'),
-        ),
-        ignorePointer: true,
-        gravity: ToastGravity.BOTTOM,
-        toastDuration: const Duration(seconds: 4),
+      showToast(
+        level: ToastLevel.check,
+        message: Translations.of(context).trans('synccomplete'),
       );
     });
   }

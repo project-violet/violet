@@ -23,8 +23,6 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/thread/semaphore.dart';
 
 class SearchPageController extends GetxController {
-  final FToast fToast = FToast();
-
   final FlareControls heroFlareControls = FlareControls();
   late AssetFlare asset;
 
@@ -55,8 +53,6 @@ class SearchPageController extends GetxController {
   SearchPageController({required this.reloadForce});
 
   init(BuildContext context) {
-    fToast.init(context);
-
     asset = AssetFlare(
       bundle: rootBundle,
       name: 'assets/flare/search_close.flr',
@@ -148,7 +144,7 @@ class SearchPageController extends GetxController {
   resetItemHeight() => _itemHeight = 0.0;
 
   showErrorToast(String message) {
-    fToast.showToast(
+    FToast().showToast(
       toastDuration: const Duration(seconds: 10),
       child: Container(
         padding: const EdgeInsets.all(8.0),
