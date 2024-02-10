@@ -27,10 +27,12 @@ import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/lock/lock_screen.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/src/rust/frb_generated.dart';
 import 'package:violet/style/palette.dart';
 
 Future<void> main() async {
   runZonedGuarded<Future<void>>(() async {
+    await RustLib.init();
     WidgetsFlutterBinding.ensureInitialized();
 
     await FlutterDownloader.initialize(); // @dependent: android
@@ -210,3 +212,29 @@ class MyApp extends StatelessWidget {
     return supportedLocales.first;
   }
 }
+
+// import 'package:flutter/material.dart';
+// import 'package:violet/src/rust/api/simple.dart';
+// import 'package:violet/src/rust/frb_generated.dart';
+
+// Future<void> main() async {
+//   await RustLib.init();
+//   runApp(const MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: Scaffold(
+//         appBar: AppBar(title: const Text('flutter_rust_bridge quickstart')),
+//         body: Center(
+//           child: Text(
+//               'Action: Call Rust `greet("Tom")`\nResult: `${greet(name: "Tom")}`'),
+//         ),
+//       ),
+//     );
+//   }
+// }
