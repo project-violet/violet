@@ -19,7 +19,6 @@ import 'package:violet/pages/viewer/horizontal_viewer_page.dart';
 import 'package:violet/pages/viewer/others/lifecycle_event_handler.dart';
 import 'package:violet/pages/viewer/overlay/viewer_overlay.dart';
 import 'package:violet/pages/viewer/vertical_viewer_page.dart';
-import 'package:violet/pages/viewer/vertical_webview_viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/script/script_manager.dart';
@@ -65,10 +64,8 @@ class _ViewerPageState extends State<ViewerPage> {
         children: [
           if (c.viewType.value == ViewType.horizontal)
             HorizontalViewerPage(getxId: getxId)
-          else if (!Settings.useVerticalWebviewViewer)
-            VerticalViewerPage(getxId: getxId)
           else
-            VerticalWebviewViewerPage(getxId: getxId),
+            VerticalViewerPage(getxId: getxId),
           ViewerOverlay(getxId: getxId),
         ],
       ),
