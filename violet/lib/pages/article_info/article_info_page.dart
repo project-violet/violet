@@ -34,6 +34,7 @@ import 'package:violet/pages/article_info/preview_area.dart';
 import 'package:violet/pages/article_info/simple_info.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
+import 'package:violet/pages/common/toast.dart';
 import 'package:violet/pages/common/utils.dart';
 import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/main/info/lab/search_comment_author.dart';
@@ -247,17 +248,9 @@ class ArticleInfoPage extends StatelessWidget {
       }
     }
     if (!DownloadPageManager.downloadPageLoaded) {
-      FToast ftoast = FToast();
-      ftoast.init(context);
-      ftoast.showToast(
-        child: const ToastWrapper(
-          isCheck: false,
-          isWarning: true,
-          msg: 'You need to open the download tab!',
-        ),
-        ignorePointer: true,
-        gravity: ToastGravity.BOTTOM,
-        toastDuration: const Duration(seconds: 4),
+      showToast(
+        level: ToastLevel.warning,
+        message: 'You need to open the download tab!',
       );
       return;
     }
@@ -270,19 +263,11 @@ class ArticleInfoPage extends StatelessWidget {
       }
     }
 
-    FToast ftoast = FToast();
-    ftoast.init(context);
-    ftoast.showToast(
-      child: ToastWrapper(
-        isCheck: true,
-        isWarning: false,
-        icon: Icons.download,
-        msg: data.queryResult.id().toString() +
-            Translations.of(context).trans('addtodownloadqueue'),
-      ),
-      ignorePointer: true,
-      gravity: ToastGravity.BOTTOM,
-      toastDuration: const Duration(seconds: 4),
+    showToast(
+      icon: Icons.download,
+      level: ToastLevel.check,
+      message:
+          '${data.queryResult.id()}${Translations.of(context).trans('addtodownloadqueue')}',
     );
 
     await ScriptManager.refresh();
@@ -1024,17 +1009,9 @@ class _Chip extends StatelessWidget {
           );
         } else if (group == 'id') {
           Clipboard.setData(ClipboardData(text: name));
-          FToast fToast = FToast();
-          fToast.init(context);
-          fToast.showToast(
-            child: ToastWrapper(
-              isCheck: true,
-              isWarning: false,
-              msg: Translations.of(context).trans('copied'),
-            ),
-            ignorePointer: true,
-            gravity: ToastGravity.BOTTOM,
-            toastDuration: const Duration(seconds: 4),
+          showToast(
+            level: ToastLevel.check,
+            message: Translations.of(context).trans('copied'),
           );
         }
       },

@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/common/toast.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/toast.dart';
 
@@ -28,13 +29,10 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
   bool _isFirstPINInserted = false;
   String? _firstPIN;
   String? _message;
-  late final FToast fToast;
 
   @override
   void initState() {
     super.initState();
-    fToast = FToast();
-    fToast.init(context);
 
     _controller = AnimationController(
         duration: const Duration(milliseconds: 300), vsync: this)
@@ -331,15 +329,9 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
   Future<void> passwordRegisterInteraction(SharedPreferences prefs) async {
     await prefs.setString('pinPass', _pin.join());
     Future.delayed(const Duration(milliseconds: 300)).then((value) {
-      fToast.showToast(
-        child: ToastWrapper(
-          isCheck: true,
-          isWarning: false,
-          msg: Translations.of(context).trans('pinisregistered'),
-        ),
-        ignorePointer: true,
-        gravity: ToastGravity.BOTTOM,
-        toastDuration: const Duration(seconds: 4),
+      showToast(
+        level: ToastLevel.check,
+        message: Translations.of(context).trans('pinisregistered'),
       );
       Navigator.pop(context);
     });

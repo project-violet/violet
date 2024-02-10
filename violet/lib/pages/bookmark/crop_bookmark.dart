@@ -19,6 +19,7 @@ import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/common/toast.dart';
 import 'package:violet/pages/common/utils.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
@@ -296,31 +297,15 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
                           elem['page'], elem['area'], elem['aspectRatio']);
                     }
 
-                    FToast ftoast = FToast();
-                    ftoast.init(context);
-                    ftoast.showToast(
-                      child: const ToastWrapper(
-                        isCheck: true,
-                        isWarning: false,
-                        msg: 'Successful Importing!',
-                      ),
-                      ignorePointer: true,
-                      gravity: ToastGravity.BOTTOM,
-                      toastDuration: const Duration(seconds: 4),
+                    showToast(
+                      level: ToastLevel.check,
+                      message: 'Successful Importing!',
                     );
                     setState(() {});
                   } catch (e) {
-                    FToast ftoast = FToast();
-                    ftoast.init(context);
-                    ftoast.showToast(
-                      child: const ToastWrapper(
-                        isCheck: false,
-                        isWarning: false,
-                        msg: 'Import Error! Check Log!',
-                      ),
-                      ignorePointer: true,
-                      gravity: ToastGravity.BOTTOM,
-                      toastDuration: const Duration(seconds: 4),
+                    showToast(
+                      level: ToastLevel.error,
+                      message: 'Import Error! Check Log!',
                     );
                     Logger.error('[Import Crop] $e');
                   }

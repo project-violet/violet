@@ -8,6 +8,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/log/log.dart';
+import 'package:violet/pages/common/toast.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/toast.dart';
@@ -29,13 +30,10 @@ class RestoreBookmarkPage extends StatefulWidget {
 class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
   int total = 0;
   int progress = 0;
-  late final FToast fToast;
 
   @override
   void initState() {
     super.initState();
-    fToast = FToast();
-    fToast.init(context);
 
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       try {
@@ -119,14 +117,9 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
       } catch (e, st) {
         Logger.error('[Restore Bookmark] $e\n'
             '$st');
-        fToast.showToast(
-          child: const ToastWrapper(
-            isCheck: false,
-            msg: 'Bookmark Restoring Error!',
-          ),
-          ignorePointer: true,
-          gravity: ToastGravity.BOTTOM,
-          toastDuration: const Duration(seconds: 4),
+        showToast(
+          level: ToastLevel.error,
+          message: 'Bookmark Restoring Error!',
         );
         Navigator.pop(context, false);
         return;

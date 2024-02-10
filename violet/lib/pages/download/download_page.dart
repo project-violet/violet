@@ -29,6 +29,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/common/toast.dart';
 import 'package:violet/pages/download/download_align_type.dart';
 import 'package:violet/pages/download/download_features_menu.dart';
 import 'package:violet/pages/download/download_item_widget.dart';
@@ -77,13 +78,11 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
   final FilterController _filterController =
       FilterController(heroKey: 'downloadtype');
   ObjectKey _listKey = ObjectKey(const Uuid().v4());
-  late final FToast fToast;
 
   @override
   void initState() {
     super.initState();
-    fToast = FToast();
-    fToast.init(context);
+
     refresh();
     // DownloadPageManager.appendTask = appendTask;
     DownloadPageManager.taskController = StreamController<String>();
@@ -896,15 +895,10 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
       } else if (value == 2) {
         Clipboard.setData(ClipboardData(
             text: filterResult.map((e) => int.tryParse(e.url())).join(', ')));
-        fToast.showToast(
-          child: const ToastWrapper(
-            isCheck: true,
-            isWarning: false,
-            msg: 'Ids Copied!',
-          ),
-          ignorePointer: true,
-          gravity: ToastGravity.BOTTOM,
-          toastDuration: const Duration(seconds: 4),
+
+        showToast(
+          level: ToastLevel.check,
+          message: 'Ids Copied!',
         );
       }
     });

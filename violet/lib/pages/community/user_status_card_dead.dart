@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/common/toast.dart';
 import 'package:violet/pages/community/signin_dialog.dart';
 import 'package:violet/pages/community/signup_dialog.dart';
 import 'package:violet/server/community/article.dart';
@@ -32,13 +33,10 @@ class _UserStatusCardState extends State<UserStatusCard>
   late String _userAppId;
   String _userNickName = 'None';
   bool _logining = false;
-  late final FToast fToast;
 
   @override
   void initState() {
     super.initState();
-    fToast = FToast();
-    fToast.init(context);
 
     // load boards
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
@@ -243,25 +241,14 @@ class _UserStatusCardState extends State<UserStatusCard>
                       });
 
                       if (resc) {
-                        fToast.showToast(
-                          child: const ToastWrapper(
-                            isCheck: true,
-                            msg: 'Bookmark Backup Success!',
-                          ),
-                          ignorePointer: true,
-                          gravity: ToastGravity.BOTTOM,
-                          toastDuration: const Duration(seconds: 4),
+                        showToast(
+                          level: ToastLevel.check,
+                          message: 'Bookmark Backup Success!',
                         );
                       } else {
-                        fToast.showToast(
-                          child: const ToastWrapper(
-                            isCheck: false,
-                            isWarning: false,
-                            msg: 'Bookmark Backup Fail!',
-                          ),
-                          ignorePointer: true,
-                          gravity: ToastGravity.BOTTOM,
-                          toastDuration: const Duration(seconds: 4),
+                        showToast(
+                          level: ToastLevel.error,
+                          message: 'Bookmark Backup Fail!',
                         );
                       }
 
