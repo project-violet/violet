@@ -213,7 +213,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 // import 'package:flutter/material.dart';
 // import 'package:violet/src/rust/api/simple.dart';
 // import 'package:violet/src/rust/frb_generated.dart';
