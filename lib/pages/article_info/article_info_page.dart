@@ -9,7 +9,6 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -48,7 +47,6 @@ import 'package:violet/style/palette.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
-import 'package:violet/widgets/toast.dart';
 
 class ArticleInfoPage extends StatelessWidget {
   const ArticleInfoPage({

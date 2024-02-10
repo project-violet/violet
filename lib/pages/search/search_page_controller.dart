@@ -17,7 +17,6 @@ import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/context/modal_bottom_sheet_context.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/log/log.dart';
-import 'package:violet/pages/common/toast.dart';
 import 'package:violet/pages/segment/filter_page_controller.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';

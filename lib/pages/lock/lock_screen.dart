@@ -3,13 +3,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/common/toast.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/widgets/toast.dart';
 
 class LockScreen extends StatefulWidget {
   final bool isRegisterMode;

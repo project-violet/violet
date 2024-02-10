@@ -10,7 +10,6 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
@@ -27,7 +26,6 @@ import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/article_item/thumbnail.dart';
-import 'package:violet/widgets/toast.dart';
 
 class DownloadListItem {
   bool addBottomPadding;

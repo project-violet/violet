@@ -4,7 +4,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:image_crop/image_crop.dart';
 import 'package:violet/database/user/bookmark.dart';
@@ -14,7 +13,6 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/settings/settings_wrapper.dart';
-import 'package:violet/widgets/toast.dart';
 
 typedef VImageWidgetBuilder = Widget Function(
     BuildContext context, Widget child);
