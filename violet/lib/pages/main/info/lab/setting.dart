@@ -162,29 +162,6 @@ class _LabSettingState extends State<LabSetting> {
           InkWell(
             child: ListTile(
               leading: Icon(MdiIcons.flask, color: Settings.majorColor),
-              title: const Text('Vertical Webview Viewer'),
-              subtitle: const Text(
-                  'It replaces the vertical viewer to webview viewer.'),
-              trailing: Switch(
-                value: Settings.useVerticalWebviewViewer,
-                onChanged: (newValue) async {
-                  await Settings.setUseVerticalWebviewViewer(newValue);
-                  setState(() {});
-                },
-                activeTrackColor: Settings.majorColor,
-                activeColor: Settings.majorAccentColor,
-              ),
-            ),
-            onTap: () async {
-              await Settings.setUseVerticalWebviewViewer(
-                  !Settings.useVerticalWebviewViewer);
-              setState(() {});
-            },
-          ),
-          _buildDivider(),
-          InkWell(
-            child: ListTile(
-              leading: Icon(MdiIcons.flask, color: Settings.majorColor),
               title: const Text('In Viewer Message Search'),
               subtitle: const Text('Support message search on viewer mode.'),
               trailing: Switch(
