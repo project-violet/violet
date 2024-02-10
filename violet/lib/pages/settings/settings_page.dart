@@ -17,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mdi/mdi.dart';
 import 'package:path_provider/path_provider.dart';
@@ -35,6 +34,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
+import 'package:violet/pages/common/toast.dart';
 import 'package:violet/pages/community/user_status_card.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/main/artist_collection/artist_collection_page.dart';
@@ -68,7 +68,6 @@ import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
-import 'package:violet/widgets/toast.dart';
 import 'package:violet/network/wrapper.dart' as http;
 
 class ExCountry extends Country {
@@ -158,14 +157,11 @@ class _SettingsPageState extends State<SettingsPage>
     with AutomaticKeepAliveClientMixin<SettingsPage>, DoubleTapToTopMixin {
   final FlareControls _flareController = FlareControls();
   bool _themeSwitch = false;
-  late final FToast flutterToast;
 
   @override
   void initState() {
     super.initState();
     _themeSwitch = Settings.themeWhat;
-    flutterToast = FToast();
-    flutterToast.init(context);
   }
 
   List<Widget>? _cachedGroups;
@@ -760,15 +756,10 @@ class _SettingsPageState extends State<SettingsPage>
                   await HitomiIndexs.init();
                   HitomiManager.reloadIndex();
 
-                  flutterToast.showToast(
-                    child: ToastWrapper(
-                      isCheck: true,
-                      msg:
-                          '${Translations.of(context).trans('tagrebuild')} ${Translations.of(context).trans('complete')}',
-                    ),
-                    ignorePointer: true,
-                    gravity: ToastGravity.BOTTOM,
-                    toastDuration: const Duration(seconds: 4),
+                  showToast(
+                    level: ToastLevel.check,
+                    message:
+                        '${Translations.of(context).trans('tagrebuild')} ${Translations.of(context).trans('complete')}',
                   );
                 }
               },
@@ -1079,14 +1070,9 @@ class _SettingsPageState extends State<SettingsPage>
               onTap: () async {
                 await Logger.exportLog();
 
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: true,
-                    msg: Translations.of(context).trans('complete'),
-                  ),
-                  ignorePointer: true,
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
+                showToast(
+                  level: ToastLevel.check,
+                  message: Translations.of(context).trans('complete'),
                 );
               },
             ),
@@ -1251,15 +1237,10 @@ class _SettingsPageState extends State<SettingsPage>
                   builder: (BuildContext context) => const DBRebuildPage(),
                 );
 
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: true,
-                    msg:
-                        '${Translations.of(context).trans('dbrebuild')} ${Translations.of(context).trans('complete')}',
-                  ),
-                  ignorePointer: true,
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
+                showToast(
+                  level: ToastLevel.check,
+                  message:
+                      '${Translations.of(context).trans('dbrebuild')} ${Translations.of(context).trans('complete')}',
                 );
               }
             },
@@ -1306,15 +1287,10 @@ class _SettingsPageState extends State<SettingsPage>
                     if (lastDB != null &&
                         latestDB.difference(DateTime.parse(lastDB)).inHours <
                             1) {
-                      flutterToast.showToast(
-                        child: ToastWrapper(
-                          isCheck: true,
-                          msg: Translations.of(context)
-                              .trans('thisislatestbookmark'),
-                        ),
-                        ignorePointer: true,
-                        gravity: ToastGravity.BOTTOM,
-                        toastDuration: const Duration(seconds: 4),
+                      showToast(
+                        level: ToastLevel.check,
+                        message: Translations.of(context)
+                            .trans('thisislatestbookmark'),
                       );
                       return;
                     }
@@ -1344,14 +1320,10 @@ class _SettingsPageState extends State<SettingsPage>
                         HitomiManager.tagmap = jsonDecode(text);
                         await DataBaseManager.reloadInstance();
 
-                        flutterToast.showToast(
-                          child: ToastWrapper(
-                            isCheck: true,
-                            msg: Translations.of(context).trans('synccomplete'),
-                          ),
-                          ignorePointer: true,
-                          gravity: ToastGravity.BOTTOM,
-                          toastDuration: const Duration(seconds: 4),
+                        showToast(
+                          level: ToastLevel.check,
+                          message:
+                              Translations.of(context).trans('synccomplete'),
                         );
                       },
                     );
@@ -1670,14 +1642,9 @@ class _SettingsPageState extends State<SettingsPage>
 
                 await prefs.setInt('thread_count', int.parse(text.text));
 
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: true,
-                    msg: Translations.of(context).trans('changedthread'),
-                  ),
-                  ignorePointer: true,
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
+                showToast(
+                  level: ToastLevel.check,
+                  message: Translations.of(context).trans('changedthread'),
                 );
 
                 setState(() {});
@@ -1998,28 +1965,18 @@ class _SettingsPageState extends State<SettingsPage>
                 } catch (e, st) {
                   Logger.error('[Restore Bookmark] $e\n'
                       '$st');
-                  flutterToast.showToast(
-                    child: const ToastWrapper(
-                      isCheck: false,
-                      msg: 'Bookmark Restoring Error!',
-                    ),
-                    ignorePointer: true,
-                    gravity: ToastGravity.BOTTOM,
-                    toastDuration: const Duration(seconds: 4),
+                  showToast(
+                    level: ToastLevel.error,
+                    message: 'Bookmark Restoring Error!',
                   );
                   return;
                 }
 
                 await Bookmark.getInstance();
 
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: true,
-                    msg: Translations.of(context).trans('importbookmark'),
-                  ),
-                  ignorePointer: true,
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
+                showToast(
+                  level: ToastLevel.check,
+                  message: Translations.of(context).trans('importbookmark'),
                 );
               },
             ),
@@ -2033,14 +1990,9 @@ class _SettingsPageState extends State<SettingsPage>
               final pickedFilePath = filePickerResult?.files.singleOrNull?.path;
 
               if (pickedFilePath == null) {
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: false,
-                    msg: Translations.of(context).trans('noselectedb'),
-                  ),
-                  ignorePointer: true,
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
+                showToast(
+                  level: ToastLevel.error,
+                  message: Translations.of(context).trans('noselectedb'),
                 );
 
                 return;
@@ -2055,14 +2007,9 @@ class _SettingsPageState extends State<SettingsPage>
 
               await Bookmark.getInstance();
 
-              flutterToast.showToast(
-                child: ToastWrapper(
-                  isCheck: true,
-                  msg: Translations.of(context).trans('importbookmark'),
-                ),
-                ignorePointer: true,
-                gravity: ToastGravity.BOTTOM,
-                toastDuration: const Duration(seconds: 4),
+              showToast(
+                level: ToastLevel.check,
+                message: Translations.of(context).trans('importbookmark'),
               );
             },
           ),
@@ -2098,14 +2045,9 @@ class _SettingsPageState extends State<SettingsPage>
                 await bookmarkDatabaseFile.copy(extpath);
               }
 
-              flutterToast.showToast(
-                child: ToastWrapper(
-                  isCheck: true,
-                  msg: Translations.of(context).trans('exportbookmark'),
-                ),
-                ignorePointer: true,
-                gravity: ToastGravity.BOTTOM,
-                toastDuration: const Duration(seconds: 4),
+              showToast(
+                level: ToastLevel.check,
+                message: Translations.of(context).trans('exportbookmark'),
               );
             },
           ),
@@ -2123,14 +2065,9 @@ class _SettingsPageState extends State<SettingsPage>
               var ehc = prefs.getString('eh_cookies');
 
               if (ehc == null || ehc == '') {
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: false,
-                    msg: Translations.of(context).trans('setcookiefirst'),
-                  ),
-                  ignorePointer: true,
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
+                showToast(
+                  level: ToastLevel.error,
+                  message: Translations.of(context).trans('setcookiefirst'),
                 );
                 return;
               }
@@ -2141,15 +2078,9 @@ class _SettingsPageState extends State<SettingsPage>
               );
 
               if (EHBookmark.bookmarkInfo == null) {
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: false,
-                    isWarning: true,
-                    msg: Translations.of(context).trans('bookmarkisempty'),
-                  ),
-                  ignorePointer: true,
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
+                showToast(
+                  level: ToastLevel.warning,
+                  message: Translations.of(context).trans('bookmarkisempty'),
                 );
                 return;
               }
@@ -2181,16 +2112,10 @@ class _SettingsPageState extends State<SettingsPage>
                   }
                 }
 
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: true,
-                    isWarning: false,
-                    msg: Translations.of(context)
-                        .trans('completeimportbookmark'),
-                  ),
-                  ignorePointer: true,
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
+                showToast(
+                  level: ToastLevel.check,
+                  message:
+                      Translations.of(context).trans('completeimportbookmark'),
                 );
               }
             },
@@ -2379,14 +2304,9 @@ class _SettingsPageState extends State<SettingsPage>
                 }
 
                 if (cookie != null) {
-                  flutterToast.showToast(
-                    child: const ToastWrapper(
-                      isCheck: true,
-                      msg: 'Login Success!',
-                    ),
-                    ignorePointer: true,
-                    gravity: ToastGravity.BOTTOM,
-                    toastDuration: const Duration(seconds: 4),
+                  showToast(
+                    level: ToastLevel.check,
+                    message: 'Login Success!',
                   );
                 }
               } else if (dialog == 2) {
@@ -2566,24 +2486,14 @@ class _SettingsPageState extends State<SettingsPage>
               await UpdateSyncManager.checkUpdateSync();
 
               if (UpdateSyncManager.updateRequire) {
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: true,
-                    msg: Translations.of(context).trans('newupdate'),
-                  ),
-                  ignorePointer: true,
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
+                showToast(
+                  level: ToastLevel.check,
+                  message: Translations.of(context).trans('newupdate'),
                 );
               } else {
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: true,
-                    msg: Translations.of(context).trans('latestver'),
-                  ),
-                  ignorePointer: true,
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
+                showToast(
+                  level: ToastLevel.check,
+                  message: Translations.of(context).trans('latestver'),
                 );
               }
             },
@@ -2607,27 +2517,17 @@ class _SettingsPageState extends State<SettingsPage>
               await UpdateSyncManager.checkUpdateSync();
 
               if (!UpdateSyncManager.updateRequire) {
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: true,
-                    msg: Translations.of(context).trans('latestver'),
-                  ),
-                  ignorePointer: true,
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
+                showToast(
+                  level: ToastLevel.check,
+                  message: Translations.of(context).trans('latestver'),
                 );
                 return;
               }
 
               if (Platform.isIOS) {
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isWarning: true,
-                    msg: Translations.of(context).trans('cannotuseios'),
-                  ),
-                  ignorePointer: true,
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
+                showToast(
+                  level: ToastLevel.warning,
+                  message: Translations.of(context).trans('cannotuseios'),
                 );
                 return;
               }

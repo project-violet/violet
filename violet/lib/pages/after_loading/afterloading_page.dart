@@ -14,6 +14,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/log/act_log.dart';
 import 'package:violet/other/named_color.dart';
 import 'package:violet/pages/bookmark/bookmark_page.dart';
+import 'package:violet/pages/common/toast.dart';
 import 'package:violet/pages/common/utils.dart';
 import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/hot/hot_page.dart';
@@ -28,7 +29,6 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/update/update_manager.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/update_sync.dart';
-import 'package:violet/widgets/toast.dart';
 
 class AfterLoadingPage extends StatefulWidget {
   const AfterLoadingPage({super.key});
@@ -40,14 +40,12 @@ class AfterLoadingPage extends StatefulWidget {
 class AfterLoadingPageState extends State<AfterLoadingPage>
     with WidgetsBindingObserver {
   static int defaultInitialPage = 0;
-  late FToast fToast;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    fToast = FToast();
-    fToast.init(context);
+    FToast().init(context);
 
     uriLinkStream.listen(handleDeeplink);
 
@@ -328,16 +326,10 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
         } else {
           _lastPopAt = now;
 
-          fToast.showToast(
-            child: ToastWrapper(
-              isCheck: false,
-              isWarning: true,
-              icon: Icons.logout,
-              msg: Translations.of(context).trans('closedoubletap'),
-            ),
-            ignorePointer: true,
-            gravity: ToastGravity.BOTTOM,
-            toastDuration: const Duration(seconds: 4),
+          showToast(
+            icon: Icons.logout,
+            level: ToastLevel.warning,
+            message: Translations.of(context).trans('closedoubletap'),
           );
         }
       },

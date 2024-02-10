@@ -6,7 +6,6 @@ import 'dart:math';
 import 'package:animated_widgets/animated_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart';
@@ -15,12 +14,12 @@ import 'package:violet/pages/bookmark/crop_bookmark.dart';
 import 'package:violet/pages/bookmark/group/group_article_list_page.dart';
 import 'package:violet/pages/bookmark/group_modify.dart';
 import 'package:violet/pages/bookmark/record_view_page.dart';
+import 'package:violet/pages/common/toast.dart';
 import 'package:violet/pages/segment/double_tap_to_top.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
-import 'package:violet/widgets/toast.dart';
 
 class BookmarkPage extends StatefulWidget {
   const BookmarkPage({super.key});
@@ -38,15 +37,7 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
   @override
   VoidCallback? get shouldReloadCallback => null;
 
-  late final FToast fToast;
   static const int _kReservedPreIndex = 2;
-
-  @override
-  void initState() {
-    super.initState();
-    fToast = FToast();
-    fToast.init(context);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -164,15 +155,9 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
     if (oldIndex * newIndex <= _kReservedPreIndex ||
         oldIndex <= _kReservedPreIndex ||
         newIndex <= _kReservedPreIndex) {
-      fToast.showToast(
-        child: const ToastWrapper(
-          isCheck: false,
-          isWarning: false,
-          msg: 'You cannot move like that!',
-        ),
-        ignorePointer: true,
-        gravity: ToastGravity.BOTTOM,
-        toastDuration: const Duration(seconds: 4),
+      showToast(
+        level: ToastLevel.error,
+        message: 'You cannot move like that!',
       );
       return;
     }

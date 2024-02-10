@@ -10,13 +10,13 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/pages/common/toast.dart';
 import 'package:violet/pages/common/utils.dart';
 import 'package:violet/pages/download/download_item_menu.dart';
 import 'package:violet/pages/download/download_routine.dart';
@@ -26,7 +26,6 @@ import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/article_item/thumbnail.dart';
-import 'package:violet/widgets/toast.dart';
 
 class DownloadListItem {
   bool addBottomPadding;
@@ -85,7 +84,6 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
   late DownloadListItem style;
   bool isLastestRead = false;
   int latestReadPage = 0;
-  late final FToast fToast;
   bool disposed = false;
 
   bool downloaded = false;
@@ -94,10 +92,6 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
   void initState() {
     super.initState();
     downloaded = widget.download;
-
-    fToast = FToast();
-    fToast.init(context);
-
     _styleCallback(widget.initialStyle);
 
     _checkLastRead();
@@ -257,17 +251,11 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
       recoveryMode = false;
 
       if (!disposed) {
-        fToast.showToast(
-          child: ToastWrapper(
-            isCheck: true,
-            isWarning: false,
-            icon: Icons.download,
-            msg:
-                '${widget.item.info()!.split('[')[1].split(']').first}${Translations.of(context).trans('download')} ${Translations.of(context).trans('complete')}',
-          ),
-          ignorePointer: true,
-          gravity: ToastGravity.BOTTOM,
-          toastDuration: const Duration(seconds: 4),
+        showToast(
+          icon: Icons.download,
+          level: ToastLevel.check,
+          message:
+              '${widget.item.info()!.split('[')[1].split(']').first}${Translations.of(context).trans('download')} ${Translations.of(context).trans('complete')}',
         );
       }
     });
@@ -322,15 +310,9 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
         } else if (v == 2) {
           // Copy Url
           Clipboard.setData(ClipboardData(text: widget.item.url()));
-          fToast.showToast(
-            child: const ToastWrapper(
-              isCheck: true,
-              isWarning: false,
-              msg: 'URL Copied!',
-            ),
-            ignorePointer: true,
-            gravity: ToastGravity.BOTTOM,
-            toastDuration: const Duration(seconds: 4),
+          showToast(
+            level: ToastLevel.check,
+            message: 'URL Copied!',
           );
         } else if (v == 1) {
           _retry();
