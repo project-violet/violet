@@ -105,7 +105,7 @@
   "dbdunzip": "解凍中...",
   "dbdretry": "エラーが発生しました！\nインターネット接続を確認してからもう一度試してください！",
   "dbdindexing": "インデックス作業中... ",
-  "dbdcomplete": "完了！\nアプリを再起動してください！",
+  "dbdcomplete": "完了！",
   "dbdname": "データベースダウンローダー",
   "dbddownloading": "ダウンロード中...",
   "nosearchresult": "検索結果がありません :(",

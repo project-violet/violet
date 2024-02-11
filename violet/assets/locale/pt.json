@@ -105,7 +105,7 @@
   "dbdunzip": "Desempacotando...",
   "dbdretry": "Ocorreu um erro!\nPor favor verifique sua conexão com a internet e tente novamente!",
   "dbdindexing": "Indexando...",
-  "dbdcomplete": "Feito!\nPor favor, reinicie o aplicativo!",
+  "dbdcomplete": "Feito!",
   "dbdname": "Downloader de banco de dados",
   "dbddownloading": "Baixando...",
   "nosearchresult": "Nenhum resultado encontrado :(",

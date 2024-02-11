@@ -105,7 +105,7 @@
   "dbdunzip": "압축푸는 중...",
   "dbdretry": "오류가 발생했습니다!\n인터넷 연결을 확인하고 재시도해주세요!",
   "dbdindexing": "인덱싱 작업중... 작업수 ",
-  "dbdcomplete": "완료!\n앱을 재실행 해주세요!",
+  "dbdcomplete": "데이터베이스 동기화 완료!",
   "dbdname": "데이터베이스 다운로더",
   "dbddownloading": "다운로드 중...",
   "nosearchresult": "검색 결과가 없습니다 :(",

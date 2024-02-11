@@ -105,7 +105,7 @@
   "dbdunzip": "Spacchettamento...",
   "dbdretry": "Si è verificato un errore!\nControlla la tua connessione internet e prova di nuovo!",
   "dbdindexing": "Indicizzazione... ",
-  "dbdcomplete": "Fatto!\nPer favore riavvia la app!",
+  "dbdcomplete": "Fatto!",
   "dbdname": "Database Downloader",
   "dbddownloading": "Scaricamento...",
   "nosearchresult": "Nessun risultato è stato trovato :(",
