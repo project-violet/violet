@@ -1068,7 +1068,29 @@ class _SettingsPageState extends State<SettingsPage>
               title: Text(Translations.of(context).trans('exportlog')),
               trailing: const Icon(Icons.keyboard_arrow_right),
               onTap: () async {
-                await Logger.exportLog();
+                final ext = Platform.isIOS
+                    ? await getApplicationSupportDirectory()
+                    : await getExternalStorageDirectory();
+                final logfile = File('${ext!.path}/log.txt');
+
+                if (Platform.isAndroid) {
+                  await PlatformMiscMethods.instance.exportFile(
+                    logfile.path,
+                    mimeType: 'application/txt',
+                    fileNameToSaveAs: 'log.txt',
+                  );
+                } else {
+                  final selectedPath =
+                      await FilePicker.platform.getDirectoryPath();
+
+                  if (selectedPath == null) {
+                    return;
+                  }
+
+                  final extpath = '$selectedPath/bookmark.db';
+
+                  await logfile.copy(extpath);
+                }
 
                 showToast(
                   level: ToastLevel.check,
