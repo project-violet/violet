@@ -1,3 +1,6 @@
+// This source code is a part of Project Violet.
+// Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
+
 use std::{
     io::{copy, Read},
     path::PathBuf,
