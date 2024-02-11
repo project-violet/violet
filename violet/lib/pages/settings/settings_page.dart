@@ -1225,14 +1225,12 @@ class _SettingsPageState extends State<SettingsPage>
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
-            onTap: Variables.databaseDecompressed
-                ? null
-                : () async {
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const SplashPage(
-                              switching: true,
-                            )));
-                  },
+            onTap: () async {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => const SplashPage(
+                        switching: true,
+                      )));
+            },
             child: ListTile(
               leading:
                   Icon(MdiIcons.swapHorizontal, color: Settings.majorColor),
@@ -1299,57 +1297,51 @@ class _SettingsPageState extends State<SettingsPage>
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
-            onTap: Variables.databaseDecompressed
-                ? null
-                : () async {
-                    final prefs = await SharedPreferences.getInstance();
-                    var latestDB = SyncManager.getLatestDB().getDateTime();
-                    var lastDB = prefs.getString('databasesync');
+            onTap: () async {
+              final prefs = await SharedPreferences.getInstance();
+              var latestDB = SyncManager.getLatestDB().getDateTime();
+              var lastDB = prefs.getString('databasesync');
 
-                    if (lastDB != null &&
-                        latestDB.difference(DateTime.parse(lastDB)).inHours <
-                            1) {
-                      showToast(
-                        level: ToastLevel.check,
-                        message: Translations.of(context)
-                            .trans('thisislatestbookmark'),
-                      );
-                      return;
-                    }
+              if (lastDB != null &&
+                  latestDB.difference(DateTime.parse(lastDB)).inHours < 1) {
+                showToast(
+                  level: ToastLevel.check,
+                  message:
+                      Translations.of(context).trans('thisislatestbookmark'),
+                );
+                return;
+              }
 
-                    var dir = await getApplicationDocumentsDirectory();
-                    try {
-                      await ((await openDatabase('${dir.path}/data/data.db'))
-                          .close());
-                      await deleteDatabase('${dir.path}/data/data.db');
-                      await Directory('${dir.path}/data')
-                          .delete(recursive: true);
-                    } catch (_) {}
+              var dir = await getApplicationDocumentsDirectory();
+              try {
+                await ((await openDatabase('${dir.path}/data/data.db'))
+                    .close());
+                await deleteDatabase('${dir.path}/data/data.db');
+                await Directory('${dir.path}/data').delete(recursive: true);
+              } catch (_) {}
 
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(
-                            builder: (context) => DataBaseDownloadPage(
-                                  dbType: Settings.databaseType,
-                                  isSync: true,
-                                )))
-                        .then(
-                      (value) async {
-                        HitomiIndexs.init();
-                        final directory =
-                            await getApplicationDocumentsDirectory();
-                        final path = File('${directory.path}/data/index.json');
-                        final text = path.readAsStringSync();
-                        HitomiManager.tagmap = jsonDecode(text);
-                        await DataBaseManager.reloadInstance();
+              Navigator.of(context)
+                  .push(MaterialPageRoute(
+                      builder: (context) => DataBaseDownloadPage(
+                            dbType: Settings.databaseType,
+                            isSync: true,
+                          )))
+                  .then(
+                (value) async {
+                  HitomiIndexs.init();
+                  final directory = await getApplicationDocumentsDirectory();
+                  final path = File('${directory.path}/data/index.json');
+                  final text = path.readAsStringSync();
+                  HitomiManager.tagmap = jsonDecode(text);
+                  await DataBaseManager.reloadInstance();
 
-                        showToast(
-                          level: ToastLevel.check,
-                          message:
-                              Translations.of(context).trans('synccomplete'),
-                        );
-                      },
-                    );
-                  },
+                  showToast(
+                    level: ToastLevel.check,
+                    message: Translations.of(context).trans('synccomplete'),
+                  );
+                },
+              );
+            },
             child: ListTile(
               leading: Icon(MdiIcons.databaseSync, color: Settings.majorColor),
               title: Text(Translations.of(context).trans('syncmanual')),
