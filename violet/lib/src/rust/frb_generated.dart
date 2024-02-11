@@ -64,7 +64,8 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
-  void decompress7Z({required String src, required String dest, dynamic hint});
+  Future<void> decompress7Z(
+      {required String src, required String dest, dynamic hint});
 
   String greet({required String name, dynamic hint});
 
@@ -80,13 +81,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
-  void decompress7Z({required String src, required String dest, dynamic hint}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+  Future<void> decompress7Z(
+      {required String src, required String dest, dynamic hint}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(src, serializer);
         sse_encode_String(dest, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 3)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 3, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,

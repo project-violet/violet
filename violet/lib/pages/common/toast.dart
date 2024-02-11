@@ -16,10 +16,13 @@ void showToast({
   required String message,
   IconData? icon,
 }) {
+  final isCheck = level == ToastLevel.check;
+  final isWarning = level == ToastLevel.warning;
+
   FToast().showToast(
     child: ToastWrapper(
-      isCheck: false,
-      isWarning: true,
+      isCheck: isCheck,
+      isWarning: isWarning,
       icon: icon,
       msg: message,
     ),
