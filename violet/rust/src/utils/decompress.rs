@@ -15,8 +15,10 @@ pub fn to_parent_entry_extract_fn(
 ) -> Result<bool, Error> {
     use std::{fs::File, io::BufWriter};
 
-    if entry.is_directory() && !dest.exists() {
-        std::fs::create_dir_all(&dest).map_err(Error::io)?;
+    if entry.is_directory() {
+        if !dest.exists() {
+            std::fs::create_dir_all(&dest).map_err(Error::io)?;
+        }
         return Ok(true);
     }
 
