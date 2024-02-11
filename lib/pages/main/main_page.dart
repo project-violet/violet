@@ -438,14 +438,12 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Settings.majorColor.withAlpha(220),
               ),
-              onPressed: Variables.databaseDecompressed
-                  ? null
-                  : () {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => const SplashPage(
-                                switching: true,
-                              )));
-                    },
+              onPressed: () {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => const SplashPage(
+                          switching: true,
+                        )));
+              },
               child: Text(
                   '    ${Translations.of(context).trans('switching')}    '),
             ),
@@ -458,8 +456,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Settings.majorColor.withAlpha(220),
                 ),
-                onPressed:
-                    Variables.databaseDecompressed ? null : _onSyncPressed,
+                onPressed: _onSyncPressed,
                 child:
                     Text('    ${Translations.of(context).trans('sync')}    '),
               ),

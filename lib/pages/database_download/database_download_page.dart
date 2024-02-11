@@ -22,7 +22,6 @@ import 'package:violet/log/log.dart';
 import 'package:violet/platform/misc.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/src/rust/api/simple.dart';
-import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 
 typedef TagIndexingCallback = dynamic Function(QueryResult);
@@ -61,11 +60,11 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     try {
       final prefs = await SharedPreferences.getInstance();
       if (prefs.getInt('db_exists') == 1) {
-        var dbPath = Platform.isAndroid
+        final dbPath = Platform.isAndroid
             ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
             : '${await getDatabasesPath()}/data.db';
         if (await File(dbPath).exists()) await File(dbPath).delete();
-        var dir = await getApplicationDocumentsDirectory();
+        final dir = await getApplicationDocumentsDirectory();
         if (await Directory('${dir.path}/data').exists()) {
           await Directory('${dir.path}/data').delete(recursive: true);
         }
@@ -75,33 +74,18 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
           '$st');
     }
 
-    if (Platform.isAndroid) {
-      downloadFileAndroid();
-    } else if (Platform.isIOS) {
-      // p7zip is not supported on IOS.
-      // So, download raw database.
-      downloadFileIOS();
-    }
+    downloadFile();
   }
 
-  Future<void> downloadFileAndroid() async {
+  Future<void> downloadFile() async {
     try {
-      await downloadFileAndroidWith('latest', true);
+      await downloadFileWith('latest', true);
     } catch (e) {
-      await downloadFileAndroidWith('old', false);
+      await downloadFileWith('old', false);
     }
   }
 
-  Future<void> downloadFileIOS() async {
-    try {
-      await downloadFileIOSWith('latest', true);
-    } catch (e) {
-      await downloadFileIOSWith('old', false);
-    }
-  }
-
-  Future<void> downloadFileAndroidWith(
-      String target, bool propagateException) async {
+  Future<void> downloadFileWith(String target, bool propagateException) async {
     Dio dio = Dio();
     int oneMega = 1024 * 1024;
     int nu = 0;
@@ -124,9 +108,9 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
         default:
           {
             try {
-              await downloadFileAndroidWith('latest', true);
+              await downloadFileWith('latest', true);
             } catch (e) {
-              await downloadFileAndroidWith('old', false);
+              await downloadFileWith('old', false);
             }
             return;
           }
@@ -167,20 +151,11 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
         downloading = false;
       });
 
-      if (await Directory('${dir.path}/data2').exists()) {
-        await Directory('${dir.path}/data2').delete(recursive: true);
-      }
-      await decompress7Z(
-          src: '${dir.path}/db.sql.7z', dest: '${dir.path}/data2');
-      Variables.databaseDecompressed = true;
       if (await Directory('${dir.path}/data').exists()) {
         await Directory('${dir.path}/data').delete(recursive: true);
       }
-      await Directory('${dir.path}/data2').rename('${dir.path}/data');
-      if (await Directory('${dir.path}/data2').exists()) {
-        await Directory('${dir.path}/data2').delete(recursive: true);
-      }
-
+      await decompress7Z(
+          src: '${dir.path}/db.sql.7z', dest: '${dir.path}/data');
       await File('${dir.path}/db.sql.7z').delete();
 
       final prefs = await SharedPreferences.getInstance();
@@ -207,124 +182,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
         }
       }
 
-      if (widget.isSync == true) {
-        Navigator.pop(context);
-      } else {
-        setState(() {
-          baseString = Translations.instance!.trans('dbdcomplete');
-          _showCloseAppButton = true;
-        });
-      }
-
-      return;
-    } catch (e, st) {
-      Logger.error('[DBDownload] E: $e\n'
-          '$st');
-      if (propagateException) rethrow;
-    }
-
-    setState(() {
-      downloading = false;
-      baseString = Translations.instance!.trans('dbdretry');
-    });
-  }
-
-  Future<void> downloadFileIOSWith(
-      String target, bool propagateException) async {
-    Dio dio = Dio();
-    int oneMega = 1024 * 1024;
-    int nu = 0;
-    int latest = 0;
-    int tlatest = 0;
-    int tnu = 0;
-
-    try {
-      var dir = await getDatabasesPath();
-      if (await File('$dir/data.db').exists()) {
-        await File('$dir/data.db').delete();
-      }
-      switch (target) {
-        case 'latest':
-          await SyncManager.checkSyncLatest(propagateException);
-          break;
-        case 'old':
-          await SyncManager.checkSyncOld(propagateException);
-          break;
-        default:
-          {
-            try {
-              await downloadFileIOSWith('latest', true);
-            } catch (e) {
-              await downloadFileIOSWith('old', false);
-            }
-            return;
-          }
-      }
-
-      Timer timer = Timer.periodic(
-          const Duration(seconds: 1),
-          (Timer timer) => setState(() {
-                final speed = tlatest / 1024;
-                speedString = '${_formatNumberWithComma(speed)} KB/s';
-                tlatest = tnu;
-                tnu = 0;
-              }));
-      await dio.download(
-          SyncManager.getLatestDB().getDBDownloadUrliOS(widget.dbType!),
-          '$dir/data.db', onReceiveProgress: (rec, total) {
-        nu += rec - latest;
-        tnu += rec - latest;
-        latest = rec;
-        if (nu <= oneMega) return;
-
-        nu = 0;
-
-        setState(
-          () {
-            downloading = true;
-            final progressPercent = (rec / total) * 100;
-            progressString = '${_formatNumberWithComma(progressPercent)}%';
-            downString =
-                '[${_formatNumberWithComma(rec)}/${_formatNumberWithComma(total)}]';
-          },
-        );
-      });
-      timer.cancel();
-
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt('db_exists', 1);
-      await prefs.setString('databasetype', widget.dbType!);
-      await prefs.setString(
-          'databasesync', SyncManager.getLatestDB().getDateTime().toString());
-      await prefs.setInt('synclatest', SyncManager.getLatestDB().timestamp);
-
-      setState(() {
-        downloading = false;
-      });
-
-      await DataBaseManager.reloadInstance();
-
-      try {
-        if (Settings.useOptimizeDatabase) await deleteUnused();
-      } catch (e1, st1) {
-        Logger.error('[deleteUnused] E: $e1\n'
-            '$st1');
-      }
-      try {
-        await indexing();
-      } catch (e1, st1) {
-        Logger.error('[indexing] E: $e1\n'
-            '$st1');
-      }
-
-      if (widget.isSync == true) {
-        Navigator.pop(context);
-      } else {
-        setState(() {
-          baseString = Translations.instance!.trans('dbdcomplete');
-          _showCloseAppButton = true;
-        });
-      }
+      Navigator.pop(context);
 
       return;
     } catch (e, st) {
@@ -568,10 +426,6 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
         final path11 = File('${directory.path}/series-series.json');
         path11.writeAsString(jsonEncode(seriesSeries));
 
-        setState(() {
-          baseString = Translations.instance!.trans('dbdcomplete');
-          _showCloseAppButton = true;
-        });
         break;
       }
       i++;
