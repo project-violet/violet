@@ -105,7 +105,7 @@
   "dbdunzip": "Unpacking...",
   "dbdretry": "An error has occurred!\nPlease check your internet connection and try again!",
   "dbdindexing": "Indexing... ",
-  "dbdcomplete": "Done!\nPlease restart app!",
+  "dbdcomplete": "Database Download Done!",
   "dbdname": "Database Downloader",
   "dbddownloading": "Downloading...",
   "nosearchresult": "No search results found :(",
