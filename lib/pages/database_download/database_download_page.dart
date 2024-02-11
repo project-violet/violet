@@ -182,7 +182,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
         }
       }
 
-      Navigator.pop(context);
+      Navigator.of(context).pushReplacementNamed('/AfterLoading');
 
       return;
     } catch (e, st) {
