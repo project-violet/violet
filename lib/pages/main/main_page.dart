@@ -41,7 +41,6 @@ import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/platform/android_external_storage_directory.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
-import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
