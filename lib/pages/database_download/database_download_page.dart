@@ -170,7 +170,8 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       if (await Directory('${dir.path}/data2').exists()) {
         await Directory('${dir.path}/data2').delete(recursive: true);
       }
-      decompress7Z(src: '${dir.path}/db.sql.7z', dest: '${dir.path}/data2');
+      await decompress7Z(
+          src: '${dir.path}/db.sql.7z', dest: '${dir.path}/data2');
       Variables.databaseDecompressed = true;
       if (await Directory('${dir.path}/data').exists()) {
         await Directory('${dir.path}/data').delete(recursive: true);
