@@ -16,5 +16,6 @@ services:
     image: redis
     restart: always
     container_name: violet-dev-redis
+    command: sh -cx "redis-server --daemonize yes && redis-cli config set notify-keyspace-events KEA && sleep infinity"
     ports:
       - 6379:6379
