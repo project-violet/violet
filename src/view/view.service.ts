@@ -3,10 +3,14 @@ import { ViewGetRequestDto, ViewGetResponseDto } from './dtos/view-get.dto';
 import { RedisService } from 'src/redis/redis.service';
 import { ViewPostRequestDto } from './dtos/view-post.dto';
 import { User } from 'src/user/entity/user.entity';
+import { ViewRepository } from './view.repository';
 
 @Injectable()
 export class ViewService {
-  constructor(private redisService: RedisService) {}
+  constructor(
+    private redisService: RedisService,
+    private viewRepository: ViewRepository,
+  ) {}
 
   async getView(dto: ViewGetRequestDto): Promise<ViewGetResponseDto> {
     let query = await this.redisService.zrevrange_by_score(
@@ -25,6 +29,7 @@ export class ViewService {
   }
 
   post(dto: ViewPostRequestDto) {
+    this.viewRepository.postView(dto);
     this.postRedis(dto.articleId);
   }
 
