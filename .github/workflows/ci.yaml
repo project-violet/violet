@@ -62,6 +62,7 @@ jobs:
           title: "Failed to Deploy"
           nodetail: true
           color: 0xff9300
+          content: "<@614104830738169877>"
           description: |
             Commit: [${{ github.event.head_commit.message }}](https://github.com/project-violet/violet-server-nest/commit/${{ github.sha }})
             CI Log: [${{ github.ref }} / ${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
