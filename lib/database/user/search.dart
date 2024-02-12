@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:violet/database/user/user.dart';
 import 'package:violet/log/log.dart';
@@ -58,10 +59,12 @@ class SearchLogDatabase {
 
   Future<void> insertSearchLog(String? searchWhat, [DateTime? datetime]) async {
     datetime ??= DateTime.now();
-    var db = await CommonUserDatabase.getInstance();
-    await db.insert('SearchLog', {
+    final db = await CommonUserDatabase.getInstance();
+    final body = {
       'SearchWhat': searchWhat,
       'DateTime': datetime.toString(),
-    });
+    };
+    await db.insert('SearchLog', body);
+    FirebaseAnalytics.instance.logEvent(name: 'search', parameters: body);
   }
 }
