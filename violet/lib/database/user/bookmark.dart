@@ -3,6 +3,7 @@
 
 import 'dart:collection';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:violet/database/user/user.dart';
@@ -219,12 +220,15 @@ class Bookmark {
   Future<void> insertArticle(String article,
       [DateTime? datetime, int group = 1]) async {
     datetime ??= DateTime.now();
-    var db = await CommonUserDatabase.getInstance();
-    await db.insert('BookmarkArticle', {
+    final db = await CommonUserDatabase.getInstance();
+    final body = {
       'Article': article,
       'DateTime': datetime.toString(),
       'GroupId': group,
-    });
+    };
+    await db.insert('BookmarkArticle', body);
+    FirebaseAnalytics.instance
+        .logEvent(name: 'bookmark_article', parameters: body);
     bookmarkSet ??= HashSet<int>();
     bookmarkSet!.add(int.parse(article));
   }
@@ -268,14 +272,17 @@ class Bookmark {
       int articleId, int page, String area, double aspectRatio,
       [DateTime? datetime]) async {
     datetime ??= DateTime.now();
-    var db = await CommonUserDatabase.getInstance();
-    await db.insert('BookmarkCropImage', {
+    final db = await CommonUserDatabase.getInstance();
+    final body = {
       'Article': articleId,
       'Page': page,
       'Area': area,
       'AspectRatio': aspectRatio,
       'DateTime': datetime.toString(),
-    });
+    };
+    await db.insert('BookmarkCropImage', body);
+    FirebaseAnalytics.instance
+        .logEvent(name: 'bookmark_crop', parameters: body);
   }
 
   Future<int> createGroup(String name, String description, Color color,

@@ -4,6 +4,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -43,6 +44,12 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
       ValueNotifier(Settings.cropBookmarkShowOverlay);
 
   List<String>? imagesUrlForEvict;
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseAnalytics.instance.logEvent(name: 'open_crop');
+  }
 
   @override
   void dispose() {
