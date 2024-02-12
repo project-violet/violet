@@ -5,16 +5,18 @@ import Redis from 'ioredis';
 @Injectable()
 export class RedisService {
   private readonly redis: Redis;
+  private readonly subscribeRedis: Redis;
 
   constructor(private readonly redisService: RedisInnerService) {
     this.redis = this.redisService.getClient();
+    this.subscribeRedis = Redis.createClient();
     this.subcribe_close_event();
   }
 
   async subcribe_close_event() {
-    await this.redis.psubscribe('*', function (e) {});
-    this.redis.on('pmessage', function (pattern, message, channel) {
-      console.log(message, channel);
+    await this.subscribeRedis.psubscribe('*', function (e) {});
+    const redis = this.redis;
+    this.subscribeRedis.on('pmessage', function (pattern, message, channel) {
       if (
         message.toString().startsWith('__keyevent') &&
         message.toString().endsWith('expired')
@@ -27,7 +29,7 @@ export class RedisService {
           (type == 'weekly' || type == 'daily' || type == 'monthly') &&
           isNumeric(id)
         ) {
-          this.redis.zincrby(type, -1, id);
+          redis.zincrby(type, -1, id);
         }
       }
     });

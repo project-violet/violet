@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { User } from 'src/user/entity/user.entity';
 import { Comment } from 'src/comment/entity/comment.entity';
+import { View } from 'src/view/entity/view.entity';
 
 @Injectable()
 export class MySQLConfigService implements TypeOrmOptionsFactory {
@@ -19,7 +20,7 @@ export class MySQLConfigService implements TypeOrmOptionsFactory {
       synchronize: true,
       logging: true,
 
-      entities: [User, Comment],
+      entities: [User, Comment, View],
 
       migrations: ['src/migration/**/*.ts'],
       subscribers: ['src/subscriber/**/*.ts'],
