@@ -35,6 +35,7 @@ analyzer:
   exclude:
     - "rust_builder/**"
     - "lib/src/rust/**"
+    - "lib/pages/viewer/others/**"
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
