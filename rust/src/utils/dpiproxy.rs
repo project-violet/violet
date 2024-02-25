@@ -71,6 +71,11 @@ static mut DISABLED_DOH: bool = false;
 static mut INSERT_SPACE_HTTP_HOST: bool = false;
 static SPACE_HTTP_HOST: &'static [u8] = &[32];
 
+pub fn init_proxy() {
+    #[cfg(not(windows))]
+    set_max_rlimit_nofile();
+}
+
 async fn proxy(mut req: Request<Body>) -> Result<Response<Body>, hyper::Error> {
     let http_client = HTTP_CLIENT.clone();
     let https_client = HTTPS_CLIENT.clone();
