@@ -818,7 +818,7 @@ class TagTranslatedRegacy {
       case 'female:necrophilia':
         return 'female:네크로필리아';
       case 'female:anorexic':
-        return 'female:식용부진';
+        return 'female:식욕부진';
       case 'female:pig girl':
         return 'female:돼지녀';
       case 'female:menstruation':
