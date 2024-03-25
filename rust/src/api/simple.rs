@@ -1,12 +1,13 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
-use crate::utils::decompress::to_parent_entry_extract_fn;
+use crate::utils::{decompress::to_parent_entry_extract_fn, dpiproxy::init_proxy};
 
 #[flutter_rust_bridge::frb(init)]
 pub fn init_app() {
     // Default utilities - feel free to customize
     flutter_rust_bridge::setup_default_user_utils();
+    init_proxy();
 }
 
 #[flutter_rust_bridge::frb(sync)] // Synchronous mode for simplicity of the demo
