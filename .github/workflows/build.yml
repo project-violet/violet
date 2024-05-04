@@ -46,7 +46,7 @@ jobs:
           
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'beta'
+          channel: 'stable'
           
       - uses: actions/setup-python@v2
         with:
@@ -100,7 +100,7 @@ jobs:
           
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'beta'
+          channel: 'stable'
           
       - uses: actions/setup-python@v2
         with:
