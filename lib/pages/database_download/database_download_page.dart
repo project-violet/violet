@@ -153,7 +153,8 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
         await Directory('${dir.path}/data').delete(recursive: true);
       }
       await decompress7Z(
-          src: '${dir.path}/db.sql.7z', dest: '${dir.path}/data');
+          src: '${dir.path}/db.sql.7z',
+          dest: Platform.isAndroid ? '${dir.path}/data' : dir.path);
       await File('${dir.path}/db.sql.7z').delete();
 
       final prefs = await SharedPreferences.getInstance();
