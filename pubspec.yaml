@@ -17,7 +17,7 @@ publish_to: none
 
 environment:
   sdk: ^3.0.0
-  flutter: "3.19.6"
+  flutter: "3.22.0"
 
 dependencies:
   flutter:
@@ -52,7 +52,10 @@ dependencies:
   community_charts_flutter: ^1.0.1
   connectivity:
   convert:
-  country_pickers: ^2.0.0
+  country_pickers:
+    git:
+      url: https://github.com/DavidOrakpo/country_pickers
+      ref: 4b21a901ed3890f3a8aa5637a1eaa87a9a79afd2
   crypto:
   # device_info: ^2.0.0
   device_info_plus: ^9.0.2
@@ -74,7 +77,10 @@ dependencies:
   # flare_dart:
   flare_flutter: ^3.0.2
   flutter_cache_manager: ^3.3.0
-  flutter_colorpicker: ^1.0.3
+  flutter_colorpicker:
+    git:
+      url: https://github.com/mchome/flutter_colorpicker
+      ref: 786d04363f587b818ce585d25b9c2bb62de95aba
   flutter_downloader: ^1.11.3
   flutter_heatmap_calendar: ^1.0.5
   flutter_image_compress: ^2.0.4
