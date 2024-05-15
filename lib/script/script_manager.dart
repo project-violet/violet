@@ -32,25 +32,33 @@ class ScriptManager {
       _scriptCache = json.decode(parse(scriptHtml)
           .querySelector("script[data-target='react-app.embeddedData']")!
           .text)['payload']['blob']['rawBlob'];
-    } catch (e) {
+    } catch (e, st) {
+      await Logger.warning('[ScriptManager-init] W: $e\n'
+          '$st');
       debugPrint(e.toString());
     }
     if (_scriptCache == null) {
       try {
         _scriptCache = (await http.get(_scriptUrl)).body;
-      } catch (e) {
+      } catch (e, st) {
+        await Logger.warning('[ScriptManager-init] W: $e\n'
+            '$st');
         debugPrint(e.toString());
       }
     }
     try {
       _v4Cache = (await http.get(_scriptV4)).body;
-    } catch (e) {
+    } catch (e, st) {
+      await Logger.warning('[ScriptManager-init] W: $e\n'
+          '$st');
       debugPrint(e.toString());
     }
     _latestUpdate = DateTime.now();
     try {
       _initRuntime();
-    } catch (e) {
+    } catch (e, st) {
+      await Logger.error('[ScriptManager-init] E: $e\n'
+          '$st');
       debugPrint(e.toString());
     }
   }
