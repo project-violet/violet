@@ -22,6 +22,16 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2024, 5, 26),
+    version: '1.32.0 Minor',
+    contents: [
+      'fix database switch bug',
+      'supports fast download database in ios',
+      'supports apple pencil double tap gesture',
+      'reduce app size',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2024, 2, 9),
     version: '1.31.1 Patch',
     contents: [
