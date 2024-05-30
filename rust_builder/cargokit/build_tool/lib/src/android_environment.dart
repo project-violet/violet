@@ -64,13 +64,17 @@ class AndroidEnvironment {
     required String javaHome,
   }) {
     final sdkManagerExtension = Platform.isWindows ? '.bat' : '';
-    final sdkManager = path.join(
+    String sdkManager = path.join(
       sdkPath,
       'cmdline-tools',
       'latest',
       'bin',
       'sdkmanager$sdkManagerExtension',
     );
+
+    if (!(new File(sdkManager)).existsSync()) {
+      sdkManager = path.join('sdkmanager$sdkManagerExtension');
+    }
 
     log.info('Installing NDK $ndkVersion');
     runCommand(sdkManager, [
