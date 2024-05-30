@@ -4,6 +4,10 @@ set -e -x
 
 BASEDIR=$(dirname "$0")
 
+if [ -z "${CARGOKIT_TOOL_TEMP_DIR}" ];then
+	export CARGOKIT_TOOL_TEMP_DIR=${PWD}/build/rust_lib_violet/build/build_tool
+fi
+
 mkdir -p "$CARGOKIT_TOOL_TEMP_DIR"
 
 cd "$CARGOKIT_TOOL_TEMP_DIR"
