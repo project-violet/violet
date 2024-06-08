@@ -23,7 +23,6 @@
 
 #include "httplib.h"
 #include "rapidfuzz/fuzz.hpp"
-#include "rapidfuzz/utils.hpp"
 #include "simdjson.h"
 
 using namespace simdjson;
@@ -217,31 +216,31 @@ void route_winternal(const httplib::Request &req, httplib::Response &res,
   res.set_content(json, "text/json");
 }
 
-std::vector<std::pair<MergedInfo *, rapidfuzz::percent>>
+std::vector<std::pair<MergedInfo *, double>>
 extract_similar(const std::string &query,
                 const std::vector<MergedInfo *> &choices) {
-  std::vector<std::pair<MergedInfo *, rapidfuzz::percent>> results(
+  std::vector<std::pair<MergedInfo *, double>> results(
       choices.size());
 
-  auto scorer = rapidfuzz::fuzz::CachedRatio<std::string>(query);
+  auto scorer = rapidfuzz::fuzz::CachedRatio<typename std::string::value_type> (query);
 
 #pragma omp parallel for
   for (int i = 0; i < choices.size(); ++i) {
-    double score = scorer.ratio(choices[i]->message, 0.0);
+    double score = scorer.similarity(choices[i]->message, 0.0);
     results[i] = std::make_pair(choices[i], score);
   }
 
   return results;
 }
 
-std::vector<std::pair<MergedInfo *, rapidfuzz::percent>>
+std::vector<std::pair<MergedInfo *, double>>
 extract_partial_contains(const std::string &query,
                          const std::vector<MergedInfo *> &choices) {
-  std::vector<std::pair<MergedInfo *, rapidfuzz::percent>> results(
+  std::vector<std::pair<MergedInfo *, double>> results(
       choices.size());
   auto query_len = query.length();
 
-  auto scorer = rapidfuzz::fuzz::CachedPartialRatio<std::string>(query);
+  auto scorer = rapidfuzz::fuzz::CachedPartialRatio<typename std::string::value_type>(query);
 
 #pragma omp parallel for
   for (int i = 0; i < choices.size(); ++i) {
@@ -249,21 +248,21 @@ extract_partial_contains(const std::string &query,
       results[i] = std::make_pair(choices[i], 0.0);
       continue;
     }
-    double score = scorer.ratio(choices[i]->message, 0.0);
+    double score = scorer.similarity(choices[i]->message, 0.0);
     results[i] = std::make_pair(choices[i], score);
   }
 
   return results;
 }
 
-std::vector<std::pair<MergedInfo *, rapidfuzz::percent>>
+std::vector<std::pair<MergedInfo *, double>>
 extract_lcs(const std::string &query,
             const std::vector<MergedInfo *> &choices) {
-  std::vector<std::pair<MergedInfo *, rapidfuzz::percent>> results(
+  std::vector<std::pair<MergedInfo *, double>> results(
       choices.size());
   auto query_len = query.length();
 
-  auto scorer = rapidfuzz::fuzz::CachedRatio<std::string>(query);
+  auto scorer = rapidfuzz::fuzz::CachedRatio<typename std::string::value_type>(query);
 
 #pragma omp parallel for
   for (int i = 0; i < choices.size(); ++i) {
@@ -273,7 +272,7 @@ extract_lcs(const std::string &query,
       continue;
     }
 
-    double score = scorer.ratio(choices[i]->message, 0.0);
+    double score = scorer.similarity(choices[i]->message, 0.0);
 
     // s2길이 > s1길이 일때
     // score값 - (s2길이 - s1길이)이 실질적인 score값임
@@ -290,15 +289,15 @@ extract_lcs(const std::string &query,
 
 template <typename Sentence1, typename Iterable,
           typename Sentence2 = typename Iterable::value_type>
-std::vector<std::pair<Sentence2, rapidfuzz::percent>>
+std::vector<std::pair<Sentence2, double>>
 extract_regional_partial_contains(const Sentence1 &query,
                                   const Iterable &choices,
-                                  const rapidfuzz::percent score_cutoff = 0.0) {
-  std::vector<std::pair<Sentence2, rapidfuzz::percent>> results(choices.size());
+                                  const double score_cutoff = 0.0) {
+  std::vector<std::pair<Sentence2, double>> results(choices.size());
   auto query_len = query.length();
 
-  auto scorer1 = rapidfuzz::fuzz::CachedRatio<Sentence1>(query);
-  auto scorer2 = rapidfuzz::fuzz::CachedPartialRatio<Sentence1>(query);
+  auto scorer1 = rapidfuzz::fuzz::CachedRatio<typename Sentence1::value_type>(query);
+  auto scorer2 = rapidfuzz::fuzz::CachedPartialRatio<typename Sentence1::value_type> (query);
 
 #pragma omp parallel for
   for (int i = 0; i < choices.size(); ++i) {
@@ -306,8 +305,8 @@ extract_regional_partial_contains(const Sentence1 &query,
       results[i] = std::make_pair(choices[i], 0.0);
       continue;
     }
-    double score1 = scorer1.ratio(choices[i]->message, score_cutoff);
-    double score2 = scorer2.ratio(choices[i]->message, score_cutoff);
+    double score1 = scorer1.similarity(choices[i]->message, score_cutoff);
+    double score2 = scorer2.similarity(choices[i]->message, score_cutoff);
 
     double score1_rev = (1 - score1 / 100) * (choices[i]->message + query_len);
 
