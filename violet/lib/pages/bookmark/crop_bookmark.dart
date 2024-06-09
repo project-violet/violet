@@ -299,7 +299,8 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
                     for (var e in arr as List<dynamic>) {
                       final elem = e as Map<String, dynamic>;
                       await bookmark.insertCropImage(elem['article'],
-                          elem['page'], elem['area'], elem['aspectRatio']);
+                          elem['page'], elem['area'], elem['aspectRatio'],
+                          logging: false);
                     }
 
                     showToast(

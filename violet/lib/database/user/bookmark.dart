@@ -270,7 +270,7 @@ class Bookmark {
 
   Future<void> insertCropImage(
       int articleId, int page, String area, double aspectRatio,
-      [DateTime? datetime]) async {
+      {DateTime? datetime, bool logging = true}) async {
     datetime ??= DateTime.now();
     final db = await CommonUserDatabase.getInstance();
     final body = {
@@ -281,8 +281,10 @@ class Bookmark {
       'DateTime': datetime.toString(),
     };
     await db.insert('BookmarkCropImage', body);
-    FirebaseAnalytics.instance
-        .logEvent(name: 'bookmark_crop', parameters: body);
+    if (logging) {
+      FirebaseAnalytics.instance
+          .logEvent(name: 'bookmark_crop', parameters: body);
+    }
   }
 
   Future<int> createGroup(String name, String description, Color color,
