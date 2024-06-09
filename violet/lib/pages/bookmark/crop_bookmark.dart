@@ -42,6 +42,7 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
       ValueNotifier(Settings.cropBookmarkAlign);
   final ValueNotifier<bool> showOverlay =
       ValueNotifier(Settings.cropBookmarkShowOverlay);
+  bool sortDesc = Settings.cropBookmarkSortDesc;
 
   List<String>? imagesUrlForEvict;
 
@@ -68,7 +69,10 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
           return Container();
         }
 
-        final imgs = snapshot.data!;
+        var imgs = snapshot.data!;
+        if (sortDesc) {
+          imgs = imgs.reversed.toList();
+        }
 
         imagesUrlForEvict = List<String>.filled(imgs.length, '');
 
@@ -336,6 +340,15 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
           onChanged: (bool value) async {
             await Settings.setCropBookmarkShowOverlay(value);
             showOverlay.value = value;
+          },
+        ),
+        SwitchMenuItem(
+          title: 'Sort Descending',
+          initialValue: sortDesc,
+          onChanged: (bool value) async {
+            await Settings.setCropBookmarkSortDesc(value);
+            sortDesc = value;
+            setState(() {});
           },
         ),
         // TODO: enable select mode
