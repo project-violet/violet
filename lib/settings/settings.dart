@@ -113,6 +113,7 @@ class Settings {
   // Crop Bookmark
   static late int cropBookmarkAlign;
   static late bool cropBookmarkShowOverlay;
+  static late bool cropBookmarkSortDesc;
 
   // Lab
   static late bool simpleItemWidgetLoadingIcon;
@@ -353,6 +354,7 @@ class Settings {
     cropBookmarkAlign =
         await _getInt('cropBookmarkAlign', useTabletMode ? 3 : 2);
     cropBookmarkShowOverlay = await _getBool('cropBookmarkShowOverlay', true);
+    cropBookmarkSortDesc = await _getBool('cropBookmarkSortDesc', false);
 
     simpleItemWidgetLoadingIcon =
         await _getBool('simpleItemWidgetLoadingIcon', true);
@@ -835,6 +837,12 @@ class Settings {
     cropBookmarkShowOverlay = nn;
 
     await prefs.setBool('cropBookmarkShowOverlay', nn);
+  }
+
+  static Future<void> setCropBookmarkSortDesc(bool nn) async {
+    cropBookmarkSortDesc = nn;
+
+    await prefs.setBool('cropBookmarkSortDesc', nn);
   }
 
   static Future<void> setSimpleItemWidgetLoadingIcon(bool nn) async {
