@@ -1,0 +1,109 @@
+name: Daily Sync 
+
+on:
+  schedule:
+    - cron: "0 0 */1 * *"
+  workflow_dispatch:
+
+jobs:
+  sync-job:
+    runs-on: ubuntu-latest
+    steps:
+      #
+      #   Setup
+      #
+      - uses: actions/checkout@v4
+        with:
+          ref: dev
+
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+         credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+
+      #
+      #   Sync
+      #
+      - name: Install Requirements
+        run: pip3 install -r script/requirements.txt
+
+      - name: Sync Main
+        run: python3 script/daily-crop.py
+
+      #
+      #   Update
+      #
+      - name: Revision
+        run: |
+          git config --local user.email "violet.dev.master.bot@gmail.com"
+          git config --local user.name "violet-dev-bot"
+          git config --global pull.rebase false
+          git add asserts/daily/
+          git commit -m "Daily Sync"
+          git pull
+
+      #
+      #   Push (Max Retry 5)
+      #
+      - name: Push
+        id: trypush
+        uses: ad-m/github-push-action@master
+        with:
+          branch: "dev"
+          github_token: $
+      - name: Fail Safe Pull
+        if: ${{ failure() && steps.trypush.outcome == 'failure' }}
+        run: git pull
+      - name: Fail Safe 1
+        id: trypushfs1
+        if: ${{ failure() && steps.trypush.outcome == 'failure' }}
+        uses: ad-m/github-push-action@master
+        with:
+          branch: "dev"
+          github_token: $
+      - name: Fail Safe Pull
+        if: ${{ failure() && steps.trypushfs1.outcome == 'failure' }}
+        run: git pull
+      - name: Fail Safe 2
+        id: trypushfs2
+        if: ${{ failure() && steps.trypushfs1.outcome == 'failure' }}
+        uses: ad-m/github-push-action@master
+        with:
+          branch: "dev"
+          github_token: $
+      - name: Fail Safe Pull
+        if: ${{ failure() && steps.trypushfs2.outcome == 'failure' }}
+        run: git pull
+      - name: Fail Safe 3
+        id: trypushfs3
+        if: ${{ failure() && steps.trypushfs2.outcome == 'failure' }}
+        uses: ad-m/github-push-action@master
+        with:
+          branch: "dev"
+          github_token: $
+      - name: Fail Safe Pull
+        if: ${{ failure() && steps.trypushfs3.outcome == 'failure' }}
+        run: git pull
+      - name: Fail Safe 4
+        id: trypushfs4
+        if: ${{ failure() && steps.trypushfs3.outcome == 'failure' }}
+        uses: ad-m/github-push-action@master
+        with:
+          branch: "dev"
+          github_token: $
+      - name: Fail Safe Pull
+        if: ${{ failure() && steps.trypushfs4.outcome == 'failure' }}
+        run: git pull
+      - name: Fail Safe 5
+        if: ${{ failure() && steps.trypushfs4.outcome == 'failure' }}
+        uses: ad-m/github-push-action@master
+        with:
+          branch: "dev"
+          github_token: $
