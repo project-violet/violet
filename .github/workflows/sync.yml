@@ -37,73 +37,32 @@ jobs:
       - name: Sync Main
         run: python3 script/daily-crop.py
 
+      - name: Compress
+        uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r assets/daily.zip assets/daily
+          
       #
       #   Update
       #
       - name: Revision
         run: |
+          git checkout -b sync
           git config --local user.email "violet.dev.master.bot@gmail.com"
           git config --local user.name "violet-dev-bot"
           git config --global pull.rebase false
-          git add asserts/daily/
+          git add assets/daily.zip
           git commit -m "Daily Sync"
-          git pull
+          git push --set-upstream origin sync --force
 
       #
-      #   Push (Max Retry 5)
+      #   PR Creation
       #
-      - name: Push
-        id: trypush
-        uses: ad-m/github-push-action@master
-        with:
-          branch: "dev"
-          github_token: $
-      - name: Fail Safe Pull
-        if: ${{ failure() && steps.trypush.outcome == 'failure' }}
-        run: git pull
-      - name: Fail Safe 1
-        id: trypushfs1
-        if: ${{ failure() && steps.trypush.outcome == 'failure' }}
-        uses: ad-m/github-push-action@master
-        with:
-          branch: "dev"
-          github_token: $
-      - name: Fail Safe Pull
-        if: ${{ failure() && steps.trypushfs1.outcome == 'failure' }}
-        run: git pull
-      - name: Fail Safe 2
-        id: trypushfs2
-        if: ${{ failure() && steps.trypushfs1.outcome == 'failure' }}
-        uses: ad-m/github-push-action@master
-        with:
-          branch: "dev"
-          github_token: $
-      - name: Fail Safe Pull
-        if: ${{ failure() && steps.trypushfs2.outcome == 'failure' }}
-        run: git pull
-      - name: Fail Safe 3
-        id: trypushfs3
-        if: ${{ failure() && steps.trypushfs2.outcome == 'failure' }}
-        uses: ad-m/github-push-action@master
-        with:
-          branch: "dev"
-          github_token: $
-      - name: Fail Safe Pull
-        if: ${{ failure() && steps.trypushfs3.outcome == 'failure' }}
-        run: git pull
-      - name: Fail Safe 4
-        id: trypushfs4
-        if: ${{ failure() && steps.trypushfs3.outcome == 'failure' }}
-        uses: ad-m/github-push-action@master
-        with:
-          branch: "dev"
-          github_token: $
-      - name: Fail Safe Pull
-        if: ${{ failure() && steps.trypushfs4.outcome == 'failure' }}
-        run: git pull
-      - name: Fail Safe 5
-        if: ${{ failure() && steps.trypushfs4.outcome == 'failure' }}
-        uses: ad-m/github-push-action@master
-        with:
-          branch: "dev"
-          github_token: $
+      - name: Today
+        id: ciinfo
+        if: always()
+        run: echo "today=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr create -B dev -H sync --title 'Daily Sync (${{ steps.ciinfo.outputs.today }})' --body 'Daily sync data'
