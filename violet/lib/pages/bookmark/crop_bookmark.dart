@@ -4,12 +4,17 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:archive/archive_io.dart';
+import 'package:collection/collection.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:tuple/tuple.dart';
@@ -21,6 +26,7 @@ import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/common/toast.dart';
 import 'package:violet/pages/common/utils.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/server/violet.dart';
@@ -31,7 +37,9 @@ import 'package:violet/widgets/cupertino_switch_list_tile.dart';
 import 'package:violet/widgets/v_cached_network_image.dart';
 
 class CropBookmarkPage extends StatefulWidget {
-  const CropBookmarkPage({super.key});
+  const CropBookmarkPage({super.key, this.bookmarks});
+
+  final List<BookmarkCropImage>? bookmarks;
 
   @override
   State<CropBookmarkPage> createState() => _CropBookmarkPageState();
@@ -63,7 +71,9 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
     final height = MediaQuery.of(context).size.height;
 
     final listView = FutureBuilder(
-      future: Bookmark.getInstance().then((value) => value.getCropImages()),
+      future: widget.bookmarks != null
+          ? Future.value(widget.bookmarks)
+          : Bookmark.getInstance().then((value) => value.getCropImages()),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Container();
@@ -334,6 +344,7 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
             });
           },
         ),
+        const PullDownMenuTitle(title: Text('Show Options')),
         SwitchMenuItem(
           title: 'Show Overlay',
           initialValue: showOverlay.value,
@@ -349,6 +360,50 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
             await Settings.setCropBookmarkSortDesc(value);
             sortDesc = value;
             setState(() {});
+          },
+        ),
+        const PullDownMenuTitle(title: Text('Others')),
+        PullDownMenuItem(
+          title: 'User Bookmarks',
+          icon: CupertinoIcons.bookmark,
+          onTap: () async {
+            final dir = await getApplicationDocumentsDirectory();
+            final dio = Dio();
+            await dio.download(
+                'https://github.com/project-violet/violet/raw/dev/assets/daily.zip',
+                '${dir.path}/daily.zip');
+
+            final inputStream = InputFileStream('${dir.path}/daily.zip');
+            final archive = ZipDecoder().decodeBuffer(inputStream);
+            for (final file in archive.files) {
+              if (file.name == 'assets/daily/crop-bookmarks.json') {
+                final outputStream = OutputStream();
+                file.writeContent(outputStream);
+
+                final json = jsonDecode(utf8.decode(outputStream.getBytes()));
+                List<BookmarkCropImage> bookmarks = [];
+                for (final e in json as List<dynamic>) {
+                  final bookmark = BookmarkCropImage(result: {
+                    'Article': e['article'],
+                    'Page': e['page'],
+                    'Area': e['area'],
+                    'AspectRatio': e['aspectRatio'],
+                    'DateTime': e['datetime'],
+                  });
+                  bookmarks.add(bookmark);
+                }
+
+                PlatformNavigator.navigateSlide(
+                  context,
+                  CropBookmarkPage(
+                      bookmarks: bookmarks
+                          .sortedBy((e) => DateTime.parse(e.datetime()))
+                          .reversed
+                          .toList()),
+                  opaque: false,
+                );
+              }
+            }
           },
         ),
         // TODO: enable select mode
