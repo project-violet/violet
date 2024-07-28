@@ -13,7 +13,10 @@ export class RedisService {
     private configService: ConfigService,
   ) {
     this.redis = this.redisService.getClient();
-    this.subscribeRedis = Redis.createClient();
+    this.subscribeRedis = new Redis(
+      this.configService.get('REDIS_PORT'),
+      this.configService.get('REDIS_HOST'),
+    );
     if (this.configService.get<boolean>('IS_MASTER_NODE')) {
       Logger.log(`master node`);
       this.subcribe_close_event();
