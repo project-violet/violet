@@ -1,16 +1,23 @@
 import { RedisService as RedisInnerService } from '@songkeys/nestjs-redis';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import Redis from 'ioredis';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RedisService {
   private readonly redis: Redis;
   private readonly subscribeRedis: Redis;
 
-  constructor(private readonly redisService: RedisInnerService) {
+  constructor(
+    private readonly redisService: RedisInnerService,
+    private configService: ConfigService,
+  ) {
     this.redis = this.redisService.getClient();
     this.subscribeRedis = Redis.createClient();
-    this.subcribe_close_event();
+    if (this.configService.get<boolean>('IS_MASTER_NODE')) {
+      Logger.log(`master node`);
+      this.subcribe_close_event();
+    }
   }
 
   async subcribe_close_event() {
