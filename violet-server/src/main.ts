@@ -6,10 +6,9 @@ import * as cookies from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { logger: logger });
 
   app.setGlobalPrefix('api/v2');
-  app.useLogger(logger);
   app.useGlobalPipes(new ValidationPipe());
 
   app.use(cookies());
