@@ -35,6 +35,7 @@ import * as Joi from 'joi';
         SALT: Joi.string().required(),
         REDIS_HOST: Joi.string().required(),
         REDIS_PORT: Joi.string().required(),
+        IS_MASTER_NODE: Joi.bool().required(),
       }),
     }),
 
