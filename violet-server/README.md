@@ -111,7 +111,7 @@ server {
 
         # violet-server-nest
         location /api/v2/ {
-                proxy_pass http://127.0.0.1:3000/;
+                proxy_pass http://127.0.0.1:3000/api/v2/;
         }
 
         # violet-server legacy
