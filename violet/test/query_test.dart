@@ -3,12 +3,14 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/settings/settings.dart';
 
 void main() {
   group('Query Test', () {
     setUp(() async {
       await HitomiManager.loadIndexIfRequired();
+      await TagTranslate.init();
     });
 
     test('Hitomi Query Auto Complete', () async {
@@ -17,6 +19,14 @@ void main() {
 
       expect(result0[0].item1.toString(), 'tag:female:sole female');
       expect(result1.length, 0);
+    });
+
+    test('Hitomi Query Auto Complete Korean', () async {
+      final result0 = await HitomiManager.queryAutoComplete('단독여', true);
+      final result1 = await HitomiManager.queryAutoComplete('male:단독', true);
+
+      expect(result0[0].item1.toString(), 'tag:female:sole female');
+      expect(result1[0].item1.toString(), 'tag:male:sole male');
     });
 
     test('Hitomi Query Auto Complete Fuzzy', () async {
