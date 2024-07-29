@@ -13,6 +13,7 @@ docker create --env-file ./.env.docker.prod \
                   --name violet \
                   --network host \
                   --add-host host.docker.internal:host-gateway \
+                  --restart always \
                   violetdev/violet:latest
 
 # download env & copy to container
