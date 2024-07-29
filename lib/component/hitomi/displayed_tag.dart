@@ -61,4 +61,12 @@ class DisplayedTag {
   String toString() {
     return getTag();
   }
+
+  // TODO: https://github.com/project-violet/violet/issues/440 로 삭제
+  bool groupEqualTo(String otherGroup) {
+    if (otherGroup == 'female' || otherGroup == 'male') {
+      return group == 'tag' && name!.startsWith(otherGroup);
+    }
+    return group == otherGroup;
+  }
 }

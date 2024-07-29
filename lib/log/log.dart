@@ -35,6 +35,9 @@ class LogEvent {
         message: message,
         detail: detail,
       );
+
+  bool isHttpRequest() =>
+      message.startsWith('GET:') || message.startsWith('GETS:');
 }
 
 class Logger {

@@ -144,31 +144,29 @@ class Download {
     await init();
   }
 
-  bool isDownloadedArticle(int id) => _downloadedChecker.contains(id);
-
-  final Map<int, bool> _validDownloadedArticleCache = <int, bool>{};
-  bool _isValidDownloadedArticle(int id) {
-    if (!isDownloadedArticle(id)) return false;
-
-    var item = _downloadedItems[id]!;
-
-    // _isValidDownloadedArticle 메서드가 호출되었다는 것은 state가
-    // extraction을 마치고 다운로드가 시작되기 직전 후라는 것임
-    var files = jsonDecode(item.files()!) as List<dynamic>;
-
-    if (!File(files[0] as String).existsSync()) return false;
-
-    return true;
-  }
-
-  bool isValidDownloadedArticle(int id) {
-    if (_validDownloadedArticleCache.containsKey(id)) {
-      return _validDownloadedArticleCache[id]!;
+  bool isDownloadedArticle(int id, bool checkFileEixsts) {
+    if (!checkFileEixsts) {
+      return _downloadedChecker.contains(id);
     }
 
-    var v = _isValidDownloadedArticle(id);
-    _validDownloadedArticleCache[id] = v;
-    return v;
+    return _isDownloadedFileExists(id);
+  }
+
+  final Map<int, bool> _isDownloadedFileExistsCache = <int, bool>{};
+  bool _isDownloadedFileExists(int id) {
+    if (_isDownloadedFileExistsCache.containsKey(id)) {
+      return _isDownloadedFileExistsCache[id]!;
+    }
+
+    final item = _downloadedItems[id]!;
+
+    // _isDownloadedFileExists 메서드가 호출되었다는 것은 state가
+    // extraction을 마치고 다운로드가 시작되기 직전 후라는 것임
+    final files = jsonDecode(item.files()!) as List<dynamic>;
+
+    final exists = File(files[0] as String).existsSync();
+    _isDownloadedFileExistsCache[id] = exists;
+    return exists;
   }
 
   void appendDownloaded(int id, DownloadItemModel item) {
