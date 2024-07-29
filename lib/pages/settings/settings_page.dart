@@ -33,6 +33,7 @@ import 'package:violet/downloader/isolate_downloader.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/other/ex_country.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:violet/pages/common/toast.dart';
 import 'package:violet/pages/community/user_status_card.dart';
@@ -68,82 +69,6 @@ import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/network/wrapper.dart' as http;
-
-class ExCountry extends Country {
-  String? language;
-  String? script;
-  String? region;
-  String? variant;
-
-  ExCountry(
-    String name,
-    String isoCode,
-    String iso3Code,
-    String phoneCode,
-  ) : super(
-          name: name,
-          isoCode: isoCode,
-          iso3Code: iso3Code,
-          phoneCode: phoneCode,
-        );
-
-  static ExCountry create(String iso,
-      {String? language, String? script, String? region, String? variant}) {
-    var c = CountryPickerUtils.getCountryByIsoCode(iso);
-    var country = ExCountry(c.name, c.isoCode, c.iso3Code, c.phoneCode);
-    country.language = language;
-    country.script = script;
-    country.region = region;
-    country.variant = variant;
-    return country;
-  }
-
-  @override
-  String toString() {
-    final dict = {
-      'KR': 'ko',
-      'US': 'en',
-      'JP': 'ja',
-      // 'CN': 'zh',
-      'RU': 'ru',
-      'IT': 'it',
-      'ES': 'eo',
-      'BR': 'pt',
-    };
-
-    if (dict.containsKey(isoCode)) return dict[isoCode]!;
-
-    if (isoCode == 'CN') {
-      if (script == 'Hant') return 'zh_Hant';
-      if (script == 'Hans') return 'zh_Hans';
-    }
-
-    return 'en';
-  }
-
-  String getDisplayLanguage() {
-    final dict = {
-      'KR': '한국어',
-      'US': 'English',
-      'JP': '日本語',
-      // 'CN': '中文(简体)',
-      // 'CN': '中文(繁體)',
-      'RU': 'Русский',
-      'IT': 'Italiano',
-      'ES': 'Español',
-      'BR': 'Português'
-    };
-
-    if (dict.containsKey(isoCode)) return dict[isoCode]!;
-
-    if (isoCode == 'CN') {
-      if (script == 'Hant') return '中文(繁體)';
-      if (script == 'Hans') return '中文(简体)';
-    }
-
-    return 'English';
-  }
-}
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
