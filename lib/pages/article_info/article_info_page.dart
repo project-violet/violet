@@ -254,7 +254,7 @@ class ArticleInfoPage extends StatelessWidget {
     }
 
     if ((await Download.getInstance())
-        .isDownloadedArticle(data.queryResult.id())) {
+        .isDownloadedArticle(data.queryResult.id(), false)) {
       if (await showYesNoDialog(context, '이미 다운로드된 작품입니다. 그래도 다운로드할까요?') !=
           true) {
         return;
