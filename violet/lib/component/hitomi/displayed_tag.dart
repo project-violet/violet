@@ -1,7 +1,6 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
-import 'package:get/get.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 
 class DisplayedTag {
@@ -63,6 +62,7 @@ class DisplayedTag {
     return getTag();
   }
 
+  // TODO: https://github.com/project-violet/violet/issues/440 로 삭
   bool groupEqualTo(String otherGroup) {
     if (otherGroup == 'female' || otherGroup == 'male') {
       return group == 'tag' && name!.startsWith(otherGroup);
