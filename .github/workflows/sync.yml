@@ -1,4 +1,4 @@
-name: Daily Sync 
+name: Daily Sync
 
 on:
   schedule:
@@ -16,17 +16,17 @@ jobs:
         with:
           ref: dev
 
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v2'
+      - id: "auth"
+        uses: "google-github-actions/auth@v2"
         with:
-         credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+          credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
 
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v2'
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
 
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       #
       #   Sync
@@ -35,13 +35,15 @@ jobs:
         run: pip3 install -r script/requirements.txt
 
       - name: Sync Main
-        run: python3 script/daily-crop.py
+        run: |
+          python3 script/daily-crop.py
+          python3 script/daily-bookmark.py
 
       - name: Compress
         uses: montudor/action-zip@v1
         with:
           args: zip -qq -r assets/daily.zip assets/daily
-          
+
       #
       #   Update
       #
