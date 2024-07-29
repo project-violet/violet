@@ -84,6 +84,35 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
       ArticleListItemWidgetController(data),
       tag: getxId,
     );
+    updateIdOnlyArticle();
+  }
+
+  // This checks QueryResult then do idQueryWeb
+  // when QueryResult keys was only exists 'Id'
+  updateIdOnlyArticle() async {
+    // When queryResult is only id
+    if (c.articleListItem.queryResult.result.keys.length == 1 &&
+        c.articleListItem.queryResult.result.keys.lastOrNull == 'Id') {
+      final query = await HentaiManager.idQueryWeb(
+          '${c.articleListItem.queryResult.id()}');
+
+      // Update ArticleListItem to new
+      data = ArticleListItem.fromJson(
+          {...c.articleListItem.toJson(), 'queryResult': query});
+
+      // Swap data of new
+      c.dispose();
+      c = ArticleListItemWidgetController(data);
+
+      // Swap local ArticleListItemWidgetController
+      // https://stackoverflow.com/questions/67250736/flutter-getx-how-to-remove-initialized-controller-every-time-we-navigate-to-oth
+      Get.delete<ArticleListItemWidgetController>(tag: getxId, force: true);
+      Get.put(c, tag: getxId);
+
+      setState(() {
+        _shouldReload = true;
+      });
+    }
   }
 
   @override
@@ -158,72 +187,7 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
                             ..translate(c.thisWidth / 2, c.thisHeight / 2)
                             ..scale(c.scale.value)
                             ..translate(-c.thisWidth / 2, -c.thisHeight / 2)),
-                      child: FutureBuilder<QueryResult>(
-                        /*
-                         * This checks QueryResult then 
-                         * do idQueryWeb when QueryResult keys was only exists 'Id'
-                         */
-                        future: (() {
-                          if (_body?.c.articleListItem.queryResult.result.keys
-                                      .length ==
-                                  1 &&
-                              _body?.c.articleListItem.queryResult.result.keys
-                                      .lastOrNull ==
-                                  'Id') {
-                            // Do when queryResult was only id
-                            // returns queryResult from idQueryWeb
-                            return HentaiManager.idQueryWeb(
-                                '${_body?.c.articleListItem.queryResult.id()}');
-                          } else {
-                            // Do when queryResult was not only id
-                            // returns queryResult on before body
-                            return Future.value(
-                                _body!.c.articleListItem.queryResult);
-                          }
-                        })(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            if (_body?.c.articleListItem.queryResult.result.keys
-                                        .length ==
-                                    1 &&
-                                _body?.c.articleListItem.queryResult.result.keys
-                                        .lastOrNull ==
-                                    'Id') {
-                              // When queryResult is only id
-                              final newData = ArticleListItem.fromJson({
-                                ..._body!.c.articleListItem.toJson(),
-                                'queryResult': snapshot.data!
-                              });
-                              data = newData;
-                              // Swap data of new
-                              final oldGetxId = _body!.getxId;
-                              final tmpC =
-                                  ArticleListItemWidgetController(data);
-                              c.dispose();
-                              c = tmpC;
-                              // Swap local ArticleListItemWidgetController
-                              // https://stackoverflow.com/questions/67250736/flutter-getx-how-to-remove-initialized-controller-every-time-we-navigate-to-oth
-                              Get.delete<ArticleListItemWidgetController>(
-                                  // Delete old for reuse oldGetxId
-                                  tag: oldGetxId,
-                                  force: true);
-                              Get.put(c, tag: oldGetxId); // Reuse oldGetxId
-                              // Swap ArticleListItemWidgetController with Get.put
-                              final body = BodyWidget(
-                                // new Body with queryResult from idQueryWeb
-                                key: c.bodyKey,
-                                getxId: oldGetxId,
-                              );
-                              _body = body;
-                              return _body!;
-                            } else {
-                              return _body!;
-                            }
-                          } else {
-                            return _body!;
-                          }
-                        },
-                      ),
+                      child: _body!,
                     ),
                   ),
                 ),

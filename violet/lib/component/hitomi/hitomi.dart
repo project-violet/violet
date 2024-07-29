@@ -106,20 +106,20 @@ class HitomiManager {
 
   static List<Tuple2<DisplayedTag, int>> _queryAutoCompleteWithTagmap(
       String prefix, bool useTranslated) {
-    final opp = prefix.split(':')[0];
-    final pp = normalizeTagPrefix(opp);
+    final groupOrig = prefix.split(':')[0];
+    final group = normalizeTagPrefix(groupOrig);
 
     final results = <Tuple2<DisplayedTag, int>>[];
-    if (!tagmap!.containsKey(pp)) return results;
+    if (!tagmap!.containsKey(group)) return results;
 
-    final ch = tagmap![pp] as Map<dynamic, dynamic>;
+    final nameCountsMap = tagmap![group] as Map<dynamic, dynamic>;
     if (!useTranslated) {
       final tagContains = () {
-        switch (opp) {
+        switch (groupOrig) {
           case 'female':
           case 'male':
             return (key) =>
-                key.toLowerCase().startsWith('$opp:') &&
+                key.toLowerCase().startsWith('$groupOrig:') &&
                 key.toLowerCase().contains(prefix);
 
           case 'tag':
@@ -135,25 +135,18 @@ class HitomiManager {
         }
       }();
 
-      ch.entries
+      nameCountsMap.entries
           .where((element) => tagContains(element.key))
           .forEach((element) {
         results.add(Tuple2<DisplayedTag, int>(
-            DisplayedTag(group: pp, name: element.key), element.value));
+            DisplayedTag(group: group, name: element.key), element.value));
       });
     } else {
-      final po = prefix.split(':').last;
-      results.addAll(TagTranslate.containsTotal(po)
+      final name = prefix.split(':').last;
+      results.addAll(TagTranslate.containsTotal(name)
           .where((e) =>
-              (pp != 'female' && pp != 'male'
-                  ? e.group == pp
-                  : e.group == 'tag' && e.name!.startsWith(pp)) &&
-              ch.containsKey(e.name))
-          .map((e) => Tuple2<DisplayedTag, int>(e, ch[e.name]))
-          .where((e) => pp == 'tag'
-              ? !(e.item1.name!.startsWith('female:') ||
-                  e.item1.name!.startsWith('male:'))
-              : true));
+              e.groupEqualTo(groupOrig) && nameCountsMap.containsKey(e.name))
+          .map((e) => Tuple2<DisplayedTag, int>(e, nameCountsMap[e.name])));
     }
     results.sort((a, b) => b.item2.compareTo(a.item2));
     return results;
@@ -172,25 +165,25 @@ class HitomiManager {
 
     final results = <Tuple2<DisplayedTag, int>>[];
 
-    tagmap!['tag'].forEach((key2, value2) {
-      if (key2.contains(':')) {
-        final split = key2.split(':');
-        if (split[1].contains(prefix)) {
+    tagmap!['tag'].forEach((group, count) {
+      if (group.contains(':')) {
+        final subGroup = group.split(':');
+        if (subGroup[1].contains(prefix)) {
           results.add(Tuple2<DisplayedTag, int>(
-              DisplayedTag(group: split[0], name: key2), value2));
+              DisplayedTag(group: subGroup[0], name: group), count));
         }
-      } else if (key2.contains(prefix)) {
+      } else if (group.contains(prefix)) {
         results.add(Tuple2<DisplayedTag, int>(
-            DisplayedTag(group: 'tag', name: key2), value2));
+            DisplayedTag(group: 'tag', name: group), count));
       }
     });
 
-    tagmap!.forEach((key1, value) {
-      if (key1 != 'tag') {
-        value.forEach((key2, value2) {
-          if (key2.toLowerCase().contains(prefix)) {
+    tagmap!.forEach((group, value) {
+      if (group != 'tag') {
+        value.forEach((name, count) {
+          if (name.toLowerCase().contains(prefix)) {
             results.add(Tuple2<DisplayedTag, int>(
-                DisplayedTag(group: key1, name: key2), value2));
+                DisplayedTag(group: group, name: name), count));
           }
         });
       }
@@ -208,62 +201,55 @@ class HitomiManager {
     prefix = prefix.toLowerCase().replaceAll('_', ' ');
 
     if (prefix.contains(':')) {
-      final opp = prefix.split(':')[0];
-      final pp = normalizeTagPrefix(opp);
+      final groupOrig = prefix.split(':')[0];
+      final group = normalizeTagPrefix(groupOrig);
 
       final results = <Tuple3<DisplayedTag, int, int>>[];
-      if (!tagmap!.containsKey(pp)) return <Tuple2<DisplayedTag, int>>[];
+      if (!tagmap!.containsKey(group)) return <Tuple2<DisplayedTag, int>>[];
 
-      final ch = tagmap![pp];
+      final nameCountsMap = tagmap![group];
       if (!useTranslated) {
-        if (opp == 'female' || opp == 'male') {
-          ch.forEach((key, value) {
-            if (key.toLowerCase().startsWith('$opp:')) {
+        if (groupOrig == 'female' || groupOrig == 'male') {
+          nameCountsMap.forEach((key, value) {
+            if (key.toLowerCase().startsWith('$groupOrig:')) {
               results.add(Tuple3<DisplayedTag, int, int>(
-                  DisplayedTag(group: opp, name: key),
+                  DisplayedTag(group: groupOrig, name: key),
                   Distance.levenshteinDistance(
                       prefix.runes.toList(), key.runes.toList()),
                   value));
             }
           });
-        } else if (opp == 'tag') {
-          final po = prefix.split(':')[1];
-          ch.forEach((key, value) {
+        } else if (groupOrig == 'tag') {
+          // CHECK: tag:female:~, tag:artist:~도 허용해야하는지?
+          final name = prefix.split(':').last;
+          nameCountsMap.forEach((key, value) {
             if (!key.toLowerCase().startsWith('female:') &&
                 !key.toLowerCase().startsWith('male:')) {
               results.add(Tuple3<DisplayedTag, int, int>(
-                  DisplayedTag(group: opp, name: key),
+                  DisplayedTag(group: groupOrig, name: key),
                   Distance.levenshteinDistance(
-                      po.runes.toList(), key.runes.toList()),
+                      name.runes.toList(), key.runes.toList()),
                   value));
             }
           });
         } else {
-          final po = prefix.split(':')[1];
-
-          ch.forEach((key, value) {
+          final name = prefix.split(':').last;
+          nameCountsMap.forEach((key, value) {
             results.add(Tuple3<DisplayedTag, int, int>(
-                DisplayedTag(group: pp, name: key),
+                DisplayedTag(group: group, name: key),
                 Distance.levenshteinDistance(
-                    po.runes.toList(), key.runes.toList()),
+                    name.runes.toList(), key.runes.toList()),
                 value));
           });
         }
       } else {
-        final po = prefix.split(':').last;
-        results.addAll(TagTranslate.containsFuzzingTotal(po)
+        final name = prefix.split(':').last;
+        results.addAll(TagTranslate.containsFuzzingTotal(name)
             .where((e) =>
-                (opp != 'female' && opp != 'male'
-                    ? e.item1.group == opp
-                    : e.item1.group == 'tag' &&
-                        e.item1.name!.startsWith(opp)) &&
-                ch.containsKey(e.item1.name))
+                e.item1.groupEqualTo(groupOrig) &&
+                nameCountsMap.containsKey(e.item1.name))
             .map((e) => Tuple3<DisplayedTag, int, int>(
-                e.item1, ch[e.item1.name], e.item2))
-            .where((e) => opp == 'tag'
-                ? !(e.item1.name!.startsWith('female:') ||
-                    e.item1.name!.startsWith('male:'))
-                : true));
+                e.item1, nameCountsMap[e.item1.name], e.item2)));
       }
       results.sort((a, b) => a.item2.compareTo(b.item2));
       return results
@@ -272,31 +258,31 @@ class HitomiManager {
     } else {
       if (!useTranslated) {
         final results = <Tuple3<DisplayedTag, int, int>>[];
-        tagmap!.forEach((key1, value) {
-          if (key1 == 'tag') {
-            value.forEach((key2, value2) {
-              if (key2.contains(':')) {
-                final split = key2.split(':');
+        tagmap!.forEach((group, value) {
+          if (group == 'tag') {
+            value.forEach((name, count) {
+              if (name.contains(':')) {
+                final split = name.split(':');
                 results.add(Tuple3<DisplayedTag, int, int>(
-                    DisplayedTag(group: split[0], name: key2),
+                    DisplayedTag(group: split[0], name: name),
                     Distance.levenshteinDistance(
                         prefix.runes.toList(), split[1].runes.toList()),
-                    value2));
+                    count));
               } else {
                 results.add(Tuple3<DisplayedTag, int, int>(
-                    DisplayedTag(group: 'tag', name: key2),
+                    DisplayedTag(group: 'tag', name: name),
                     Distance.levenshteinDistance(
-                        prefix.runes.toList(), key2.runes.toList()),
-                    value2));
+                        prefix.runes.toList(), name.runes.toList()),
+                    count));
               }
             });
           } else {
-            value.forEach((key2, value2) {
+            value.forEach((name, count) {
               results.add(Tuple3<DisplayedTag, int, int>(
-                  DisplayedTag(group: key1, name: key2),
+                  DisplayedTag(group: group, name: name),
                   Distance.levenshteinDistance(
-                      prefix.runes.toList(), key2.runes.toList()),
-                  value2));
+                      prefix.runes.toList(), name.runes.toList()),
+                  count));
             });
           }
         });
