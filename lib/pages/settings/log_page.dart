@@ -22,13 +22,11 @@ class _LogPageState extends State<LogPage> {
 
     // Merge Simple Errors
     for (var i = 0; i < errors.length; i++) {
-      if (errors[i].detail != null ||
-          !(errors[i].message.startsWith('GET:') ||
-              errors[i].message.startsWith('GETS:'))) continue;
+      if (errors[i].detail != null || !errors[i].isHttpRequest()) continue;
       for (var j = i + 1; j < errors.length; j++) {
-        if (errors[i].title != errors[j].title ||
-            !(errors[j].message.startsWith('GET:') ||
-                errors[j].message.startsWith('GETS:'))) break;
+        if (errors[i].title != errors[j].title || !errors[j].isHttpRequest()) {
+          break;
+        }
         if (errors[j].message.length < 200) {
           errors[i].message += '\n${errors[j].message}';
           errors.removeAt(j--);
