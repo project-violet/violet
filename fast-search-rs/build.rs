@@ -1,9 +1,10 @@
 #![allow(warnings)]
 
-use cmake::Config;
 use std::env;
 use std::path::PathBuf;
 use std::process::Command;
+
+use cmake::Config;
 
 fn main() {
     // Path to the C++ project

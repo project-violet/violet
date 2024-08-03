@@ -40,9 +40,8 @@ impl CachedPartialRatio {
 
 #[cfg(test)]
 mod tests {
-    use crate::binding::CachedRatio;
-
     use super::CachedPartialRatio;
+    use crate::binding::CachedRatio;
 
     fn test(src: &str, tar: &str) -> usize {
         CachedRatio::from(src).similarity(tar) as usize

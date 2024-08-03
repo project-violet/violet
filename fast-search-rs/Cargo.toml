@@ -6,6 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+serde = "1.0.204"
+simd-json = "0.13.10"
+structopt = "0.3.26"
 
 [build-dependencies]
 bindgen = "0.69.4"
