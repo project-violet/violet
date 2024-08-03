@@ -4,3 +4,9 @@
 [submodule "fast-search/libkdtree"]
 	path = fast-search/libkdtree
 	url = https://github.com/nvmd/libkdtree
+[submodule "fast-search-rs/cxx/RapidFuzz"]
+	path = fast-search-rs/cxx/RapidFuzz
+	url = https://github.com/rapidfuzz/RapidFuzz
+[submodule "fast-search-rs/cxx/RapidFuzz-cpp"]
+	path = fast-search-rs/cxx/RapidFuzz-cpp
+	url = https://github.com/rapidfuzz/RapidFuzz-cpp
