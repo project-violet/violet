@@ -29,10 +29,15 @@ fn main() {
                 .to_str()
                 .unwrap(),
         )
+        .header(cpp_project_dir.join("main.hpp").to_str().unwrap())
+        .clang_arg("-Icxx")
         .clang_arg("-Icxx/RapidFuzz-cpp")
         .clang_arg("--std=c++20")
         .opaque_type("std::.*")
-        .allowlist_item("rapidfuzz::fuzz::.*")
+        .opaque_type("rapidfuzz::.*")
+        .opaque_type("binding::.*")
+        .allowlist_item("binding::create")
+        .allowlist_item("binding::similarity")
         .generate()
         .expect("Unable to generate bindings");
 
@@ -43,5 +48,6 @@ fn main() {
 
     // Invalidate the built crate whenever the wrapper or C++ sources change
     println!("cargo:rerun-if-changed=cxx/main.cpp");
+    println!("cargo:rerun-if-changed=cxx/main.hpp");
     println!("cargo:rerun-if-changed=cxx/CMakeLists.txt");
 }
