@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use itertools::Itertools;
 use lazy_static::lazy_static;
-use message::{load_messages, search_similar};
+use message::{load_messages, search_partial_contains, search_similar};
 use rocket::serde::json::Json;
 use serde::Serialize;
 use structopt::StructOpt;
@@ -50,6 +50,21 @@ fn similar(query: &str) -> Json<Vec<MessageResult>> {
     Json(result)
 }
 
+#[get("/<query>")]
+fn contains(query: &str) -> Json<Vec<MessageResult>> {
+    let result = search_partial_contains(query, 1000)
+        .into_iter()
+        .map(|(msg, score)| MessageResult {
+            id: msg.article_id,
+            page: msg.page,
+            score,
+            rects: msg.rects,
+        })
+        .collect_vec();
+
+    Json(result)
+}
+
 #[launch]
 fn rocket() -> _ {
     OPT.data_paths
@@ -64,4 +79,5 @@ fn rocket() -> _ {
                 .merge(("port", OPT.port)),
         )
         .mount("/similar", routes![similar])
+        .mount("/contains", routes![contains])
 }

@@ -5,11 +5,14 @@ use std::ptr::NonNull;
 
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
+pub trait SimilarityMethod: Sync {
+    fn similarity(&self, message: &str) -> f64;
+}
+
 pub struct CachedRatio {
     scorer: *mut binding_CachedRatioBinding,
 }
 
-unsafe impl Send for CachedRatio {}
 unsafe impl Sync for CachedRatio {}
 
 impl CachedRatio {
@@ -18,8 +21,10 @@ impl CachedRatio {
         let scorer = unsafe { binding_create(c_query.as_ptr()) };
         Self { scorer }
     }
+}
 
-    pub fn similarity(&self, message: &str) -> f64 {
+impl SimilarityMethod for CachedRatio {
+    fn similarity(&self, message: &str) -> f64 {
         let c_query = CString::new(message).unwrap();
         unsafe { binding_similarity(self.scorer, c_query.as_ptr()) }
     }
@@ -29,14 +34,18 @@ pub struct CachedPartialRatio {
     scorer: *mut binding_CachedPartialRatioBinding,
 }
 
+unsafe impl Sync for CachedPartialRatio {}
+
 impl CachedPartialRatio {
     pub fn from(query: &str) -> Self {
         let c_query = CString::new(query).unwrap();
         let scorer = unsafe { binding_create_partial(c_query.as_ptr()) };
         Self { scorer }
     }
+}
 
-    pub fn similarity(&self, message: &str) -> f64 {
+impl SimilarityMethod for CachedPartialRatio {
+    fn similarity(&self, message: &str) -> f64 {
         let c_query = CString::new(message).unwrap();
         unsafe { binding_similarity_partial(self.scorer, c_query.as_ptr()) }
     }
@@ -44,7 +53,7 @@ impl CachedPartialRatio {
 
 #[cfg(test)]
 mod tests {
-    use super::CachedPartialRatio;
+    use super::{CachedPartialRatio, SimilarityMethod};
     use crate::binding::CachedRatio;
 
     fn test(src: &str, tar: &str) -> usize {

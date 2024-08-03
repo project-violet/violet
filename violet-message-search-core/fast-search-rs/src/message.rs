@@ -5,7 +5,7 @@ use std::sync::{Arc, LazyLock, Mutex};
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use serde::Deserialize;
 
-use crate::binding::CachedRatio;
+use crate::binding::{CachedPartialRatio, CachedRatio, SimilarityMethod};
 
 static MESSAGES: LazyLock<Mutex<Vec<Arc<Message>>>> = LazyLock::new(|| Mutex::new(vec![]));
 
@@ -39,8 +39,14 @@ pub fn load_messages(path: PathBuf) {
 }
 
 pub fn search_similar(query: &str, take: usize) -> Vec<(Arc<Message>, f64)> {
-    let scorer = CachedRatio::from(query);
+    search(CachedRatio::from(query), take)
+}
 
+pub fn search_partial_contains(query: &str, take: usize) -> Vec<(Arc<Message>, f64)> {
+    search(CachedPartialRatio::from(query), take)
+}
+
+fn search(scorer: impl SimilarityMethod, take: usize) -> Vec<(Arc<Message>, f64)> {
     let mut results: Vec<_> = MESSAGES
         .lock()
         .unwrap()
