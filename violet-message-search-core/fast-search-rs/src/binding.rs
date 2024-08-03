@@ -1,12 +1,16 @@
 #![allow(warnings)]
 
 use std::ffi::{CStr, CString};
+use std::ptr::NonNull;
 
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
 pub struct CachedRatio {
     scorer: *mut binding_CachedRatioBinding,
 }
+
+unsafe impl Send for CachedRatio {}
+unsafe impl Sync for CachedRatio {}
 
 impl CachedRatio {
     pub fn from(query: &str) -> Self {
