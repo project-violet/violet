@@ -36,8 +36,8 @@ fn main() {
         .opaque_type("std::.*")
         .opaque_type("rapidfuzz::.*")
         .opaque_type("binding::.*")
-        .allowlist_item("binding::create")
-        .allowlist_item("binding::similarity")
+        .allowlist_item("binding::create.*")
+        .allowlist_item("binding::similarity.*")
         .generate()
         .expect("Unable to generate bindings");
 
