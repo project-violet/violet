@@ -4,7 +4,7 @@ on:
     branches:
       - "dev"
     paths:
-      - ".github/workflows/violet/**"
+      - ".github/workflows/violet-build.yml"
       - "violet/**"
   merge_group:
   workflow_dispatch:
