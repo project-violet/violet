@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use std::sync::{Arc, LazyLock, Mutex};
 
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::binding::{CachedPartialRatio, CachedRatio, SimilarityMethod};
 
@@ -29,6 +29,14 @@ pub struct Message {
     pub rects: [f64; 4],
 }
 
+#[derive(Serialize)]
+pub struct MessageResult {
+    id: usize,
+    page: f64,
+    score: f64,
+    rects: [f64; 4],
+}
+
 pub fn load_messages(path: PathBuf) {
     let file = File::open(path).unwrap();
     let msgs: Vec<Message> = simd_json::serde::from_reader(file).unwrap();
@@ -38,15 +46,15 @@ pub fn load_messages(path: PathBuf) {
         .extend(msgs.into_iter().map(Arc::new));
 }
 
-pub fn search_similar(query: &str, take: usize) -> Vec<(Arc<Message>, f64)> {
+pub fn search_similar(query: &str, take: usize) -> Vec<MessageResult> {
     search(CachedRatio::from(query), take)
 }
 
-pub fn search_partial_contains(query: &str, take: usize) -> Vec<(Arc<Message>, f64)> {
+pub fn search_partial_contains(query: &str, take: usize) -> Vec<MessageResult> {
     search(CachedPartialRatio::from(query), take)
 }
 
-fn search(scorer: impl SimilarityMethod, take: usize) -> Vec<(Arc<Message>, f64)> {
+fn search(scorer: impl SimilarityMethod, take: usize) -> Vec<MessageResult> {
     let mut results: Vec<_> = MESSAGES
         .lock()
         .unwrap()
@@ -56,5 +64,14 @@ fn search(scorer: impl SimilarityMethod, take: usize) -> Vec<(Arc<Message>, f64)
 
     results.sort_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap().reverse());
 
-    results.into_iter().take(take).collect()
+    results
+        .into_iter()
+        .take(take)
+        .map(|(msg, score)| MessageResult {
+            id: msg.article_id,
+            page: msg.page,
+            score,
+            rects: msg.rects,
+        })
+        .collect()
 }
