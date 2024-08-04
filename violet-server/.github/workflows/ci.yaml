@@ -1,0 +1,68 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - 'master'
+    paths-ignore:
+      - 'README.md'
+  workflow_dispatch:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          ref: master
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: violetdev/violet:latest
+
+      - name: Diploy
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ secrets.WEBHOOK_URL }}
+          method: 'POST'
+          timeout: 60000
+
+      - name: CD Success
+        if: success()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Success Deploy!"
+          color: 0x28e1ff
+          nodetail: true
+          description: |
+            Commit: [${{ github.event.head_commit.message }}](https://github.com/project-violet/violet-server-nest/commit/${{ github.sha }})
+            CI Log: [${{ github.ref }} / ${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+      - name: CD Fail
+        if: failure()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Failed to Deploy"
+          nodetail: true
+          color: 0xff9300
+          content: "<@614104830738169877>"
+          description: |
+            Commit: [${{ github.event.head_commit.message }}](https://github.com/project-violet/violet-server-nest/commit/${{ github.sha }})
+            CI Log: [${{ github.ref }} / ${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
