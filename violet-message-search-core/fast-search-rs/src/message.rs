@@ -6,6 +6,7 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
 
 use crate::binding::{CachedPartialRatio, CachedRatio, SimilarityMethod};
+use crate::cache::{with_cache_contains, with_cache_similar};
 use crate::displant::HangulConverter;
 
 static MESSAGES: LazyLock<Mutex<Vec<Arc<Message>>>> = LazyLock::new(|| Mutex::new(vec![]));
@@ -30,7 +31,7 @@ pub struct Message {
     pub rects: [f64; 4],
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone, Copy)]
 pub struct MessageResult {
     #[serde(rename(serialize = "Id"))]
     id: usize,
@@ -59,12 +60,16 @@ pub fn load_messages(path: PathBuf) {
 
 pub fn search_similar(query: &str, take: usize) -> Vec<MessageResult> {
     let converted_query = convert_query(query);
-    search(CachedRatio::from(&converted_query), take)
+    with_cache_similar(converted_query.clone(), move || {
+        search(CachedRatio::from(&converted_query), take)
+    })
 }
 
 pub fn search_partial_contains(query: &str, take: usize) -> Vec<MessageResult> {
     let converted_query = convert_query(query);
-    search(CachedPartialRatio::from(&converted_query), take)
+    with_cache_contains(converted_query.clone(), move || {
+        search(CachedPartialRatio::from(&converted_query), take)
+    })
 }
 
 fn convert_query(query: &str) -> String {

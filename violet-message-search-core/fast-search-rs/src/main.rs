@@ -6,6 +6,7 @@ use rocket::serde::json::Json;
 use structopt::StructOpt;
 
 mod binding;
+mod cache;
 mod displant;
 mod message;
 
