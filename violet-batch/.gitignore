@@ -1,0 +1,15 @@
+*
+!.gitignore
+!api
+!config/config.json
+!*.js
+!*.go
+!*.py
+!*.cpp
+!*.h
+!CMakeLists.txt
+!package.json
+!package-lock.json
+!go.mod
+!go.sum
+!app-*
