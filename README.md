@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="150px" src="https://raw.githubusercontent.com/project-violet/violet/dev/assets/images/logo.png" align="center" alt="Violet Logo" />
+    <img width="150px" src="https://raw.githubusercontent.com/project-violet/violet/dev/violet/assets/images/logo.png" align="center" alt="Violet Logo" />
 </p>
 <h2 align="center">Project Violet</h2>
 <p align="center">
@@ -7,9 +7,9 @@
     •
     <b><a href="https://github.com/project-violet/violet/releases/latest">Download</a></b>
     •
-    <b><a href="https://github.com/project-violet/violet/tree/dev/manual">User Manual</a></b>
+    <b><a href="https://github.com/project-violet/violet/tree/violet/dev/manual">User Manual</a></b>
     •
-    <b><a href="https://github.com/project-violet/violet/tree/dev/doc">Docs</a></b>
+    <b><a href="https://github.com/project-violet/violet/tree/violet/dev/doc">Docs</a></b>
 </p>
 
 [![](https://discordapp.com/api/guilds/713749607472955445/widget.png?style=shield)](https://discord.gg/fqrtRxC)
@@ -29,16 +29,20 @@ Desktop is not currently supported.
 
 See https://github.com/project-violet/violet/tree/dev-windows for buildable code.
 
-### Sub Projects
+### Projects
 
-- [Violet Server](https://github.com/project-violet/violet-server) - Real-time statistics provided by collecting user behavior
-- [Violet Message Search Local](https://github.com/project-violet/violet-message-search-local) - Doujinshi Quotes Searching Program
-- [hsync](https://github.com/project-violet/hsync) - Very fast metadata synchronizer
+- [Violet](https://github.com/project-violet/violet/tree/dev/violet) - Violet App
+- [Violet Server](https://github.com/project-violet/violet/tree/dev/violet-server) - Real-time statistics provided by collecting user behavior
+- [Violet Message Search Core](https://github.com/project-violet/violet/tree/dev/violet-message-search-core) - Core program collection for Message Search
+- [Violet Message Search Local](https://github.com/project-violet/violet/tree/dev/violet-message-search-client) - Doujinshi Quotes Searching Program
+- [Violet Batch](https://github.com/project-violet/violet/tree/dev/violet-batch) - Violet Data Pipeline
+- [tag-info](https://github.com/project-violet/violet/tree/dev/tag-info) - Tag translation tools
+- [hsync](https://github.com/project-violet/violet/tree/dev/hsync) - Very fast metadata synchronizer
 
 ### Multiple Language Support
 
 If you want to add your language to the app,
-please translate [assets/locale/en.json](https://github.com/project-violet/violet/blob/dev/assets/locale/en.json).
+please translate [assets/locale/en.json](https://github.com/project-violet/violet/blob/dev/violet/assets/locale/en.json).
 I can translate it by Google translator, but the quality is low.
 
 If you want to support language in source code, please refer to the following commit:
