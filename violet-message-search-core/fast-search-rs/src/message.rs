@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::fs::File;
 use std::path::PathBuf;
 use std::sync::{Arc, LazyLock, Mutex};
@@ -25,7 +26,7 @@ pub struct Message {
     // #[serde(rename(deserialize = "MessageRaw"))]
     // pub raw: String,
     #[serde(rename(deserialize = "Score"))]
-    pub score: f64,
+    pub correct: f64,
 
     #[serde(rename(deserialize = "Rectangle"))]
     pub rects: [f64; 4],
@@ -86,7 +87,13 @@ fn search(scorer: impl SimilarityMethod, take: usize) -> Vec<MessageResult> {
         .map(|message| (message.clone(), scorer.similarity(&message.message)))
         .collect();
 
-    results.sort_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap().reverse());
+    results.sort_by(|(amsg, ascore), (bmsg, bscore)| {
+        let ord = ascore.partial_cmp(bscore).unwrap();
+        match ord {
+            Ordering::Greater | Ordering::Less => ord.reverse(),
+            Ordering::Equal => amsg.correct.partial_cmp(&bmsg.correct).unwrap().reverse(),
+        }
+    });
 
     results
         .into_iter()
@@ -94,7 +101,7 @@ fn search(scorer: impl SimilarityMethod, take: usize) -> Vec<MessageResult> {
         .map(|(msg, score)| MessageResult {
             id: msg.article_id,
             page: msg.page,
-            correct: msg.score,
+            correct: msg.correct,
             score,
             rects: msg.rects,
         })
