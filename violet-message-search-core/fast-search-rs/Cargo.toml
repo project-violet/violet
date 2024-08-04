@@ -19,3 +19,7 @@ structopt = "0.3.26"
 bindgen = "0.69.4"
 cc = "1.1.7"
 cmake = "0.1.50"
+
+[features]
+# Send request with raw message
+raw = []

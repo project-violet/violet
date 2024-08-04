@@ -23,8 +23,10 @@ pub struct Message {
     #[serde(rename(deserialize = "Message"))]
     pub message: String,
 
-    // #[serde(rename(deserialize = "MessageRaw"))]
-    // pub raw: String,
+    #[cfg(feature = "raw")]
+    #[serde(rename(deserialize = "MessageRaw"))]
+    pub raw: String,
+
     #[serde(rename(deserialize = "Score"))]
     pub correct: f64,
 
@@ -32,7 +34,8 @@ pub struct Message {
     pub rects: [f64; 4],
 }
 
-#[derive(Serialize, Clone, Copy)]
+#[derive(Serialize, Clone)]
+#[cfg_attr(not(feature = "raw"), derive(Copy))]
 pub struct MessageResult {
     #[serde(rename(serialize = "Id"))]
     id: usize,
@@ -48,6 +51,10 @@ pub struct MessageResult {
 
     #[serde(rename(serialize = "Rect"))]
     rects: [f64; 4],
+
+    #[cfg(feature = "raw")]
+    #[serde(rename(serialize = "Raw"))]
+    raw: String,
 }
 
 pub fn load_messages(path: PathBuf) {
@@ -105,6 +112,8 @@ fn search(scorer: impl SimilarityMethod, take: usize) -> Vec<MessageResult> {
             correct: msg.correct,
             score,
             rects: msg.rects,
+            #[cfg(feature = "raw")]
+            raw: msg.raw.clone(),
         })
         .collect()
 }
