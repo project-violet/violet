@@ -8,6 +8,9 @@ jobs:
   test:
     if: ${{ github.event.label.name == 'ci/flutter-test' }}
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: violet
     steps:
       - uses: actions/checkout@v2
         with:
@@ -29,7 +32,6 @@ jobs:
           channel: "stable"
 
       - name: Preprocess Salt
-        working-directory: violet
         run: |
           cd lib/server
           wget -q ${{ secrets.SECRET_SALT }} || echo 'String getValid(String vToken) { return vToken; }' > salt.dart
@@ -44,7 +46,6 @@ jobs:
           sudo cp build/linux/libquickjs_c_bridge_plugin.so /usr/lib/libquickjs_c_bridge_plugin.so
 
       - name: Preprocess Pull DB
-        working-directory: violet
         run: |
           cd test
           python3 pull-db.py
@@ -53,5 +54,4 @@ jobs:
           7z e -odb db.7z
 
       - name: Test
-        working-directory: violet
         run: flutter test test

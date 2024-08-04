@@ -12,6 +12,9 @@ on:
 jobs:
   format:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: violet
     steps:
       - uses: actions/checkout@v2
         with:
@@ -29,11 +32,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
 
       - name: Formatting
-        working-directory: violet
         run: dart format --output=none --set-exit-if-changed .
 
       - name: Preprocess
-        working-directory: violet
         run: |
           cd lib/server
           wget -q ${{ secrets.SECRET_SALT }} || echo 'String getValid(String vToken) { return vToken; }' > salt.dart
@@ -45,6 +46,9 @@ jobs:
   ios-build:
     runs-on: macos-latest
     needs: [format]
+    defaults:
+      run:
+        working-directory: violet
     steps:
       - uses: actions/checkout@v2
         with:
@@ -62,7 +66,6 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
 
       - name: Preprocess
-        working-directory: violet
         run: |
           cd lib/server
           wget -q ${{ secrets.SECRET_SALT }} || echo 'String getValid(String vToken) { return vToken; }' > salt.dart
@@ -71,7 +74,6 @@ jobs:
           python3 preprocess-ios.py
 
       - name: Podfile
-        working-directory: violet
         run: |
           cd ios
           rm Podfile.lock
@@ -82,7 +84,6 @@ jobs:
           cd ..
 
       - name: Build
-        working-directory: violet
         run: |
           flutter build ios --release --no-codesign
           mkdir -p Payload
@@ -91,7 +92,6 @@ jobs:
           mv Payload.zip Payload.ipa
 
       - name: Upload IPA
-        working-directory: violet
         uses: actions/upload-artifact@v2
         with:
           name: ipa-build
@@ -100,6 +100,9 @@ jobs:
   android-build:
     runs-on: ubuntu-latest
     needs: [format]
+    defaults:
+      run:
+        working-directory: violet
     steps:
       - uses: actions/checkout@v2
         with:
@@ -120,7 +123,6 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
 
       - name: Preprocess
-        working-directory: violet
         run: |
           cd lib/server
           wget -q ${{ secrets.SECRET_SALT }} || echo 'String getValid(String vToken) { return vToken; }' > salt.dart
@@ -129,13 +131,11 @@ jobs:
           python3 preprocess-android.py
 
       - name: Build
-        working-directory: violet
         run: |
           flutter clean
           flutter build apk --release
 
       - name: Upload APK
-        working-directory: violet
         uses: actions/upload-artifact@v2
         with:
           name: apk-build
