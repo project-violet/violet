@@ -6,6 +6,7 @@ use rocket::serde::json::Json;
 use structopt::StructOpt;
 
 mod binding;
+mod displant;
 mod message;
 
 #[macro_use]
@@ -40,6 +41,8 @@ fn rocket() -> _ {
     OPT.data_paths
         .iter()
         .for_each(|path| load_messages(path.clone()));
+
+    println!("fscm has launched from http://{}:{}", OPT.host, OPT.port);
 
     rocket::build()
         .configure(
