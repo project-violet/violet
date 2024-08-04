@@ -1,0 +1,20 @@
+.GithubButton {
+  svg {
+    transition-duration: 300ms;
+  }
+
+  svg:hover {
+    fill: grey;
+  }
+}
+
+.DiscordButton {
+  svg {
+    transition-duration: 300ms;
+  }
+
+  svg:hover {
+    fill: #7289da;
+  }
+
+}
