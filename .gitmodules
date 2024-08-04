@@ -1,3 +1,3 @@
 [submodule "cxx/RapidFuzz-cpp"]
-	path = cxx/RapidFuzz-cpp
+	path = violet-message-search-core/fast-search-rs/cxx/RapidFuzz-cpp
 	url = https://github.com/rapidfuzz/RapidFuzz-cpp
