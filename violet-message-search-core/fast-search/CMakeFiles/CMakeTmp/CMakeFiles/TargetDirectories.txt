@@ -1,0 +1,3 @@
+/home/ubuntu/htext-miner/fast-search/CMakeFiles/CMakeTmp/CMakeFiles/rebuild_cache.dir
+/home/ubuntu/htext-miner/fast-search/CMakeFiles/CMakeTmp/CMakeFiles/edit_cache.dir
+/home/ubuntu/htext-miner/fast-search/CMakeFiles/CMakeTmp/CMakeFiles/cmTC_8fe6c.dir

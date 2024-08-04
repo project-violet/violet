@@ -1,0 +1,121 @@
+name: Scheduler Job %id%
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  sched-job-0:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: master
+      - name: Init for Github
+        run: |
+          git config --local user.email "violet.dev.master@gmail.com"
+          git config --local user.name "violet-dev"
+          git config --global pull.rebase false
+      - name: Reserve Job Index
+        run: |
+          git pull
+          python3 reserve-job.py %id%
+          git add workspace/current_job%id%
+          git commit -m "reserve job %id%"
+          git pull
+      - name: Push
+        uses: ad-m/github-push-action@master
+        with:
+          branch: "master"
+          github_token: $
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+      - name: Download Programs
+        run: |
+          sudo apt install snap
+          sudo snap install gallery-dl
+          pip3 install easyocr
+      - name: A
+        run: |
+          python3 do-ocr.py %id%
+      # - name: Upload
+      #   uses: actions/upload-artifact@master
+      #   with:
+      #     name: test-test
+      #     path: a.txt
+      #     env-url: UPLOADURL
+      # - name: Upload S3
+      #   uses: shallwefootball/s3-upload-action@master
+      #   with:
+      #     aws_key_id: ${{ secrets.AWS_KEY_ID }}
+      #     aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+      #     aws_bucket: ${{ secrets.AWS_BUCKET }}
+      #     source_dir: ${{ env.CURRENTID }}.txt
+      - name: Update History
+        run: |
+          git pull
+          python3 update-job.py %id% "${{ env.UPLOADURL }}"
+      - name: Revision
+        run: |
+          git add workspace/history-%id%.txt
+          git add result/
+          git add .github/
+          git commit -m "update job %id%"
+          git pull
+      - name: Push
+        id: trypush
+        uses: ad-m/github-push-action@master
+        with:
+          branch: "master"
+          github_token: $
+      - name: Fail Safe Pull
+        if: ${{ failure() && steps.trypush.outcome == 'failure' }}
+        run: git pull
+      - name: Fail Safe 1
+        id: trypushfs1
+        if: ${{ failure() && steps.trypush.outcome == 'failure' }}
+        uses: ad-m/github-push-action@master
+        with:
+          branch: "master"
+          github_token: $
+      - name: Fail Safe Pull
+        if: ${{ failure() && steps.trypushfs1.outcome == 'failure' }}
+        run: git pull
+      - name: Fail Safe 2
+        id: trypushfs2
+        if: ${{ failure() && steps.trypushfs1.outcome == 'failure' }}
+        uses: ad-m/github-push-action@master
+        with:
+          branch: "master"
+          github_token: $
+      - name: Fail Safe Pull
+        if: ${{ failure() && steps.trypushfs2.outcome == 'failure' }}
+        run: git pull
+      - name: Fail Safe 3
+        id: trypushfs3
+        if: ${{ failure() && steps.trypushfs2.outcome == 'failure' }}
+        uses: ad-m/github-push-action@master
+        with:
+          branch: "master"
+          github_token: $
+      - name: Fail Safe Pull
+        if: ${{ failure() && steps.trypushfs3.outcome == 'failure' }}
+        run: git pull
+      - name: Fail Safe 4
+        id: trypushfs4
+        if: ${{ failure() && steps.trypushfs3.outcome == 'failure' }}
+        uses: ad-m/github-push-action@master
+        with:
+          branch: "master"
+          github_token: $
+      - name: Fail Safe Pull
+        if: ${{ failure() && steps.trypushfs4.outcome == 'failure' }}
+        run: git pull
+      - name: Fail Safe 5
+        if: ${{ failure() && steps.trypushfs4.outcome == 'failure' }}
+        uses: ad-m/github-push-action@master
+        with:
+          branch: "master"
+          github_token: $
