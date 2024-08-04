@@ -23,18 +23,28 @@ pub struct Message {
 
     // #[serde(rename(deserialize = "MessageRaw"))]
     // pub raw: String,
+    #[serde(rename(deserialize = "Score"))]
+    pub score: f64,
 
-    // #[serde(rename(deserialize = "Score"))]
-    // pub score: f64,
     #[serde(rename(deserialize = "Rectangle"))]
     pub rects: [f64; 4],
 }
 
 #[derive(Serialize)]
 pub struct MessageResult {
+    #[serde(rename(serialize = "Id"))]
     id: usize,
+
+    #[serde(rename(serialize = "Page"))]
     page: f64,
+
+    #[serde(rename(serialize = "Correctness"))]
+    correct: f64,
+
+    #[serde(rename(serialize = "MatchScore"))]
     score: f64,
+
+    #[serde(rename(serialize = "Rect"))]
     rects: [f64; 4],
 }
 
@@ -79,6 +89,7 @@ fn search(scorer: impl SimilarityMethod, take: usize) -> Vec<MessageResult> {
         .map(|(msg, score)| MessageResult {
             id: msg.article_id,
             page: msg.page,
+            correct: msg.score,
             score,
             rects: msg.rects,
         })
