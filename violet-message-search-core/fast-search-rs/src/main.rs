@@ -75,6 +75,7 @@ fn rocket() -> _ {
         .configure(
             // https://api.rocket.rs/v0.4/rocket/config/
             rocket::Config::figment()
+                .merge(("log", "off"))
                 .merge(("address", OPT.host.clone()))
                 .merge(("port", OPT.port)),
         )
