@@ -1,0 +1,141 @@
+
+{
+	"buildFiles" : [ "F:/Dev/violet/android/app/src/main/cpp/CMakeLists.txt" ],
+	"cFileExtensions" : [ "c" ],
+	"cleanCommands" : 
+	[
+		"F:\\android-sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\x86 --target clean"
+	],
+	"cppFileExtensions" : [ "cpp" ],
+	"libraries" : 
+	{
+		"dpi-bypass-Debug-x86" : 
+		{
+			"abi" : "x86",
+			"artifactName" : "dpi-bypass",
+			"buildCommand" : "F:\\android-sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\x86 --target dpi-bypass",
+			"buildType" : "debug",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/sysroot  -Ddpi_bypass_EXPORTS -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\dpi-bypass -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\rapidjson\\include -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\tun2http  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "F:/Dev/violet/android/app/src/main/cpp/dns.cpp",
+					"workingDirectory" : "F:/Dev/violet/android/app/.cxx/cmake/debug/x86"
+				},
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/sysroot  -Ddpi_bypass_EXPORTS -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\dpi-bypass -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\rapidjson\\include -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\tun2http  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "F:/Dev/violet/android/app/src/main/cpp/dpi-bypass.cpp",
+					"workingDirectory" : "F:/Dev/violet/android/app/.cxx/cmake/debug/x86"
+				},
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/sysroot  -Ddpi_bypass_EXPORTS -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\dpi-bypass -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\rapidjson\\include -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\tun2http  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "F:/Dev/violet/android/app/src/main/cpp/hostlist.cpp",
+					"workingDirectory" : "F:/Dev/violet/android/app/.cxx/cmake/debug/x86"
+				},
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/sysroot  -Ddpi_bypass_EXPORTS -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\dpi-bypass -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\rapidjson\\include -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\tun2http  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "F:/Dev/violet/android/app/src/main/cpp/packet.cpp",
+					"workingDirectory" : "F:/Dev/violet/android/app/.cxx/cmake/debug/x86"
+				},
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/sysroot  -Ddpi_bypass_EXPORTS -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\dpi-bypass -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\rapidjson\\include -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\tun2http  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "F:/Dev/violet/android/app/src/main/cpp/socket.cpp",
+					"workingDirectory" : "F:/Dev/violet/android/app/.cxx/cmake/debug/x86"
+				}
+			],
+			"output" : "F:/Dev/violet/build/app/intermediates/cmake/debug/obj/x86/libdpi-bypass.so",
+			"toolchain" : "3712294073"
+		},
+		"tun2http-Debug-x86" : 
+		{
+			"abi" : "x86",
+			"artifactName" : "tun2http",
+			"buildCommand" : "F:\\android-sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\x86 --target tun2http",
+			"buildType" : "debug",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dtun2http_EXPORTS -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\dpi-bypass -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\rapidjson\\include -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\tun2http  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "F:/Dev/violet/android/app/src/main/cpp/tun2http/dhcp.c",
+					"workingDirectory" : "F:/Dev/violet/android/app/.cxx/cmake/debug/x86"
+				},
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dtun2http_EXPORTS -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\dpi-bypass -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\rapidjson\\include -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\tun2http  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "F:/Dev/violet/android/app/src/main/cpp/tun2http/dns.c",
+					"workingDirectory" : "F:/Dev/violet/android/app/.cxx/cmake/debug/x86"
+				},
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dtun2http_EXPORTS -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\dpi-bypass -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\rapidjson\\include -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\tun2http  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "F:/Dev/violet/android/app/src/main/cpp/tun2http/http.c",
+					"workingDirectory" : "F:/Dev/violet/android/app/.cxx/cmake/debug/x86"
+				},
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dtun2http_EXPORTS -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\dpi-bypass -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\rapidjson\\include -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\tun2http  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "F:/Dev/violet/android/app/src/main/cpp/tun2http/icmp.c",
+					"workingDirectory" : "F:/Dev/violet/android/app/.cxx/cmake/debug/x86"
+				},
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dtun2http_EXPORTS -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\dpi-bypass -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\rapidjson\\include -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\tun2http  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "F:/Dev/violet/android/app/src/main/cpp/tun2http/ip.c",
+					"workingDirectory" : "F:/Dev/violet/android/app/.cxx/cmake/debug/x86"
+				},
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dtun2http_EXPORTS -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\dpi-bypass -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\rapidjson\\include -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\tun2http  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "F:/Dev/violet/android/app/src/main/cpp/tun2http/session.c",
+					"workingDirectory" : "F:/Dev/violet/android/app/.cxx/cmake/debug/x86"
+				},
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dtun2http_EXPORTS -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\dpi-bypass -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\rapidjson\\include -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\tun2http  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "F:/Dev/violet/android/app/src/main/cpp/tun2http/tcp.c",
+					"workingDirectory" : "F:/Dev/violet/android/app/.cxx/cmake/debug/x86"
+				},
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dtun2http_EXPORTS -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\dpi-bypass -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\rapidjson\\include -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\tun2http  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "F:/Dev/violet/android/app/src/main/cpp/tun2http/tls.c",
+					"workingDirectory" : "F:/Dev/violet/android/app/.cxx/cmake/debug/x86"
+				},
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dtun2http_EXPORTS -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\dpi-bypass -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\rapidjson\\include -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\tun2http  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "F:/Dev/violet/android/app/src/main/cpp/tun2http/tun2http.c",
+					"workingDirectory" : "F:/Dev/violet/android/app/.cxx/cmake/debug/x86"
+				},
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dtun2http_EXPORTS -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\dpi-bypass -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\rapidjson\\include -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\tun2http  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "F:/Dev/violet/android/app/src/main/cpp/tun2http/udp.c",
+					"workingDirectory" : "F:/Dev/violet/android/app/.cxx/cmake/debug/x86"
+				},
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dtun2http_EXPORTS -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\dpi-bypass -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\rapidjson\\include -IF:\\Dev\\violet\\android\\app\\src\\main\\cpp\\tun2http  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "F:/Dev/violet/android/app/src/main/cpp/tun2http/util.c",
+					"workingDirectory" : "F:/Dev/violet/android/app/.cxx/cmake/debug/x86"
+				}
+			],
+			"output" : "F:/Dev/violet/build/app/intermediates/cmake/debug/obj/x86/libtun2http.so",
+			"toolchain" : "3712294073"
+		}
+	},
+	"toolchains" : 
+	{
+		"3712294073" : 
+		{
+			"cCompilerExecutable" : "F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
+			"cppCompilerExecutable" : "F:/android-sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
+		}
+	}
+}

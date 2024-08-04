@@ -1,0 +1,49 @@
+// This source code is a part of Project Violet.
+// Copyright (C) 2021. violet-team. Licensed under the Apache-2.0 License.
+
+import 'dart:convert';
+
+import 'package:pointycastle/export.dart';
+import 'package:violet/cert/cert_data.dart';
+import 'package:violet/cert/cert_util.dart';
+
+class RootCert extends CertData {
+  RootCert({required super.data});
+
+  RSAPublicKey rsaPublic() => CertUtil.importRSAPublicKey(data['PubKey']);
+
+  static RootCert fromBase64(String str) {
+    return RootCert(data: jsonDecode(utf8.fuse(base64).decode(str)));
+  }
+
+  static RootCert koromoCA() => fromBase64('''
+      eyJQdWJLZXkiOiJleUpsZUhCdmJtVnVkQ0k2SWpZMU5UTTNJaXdpYlc5a2RXeDFjeUk2SWpF
+      NU5qYzRNVEU1TlRVeU9ETXdOVFExTkRrMk5UTTFNalEwTURZMU5EVTFPRGczTmpjME9EUXdP
+      REU0TVRVME1EZ3hNVEV3TWpNME5EVTFNRE14TWpnNE9UUXlNall4T0RnM01UTXhOVEV5TXpn
+      ME1UTXpNRGd4TXpFek16TXhNVE0wT0RVeE5URTFOek15T1RZMk1EVTNNek13TVRreE1qRTVP
+      VFkxTURReU5EQTNNakF5TXpJeE5qSTNPRFkyTnpJeU5ERXhNVGt6TXpNNU1EQXhPVE13TlRZ
+      eU16ZzNOelUwTVRBeU5EYzNNVEUyTXpBM05EQTNORE0zTkRjMk5qRTRNVGswTVRrNU56VTBN
+      emsxTWpBMk16Y3pOell3TVRBeE5qWXpORFUwTlRFNE1UYzFNVFk1TVRrM05EYzBOVFV5TlRr
+      M09USTNOekF6TVRJME16a3pPREk0TkRFM016QXlOVGN5TVRNMk9UYzJNekEyTmpJd05EYzFN
+      VFkwTXpnNU9EY3hNVGM1TURrMk16STVPRFExTkRBd09EQTFPVGM1TWpJek56RXlORGN6T0RB
+      M05qY3hNalV6TWpneU1ERTFPREk0TURVeE5EUXdPVE15T1Rrek5UWXhOREV5T0RJM016WXhO
+      RFkxTXpNNU16Z3lNRFEzTWpJd01EZzNNVGsxTkRnM09UVTROamcxTnpRME5EazFOREF3Tmpj
+      NU1qRTFNVFV3TURrNU9UVTVPVFE0TXpBMk9EYzVNREl6TmpnME16WTVORGc0TVRBMU1UZzVN
+      akE1TmpjME5EQTVNRGN5TkRjeE5qTTBOakkyTlRJMU1USXpNamM0TVRBME56WTFOVEEwTlRr
+      d05qRTFNemMxTkRFM016YzRNelExTmpnM09ESXlPVEV4TkRNNE16TTBOamN5TkRRMk1EWTVN
+      akExTVRJeE1UUTBOelk0TXpNeE56a3pOVEl4TVRReE5EYzFOVGcyTnprMU5Ea3dNall6T0RB
+      MU1ERTNPVFF5TkRRNU5EWTFPREUyTURFek1EazRNRFE1T1RJNE5qUXlPREkzTURRd05qQTBN
+      amc0T1RnNE56UXpJbjA9IiwiQXV0aFN0YXJ0cyI6IjIwMjEtMDgtMDUgMjI6NTc6MDAuMzk4
+      NDcyWiIsIkF1dGhFbmRzIjoiMjA0MS0wOC0wNCAyMjo1NzowMC40MDA1MDhaIiwiQXV0aFZl
+      cnNpb24iOiIxLjAiLCJPd25lciI6Imtvcm9tbyB0aGUgdmlvbGV0IHByb2plY3QgbGVhZGVy
+      IiwiU2lnbmVkRGF0YSI6IlpBbytMRDJRYjFGRkd3RHVVOURRcGxHWkdwbzVKNjlJSUhhQVB4
+      TG1zaG1IclFoam4zeUl5M0FjNVZIQ0VQOVhldURhSHFxNk14T2VnOEl1U3lDVG10UG54ZHZz
+      RFFWWmc5dWY5NmF6UVNSZmRobU5SKzU5ZHgwMW1MRGo3amttK0lQTVh3RUE3YmNzUzA0QmFO
+      cEpGZXRxU3JkSE1wSnZZYmFydE1MbzJsRUF2TGJSNUlkR3RYQ1orQjBCdDZKa3Nkc0wwK00x
+      TThVcTA3MkNtVVB5WWc4TUFSaHA4Q0sxQ0s5S1Z6Y2E2L3RwOGxRSktZMWsxS3NpQkNzdE5M
+      M0U4L3pON2QrZjVnUDZqNjZnSEhqditWcE9kdVV6YzlGL1pEZVo1T0NCK2ZRSVcrUVBxam9I
+      eW93NE5nRWhsYW9oS0ZTRTcrNENrMzUxWi8zQmlRUnRIdz09In0='''
+      .replaceAll(' ', '')
+      .replaceAll('\n', '')
+      .replaceAll('\r', ''));
+}

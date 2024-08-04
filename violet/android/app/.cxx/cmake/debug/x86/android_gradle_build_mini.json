@@ -1,0 +1,22 @@
+{
+  "buildFiles": [
+    "F:\\Dev\\violet\\android\\app\\src\\main\\cpp\\CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "F:\\android-sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\x86 --target clean"
+  ],
+  "libraries": {
+    "dpi-bypass-Debug-x86": {
+      "artifactName": "dpi-bypass",
+      "buildCommand": "F:\\android-sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\x86 --target dpi-bypass",
+      "abi": "x86",
+      "output": "F:\\Dev\\violet\\build\\app\\intermediates\\cmake\\debug\\obj\\x86\\libdpi-bypass.so"
+    },
+    "tun2http-Debug-x86": {
+      "artifactName": "tun2http",
+      "buildCommand": "F:\\android-sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\x86 --target tun2http",
+      "abi": "x86",
+      "output": "F:\\Dev\\violet\\build\\app\\intermediates\\cmake\\debug\\obj\\x86\\libtun2http.so"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>774645671791-ahtg3f5oe5snlnaqgm1qscikfdtpfap4.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.774645671791-ahtg3f5oe5snlnaqgm1qscikfdtpfap4</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCBLzu9vcpmIogaaXtL7naRLSN_XGpjgZE</string>
+	<key>GCM_SENDER_ID</key>
+	<string>774645671791</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>xyz.project.violet1</string>
+	<key>PROJECT_ID</key>
+	<string>real-violet-app</string>
+	<key>STORAGE_BUCKET</key>
+	<string>real-violet-app.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:774645671791:ios:aa980df7b3dc314a772a9a</string>
+	<key>DATABASE_URL</key>
+	<string>https://real-violet-app.firebaseio.com</string>
+</dict>
+</plist>
