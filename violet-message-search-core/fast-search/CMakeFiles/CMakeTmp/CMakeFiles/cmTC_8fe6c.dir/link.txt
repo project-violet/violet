@@ -1,0 +1,1 @@
+/usr/bin/c++   -fopenmp    -rdynamic CMakeFiles/cmTC_8fe6c.dir/OpenMPCheckVersion.cpp.o  -o cmTC_8fe6c 
