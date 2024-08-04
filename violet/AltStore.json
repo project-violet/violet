@@ -1,7 +1,7 @@
 {
   "name": "violet",
   "identifier": "xyz.project.violet",
-  "sourceURL": "https://github.com/project-violet/violet/raw/dev/AltStore.json",
+  "sourceURL": "https://raw.githubusercontent.com/project-violet/violet/dev/violet/AltStore.json",
   "apps": [
     {
       "name": "violet",
@@ -12,7 +12,7 @@
       "versionDescription": "version: update version (1.32.0)",
       "downloadURL": "https://github.com/project-violet/violet/releases/download/1.32.0/Payload.ipa",
       "localizedDescription": "An unofficial E-Hentai App for iOS.",
-      "iconURL": "https://raw.githubusercontent.com/project-violet/violet/dev/assets/images/logo.png",
+      "iconURL": "https://raw.githubusercontent.com/project-violet/violet/dev/violet/assets/images/logo.png",
       "tintColor": "289979",
       "size": 43186804,
       "permissions": [
