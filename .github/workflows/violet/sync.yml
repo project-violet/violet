@@ -32,14 +32,17 @@ jobs:
       #   Sync
       #
       - name: Install Requirements
+        working-directory: violet
         run: pip3 install -r script/requirements.txt
 
       - name: Sync Main
+        working-directory: violet
         run: |
           python3 script/daily-crop.py
           python3 script/daily-bookmark.py
 
       - name: Compress
+        working-directory: violet
         uses: montudor/action-zip@v1
         with:
           args: zip -qq -r assets/daily.zip assets/daily
@@ -48,6 +51,7 @@ jobs:
       #   Update
       #
       - name: Revision
+        working-directory: violet
         run: |
           git checkout -b sync
           git config --local user.email "violet.dev.master.bot@gmail.com"
