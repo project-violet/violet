@@ -6,6 +6,8 @@ use std::ptr::NonNull;
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
 pub trait SimilarityMethod: Sync {
+    fn filter(&self, message: &str) -> bool;
+
     fn similarity(&self, message: &str) -> f64;
 }
 
@@ -24,6 +26,10 @@ impl CachedRatio {
 }
 
 impl SimilarityMethod for CachedRatio {
+    fn filter(&self, _: &str) -> bool {
+        true
+    }
+
     fn similarity(&self, message: &str) -> f64 {
         let c_query = CString::new(message).unwrap();
         unsafe { binding_similarity(self.scorer, c_query.as_ptr()) }
@@ -31,6 +37,7 @@ impl SimilarityMethod for CachedRatio {
 }
 
 pub struct CachedPartialRatio {
+    query_len: usize,
     scorer: *mut binding_CachedPartialRatioBinding,
 }
 
@@ -40,11 +47,18 @@ impl CachedPartialRatio {
     pub fn from(query: &str) -> Self {
         let c_query = CString::new(query).unwrap();
         let scorer = unsafe { binding_create_partial(c_query.as_ptr()) };
-        Self { scorer }
+        Self {
+            query_len: query.len(),
+            scorer,
+        }
     }
 }
 
 impl SimilarityMethod for CachedPartialRatio {
+    fn filter(&self, message: &str) -> bool {
+        self.query_len <= message.len()
+    }
+
     fn similarity(&self, message: &str) -> f64 {
         let c_query = CString::new(message).unwrap();
         unsafe { binding_similarity_partial(self.scorer, c_query.as_ptr()) }

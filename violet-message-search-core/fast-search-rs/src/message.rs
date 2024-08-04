@@ -84,6 +84,7 @@ fn search(scorer: impl SimilarityMethod, take: usize) -> Vec<MessageResult> {
         .lock()
         .unwrap()
         .par_iter()
+        .filter(|message| scorer.filter(&message.message))
         .map(|message| (message.clone(), scorer.similarity(&message.message)))
         .collect();
 
