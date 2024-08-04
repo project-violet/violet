@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use chrono::Local;
 use lazy_static::lazy_static;
 use message::{load_messages, search_partial_contains, search_similar, MessageResult};
 use rocket::serde::json::Json;
@@ -27,13 +28,19 @@ lazy_static! {
     static ref OPT: Opt = Opt::from_args();
 }
 
+fn current_date_time() -> String {
+    Local::now().format("%Y-%m-%d.%H:%M:%S").to_string()
+}
+
 #[get("/<query>")]
 fn similar(query: &str) -> Json<Vec<MessageResult>> {
+    println!("({}) similar: {}", current_date_time(), query);
     Json(search_similar(query, 1000))
 }
 
 #[get("/<query>")]
 fn contains(query: &str) -> Json<Vec<MessageResult>> {
+    println!("({}) contains: {}", current_date_time(), query);
     Json(search_partial_contains(query, 1000))
 }
 
