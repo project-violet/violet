@@ -1,0 +1,19 @@
+# ninja log v5
+19	969	0	CMakeFiles/dpi-bypass.dir/socket.cpp.o	f7bcef0bbc0c030c
+36	983	0	CMakeFiles/dpi-bypass.dir/dpi-bypass.cpp.o	d5d0b280023620b0
+27	1001	0	CMakeFiles/dpi-bypass.dir/dns.cpp.o	37ee6b36907e6096
+11	1717	0	CMakeFiles/dpi-bypass.dir/packet.cpp.o	efeb873d5ada9a56
+5	868	0	CMakeFiles/dpi-bypass.dir/hostlist.cpp.o	f06f6c9d9a022015
+868	1066	0	F:/Dev/violet/build/app/intermediates/cmake/debug/obj/armeabi-v7a/libdpi-bypass.so	51080a5af408b2b3
+170	326	0	CMakeFiles/tun2http.dir/tun2http/tls.c.o	6cc1583c13e1c963
+0	381	0	CMakeFiles/tun2http.dir/tun2http/icmp.c.o	65dec00af27d1912
+144	383	0	CMakeFiles/tun2http.dir/tun2http/ip.c.o	b8df3a3d1e3d1aa5
+161	389	0	CMakeFiles/tun2http.dir/tun2http/http.c.o	568ed72956394385
+153	414	0	CMakeFiles/tun2http.dir/tun2http/udp.c.o	3d056028e2e3732f
+189	415	0	CMakeFiles/tun2http.dir/tun2http/dhcp.c.o	d553154bdc226001
+180	421	0	CMakeFiles/tun2http.dir/tun2http/session.c.o	b339004e815bb31b
+199	422	0	CMakeFiles/tun2http.dir/tun2http/util.c.o	13eb5e5941ae81b3
+210	434	0	CMakeFiles/tun2http.dir/tun2http/dns.c.o	aa9271f81cfdb635
+233	445	0	CMakeFiles/tun2http.dir/tun2http/tun2http.c.o	dd4c931028c5b71a
+220	511	0	CMakeFiles/tun2http.dir/tun2http/tcp.c.o	3a5ea35ba0041721
+511	608	0	F:/Dev/violet/build/app/intermediates/cmake/debug/obj/armeabi-v7a/libtun2http.so	345b9580497035e3

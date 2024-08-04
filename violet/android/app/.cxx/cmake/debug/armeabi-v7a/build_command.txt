@@ -1,0 +1,14 @@
+Executable : F:\android-sdk\cmake\3.6.4111459\bin\cmake.exe
+arguments : 
+-HF:\Dev\violet\android\app\src\main\cpp
+-BF:\Dev\violet\android\app\.cxx\cmake\debug\armeabi-v7a
+-DANDROID_ABI=armeabi-v7a
+-DANDROID_PLATFORM=android-21
+-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=F:\Dev\violet\build\app\intermediates\cmake\debug\obj\armeabi-v7a
+-DCMAKE_BUILD_TYPE=Debug
+-DANDROID_NDK=F:\android-sdk\ndk\21.3.6528147
+-DCMAKE_TOOLCHAIN_FILE=F:\android-sdk\ndk\21.3.6528147\build\cmake\android.toolchain.cmake
+-DCMAKE_MAKE_PROGRAM=F:\android-sdk\cmake\3.6.4111459\bin\ninja.exe
+-GAndroid Gradle - Ninja
+jvmArgs : 
+

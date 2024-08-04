@@ -1,0 +1,70 @@
+name: Daily Sync
+
+on:
+  schedule:
+    - cron: "0 0 */1 * *"
+  workflow_dispatch:
+
+jobs:
+  sync-job:
+    runs-on: ubuntu-latest
+    steps:
+      #
+      #   Setup
+      #
+      - uses: actions/checkout@v4
+        with:
+          ref: dev
+
+      - id: "auth"
+        uses: "google-github-actions/auth@v2"
+        with:
+          credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
+
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+
+      #
+      #   Sync
+      #
+      - name: Install Requirements
+        run: pip3 install -r script/requirements.txt
+
+      - name: Sync Main
+        run: |
+          python3 script/daily-crop.py
+          python3 script/daily-bookmark.py
+
+      - name: Compress
+        uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r assets/daily.zip assets/daily
+
+      #
+      #   Update
+      #
+      - name: Revision
+        run: |
+          git checkout -b sync
+          git config --local user.email "violet.dev.master.bot@gmail.com"
+          git config --local user.name "violet-dev-bot"
+          git config --global pull.rebase false
+          git add assets/daily.zip
+          git commit -m "Daily Sync"
+          git push --set-upstream origin sync --force
+
+      #
+      #   PR Creation
+      #
+      - name: Today
+        id: ciinfo
+        if: always()
+        run: echo "today=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr create -B dev -H sync --title 'Daily Sync (${{ steps.ciinfo.outputs.today }})' --body 'Daily sync data'

@@ -1,0 +1,70 @@
+{
+  "variant": {
+    "module": {
+      "rootBuildGradleFolder": "F:\\Dev\\violet\\android",
+      "sdkFolder": "F:\\android-sdk",
+      "isNativeCompilerSettingsCacheEnabled": false,
+      "isBuildOnlyTargetAbiEnabled": true,
+      "splitsAbiFilterSet": [],
+      "intermediatesFolder": "F:\\Dev\\violet\\build\\app\\intermediates",
+      "gradleModulePathName": ":app",
+      "moduleRootFolder": "F:\\Dev\\violet\\android\\app",
+      "makeFile": "F:\\Dev\\violet\\android\\app\\src\\main\\cpp\\CMakeLists.txt",
+      "buildSystem": "CMAKE",
+      "compilerSettingsCacheFolder": "F:\\Dev\\violet\\android\\.cxx",
+      "cxxFolder": "F:\\Dev\\violet\\android\\app\\.cxx",
+      "ndkFolder": "F:\\android-sdk\\ndk\\21.3.6528147",
+      "ndkVersion": "21.3.6528147",
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "cmakeToolchainFile": "."
+    },
+    "buildSystemArgumentList": [],
+    "cFlagList": [],
+    "cppFlagsList": [],
+    "variantName": "debug",
+    "soFolder": "F:\\Dev\\violet\\build\\app\\intermediates\\cmake\\debug\\lib",
+    "objFolder": "F:\\Dev\\violet\\build\\app\\intermediates\\cmake\\debug\\obj",
+    "jsonFolder": "F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug",
+    "gradleBuildOutputFolder": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug",
+    "isDebuggableEnabled": true,
+    "validAbiList": [
+      "ARMEABI_V7A",
+      "ARM64_V8A",
+      "X86",
+      "X86_64"
+    ],
+    "buildTargetSet": []
+  },
+  "abi": "ARM64_V8A",
+  "abiPlatformVersion": 21,
+  "cxxBuildFolder": "F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\arm64-v8a",
+  "jsonFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\arm64-v8a\\android_gradle_build.json",
+  "gradleBuildOutputFolder": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug\\arm64-v8a",
+  "objFolder": "F:\\Dev\\violet\\build\\app\\intermediates\\cmake\\debug\\obj\\arm64-v8a",
+  "buildCommandFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\arm64-v8a\\build_command.txt",
+  "buildOutputFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\arm64-v8a\\build_output.txt",
+  "modelOutputFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\arm64-v8a\\build_model.json",
+  "cmake": {
+    "cmakeListsWrapperFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug\\arm64-v8a\\CMakeLists.txt",
+    "toolchainWrapperFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug\\arm64-v8a\\android_gradle_build.toolchain.cmake",
+    "buildGenerationStateFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug\\arm64-v8a\\build_generation_state.json",
+    "cacheKeyFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug\\arm64-v8a\\compiler_cache_key.json",
+    "compilerCacheUseFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug\\arm64-v8a\\compiler_cache_use.json",
+    "compilerCacheWriteFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug\\arm64-v8a\\compiler_cache_write.json",
+    "toolchainSettingsFromCacheFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug\\arm64-v8a\\compiler_settings_cache.cmake",
+    "cmakeWrappingBaseFolder": "."
+  },
+  "jsonGenerationLoggingRecordFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\arm64-v8a\\json_generation_record.json",
+  "compileCommandsJsonFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\arm64-v8a\\compile_commands.json"
+}
