@@ -66,19 +66,26 @@ pub fn load_messages(path: PathBuf) {
         .extend(msgs.into_iter().map(Arc::new));
 }
 
-pub fn search_similar(query: &str, take: usize) -> Vec<MessageResult> {
+pub fn search_similar(id: Option<usize>, query: &str, take: usize) -> Vec<MessageResult> {
     let converted_query = convert_query(query);
     with_cache_similar(converted_query.clone(), move || {
-        search(CachedRatio::from(&converted_query), |_| true, take)
+        search(
+            CachedRatio::from(&converted_query),
+            |message| id.map(|id| message.article_id == id).unwrap_or(true),
+            take,
+        )
     })
 }
 
-pub fn search_partial_contains(query: &str, take: usize) -> Vec<MessageResult> {
+pub fn search_partial_contains(id: Option<usize>, query: &str, take: usize) -> Vec<MessageResult> {
     let converted_query = convert_query(query);
     with_cache_contains(converted_query.clone(), move || {
         search(
             CachedPartialRatio::from(&converted_query),
-            |message| converted_query.len() <= message.message.len(),
+            |message| {
+                id.map(|id| message.article_id == id).unwrap_or(true)
+                    && converted_query.len() <= message.message.len()
+            },
             take,
         )
     })
