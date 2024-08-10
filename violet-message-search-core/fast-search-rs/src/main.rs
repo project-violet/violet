@@ -35,13 +35,25 @@ fn current_date_time() -> String {
 #[get("/<query>")]
 fn similar(query: &str) -> Json<Vec<MessageResult>> {
     println!("({}) similar: {}", current_date_time(), query);
-    Json(search_similar(query, 1000))
+    Json(search_similar(None, query, 1000))
 }
 
 #[get("/<query>")]
 fn contains(query: &str) -> Json<Vec<MessageResult>> {
     println!("({}) contains: {}", current_date_time(), query);
-    Json(search_partial_contains(query, 1000))
+    Json(search_partial_contains(None, query, 1000))
+}
+
+#[get("/<id>/<query>")]
+fn wsimilar(id: usize, query: &str) -> Json<Vec<MessageResult>> {
+    println!("({}) wsimilar: {} - {}", current_date_time(), id, query);
+    Json(search_similar(Some(id), query, 1000))
+}
+
+#[get("/<id>/<query>")]
+fn wcontains(id: usize, query: &str) -> Json<Vec<MessageResult>> {
+    println!("({}) wcontains: {} - {}", current_date_time(), id, query);
+    Json(search_partial_contains(Some(id), query, 1000))
 }
 
 #[launch]
@@ -62,4 +74,6 @@ fn rocket() -> _ {
         )
         .mount("/similar", routes![similar])
         .mount("/contains", routes![contains])
+        .mount("/wsimilar", routes![wsimilar])
+        .mount("/wcontains", routes![wcontains])
 }

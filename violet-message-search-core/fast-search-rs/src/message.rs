@@ -66,17 +66,28 @@ pub fn load_messages(path: PathBuf) {
         .extend(msgs.into_iter().map(Arc::new));
 }
 
-pub fn search_similar(query: &str, take: usize) -> Vec<MessageResult> {
+pub fn search_similar(id: Option<usize>, query: &str, take: usize) -> Vec<MessageResult> {
     let converted_query = convert_query(query);
-    with_cache_similar(converted_query.clone(), move || {
-        search(CachedRatio::from(&converted_query), take)
+    with_cache_similar(format!("{id:?}-{converted_query}"), move || {
+        search(
+            CachedRatio::from(&converted_query),
+            |message| id.map(|id| message.article_id == id).unwrap_or(true),
+            take,
+        )
     })
 }
 
-pub fn search_partial_contains(query: &str, take: usize) -> Vec<MessageResult> {
+pub fn search_partial_contains(id: Option<usize>, query: &str, take: usize) -> Vec<MessageResult> {
     let converted_query = convert_query(query);
-    with_cache_contains(converted_query.clone(), move || {
-        search(CachedPartialRatio::from(&converted_query), take)
+    with_cache_contains(format!("{id:?}-{converted_query}"), move || {
+        search(
+            CachedPartialRatio::from(&converted_query),
+            |message| {
+                id.map(|id| message.article_id == id).unwrap_or(true)
+                    && converted_query.len() <= message.message.len()
+            },
+            take,
+        )
     })
 }
 
@@ -86,12 +97,16 @@ fn convert_query(query: &str) -> String {
     query
 }
 
-fn search(scorer: impl SimilarityMethod, take: usize) -> Vec<MessageResult> {
+fn search(
+    scorer: impl SimilarityMethod,
+    filter: impl Fn(&&Arc<Message>) -> bool + Sync + Send,
+    take: usize,
+) -> Vec<MessageResult> {
     let mut results: Vec<_> = MESSAGES
         .lock()
         .unwrap()
         .par_iter()
-        .filter(|message| scorer.filter(&message.message))
+        .filter(filter)
         .map(|message| (message.clone(), scorer.similarity(&message.message)))
         .collect();
 
