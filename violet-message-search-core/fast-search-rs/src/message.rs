@@ -68,7 +68,7 @@ pub fn load_messages(path: PathBuf) {
 
 pub fn search_similar(id: Option<usize>, query: &str, take: usize) -> Vec<MessageResult> {
     let converted_query = convert_query(query);
-    with_cache_similar(converted_query.clone(), move || {
+    with_cache_similar(format!("{id:?}-{converted_query}"), move || {
         search(
             CachedRatio::from(&converted_query),
             |message| id.map(|id| message.article_id == id).unwrap_or(true),
@@ -79,7 +79,7 @@ pub fn search_similar(id: Option<usize>, query: &str, take: usize) -> Vec<Messag
 
 pub fn search_partial_contains(id: Option<usize>, query: &str, take: usize) -> Vec<MessageResult> {
     let converted_query = convert_query(query);
-    with_cache_contains(converted_query.clone(), move || {
+    with_cache_contains(format!("{id:?}-{converted_query}"), move || {
         search(
             CachedPartialRatio::from(&converted_query),
             |message| {
