@@ -369,13 +369,13 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
             final dir = await getApplicationDocumentsDirectory();
             final dio = Dio();
             await dio.download(
-                'https://github.com/project-violet/violet/raw/dev/assets/daily.zip',
+                'https://github.com/project-violet/violet/raw/dev/violet/assets/daily.zip',
                 '${dir.path}/daily.zip');
 
             final inputStream = InputFileStream('${dir.path}/daily.zip');
             final archive = ZipDecoder().decodeBuffer(inputStream);
             for (final file in archive.files) {
-              if (file.name == 'assets/daily/crop-bookmarks.json') {
+              if (file.name == 'violet/assets/daily/crop-bookmarks.json') {
                 final outputStream = OutputStream();
                 file.writeContent(outputStream);
 
