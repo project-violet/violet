@@ -18,7 +18,7 @@ pub struct Message {
     pub article_id: usize,
 
     #[serde(rename(deserialize = "Page"))]
-    pub page: f64,
+    pub page: usize,
 
     #[serde(rename(deserialize = "Message"))]
     pub message: String,
@@ -41,7 +41,7 @@ pub struct MessageResult {
     id: usize,
 
     #[serde(rename(serialize = "Page"))]
-    page: f64,
+    page: usize,
 
     #[serde(rename(serialize = "Correctness"))]
     correct: f64,
