@@ -8,21 +8,11 @@ pub struct MemoryCache {
     cache: HashMap<String, Vec<MessageResult>>,
 }
 
-static CACHE_SIMILAR: LazyLock<Mutex<MemoryCache>> =
+static CACHE_STORAGE: LazyLock<Mutex<MemoryCache>> =
     LazyLock::new(|| Mutex::new(MemoryCache::default()));
 
-static CACHE_CONTAINS: LazyLock<Mutex<MemoryCache>> =
-    LazyLock::new(|| Mutex::new(MemoryCache::default()));
-
-pub fn with_cache_similar(k: String, f: impl FnOnce() -> Vec<MessageResult>) -> Vec<MessageResult> {
-    cache_inner(&CACHE_SIMILAR, k, f)
-}
-
-pub fn with_cache_contains(
-    k: String,
-    f: impl FnOnce() -> Vec<MessageResult>,
-) -> Vec<MessageResult> {
-    cache_inner(&CACHE_CONTAINS, k, f)
+pub fn with_cache(k: String, f: impl FnOnce() -> Vec<MessageResult>) -> Vec<MessageResult> {
+    cache_inner(&CACHE_STORAGE, k, f)
 }
 
 fn cache_inner(
