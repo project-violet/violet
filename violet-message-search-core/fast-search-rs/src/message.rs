@@ -57,6 +57,20 @@ pub struct MessageResult {
     raw: String,
 }
 
+impl From<&Message> for MessageResult {
+    fn from(msg: &Message) -> Self {
+        MessageResult {
+            id: msg.article_id,
+            page: msg.page,
+            correct: msg.correct,
+            rects: msg.rects,
+            #[cfg(feature = "raw")]
+            raw: msg.raw.clone(),
+            score: Default::default(),
+        }
+    }
+}
+
 pub fn load_messages(path: PathBuf) {
     let file = File::open(path).unwrap();
     let msgs: Vec<Message> = simd_json::serde::from_reader(file).unwrap();
@@ -121,14 +135,20 @@ fn search(
     results
         .into_iter()
         .take(take)
-        .map(|(msg, score)| MessageResult {
-            id: msg.article_id,
-            page: msg.page,
-            correct: msg.correct,
-            score,
-            rects: msg.rects,
-            #[cfg(feature = "raw")]
-            raw: msg.raw.clone(),
+        .map(|(msg, score)| {
+            let mut result: MessageResult = msg.as_ref().into();
+            result.score = score;
+            result
         })
+        .collect()
+}
+
+pub fn search_article(id: usize) -> Vec<MessageResult> {
+    MESSAGES
+        .lock()
+        .unwrap()
+        .iter()
+        .filter(|msg| msg.article_id == id)
+        .map(|msg| msg.as_ref().into())
         .collect()
 }
