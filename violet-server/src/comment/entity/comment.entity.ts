@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CoreEntity } from 'src/common/entities/core.entity';
+import { User } from 'src/user/entity/user.entity';
 import {
   OneToMany,
   JoinColumn,
@@ -7,11 +8,14 @@ import {
   Entity,
   ManyToOne,
   Index,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from 'src/user/entity/user.entity';
 
 @Entity()
 export class Comment extends CoreEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @ApiProperty({
     description: 'User Id',
     required: true,
