@@ -13,6 +13,21 @@ import { ViewModule } from './view/view.module';
 import { RedisModule } from './redis/redis.module';
 import * as Joi from 'joi';
 
+export const envValidationSchema = Joi.object({
+  NODE_ENV: Joi.string().valid('dev', 'prod', 'test').required(),
+  DB_HOST: Joi.string().required(),
+  DB_PORT: Joi.string().required(),
+  DB_USER: Joi.string().required(),
+  DB_PASSWORD: Joi.string().required(),
+  DB_DB: Joi.string().required(),
+  ACCESS_TOKEN_SECRET_KEY: Joi.string().required(),
+  REFRESH_TOKEN_SECRET_KEY: Joi.string().required(),
+  SALT: Joi.string().required(),
+  REDIS_HOST: Joi.string().required(),
+  REDIS_PORT: Joi.string().required(),
+  IS_MASTER_NODE: Joi.bool().required(),
+});
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -23,20 +38,7 @@ import * as Joi from 'joi';
           : process.env.NODE_ENV === 'prod'
             ? '.prod.env'
             : '.test.env',
-      validationSchema: Joi.object({
-        NODE_ENV: Joi.string().valid('dev', 'prod').required(),
-        DB_HOST: Joi.string().required(),
-        DB_PORT: Joi.string().required(),
-        DB_USER: Joi.string().required(),
-        DB_PASSWORD: Joi.string().required(),
-        DB_DB: Joi.string().required(),
-        ACCESS_TOKEN_SECRET_KEY: Joi.string().required(),
-        REFRESH_TOKEN_SECRET_KEY: Joi.string().required(),
-        SALT: Joi.string().required(),
-        REDIS_HOST: Joi.string().required(),
-        REDIS_PORT: Joi.string().required(),
-        IS_MASTER_NODE: Joi.bool().required(),
-      }),
+      validationSchema: envValidationSchema,
     }),
 
     TypeOrmModule.forRootAsync({
