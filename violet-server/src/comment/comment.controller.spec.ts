@@ -54,10 +54,11 @@ describe('CommentController', () => {
     let mockUser = await userRepository.createUser({
       userAppId: 'test',
     });
-    await controller.postComment(mockUser, {
+    let res = await controller.postComment(mockUser, {
       where: 'general',
       body: 'test',
     });
+    expect(res.ok).toBe(true);
   });
 
   afterEach(async () => {
