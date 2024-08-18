@@ -46,8 +46,6 @@ class HitomiManager {
 
   static String normalizeTagPrefix(String pp) {
     switch (pp) {
-      case 'female':
-      case 'male':
       case 'tags':
         return 'tag';
 
@@ -144,8 +142,8 @@ class HitomiManager {
     } else {
       final name = prefix.split(':').last;
       results.addAll(TagTranslate.containsTotal(name)
-          .where((e) =>
-              e.groupEqualTo(groupOrig) && nameCountsMap.containsKey(e.name))
+          .where(
+              (e) => e.group! == groupOrig && nameCountsMap.containsKey(e.name))
           .map((e) => Tuple2<DisplayedTag, int>(e, nameCountsMap[e.name])));
     }
     results.sort((a, b) => b.item2.compareTo(a.item2));
@@ -246,7 +244,7 @@ class HitomiManager {
         final name = prefix.split(':').last;
         results.addAll(TagTranslate.containsFuzzingTotal(name)
             .where((e) =>
-                e.item1.groupEqualTo(groupOrig) &&
+                e.item1.group! == groupOrig &&
                 nameCountsMap.containsKey(e.item1.name))
             .map((e) => Tuple3<DisplayedTag, int, int>(
                 e.item1, nameCountsMap[e.item1.name], e.item2)));
