@@ -16,6 +16,7 @@ describe('CommentController', () => {
   let module: TestingModule;
   let controller: CommentController;
   let userRepository: UserRepository;
+  let mockUser: User;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -43,6 +44,10 @@ describe('CommentController', () => {
 
     controller = module.get<CommentController>(CommentController);
     userRepository = module.get<UserRepository>(UserRepository);
+
+    mockUser = await userRepository.createUser({
+      userAppId: 'test',
+    });
   });
 
   it('should be defined', () => {
@@ -51,9 +56,6 @@ describe('CommentController', () => {
   });
 
   it('post comment', async () => {
-    let mockUser = await userRepository.createUser({
-      userAppId: 'test',
-    });
     let res = await controller.postComment(mockUser, {
       where: 'general',
       body: 'test',
