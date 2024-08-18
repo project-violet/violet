@@ -49,14 +49,22 @@ class TagTranslate {
             return null;
           }
 
-          if (translateMap.containsKey(key)) {
+          late final String nomalizedKey;
+          if (key.startsWith('tag:female:') || key.startsWith('tag:male:')) {
+            nomalizedKey = key.substring('tag:'.length);
+          } else {
+            nomalizedKey = key;
+          }
+
+          if (translateMap.containsKey(nomalizedKey)) {
             return null;
           }
 
-          translateMap[key] = value;
-          reverseAndroMap[disassembly(value)
-              .replaceAll('female:', '')
-              .replaceAll('male:', '')] = key;
+          late final String nomalizedValue =
+              value.replaceAll('female:', '').replaceAll('male:', '');
+
+          translateMap[nomalizedKey] = nomalizedValue;
+          reverseAndroMap[disassembly(nomalizedValue)] = nomalizedKey;
 
           return null;
         },
@@ -87,11 +95,11 @@ class TagTranslate {
     if (_translateMap.containsKey('character:$key')) {
       return _translateMap['character:$key']!.split('|').first;
     }
-    if (_translateMap.containsKey('tag:female:$key')) {
-      return _translateMap['tag:female:$key']!.split('|').first;
+    if (_translateMap.containsKey('female:$key')) {
+      return _translateMap['female:$key']!.split('|').first;
     }
-    if (_translateMap.containsKey('tag:male:$key')) {
-      return _translateMap['tag:male:$key']!.split('|').first;
+    if (_translateMap.containsKey('male:$key')) {
+      return _translateMap['male:$key']!.split('|').first;
     }
     if (_translateMap.containsKey('tag:$key')) {
       return _translateMap['tag:$key']!.split('|').first;
