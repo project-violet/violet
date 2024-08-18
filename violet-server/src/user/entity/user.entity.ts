@@ -15,13 +15,13 @@ export class User extends CoreEntity {
   @Column({ unique: true })
   userAppId: string;
 
-  @Column()
+  @Column({ nullable: true })
   discordId?: string;
 
-  @Column()
+  @Column({ nullable: true })
   avartar?: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   nickname?: string;
 
   @Column({ nullable: true })
