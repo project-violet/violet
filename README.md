@@ -7,9 +7,9 @@
     •
     <b><a href="https://github.com/project-violet/violet/releases/latest">Download</a></b>
     •
-    <b><a href="https://github.com/project-violet/violet/tree/violet/dev/manual">User Manual</a></b>
+    <b><a href="https://github.com/project-violet/violet/tree/dev/violet/manual">User Manual</a></b>
     •
-    <b><a href="https://github.com/project-violet/violet/tree/violet/dev/doc">Docs</a></b>
+    <b><a href="https://github.com/project-violet/violet/tree/dev/violet/doc">Docs</a></b>
 </p>
 
 [![](https://discordapp.com/api/guilds/713749607472955445/widget.png?style=shield)](https://discord.gg/fqrtRxC)
