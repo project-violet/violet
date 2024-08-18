@@ -27,7 +27,7 @@ export class CommentController {
   async postComment(
     @CurrentUser() currentUser: User,
     @Body() dto: CommentPostDto,
-  ) {
-    this.commentService.postComment(currentUser, dto);
+  ): Promise<{ ok: boolean; error?: string }> {
+    return await this.commentService.postComment(currentUser, dto);
   }
 }
