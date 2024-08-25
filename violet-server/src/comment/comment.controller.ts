@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
   UseGuards,
   UsePipes,
@@ -18,6 +19,18 @@ import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 @Controller('comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
+
+  @Get('/')
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @ApiOperation({ summary: 'Get Comment' })
+  @UseGuards(HmacAuthGuard)
+  @UseGuards(AccessTokenGuard)
+  async getComment(
+    @CurrentUser() currentUser: User,
+    @Body() dto: CommentPostDto,
+  ): Promise<{ ok: boolean; error?: string }> {
+    return await this.commentService.postComment(currentUser, dto);
+  }
 
   @Post('/')
   @UsePipes(new ValidationPipe({ transform: true }))
