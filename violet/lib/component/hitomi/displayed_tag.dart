@@ -4,9 +4,9 @@
 import 'package:violet/component/hitomi/tag_translate.dart';
 
 class DisplayedTag {
-  // artist, group, tag, series, character, uploader, type, class, language, prefix, page
+  // artist, group, tag, series, character, uploader, type, class, language, prefix, page, female, male
   String? group;
-  // <tag>, female:<tag>, male:<tag>
+  // <tag>
   String? name;
   // <translated-tag>
   String? translated;
@@ -14,33 +14,8 @@ class DisplayedTag {
   // tag := <group>:<name>
   DisplayedTag({String? tag, this.group, this.name, this.translated}) {
     if (tag != null) {
-      final maybeGroup = tag.split(':').first;
-      if ([
-        'artist',
-        'group',
-        'tag',
-        'series',
-        'character',
-        'uploader',
-        'type',
-        'class',
-        'language',
-        'prefix',
-        'page',
-      ].contains(maybeGroup)) {
-        group = maybeGroup;
-        name = tag.substring(tag.indexOf(':') + 1);
-      } else if (['female', 'male'].contains(maybeGroup)) {
-        group = 'tag';
-        name = tag;
-      }
-    }
-
-    if (group != null) {
-      if (['female', 'male'].contains(group)) {
-        if (!name!.startsWith('$group:')) name = '$group:$name';
-        group = 'tag';
-      }
+      group = tag.split(':').first;
+      name = tag.substring(tag.indexOf(':') + 1);
     }
   }
 
@@ -60,13 +35,5 @@ class DisplayedTag {
   @override
   String toString() {
     return getTag();
-  }
-
-  // TODO: https://github.com/project-violet/violet/issues/440 로 삭제
-  bool groupEqualTo(String otherGroup) {
-    if (otherGroup == 'female' || otherGroup == 'male') {
-      return group == 'tag' && name!.startsWith(otherGroup);
-    }
-    return group == otherGroup;
   }
 }

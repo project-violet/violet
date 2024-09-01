@@ -675,7 +675,9 @@ class _SearchBarPageState extends State<SearchBarPage>
               ? token.split(':').last.replaceAll('_', ' ')
               : token.replaceAll('_', ' '))
           .map((e) => Tuple2<DisplayedTag, int>(
-              DisplayedTag(group: 'tag', name: e.item1),
+              DisplayedTag(
+                  group: e.item1.split(':').first,
+                  name: e.item1.split(':').last),
               (e.item2 * 100).toInt()))
           .toList();
     } else if (token.startsWith('series:')) {
@@ -785,14 +787,12 @@ class _SearchBarPageState extends State<SearchBarPage>
     }
 
     if (info.item2 > 0 && Settings.searchShowCount) {
-      count =
-          ' (${info.item2.toString() + (related && info.item1.group == 'tag' ? '%' : '')})';
+      count = ' (${info.item2.toString() + (related ? '%' : '')})';
     }
 
-    if (info.item1.group == 'tag' && info.item1.name!.startsWith('female:')) {
+    if (info.item1.group == 'female') {
       color = Colors.pink;
-    } else if (info.item1.group == 'tag' &&
-        info.item1.name!.startsWith('male:')) {
+    } else if (info.item1.group == 'male') {
       color = Colors.blue;
     } else if (info.item1.group == 'prefix') {
       color = Colors.orange;
@@ -884,11 +884,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       labelPadding: const EdgeInsets.all(0.0),
       avatar: CircleAvatar(
         backgroundColor: Colors.grey.shade600,
-        child: Text(info.item1.group == 'tag' &&
-                (info.item1.name!.startsWith('female:') ||
-                    info.item1.name!.startsWith('male:'))
-            ? info.item1.name![0].toUpperCase()
-            : info.item1.group![0].toUpperCase()),
+        child: Text(info.item1.group![0].toUpperCase()),
       ),
       label: RichText(
           text: TextSpan(
@@ -907,12 +903,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       onPressed: () async {
         // Insert text to cursor.
         if (info.item1.group != 'prefix') {
-          var insert = (info.item1.group == 'tag' &&
-                      (info.item1.name!.startsWith('female') ||
-                          info.item1.name!.startsWith('male'))
-                  ? info.item1.name
-                  : info.item1.getTag())!
-              .replaceAll(' ', '_');
+          final insert = info.item1.getTag().replaceAll(' ', '_');
 
           _searchController.text = _searchText!.substring(0, _insertPos) +
               insert +
@@ -923,11 +914,18 @@ class _SearchBarPageState extends State<SearchBarPage>
             extentOffset: _insertPos! + insert.length,
           );
 
-          if (info.item1.group == 'tag') {
-            _relatedLists = HitomiIndexs.getRelatedTag(
-                    info.item1.name!.replaceAll('_', ' '))
+          if (info.item1.group == 'tag' ||
+              info.item1.group == 'female' ||
+              info.item1.group == 'male') {
+            _relatedLists = HitomiIndexs.getRelatedTag(info.item1.group == 'tag'
+                    ? info.item1.name!.replaceAll('_', ' ')
+                    : info.item1.getTag().replaceAll('_', ' '))
                 .map((e) => Tuple2<DisplayedTag, int>(
-                    DisplayedTag(group: 'tag', name: e.item1),
+                    DisplayedTag(
+                        group: e.item1.contains(':')
+                            ? e.item1.split(':').first
+                            : 'tag',
+                        name: e.item1.split(':').last),
                     (e.item2 * 100).toInt()))
                 .toList();
             setState(() {});
