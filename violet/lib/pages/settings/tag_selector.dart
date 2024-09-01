@@ -227,8 +227,6 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
 
     if (info.item2 > 0 && _showCount) count = ' (${info.item2})';
 
-    print(info.item1);
-
     if (info.item1.group == 'female') {
       color = Colors.pink;
     } else if (info.item1.group == 'male') {
