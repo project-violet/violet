@@ -72,6 +72,15 @@ class DownloadRoutine {
           generalDownloadProgress,
         );
       }
+
+      final basepath = await downloadBasePath();
+      for (var task in tasks!) {
+        task.downloadPath = join(
+          basepath,
+          task.format!
+              .formatting(HentaiDonwloadManager.instance().defaultFormat()),
+        );
+      }
     } catch (e) {
       _setState(7);
       return;
@@ -87,13 +96,7 @@ class DownloadRoutine {
   }
 
   Future<void> extractFilePath() async {
-    final inner = (await getApplicationDocumentsDirectory()).path;
-    final files = tasks!
-        .map((e) => join(
-            Settings.useInnerStorage ? inner : Settings.downloadBasePath,
-            e.format!
-                .formatting(HentaiDonwloadManager.instance().defaultFormat())))
-        .toList();
+    final files = tasks!.map((e) => e.downloadPath!).toList();
     result['Files'] = jsonEncode(files);
     result['Path'] = _extractSuperPath(files);
     await _updateItem();
@@ -120,18 +123,8 @@ class DownloadRoutine {
     required VoidStringCallback errorCallback,
   }) async {
     final downloader = await IsolateDownloader.getInstance();
-    var basepath = Settings.downloadBasePath;
-
-    if (Settings.useInnerStorage) {
-      basepath = (await getApplicationDocumentsDirectory()).path;
-    }
 
     downloader.appendTasks(tasks!.map((e) {
-      e.downloadPath = join(
-          basepath,
-          e.format!
-              .formatting(HentaiDonwloadManager.instance().defaultFormat()));
-
       e.startCallback = () {};
       e.completeCallback = completeCallback;
 
@@ -147,23 +140,11 @@ class DownloadRoutine {
   }
 
   Future<List<int>> checkDownloadFiles() async {
-    var basepath = Settings.downloadBasePath;
-
-    if (Settings.useInnerStorage) {
-      basepath = (await getApplicationDocumentsDirectory()).path;
-    }
-
-    final filenames = tasks!
-        .map((e) => join(
-            basepath,
-            e.format!
-                .formatting(HentaiDonwloadManager.instance().defaultFormat())))
-        .toList();
-
+    final files = tasks!.map((e) => e.downloadPath!).toList();
     final invalidIndex = <int>[];
 
-    for (var i = 0; i < filenames.length; i++) {
-      var file = File(filenames[i]);
+    for (var i = 0; i < files.length; i++) {
+      var file = File(files[i]);
 
       if (!await file.exists()) {
         invalidIndex.add(i);
@@ -187,18 +168,8 @@ class DownloadRoutine {
     required VoidStringCallback errorCallback,
   }) async {
     final downloader = await IsolateDownloader.getInstance();
-    var basepath = Settings.downloadBasePath;
-
-    if (Settings.useInnerStorage) {
-      basepath = (await getApplicationDocumentsDirectory()).path;
-    }
 
     downloader.appendTasks(invalidIndex.map((e) => tasks![e]).map((e) {
-      e.downloadPath = join(
-          basepath,
-          e.format!
-              .formatting(HentaiDonwloadManager.instance().defaultFormat()));
-
       e.startCallback = () {};
       e.completeCallback = completeCallback;
 
@@ -228,5 +199,13 @@ class DownloadRoutine {
     item.result = result;
     await item.update();
     setStateCallback.call();
+  }
+
+  Future<String> downloadBasePath() async {
+    if (Settings.useInnerStorage) {
+      return (await getApplicationDocumentsDirectory()).path;
+    } else {
+      return Settings.downloadBasePath;
+    }
   }
 }

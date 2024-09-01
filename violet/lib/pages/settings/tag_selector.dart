@@ -227,10 +227,9 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
 
     if (info.item2 > 0 && _showCount) count = ' (${info.item2})';
 
-    if (info.item1.group == 'tag' && info.item1.name!.startsWith('female:')) {
+    if (info.item1.group == 'female') {
       color = Colors.pink;
-    } else if (info.item1.group == 'tag' &&
-        info.item1.name!.startsWith('male:')) {
+    } else if (info.item1.group == 'male') {
       color = Colors.blue;
     } else if (info.item1.group == 'prefix') {
       color = Colors.orange;
@@ -244,15 +243,11 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
       color = Colors.orange;
     }
 
-    var fc = RawChip(
+    final fc = RawChip(
       labelPadding: const EdgeInsets.all(0.0),
       avatar: CircleAvatar(
         backgroundColor: Colors.grey.shade600,
-        child: Text(info.item1.group == 'tag' &&
-                (info.item1.name!.startsWith('female:') ||
-                    info.item1.name!.startsWith('male:'))
-            ? info.item1.name![0].toUpperCase()
-            : info.item1.group![0].toUpperCase()),
+        child: Text(info.item1.group![0].toUpperCase()),
       ),
       label: Text(
         ' $tagDisplayed$count',
@@ -267,12 +262,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
       onPressed: () async {
         // Insert text to cursor.
         if (info.item1.group != 'prefix') {
-          var insert = (info.item1.group == 'tag' &&
-                      (info.item1.name!.startsWith('female') ||
-                          info.item1.name!.startsWith('male'))
-                  ? info.item1.name
-                  : info.item1.getTag())!
-              .replaceAll(' ', '_');
+          final insert = info.item1.getTag().replaceAll(' ', '_');
 
           _searchController.text = _searchText!.substring(0, _insertPos) +
               insert +
