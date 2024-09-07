@@ -76,20 +76,30 @@ describe('CommentController', () => {
   });
 
   it('post comment with parent', async () => {
+    // Post Parent Comment
     await controller.postComment(mockUser, {
       where: 'general',
       body: 'parent',
     });
+
+    // Get Parent Comment Id
     let parentComment = await controller.getComment({
       where: 'general',
     });
-    let res = await controller.postComment(mockUser, {
+    let parentCommentId = parentComment.elements[0].id;
+
+    // Post Child Comment
+    let postChildRes = await controller.postComment(mockUser, {
       where: 'general',
-      body: 'test',
-      parent: parentComment.elements[0].id,
+      body: 'child',
+      parent: parentCommentId,
     });
-    console.log(res);
-    expect(res.ok).toBe(true);
+    expect(postChildRes.ok).toBe(true);
+
+    let childComment = await controller.getComment({
+      where: 'general',
+    });
+    expect(childComment.elements[0].parent!).toBe(parentCommentId);
   });
 
   afterEach(async () => {

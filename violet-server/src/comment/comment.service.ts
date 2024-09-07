@@ -26,6 +26,7 @@ export class CommentService {
         },
         relations: {
           user: true,
+          parent: true,
         },
       });
 
