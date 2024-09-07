@@ -34,6 +34,7 @@ describe('CommentController', () => {
           database: ':memory:',
           entities: [User, Comment],
           synchronize: true,
+          logging: true,
         }),
       ],
       controllers: [CommentController],
@@ -61,6 +62,44 @@ describe('CommentController', () => {
       body: 'test',
     });
     expect(res.ok).toBe(true);
+  });
+
+  it('get comment', async () => {
+    await controller.postComment(mockUser, {
+      where: 'general',
+      body: 'test',
+    });
+    let res = await controller.getComment({
+      where: 'general',
+    });
+    expect(res.elements).not.toHaveLength(0);
+  });
+
+  it('post comment with parent', async () => {
+    // Post Parent Comment
+    await controller.postComment(mockUser, {
+      where: 'general',
+      body: 'parent',
+    });
+
+    // Get Parent Comment Id
+    let parentComment = await controller.getComment({
+      where: 'general',
+    });
+    let parentCommentId = parentComment.elements[0].id;
+
+    // Post Child Comment
+    let postChildRes = await controller.postComment(mockUser, {
+      where: 'general',
+      body: 'child',
+      parent: parentCommentId,
+    });
+    expect(postChildRes.ok).toBe(true);
+
+    let childComment = await controller.getComment({
+      where: 'general',
+    });
+    expect(childComment.elements[0].parent!).toBe(parentCommentId);
   });
 
   afterEach(async () => {
