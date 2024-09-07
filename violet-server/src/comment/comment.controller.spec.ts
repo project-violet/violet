@@ -34,6 +34,7 @@ describe('CommentController', () => {
           database: ':memory:',
           entities: [User, Comment],
           synchronize: true,
+          logging: true,
         }),
       ],
       controllers: [CommentController],
@@ -61,6 +62,17 @@ describe('CommentController', () => {
       body: 'test',
     });
     expect(res.ok).toBe(true);
+  });
+
+  it('get comment', async () => {
+    await controller.postComment(mockUser, {
+      where: 'general',
+      body: 'test',
+    });
+    let res = await controller.getComment({
+      where: 'general',
+    });
+    expect(res.elements).not.toHaveLength(0);
   });
 
   afterEach(async () => {

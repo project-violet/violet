@@ -14,6 +14,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { User } from 'src/user/entity/user.entity';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
+import { CommentGetDto, CommentGetResponseDto } from './dtos/comment-get.dto';
 
 @ApiTags('comment')
 @Controller('comment')
@@ -25,11 +26,8 @@ export class CommentController {
   @ApiOperation({ summary: 'Get Comment' })
   @UseGuards(HmacAuthGuard)
   @UseGuards(AccessTokenGuard)
-  async getComment(
-    @CurrentUser() currentUser: User,
-    @Body() dto: CommentPostDto,
-  ): Promise<{ ok: boolean; error?: string }> {
-    return await this.commentService.postComment(currentUser, dto);
+  async getComment(@Body() dto: CommentGetDto): Promise<CommentGetResponseDto> {
+    return await this.commentService.getComment(dto);
   }
 
   @Post('/')
