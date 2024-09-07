@@ -75,6 +75,23 @@ describe('CommentController', () => {
     expect(res.elements).not.toHaveLength(0);
   });
 
+  it('post comment with parent', async () => {
+    await controller.postComment(mockUser, {
+      where: 'general',
+      body: 'parent',
+    });
+    let parentComment = await controller.getComment({
+      where: 'general',
+    });
+    let res = await controller.postComment(mockUser, {
+      where: 'general',
+      body: 'test',
+      parent: parentComment.elements[0].id,
+    });
+    console.log(res);
+    expect(res.ok).toBe(true);
+  });
+
   afterEach(async () => {
     await module.close();
   });

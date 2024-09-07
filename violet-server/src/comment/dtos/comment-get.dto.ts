@@ -1,7 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { Comment } from 'src/comment/entity/comment.entity';
-import { IsArray, IsOptional, IsString, Matches } from 'class-validator';
+import {
+  IsArray,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Matches,
+} from 'class-validator';
 
 export class CommentGetDto {
   @IsString()
@@ -15,6 +21,13 @@ export class CommentGetDto {
 }
 
 export class CommentGetResponseDtoElement {
+  @IsNumber()
+  @ApiProperty({
+    description: 'Comment Id',
+    required: true,
+  })
+  id: number;
+
   @IsString()
   @ApiProperty({
     description: 'Body',
@@ -46,6 +59,7 @@ export class CommentGetResponseDtoElement {
 
   static from(comment: Comment): CommentGetResponseDtoElement {
     return {
+      id: comment.id,
       userAppId: comment.user.userAppId,
       body: comment.body,
       dateTime: comment.createdAt,
