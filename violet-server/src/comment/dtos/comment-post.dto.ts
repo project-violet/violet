@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsString, Matches } from 'class-validator';
+import { IsString, Matches, MaxLength } from 'class-validator';
 
 export class CommentPostDto {
   @IsString()
@@ -10,6 +10,7 @@ export class CommentPostDto {
   })
   @Type(() => String)
   @Matches(`^(general|\d+)$`, 'i')
+  @MaxLength(20)
   where: string;
 
   @IsString()
@@ -18,6 +19,7 @@ export class CommentPostDto {
     required: true,
   })
   @Type(() => String)
+  @MaxLength(500)
   body: string;
 
   @IsString()
