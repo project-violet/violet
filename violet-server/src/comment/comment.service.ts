@@ -17,6 +17,17 @@ export class CommentService {
   async getComment(dto: CommentGetDto): Promise<CommentGetResponseDto> {
     try {
       const comments = await this.repository.find({
+        select: {
+          id: true,
+          user: {
+            userAppId: true,
+          },
+          body: true,
+          createdAt: true,
+          parent: {
+            id: true,
+          },
+        },
         where: {
           where: dto.where,
         },
