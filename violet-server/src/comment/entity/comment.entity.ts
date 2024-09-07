@@ -20,6 +20,8 @@ export class Comment extends CoreEntity {
     description: 'User Id',
     required: true,
   })
+  @ManyToOne(() => User, (user) => user.userAppId)
+  @JoinColumn({ name: 'userAppId' })
   user: User;
 
   @Column()
@@ -31,7 +33,7 @@ export class Comment extends CoreEntity {
 
   @ManyToOne(() => Comment, (comment) => comment.id)
   @JoinColumn({ name: 'childs' })
-  parent: Comment;
+  parent?: Comment;
 
   @OneToMany(() => Comment, (comment) => comment.id)
   childs: Comment[];
