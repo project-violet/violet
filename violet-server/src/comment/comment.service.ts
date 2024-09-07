@@ -8,39 +8,13 @@ import {
   CommentGetResponseDtoElement,
 } from './dtos/comment-get.dto';
 
-const DEFAULT_GET_COMMENT_TAKE = 100;
-
 @Injectable()
 export class CommentService {
   constructor(private repository: CommentRepository) {}
 
   async getComment(dto: CommentGetDto): Promise<CommentGetResponseDto> {
     try {
-      const comments = await this.repository.find({
-        select: {
-          id: true,
-          user: {
-            userAppId: true,
-          },
-          body: true,
-          createdAt: true,
-          parent: {
-            id: true,
-          },
-        },
-        where: {
-          where: dto.where,
-        },
-        take: DEFAULT_GET_COMMENT_TAKE,
-        order: {
-          id: 'DESC',
-        },
-        relations: {
-          user: true,
-          parent: true,
-        },
-      });
-
+      const comments = await this.repository.getComment(dto);
       return { elements: comments.map(CommentGetResponseDtoElement.from) };
     } catch (e) {
       Logger.error(e);
