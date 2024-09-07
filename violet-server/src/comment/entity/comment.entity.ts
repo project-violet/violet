@@ -13,9 +13,6 @@ import {
 
 @Entity()
 export class Comment extends CoreEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
   @ApiProperty({
     description: 'User Id',
     required: true,
@@ -31,8 +28,8 @@ export class Comment extends CoreEntity {
   @Column()
   body: string;
 
-  @ManyToOne(() => Comment, (comment) => comment.id)
-  @JoinColumn({ name: 'childs' })
+  @ManyToOne(() => Comment, (comment) => comment.childs)
+  @JoinColumn({ name: 'parentId' })
   parent?: Comment;
 
   @OneToMany(() => Comment, (comment) => comment.id)
