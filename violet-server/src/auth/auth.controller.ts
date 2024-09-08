@@ -118,10 +118,8 @@ export class AuthController {
   @UseGuards(DiscordAuthGuard)
   @UseGuards(AccessTokenGuard)
   @ApiOperation({ summary: 'Redirect discord oauth2' })
-  redirect(
-    @CurrentUser('userAppId') userAppId: string,
-    @CurrentUser('discordId') discordId: string,
-  ) {
-    return { userAppId: userAppId, discordId: discordId };
+  @Redirect('violet://discord-login')
+  async redirect(@CurrentUser() currentUser: User) {
+    return await this.authService.updateDiscordInfo(currentUser);
   }
 }

@@ -20,7 +20,7 @@ export class User extends CoreEntity {
   discordId?: string;
 
   @Column({ nullable: true })
-  avartar?: string;
+  avatar?: string;
 
   @Column({ unique: true, nullable: true })
   nickname?: string;

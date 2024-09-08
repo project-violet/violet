@@ -1,10 +1,16 @@
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserRegisterDTO } from 'src/user/dtos/user-register.dto';
 import { UserRepository } from 'src/user/user.repository';
 import { ResLoginUser } from './dtos/res-login-user.dto';
 import { Tokens } from './jwt/jwt.token';
+import { User } from 'src/user/entity/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -94,5 +100,20 @@ export class AuthService {
 
   async deleteRefreshToken(userAppId: string) {
     await this.userRepository.update({ userAppId }, { refreshToken: null });
+  }
+
+  async updateDiscordInfo(
+    user: User,
+  ): Promise<{ ok: boolean; error?: string }> {
+    try {
+      const { userAppId, discordId, avatar } = user;
+      await this.userRepository.update({ userAppId }, { discordId, avatar });
+
+      return { ok: true };
+    } catch (e) {
+      Logger.error(e);
+
+      return { ok: false, error: e };
+    }
   }
 }
