@@ -50,6 +50,10 @@ jobs:
       #
       #   Update
       #
+      - name: Today
+        id: ciinfo
+        if: always()
+        run: echo "today=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
       - name: Revision
         run: |
           git checkout -b sync
@@ -57,17 +61,7 @@ jobs:
           git config --local user.name "violet-dev-bot"
           git config --global pull.rebase false
           git add assets/daily.zip
-          git commit -m "Daily Sync"
-          git push --set-upstream origin sync --force
-
-      #
-      #   PR Creation
-      #
-      - name: Today
-        id: ciinfo
-        if: always()
-        run: echo "today=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
-      - name: Create Pull Request
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh pr create -B dev -H sync --title 'Daily Sync (${{ steps.ciinfo.outputs.today }})' --body 'Daily sync data'
+          git commit -m "Daily Sync (${{ steps.ciinfo.outputs.today }})"
+          git checkout dev
+          git merge sync
+          git push
