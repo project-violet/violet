@@ -8,7 +8,7 @@ export class UserService {
 
   async registerUser(
     dto: UserRegisterDTO,
-  ): Promise<{ ok: boolean; err?: string }> {
+  ): Promise<{ ok: boolean; error?: string }> {
     try {
       if (await this.userRepository.isUserExists(dto.userAppId))
         throw new UnauthorizedException('user app id already exists');
@@ -19,7 +19,7 @@ export class UserService {
     } catch (e) {
       Logger.error(e);
 
-      return { ok: false, err: e };
+      return { ok: false, error: e };
     }
   }
 }
