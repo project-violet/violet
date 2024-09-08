@@ -16,6 +16,10 @@ jobs:
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
+
       # For pull requests it's not necessary to checkout the code
       - uses: dorny/paths-filter@v3
         id: filter
