@@ -21,7 +21,8 @@ jobs:
         id: filter
         with:
           filters: |
-            src:
+            src:      
+              - ".github/workflows/violet-build.yml"
               - "violet/**"
 
   app-format:
