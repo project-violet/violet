@@ -6,9 +6,11 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:html/parser.dart';
+import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/context/viewer_context.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
+import 'package:violet/script/freezed/script_model.dart';
 import 'package:violet/script/script_webview.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
@@ -121,8 +123,7 @@ class ScriptManager {
     return galleryInfo.body;
   }
 
-  static Future<(List<String>, List<String>, List<String>)?>
-      runHitomiGetImageList(int id) async {
+  static Future<ImageList?> runHitomiGetImageList(int id) async {
     if (_scriptCache == null) return null;
 
     try {
@@ -134,26 +135,13 @@ class ScriptManager {
       if (galleryInfo.statusCode != 200) return null;
       _runtime.evaluate(galleryInfo.body);
       final jResult = _runtime.evaluate('hitomi_get_image_list()').stringResult;
-      final jResultObject = jsonDecode(jResult);
+      final jResultImageList = ScriptImageList.fromJson(jsonDecode(jResult));
 
-      if (jResultObject is Map<dynamic, dynamic>) {
-        return (
-          (jResultObject['result'] as List<dynamic>)
-              .map((e) => e as String)
-              .toList(),
-          (jResultObject['btresult'] as List<dynamic>)
-              .map((e) => e as String)
-              .toList(),
-          (jResultObject['stresult'] as List<dynamic>)
-              .map((e) => e as String)
-              .toList()
-        );
-      } else {
-        Logger.error('[script-HitomiGetImageList] E: JSError\n'
-            'Id: $id\n'
-            'Message: $jResult');
-        return null;
-      }
+      return ImageList(
+        urls: jResultImageList.result,
+        bigThumbnails: jResultImageList.btresult,
+        smallThumbnails: jResultImageList.stresult,
+      );
     } catch (e, st) {
       Logger.error('[script-HitomiGetImageList] E: $e\n'
           'Id: $id\n'

@@ -146,10 +146,11 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
               ProviderManager.insert(_pageInfo.id * 1000000, prov);
             } else {
               try {
-                var urls =
+                var imgList =
                     await HitomiManager.getImageList(_pageInfo.id.toString());
-                if (urls.$1.isNotEmpty && urls.$2.isNotEmpty) {
-                  prov = HitomiImageProvider(urls, _pageInfo.id.toString());
+                if (imgList.urls.isNotEmpty &&
+                    imgList.bigThumbnails.isNotEmpty) {
+                  prov = HitomiImageProvider(imgList, _pageInfo.id.toString());
                   ProviderManager.insert(_pageInfo.id * 1000000, prov);
                 }
               } catch (_) {}
