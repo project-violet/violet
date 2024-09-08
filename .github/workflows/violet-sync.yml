@@ -67,5 +67,4 @@ jobs:
           git commit -m "Daily Sync (${{ steps.ciinfo.outputs.today }})"
           git checkout dev
           git merge sync
-          gh auth login
           git push
