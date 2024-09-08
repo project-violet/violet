@@ -76,7 +76,8 @@ class SearchPageController extends GetxController {
         // invisible article is not rendered yet
         // so we can find live elements
         if (key.value.currentContext != null) {
-          final bottomPadding = [8, 8, 0, 0, 0][Settings.searchResultType];
+          final bottomPadding =
+              [8, 8, 0, 0, 0][Settings.searchResultType.index];
           _itemHeight = key.value.currentContext!.size!.height + bottomPadding;
           break;
         }
@@ -85,7 +86,7 @@ class SearchPageController extends GetxController {
 
     if (scrollController!.offset.isNaN) return;
 
-    final itemPerRow = [3, 2, 1, 1, 1][Settings.searchResultType];
+    final itemPerRow = [3, 2, 1, 1, 1][Settings.searchResultType.index];
     const searchBarHeight = 64 + 16;
     final curI =
         ((scrollController!.offset - searchBarHeight) / _itemHeight + 1)

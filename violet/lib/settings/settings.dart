@@ -32,8 +32,7 @@ class Settings {
   static late bool themeWhat; // default false == light
   static late Color majorColor; // default purple
   static late Color majorAccentColor;
-  static late int
-      searchResultType; // 0: 3 Grid, 1: 2 Grid, 2: Big Line, 3: Detail, 4: Ultra
+  static late SearchResultType searchResultType;
   static late int downloadResultType;
   static late int downloadAlignType;
   static late bool themeFlat;
@@ -159,7 +158,8 @@ class Settings {
   }
 
   static Future<void> init() async {
-    searchResultType = await _getInt('searchResultType', 4);
+    searchResultType =
+        SearchResultType.values[await _getInt('searchResultType', 4)];
     downloadResultType = await _getInt('downloadResultType', 3);
     downloadAlignType = await _getInt('downloadAlignType', 0);
 
@@ -524,10 +524,10 @@ class Settings {
     await prefs.setString('bookmarkHost', bookmarkHost);
   }
 
-  static Future<void> setSearchResultType(int wh) async {
+  static Future<void> setSearchResultType(SearchResultType wh) async {
     searchResultType = wh;
 
-    await prefs.setInt('searchResultType', searchResultType);
+    await prefs.setInt('searchResultType', searchResultType.index);
   }
 
   static Future<void> setDownloadResultType(int wh) async {
@@ -877,5 +877,30 @@ class Settings {
     liteMode = nn;
 
     await prefs.setBool('liteMode', nn);
+  }
+}
+
+enum SearchResultType {
+  threeGrid,
+  twoGrid,
+  bigLine,
+  detail,
+  ultra,
+}
+
+extension SearchResultTypeExtension on SearchResultType {
+  bool get isUltra {
+    return this == SearchResultType.ultra;
+  }
+
+  bool get isDetailLike {
+    switch (this) {
+      case SearchResultType.detail:
+      case SearchResultType.ultra:
+        return true;
+
+      default:
+        return false;
+    }
   }
 }
