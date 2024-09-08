@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany, Index } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Comment } from 'src/comment/entity/comment.entity';
 
@@ -16,6 +16,7 @@ export class User extends CoreEntity {
   userAppId: string;
 
   @Column({ nullable: true })
+  @Index()
   discordId?: string;
 
   @Column({ nullable: true })
@@ -26,6 +27,7 @@ export class User extends CoreEntity {
 
   @Column({ nullable: true })
   @Exclude()
+  @Index()
   refreshToken?: string;
 
   @OneToMany(() => Comment, (comment) => comment.user)
