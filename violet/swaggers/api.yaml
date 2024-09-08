@@ -1,0 +1,321 @@
+openapi: 3.0.0
+paths:
+  /api/v2:
+    get:
+      operationId: AppController_getHello
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - app
+  /api/v2/hmac:
+    get:
+      operationId: AppController_getHmac
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - app
+  /api/v2/comment:
+    get:
+      operationId: CommentController_getComment
+      summary: Get Comment
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentGetDto'
+      responses:
+        '200':
+          description: ''
+      tags:
+        - comment
+    post:
+      operationId: CommentController_postComment
+      summary: Post Comment
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentPostDto'
+      responses:
+        '201':
+          description: ''
+      tags:
+        - comment
+  /api/v2/user:
+    post:
+      operationId: UserController_registerUser
+      summary: Register User
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegisterDTO'
+      responses:
+        '201':
+          description: ''
+      tags:
+        - user
+  /api/v2/user/discord:
+    get:
+      operationId: UserController_listDiscordUserAppIds
+      summary: Get userAppIds registered by discord id
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - user
+  /api/v2/auth:
+    get:
+      operationId: AuthController_getCurrentUser
+      summary: Get current user information
+      parameters: []
+      responses:
+        '201':
+          description: User Information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      tags:
+        - auth
+    post:
+      operationId: AuthController_logIn
+      summary: Login
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegisterDTO'
+      responses:
+        '201':
+          description: jwt token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tokens'
+      tags:
+        - auth
+    delete:
+      operationId: AuthController_logout
+      summary: Logout
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - auth
+  /api/v2/auth/refresh:
+    get:
+      operationId: AuthController_refreshToken
+      summary: Get refresh token
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - auth
+  /api/v2/auth/discord:
+    get:
+      operationId: AuthController_logInDiscord
+      summary: Login From Discord
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - auth
+  /api/v2/auth/discord/redirect:
+    get:
+      operationId: AuthController_redirect
+      summary: Redirect discord oauth2
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - auth
+  /api/v2/view:
+    get:
+      operationId: ViewController_get
+      summary: Get article read view
+      parameters:
+        - name: offset
+          required: true
+          in: query
+          description: Offset
+          schema:
+            type: number
+        - name: count
+          required: true
+          in: query
+          description: Count
+          schema:
+            type: number
+        - name: type
+          required: false
+          in: query
+          description: Type
+          schema:
+            type: string
+      responses:
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewGetResponseDto'
+      tags:
+        - view
+    post:
+      operationId: ViewController_post
+      summary: Post article read data
+      parameters:
+        - name: articleId
+          required: true
+          in: query
+          description: ArticleId
+          schema:
+            type: number
+        - name: viewSeconds
+          required: true
+          in: query
+          description: Count
+          schema:
+            type: number
+        - name: userAppId
+          required: true
+          in: query
+          description: User App Id
+          schema:
+            type: string
+      responses:
+        '201':
+          description: ''
+      tags:
+        - view
+  /api/v2/view/logined:
+    post:
+      operationId: ViewController_postLogined
+      summary: Post article read data
+      parameters:
+        - name: articleId
+          required: true
+          in: query
+          description: ArticleId
+          schema:
+            type: number
+        - name: viewSeconds
+          required: true
+          in: query
+          description: Count
+          schema:
+            type: number
+        - name: userAppId
+          required: true
+          in: query
+          description: User App Id
+          schema:
+            type: string
+      responses:
+        '201':
+          description: ''
+      tags:
+        - view
+info:
+  title: Violet Server API Docs
+  description: Violet Server API description
+  version: 1.0.0
+  contact: {}
+tags: []
+servers: []
+components:
+  schemas:
+    CommentGetDto:
+      type: object
+      properties:
+        where:
+          type: string
+          description: Where to get
+      required:
+        - where
+    CommentPostDto:
+      type: object
+      properties:
+        where:
+          type: string
+          description: Where to post
+        body:
+          type: string
+          description: Post Body
+        parent:
+          type: number
+          description: Parent Comment
+      required:
+        - where
+        - body
+    UserRegisterDTO:
+      type: object
+      properties:
+        userAppId:
+          type: string
+          description: User App Id
+      required:
+        - userAppId
+    User:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Id
+        createdAt:
+          format: date-time
+          type: string
+          description: Created At
+        updatedAt:
+          format: date-time
+          type: string
+          description: Update At
+        userAppId:
+          type: string
+          description: User Id
+      required:
+        - id
+        - createdAt
+        - updatedAt
+        - userAppId
+    Tokens:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: accessToken
+        refreshToken:
+          type: string
+          description: refreshToken
+      required:
+        - accessToken
+        - refreshToken
+    ViewGetResponseDto:
+      type: object
+      properties:
+        result:
+          description: View get response
+          example: '[ [1234,55], [1235,44] ]'
+          type: array
+          items:
+            type: string
+      required:
+        - result
