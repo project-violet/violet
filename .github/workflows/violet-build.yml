@@ -26,8 +26,8 @@ jobs:
               - "violet/**"
 
   app-format:
-    needs: changes
-    if: ${{ needs.changes.outputs.src == 'true' }}
+    needs: app-changes
+    if: ${{ needs.app-changes.outputs.src == 'true' }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -62,8 +62,8 @@ jobs:
 
   app-ios-build:
     runs-on: macos-latest
-    needs: [format, changes]
-    if: ${{ needs.changes.outputs.src == 'true' }}
+    needs: [app-format, app-changes]
+    if: ${{ needs.app-changes.outputs.src == 'true' }}
     defaults:
       run:
         working-directory: violet
@@ -117,8 +117,8 @@ jobs:
 
   app-android-build:
     runs-on: ubuntu-latest
-    needs: [format, changes]
-    if: ${{ needs.changes.outputs.src == 'true' }}
+    needs: [app-format, app-changes]
+    if: ${{ needs.app-changes.outputs.src == 'true' }}
     defaults:
       run:
         working-directory: violet
