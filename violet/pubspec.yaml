@@ -16,8 +16,8 @@ version: 1.32.0+0
 publish_to: none
 
 environment:
-  sdk: ^3.0.0
-  flutter: "3.19.6"
+  sdk: ^3.5.2
+  flutter: "3.24.2"
 
 dependencies:
   flutter:
@@ -44,7 +44,7 @@ dependencies:
   bubble_tab_indicator: ^0.1.6
   # cached_network_image: ^3.0.0
   cached_network_image: ^3.2.1
-  carousel_slider: ^4.1.1
+  carousel_slider: ^5.0.0
   # charts_flutter: ^0.11.0
   # charts_flutter: # https://github.com/google/charts/issues/678
   #   git:
@@ -60,7 +60,7 @@ dependencies:
       ref: 4b21a901ed3890f3a8aa5637a1eaa87a9a79afd2
   crypto:
   # device_info: ^2.0.0
-  device_info_plus: ^9.0.2
+  device_info_plus: ^10.1.2
   dio: ^5.0.0
   dio_cache_interceptor: ^3.3.1
   draggable_scrollbar:
@@ -72,7 +72,7 @@ dependencies:
   extended_image: ^8.1.1
   extended_wrap: ^0.1.5
   ffi: ^2.0.2
-  file_picker: ^5.5.0
+  file_picker: ^8.1.2
   firebase_core: ^2.5.0
   firebase_analytics: ^10.1.1
   firebase_crashlytics: ^3.0.12
@@ -119,7 +119,7 @@ dependencies:
   modal_bottom_sheet: ^3.0.0-pre
   open_file: ^3.3.1
   path:
-  path_provider: ^2.0.15
+  path_provider: ^2.1.4
   permission_handler: ^11.0.1
   photo_view: ^0.14.0
   platform: ^3.1.0
