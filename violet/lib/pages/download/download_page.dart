@@ -209,7 +209,8 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
         queryResults[element.id()] = element;
       }
 
-      if (Settings.downloadAlignType != 0 && Settings.downloadResultType == 0) {
+      if (Settings.downloadAlignType != 0 &&
+          Settings.downloadResultType.isThreeGrid) {
         setState(() {});
       }
     });
@@ -249,7 +250,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
               ],
             ),
             if (Settings.downloadAlignType != 0 &&
-                Settings.downloadResultType == 0)
+                Settings.downloadResultType.isThreeGrid)
               indexBar(),
           ],
         ),
@@ -265,16 +266,15 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
       <int, GlobalKey<DownloadItemWidgetState>>{};
 
   _getDownloadWidgetKey() {
-    if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1) {
+    if (Settings.downloadResultType.isGridLike) {
       return downloadItemWidgetKeys1;
     }
-    if (Settings.downloadResultType == 2 || Settings.downloadResultType == 3) {
-      if (Settings.useTabletMode ||
-          MediaQuery.of(context).orientation == Orientation.landscape) {
-        return downloadItemWidgetKeys2;
-      } else {
-        return downloadItemWidgetKeys3;
-      }
+
+    if (Settings.useTabletMode ||
+        MediaQuery.of(context).orientation == Orientation.landscape) {
+      return downloadItemWidgetKeys2;
+    } else {
+      return downloadItemWidgetKeys3;
     }
   }
 
@@ -282,8 +282,9 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
   Widget _panel() {
     var windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
 
-    if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1) {
-      if (Settings.downloadAlignType != 0 && Settings.downloadResultType == 0) {
+    if (Settings.downloadResultType.isGridLike) {
+      if (Settings.downloadAlignType != 0 &&
+          Settings.downloadResultType.isThreeGrid) {
         return FutureBuilder(
           future: getGroupBy(),
           builder: (context, snapshot) {
@@ -296,7 +297,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
         );
       }
 
-      var mm = Settings.downloadResultType == 0 ? 3 : 2;
+      var mm = Settings.downloadResultType.isThreeGrid ? 3 : 2;
       return SliverPadding(
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
           sliver: SliverGrid(
@@ -336,8 +337,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
               childCount: filterResult.length,
             ),
           ));
-    } else if (Settings.downloadResultType == 2 ||
-        Settings.downloadResultType == 3) {
+    } else {
       if (Settings.useTabletMode ||
           MediaQuery.of(context).orientation == Orientation.landscape) {
         return SliverPadding(
@@ -368,7 +368,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                 child: DownloadItemWidget(
                   key: downloadItemWidgetKeys2[filterResult[index].id()],
                   initialStyle: DownloadListItem(
-                    showDetail: Settings.downloadResultType == 3,
+                    showDetail: Settings.downloadResultType.isDetail,
                     addBottomPadding: true,
                     width: windowWidth - 4.0,
                   ),
@@ -395,7 +395,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                 child: DownloadItemWidget(
                   key: downloadItemWidgetKeys3[e.id()],
                   initialStyle: DownloadListItem(
-                    showDetail: Settings.downloadResultType == 3,
+                    showDetail: Settings.downloadResultType.isDetail,
                     addBottomPadding: true,
                     width: windowWidth - 4.0,
                   ),
@@ -409,8 +409,6 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
         );
       }
     }
-
-    throw Exception('unreachable');
   }
 
   Future<List<(String, List<DownloadItemModel>)>> getGroupBy() async {
@@ -506,7 +504,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
 
   void _scrollChanged() {
     if (!(Settings.downloadAlignType != 0 &&
-        Settings.downloadResultType == 0)) {
+        Settings.downloadResultType.isThreeGrid)) {
       return;
     }
 
@@ -586,7 +584,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
 
   Widget _panelGroupBy(List<(String, List<DownloadItemModel>)> groupBy) {
     final windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
-    final columnCount = Settings.downloadResultType == 0 ? 3 : 2;
+    final columnCount = Settings.downloadResultType.isThreeGrid ? 3 : 2;
     final effectiveColumnCount =
         Settings.useTabletMode ? columnCount * 2 : columnCount;
 

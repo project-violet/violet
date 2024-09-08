@@ -33,7 +33,7 @@ class Settings {
   static late Color majorColor; // default purple
   static late Color majorAccentColor;
   static late SearchResultType searchResultType;
-  static late int downloadResultType;
+  static late DownloadResultType downloadResultType;
   static late int downloadAlignType;
   static late bool themeFlat;
   static late bool themeBlack; // default false
@@ -160,7 +160,8 @@ class Settings {
   static Future<void> init() async {
     searchResultType =
         SearchResultType.values[await _getInt('searchResultType', 4)];
-    downloadResultType = await _getInt('downloadResultType', 3);
+    downloadResultType =
+        DownloadResultType.values[await _getInt('downloadResultType', 3)];
     downloadAlignType = await _getInt('downloadAlignType', 0);
 
     var includetags = prefs.getString('includetags');
@@ -530,10 +531,10 @@ class Settings {
     await prefs.setInt('searchResultType', searchResultType.index);
   }
 
-  static Future<void> setDownloadResultType(int wh) async {
+  static Future<void> setDownloadResultType(DownloadResultType wh) async {
     downloadResultType = wh;
 
-    await prefs.setInt('downloadResultType', downloadResultType);
+    await prefs.setInt('downloadResultType', downloadResultType.index);
   }
 
   static Future<void> setDownloadAlignType(int wh) async {
@@ -897,6 +898,29 @@ extension SearchResultTypeExtension on SearchResultType {
     switch (this) {
       case SearchResultType.detail:
       case SearchResultType.ultra:
+        return true;
+
+      default:
+        return false;
+    }
+  }
+}
+
+enum DownloadResultType {
+  threeGrid,
+  twoGrid,
+  bigLine,
+  detail,
+}
+
+extension DownloadResultTypeExtension on DownloadResultType {
+  bool get isThreeGrid => this == DownloadResultType.threeGrid;
+  bool get isDetail => this == DownloadResultType.detail;
+
+  bool get isGridLike {
+    switch (this) {
+      case DownloadResultType.threeGrid:
+      case DownloadResultType.twoGrid:
         return true;
 
       default:
