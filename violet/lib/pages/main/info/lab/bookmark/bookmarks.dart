@@ -94,8 +94,8 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
     int id;
 
     if (index == -1) {
-      name = Translations.of(context).trans('readrecord');
-      desc = Translations.of(context).trans('readrecorddesc');
+      name = Translations.instance!.trans('readrecord');
+      desc = Translations.instance!.trans('readrecorddesc');
       id = -1;
     } else {
       name = data!.name();
@@ -105,8 +105,8 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
     }
 
     if (name == 'violet_default') {
-      name = Translations.of(context).trans('unclassified');
-      desc = Translations.of(context).trans('unclassifieddesc');
+      name = Translations.instance!.trans('unclassified');
+      desc = Translations.instance!.trans('unclassifieddesc');
     }
 
     return Container(

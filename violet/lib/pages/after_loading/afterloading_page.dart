@@ -118,7 +118,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
       List.generate(7, (index) => GlobalKey());
 
   Widget _buildBottomNavigationBar(BuildContext context) {
-    final translations = Translations.of(context);
+    final translations = Translations.instance!;
 
     BottomNavigationBarItem buildItem(IconData iconData, String key) {
       return BottomNavigationBarItem(
@@ -198,7 +198,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
 
   Widget _buildDrawer(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    final translations = Translations.of(context);
+    final translations = Translations.instance!;
 
     Widget buildButton(IconData iconData, int page, String key) {
       final color = Settings.majorColor;
@@ -331,7 +331,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
           showToast(
             icon: Icons.logout,
             level: ToastLevel.warning,
-            message: Translations.of(context).trans('closedoubletap'),
+            message: Translations.instance!.trans('closedoubletap'),
           );
         }
       },

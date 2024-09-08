@@ -69,7 +69,7 @@ class _UpdateLogCardState extends State<UpdateLogCard>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          Translations.of(context).trans('patchnote'),
+                          Translations.instance!.trans('patchnote'),
                           style: const TextStyle(color: Colors.white),
                         ),
                       ]),

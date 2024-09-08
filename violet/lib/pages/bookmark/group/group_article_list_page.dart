@@ -249,10 +249,10 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
           onPressed: () async {
             if (await showYesNoDialog(
                 context,
-                Translations.of(context)
+                Translations.instance!
                     .trans('deletebookmarkmsg')
                     .replaceAll('%s', checked.length.toString()),
-                Translations.of(context).trans('bookmark'))) {
+                Translations.instance!.trans('bookmark'))) {
               var bookmark = await Bookmark.getInstance();
               for (var element in checked) {
                 await bookmark.unbookmark(element);
@@ -553,13 +553,13 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     if (await showDialog(
             context: context,
             builder: (BuildContext context) => AlertDialog(
-                  title: Text(Translations.of(context).trans('wheretomove')),
+                  title: Text(Translations.instance!.trans('wheretomove')),
                   actions: <Widget>[
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Settings.majorColor,
                       ),
-                      child: Text(Translations.of(context).trans('cancel')),
+                      child: Text(Translations.instance!.trans('cancel')),
                       onPressed: () {
                         Navigator.pop(context, 0);
                       },

@@ -370,7 +370,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         showToast(
           level: ToastLevel.check,
           message:
-              '${widget.name}${Translations.of(context).trans(isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
+              '${widget.name}${Translations.instance!.trans(isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
         );
 
         if (!isBookmarked) {
@@ -490,7 +490,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 header: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                   child: Text(
-                      '${Translations.of(context).trans('articles')} (${cc.length})'),
+                      '${Translations.instance!.trans('articles')} (${cc.length})'),
                 ),
                 expanded: Column(children: <Widget>[
                   articleArea(),
@@ -517,7 +517,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 header: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                   child: Text(
-                      '${Translations.of(context).trans('comment')} (${(comments != null ? comments!.length : 0)})'),
+                      '${Translations.instance!.trans('comment')} (${(comments != null ? comments!.length : 0)})'),
                 ),
                 expanded: commentArea(),
                 collapsed: Container(),
@@ -538,7 +538,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                       header: Padding(
                         padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                         child: Text(
-                            '${Translations.of(context).trans('related')} ${widget.type.isSeries ? Translations.of(context).trans('iseries') : Translations.of(context).trans('icharacter')}'),
+                            '${Translations.instance!.trans('related')} ${widget.type.isSeries ? Translations.instance!.trans('iseries') : Translations.instance!.trans('icharacter')}'),
                       ),
                       expanded: relatedArea(),
                       collapsed: Container(),
@@ -560,7 +560,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                       header: Padding(
                         padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                         child: Text(
-                            '${Translations.of(context).trans('related')} ${widget.type.isCharacter ? Translations.of(context).trans('iseries') : Translations.of(context).trans('icharacter')}'),
+                            '${Translations.instance!.trans('related')} ${widget.type.isCharacter ? Translations.instance!.trans('iseries') : Translations.instance!.trans('icharacter')}'),
                       ),
                       expanded: relatedSingleArea(),
                       collapsed: Container(),
@@ -580,7 +580,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 header: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                   child: Text(
-                      '${Translations.of(context).trans('similar')} ${widget.type.isGroup ? Translations.of(context).trans('igroups') : widget.type.isUploader ? Translations.of(context).trans('iuploader') : widget.type.isSeries ? Translations.of(context).trans('iseries') : widget.type.isCharacter ? Translations.of(context).trans('icharacter') : Translations.of(context).trans('iartists')}'),
+                      '${Translations.instance!.trans('similar')} ${widget.type.isGroup ? Translations.instance!.trans('igroups') : widget.type.isUploader ? Translations.instance!.trans('iuploader') : widget.type.isSeries ? Translations.instance!.trans('iseries') : widget.type.isCharacter ? Translations.instance!.trans('icharacter') : Translations.instance!.trans('iartists')}'),
                 ),
                 expanded: similarArea(),
                 collapsed: Container(),
@@ -599,7 +599,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 header: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                   child: Text(
-                      '${Translations.of(context).trans('series')} (${series.length})'),
+                      '${Translations.instance!.trans('series')} (${series.length})'),
                 ),
                 expanded: seriesArea(),
                 collapsed: Container(),
@@ -624,7 +624,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [Text(Translations.of(context).trans('more'))],
+          children: [Text(Translations.instance!.trans('more'))],
         ),
       ),
     );
@@ -710,7 +710,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           title:
               ' ${e.item1} (${HitomiManager.getArticleCount(widget.type.name, e.item1).toString()})',
           count:
-              '${Translations.of(context).trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+              '${Translations.instance!.trans('score')}: ${e.item2.toStringAsFixed(1)} ',
           articles: qq,
         );
       },
@@ -800,7 +800,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 height: 100,
                 child: Align(
                   child: Text(
-                    Translations.of(context).trans('nocomment'),
+                    Translations.instance!.trans('nocomment'),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -819,11 +819,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         TextEditingController text = TextEditingController();
         Widget okButton = TextButton(
           style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
-          child: Text(Translations.of(context).trans('ok')),
+          child: Text(Translations.instance!.trans('ok')),
           onPressed: () async {
             if (text.text.length < 5 || text.text.length > 500) {
               await showOkDialog(context, 'Comment too short or long!',
-                  Translations.of(context).trans('comment'));
+                  Translations.instance!.trans('comment'));
               return;
             }
             await VioletCommunityAnonymous.postArtistComment(
@@ -834,7 +834,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         );
         Widget cancelButton = TextButton(
           style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
-          child: Text(Translations.of(context).trans('cancel')),
+          child: Text(Translations.instance!.trans('cancel')),
           onPressed: () {
             Navigator.pop(context, false);
           },
@@ -844,7 +844,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           context: context,
           builder: (BuildContext context) => AlertDialog(
             contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-            title: Text(Translations.of(context).trans('writecomment')),
+            title: Text(Translations.instance!.trans('writecomment')),
             content: TextField(
               controller: text,
               autofocus: true,
@@ -858,7 +858,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [Text(Translations.of(context).trans('writecomment'))],
+          children: [Text(Translations.instance!.trans('writecomment'))],
         ),
       ),
     );
@@ -889,7 +889,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           title:
               ' ${e.item1} (${HitomiManager.getArticleCount(widget.type.name, e.item1)})',
           count:
-              '${Translations.of(context).trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+              '${Translations.instance!.trans('score')}: ${e.item2.toStringAsFixed(1)} ',
           articles: qq,
         );
       },
@@ -920,7 +920,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           title:
               ' ${e.item1} (${HitomiManager.getArticleCount(widget.type.name, e.item1)})',
           count:
-              '${Translations.of(context).trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+              '${Translations.instance!.trans('score')}: ${e.item2.toStringAsFixed(1)} ',
           articles: qq,
         );
       },

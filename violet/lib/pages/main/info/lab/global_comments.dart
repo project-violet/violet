@@ -161,7 +161,7 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
                       onPressed: () async {
                         if (text.text.length < 5 || text.text.length > 500) {
                           await showOkDialog(context, '너무 짧아요!',
-                              Translations.of(context).trans('comment'));
+                              Translations.instance!.trans('comment'));
                           return;
                         }
                         if (!modReply) {

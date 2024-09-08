@@ -57,7 +57,7 @@ class DownloadViewType extends StatelessWidget {
       DownloadResultType selection) {
     return ListTile(
       leading: Icon(icon, color: getColor(selection)),
-      title: Text(Translations.of(context).trans(text),
+      title: Text(Translations.instance!.trans(text),
           softWrap: false, style: TextStyle(color: getColor(selection))),
       onTap: () async {
         await Settings.setDownloadResultType(selection);

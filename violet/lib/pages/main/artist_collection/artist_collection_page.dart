@@ -35,9 +35,9 @@ class _ArtistCollectionPageState extends State<ArtistCollectionPage> {
           var name = item.key['default'];
 
           if (item.key.containsKey(
-              Translations.of(context).dbLanguageCode.split('_')[0])) {
+              Translations.instance!.dbLanguageCode.split('_')[0])) {
             name =
-                item.key[Translations.of(context).dbLanguageCode.split('_')[0]];
+                item.key[Translations.instance!.dbLanguageCode.split('_')[0]];
           }
 
           final artists =

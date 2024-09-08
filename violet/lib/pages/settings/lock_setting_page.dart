@@ -29,7 +29,7 @@ class _LockSettingPageState extends State<LockSettingPage> {
         children: [
           ListTile(
             leading: const Icon(Icons.numbers),
-            title: Text(Translations.of(context).trans('pinsetting')),
+            title: Text(Translations.instance!.trans('pinsetting')),
             onTap: () {
               Navigator.push(
                 context,
@@ -48,9 +48,9 @@ class _LockSettingPageState extends State<LockSettingPage> {
                   if ((snapshot.data as SharedPreferences)
                           .getString('pinPass') !=
                       null) {
-                    return Text(Translations.of(context).trans('setted'));
+                    return Text(Translations.instance!.trans('setted'));
                   }
-                  return Text(Translations.of(context).trans('notsetted'));
+                  return Text(Translations.instance!.trans('notsetted'));
                 }),
           ),
           Container(
@@ -63,9 +63,9 @@ class _LockSettingPageState extends State<LockSettingPage> {
           ListTile(
             enabled: false,
             leading: const Icon(Icons.fingerprint),
-            title: Text(Translations.of(context).trans('fingersetting')),
+            title: Text(Translations.instance!.trans('fingersetting')),
             onTap: () {},
-            trailing: Text(Translations.of(context).trans('notsetted')),
+            trailing: Text(Translations.instance!.trans('notsetted')),
           ),
           Container(
             width: double.infinity,
@@ -77,9 +77,9 @@ class _LockSettingPageState extends State<LockSettingPage> {
           ListTile(
             enabled: false,
             leading: const Icon(MdiIcons.humanMaleBoard),
-            title: Text(Translations.of(context).trans('etchumansetting')),
+            title: Text(Translations.instance!.trans('etchumansetting')),
             onTap: () {},
-            trailing: Text(Translations.of(context).trans('notsetted')),
+            trailing: Text(Translations.instance!.trans('notsetted')),
           ),
           Container(
             width: double.infinity,
@@ -90,7 +90,7 @@ class _LockSettingPageState extends State<LockSettingPage> {
           ),
           ListTile(
             leading: const Icon(Icons.lock),
-            title: Text(Translations.of(context).trans('useapplocksetting')),
+            title: Text(Translations.instance!.trans('useapplocksetting')),
             onTap: () async {
               _toggleAppLock();
             },

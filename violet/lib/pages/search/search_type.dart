@@ -63,7 +63,7 @@ class SearchType extends StatelessWidget {
     return ListTile(
       leading: Transform.scale(
           scaleX: flip ? -1 : 1, child: Icon(icon, color: getColor(selection))),
-      title: Text(Translations.of(context).trans(text),
+      title: Text(Translations.instance!.trans(text),
           softWrap: false, style: TextStyle(color: getColor(selection))),
       onTap: () async {
         await Settings.setSearchResultType(selection);

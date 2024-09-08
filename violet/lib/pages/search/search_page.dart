@@ -302,11 +302,10 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
   }
 
   searchBar() {
-    final searchHintText =
-        c.latestQuery != null && c.latestQuery!.item2.trim() != ''
-            ? c.latestQuery!.item2
-            : widget.searchKeyWord ??
-                trans.Translations.of(context).trans('search');
+    final searchHintText = c.latestQuery != null &&
+            c.latestQuery!.item2.trim() != ''
+        ? c.latestQuery!.item2
+        : widget.searchKeyWord ?? trans.Translations.instance!.trans('search');
 
     final textFormField = TextFormField(
       cursorColor: Colors.black,

@@ -735,7 +735,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                             disabledBorder: InputBorder.none,
                             contentPadding: const EdgeInsets.only(
                                 left: 15, bottom: 11, top: 11, right: 15),
-                            hintText: Translations.of(context).trans('addurl')),
+                            hintText: Translations.instance!.trans('addurl')),
                       ),
                       leading: const SizedBox(
                         width: 25,
@@ -769,7 +769,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                       Widget yesButton = TextButton(
                         style: TextButton.styleFrom(
                             foregroundColor: Settings.majorColor),
-                        child: Text(Translations.of(context).trans('ok')),
+                        child: Text(Translations.instance!.trans('ok')),
                         onPressed: () {
                           Navigator.pop(context, true);
                         },
@@ -777,7 +777,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                       Widget noButton = TextButton(
                         style: TextButton.styleFrom(
                             foregroundColor: Settings.majorColor),
-                        child: Text(Translations.of(context).trans('cancel')),
+                        child: Text(Translations.instance!.trans('cancel')),
                         onPressed: () {
                           Navigator.pop(context, false);
                         },
@@ -789,8 +789,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                         builder: (BuildContext context) => AlertDialog(
                           contentPadding:
                               const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                          title:
-                              Text(Translations.of(context).trans('writeurl')),
+                          title: Text(Translations.instance!.trans('writeurl')),
                           content: TextField(
                             controller: text,
                             autofocus: true,

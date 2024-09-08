@@ -40,7 +40,7 @@ class _SearchPageModifyPageState extends State<SearchPageModifyPage> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Row(children: [
-            Text('${Translations.of(context).trans('position')}: '),
+            Text('${Translations.instance!.trans('position')}: '),
             Expanded(
               child: TextField(
                 controller: _pageController,
@@ -62,7 +62,7 @@ class _SearchPageModifyPageState extends State<SearchPageModifyPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Settings.majorColor,
                 ),
-                child: Text(Translations.of(context).trans('ok')),
+                child: Text(Translations.instance!.trans('ok')),
                 onPressed: () async {
                   if (_pageController.text == '') {
                     Navigator.pop(context, [
@@ -75,7 +75,7 @@ class _SearchPageModifyPageState extends State<SearchPageModifyPage> {
                       widget.maxPage) {
                     await showOkDialog(
                         context,
-                        Translations.of(context)
+                        Translations.instance!
                             .trans('setlowerthanmaxitemposition'));
                     return;
                   }
@@ -90,7 +90,7 @@ class _SearchPageModifyPageState extends State<SearchPageModifyPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Settings.majorColor,
                 ),
-                child: Text(Translations.of(context).trans('cancel')),
+                child: Text(Translations.instance!.trans('cancel')),
                 onPressed: () {
                   Navigator.pop(context, [0]);
                 },

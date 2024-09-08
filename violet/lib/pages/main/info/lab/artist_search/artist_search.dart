@@ -272,7 +272,7 @@ class _ArtistSearchState extends State<ArtistSearch> {
               title:
                   ' ${e.item1} (${HitomiManager.getArticleCount(selectedType.name, e.item1)})',
               count:
-                  '${Translations.of(context).trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+                  '${Translations.instance!.trans('score')}: ${e.item2.toStringAsFixed(1)} ',
               articles: snapshot.data!,
             );
           },

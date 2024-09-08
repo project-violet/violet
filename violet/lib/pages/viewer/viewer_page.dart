@@ -275,10 +275,10 @@ class _ViewerPageState extends State<ViewerPage> {
       if (!mounted) return;
       final isJump = await showYesNoDialog(
         context,
-        locale.Translations.of(context)
+        locale.Translations.instance!
             .trans('recordmessage')
             .replaceAll('%s', e.lastPage().toString()),
-        locale.Translations.of(context).trans('record'),
+        locale.Translations.instance!.trans('record'),
       );
       if (!isJump) return;
 

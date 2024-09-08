@@ -179,12 +179,12 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
     int id;
 
     if (index == -2) {
-      name = Translations.of(context).trans('readrecord');
-      desc = Translations.of(context).trans('readrecorddesc');
+      name = Translations.instance!.trans('readrecord');
+      desc = Translations.instance!.trans('readrecorddesc');
       id = -2;
     } else if (index == -1) {
-      name = Translations.of(context).trans('cropbookmark');
-      desc = Translations.of(context).trans('cropbookmarkdesc');
+      name = Translations.instance!.trans('cropbookmark');
+      desc = Translations.instance!.trans('cropbookmarkdesc');
       id = -1;
     } else {
       name = data!.name();
@@ -195,8 +195,8 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
     }
 
     if (name == 'violet_default') {
-      name = Translations.of(context).trans('unclassified');
-      desc = Translations.of(context).trans('unclassifieddesc');
+      name = Translations.instance!.trans('unclassified');
+      desc = Translations.instance!.trans('unclassifieddesc');
     }
 
     final random = Random();
@@ -273,8 +273,8 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
     if (index < 0 || (oname == 'violet_default' && index == 0)) {
       await showOkDialog(
           context,
-          Translations.of(context).trans('cannotmodifydefaultgroup'),
-          Translations.of(context).trans('bookmark'));
+          Translations.instance!.trans('cannotmodifydefaultgroup'),
+          Translations.instance!.trans('bookmark'));
       return;
     }
 

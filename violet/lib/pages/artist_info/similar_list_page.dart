@@ -99,7 +99,7 @@ class SimilarListPage extends StatelessWidget {
                 title:
                     ' ${e.item1} (${HitomiManager.getArticleCount(type.name, e.item1)})',
                 count:
-                    '${Translations.of(context).trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+                    '${Translations.instance!.trans('score')}: ${e.item2.toStringAsFixed(1)} ',
                 articles: snapshot.data!,
               );
             },

@@ -56,7 +56,7 @@ class SearchType2 extends StatelessWidget {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.grid_on, color: getColor(0)),
-                          title: Text(Translations.of(context).trans('srt0'),
+                          title: Text(Translations.instance!.trans('srt0'),
                               style: TextStyle(color: getColor(0))),
                           onTap: () async {
                             Navigator.pop(context, 0);
@@ -64,7 +64,7 @@ class SearchType2 extends StatelessWidget {
                         ),
                         ListTile(
                           leading: Icon(MdiIcons.gridLarge, color: getColor(1)),
-                          title: Text(Translations.of(context).trans('srt1'),
+                          title: Text(Translations.instance!.trans('srt1'),
                               style: TextStyle(color: getColor(1))),
                           onTap: () async {
                             Navigator.pop(context, 1);
@@ -74,7 +74,7 @@ class SearchType2 extends StatelessWidget {
                           leading: Icon(MdiIcons.viewAgendaOutline,
                               color: getColor(2)),
                           title: Text(
-                            Translations.of(context).trans('srt2'),
+                            Translations.instance!.trans('srt2'),
                             style: TextStyle(color: getColor(2)),
                           ),
                           onTap: () async {
@@ -85,7 +85,7 @@ class SearchType2 extends StatelessWidget {
                           leading:
                               Icon(MdiIcons.formatListText, color: getColor(3)),
                           title: Text(
-                            Translations.of(context).trans('srt3'),
+                            Translations.instance!.trans('srt3'),
                             style: TextStyle(color: getColor(3)),
                           ),
                           onTap: () async {
@@ -98,7 +98,7 @@ class SearchType2 extends StatelessWidget {
                               child: Icon(MdiIcons.viewSplitVertical,
                                   color: getColor(4))),
                           title: Text(
-                            Translations.of(context).trans('srt4'),
+                            Translations.instance!.trans('srt4'),
                             style: TextStyle(color: getColor(4)),
                           ),
                           onTap: () async {

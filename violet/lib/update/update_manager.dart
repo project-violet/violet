@@ -46,7 +46,7 @@ class UpdateManager {
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       if (UpdateSyncManager.updateRequire) {
         var bb = await showYesNoDialog(context,
-            '${Translations.of(context).trans('newupdate')} ${UpdateSyncManager.updateMessage} ${Translations.of(context).trans('wouldyouupdate')}');
+            '${Translations.instance!.trans('newupdate')} ${UpdateSyncManager.updateMessage} ${Translations.instance!.trans('wouldyouupdate')}');
         if (bb == false) return;
       } else {
         return;

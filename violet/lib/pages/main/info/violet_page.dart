@@ -56,7 +56,7 @@ class VioletPage extends StatelessWidget {
                       Text(
                         'Violet은 강력한 검색기능 및 분석기능을 통해 사용자에게 다양한 경험을 제공하는 뷰어입니다.'
                         ' Violet이 제공하는 편리하고도 강력한 기능들을 체험해보세요!',
-                        // Translations.of(context).trans('infomessage'),
+                        // Translations.instance!.trans('infomessage'),
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 11),
                       ),

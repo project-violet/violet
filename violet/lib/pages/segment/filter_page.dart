@@ -321,7 +321,7 @@ class _FilterPageState extends State<FilterPage> {
         ),
         contentPadding:
             const EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
-        hintText: trans.Translations.of(context).trans('search'),
+        hintText: trans.Translations.instance!.trans('search'),
       ),
     );
   }
@@ -333,7 +333,7 @@ class _FilterPageState extends State<FilterPage> {
       runSpacing: -10.0,
       children: <Widget>[
         FilterChip(
-          label: Text(trans.Translations.of(context).trans('selectall')),
+          label: Text(trans.Translations.instance!.trans('selectall')),
           onSelected: (bool value) {
             _tags
                 .where((element) => c.groupStates[element.item1]!)
@@ -344,7 +344,7 @@ class _FilterPageState extends State<FilterPage> {
           },
         ),
         FilterChip(
-          label: Text(trans.Translations.of(context).trans('deselectall')),
+          label: Text(trans.Translations.instance!.trans('deselectall')),
           onSelected: (bool value) {
             _tags
                 .where((element) => c.groupStates[element.item1]!)
@@ -355,7 +355,7 @@ class _FilterPageState extends State<FilterPage> {
           },
         ),
         FilterChip(
-          label: Text(trans.Translations.of(context).trans('inverse')),
+          label: Text(trans.Translations.instance!.trans('inverse')),
           onSelected: (bool value) {
             _tags
                 .where((element) => c.groupStates[element.item1]!)

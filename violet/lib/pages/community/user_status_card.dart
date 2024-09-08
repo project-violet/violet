@@ -183,8 +183,8 @@ class _UserStatusCardState extends ThemeSwitchableState<UserStatusCard>
             onTap: () async {
               await showOkDialog(
                   context,
-                  '$_userAppId\n\n${Translations.of(context).trans('userappmsg')}',
-                  Translations.of(context).trans('uruserappid'));
+                  '$_userAppId\n\n${Translations.instance!.trans('userappmsg')}',
+                  Translations.instance!.trans('uruserappid'));
             },
           ),
         ),

@@ -86,7 +86,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
         ),
         _checkBox(
           value: Settings.isHorizontal,
-          title: locale.Translations.of(context).trans('toggleviewerstyle'),
+          title: locale.Translations.instance!.trans('toggleviewerstyle'),
           onChanged: (value) async {
             await Settings.setIsHorizontal(!Settings.isHorizontal);
 
@@ -98,7 +98,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
           },
         ),
         _checkBox(
-          title: locale.Translations.of(context).trans('togglescrollvertical'),
+          title: locale.Translations.instance!.trans('togglescrollvertical'),
           value: Settings.scrollVertical,
           enabled: Settings.isHorizontal,
           onChanged: (value) async {
@@ -112,7 +112,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
           },
         ),
         _checkBox(
-          title: locale.Translations.of(context).trans('togglerighttoleft'),
+          title: locale.Translations.instance!.trans('togglerighttoleft'),
           value: Settings.rightToLeft,
           onChanged: (value) async {
             await Settings.setRightToLeft(!Settings.rightToLeft);
@@ -123,7 +123,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
           },
         ),
         _checkBox(
-          title: locale.Translations.of(context).trans('toggleanimatin'),
+          title: locale.Translations.instance!.trans('toggleanimatin'),
           value: Settings.animation,
           onChanged: (value) async {
             await Settings.setAnimation(!Settings.animation);
@@ -134,7 +134,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
           },
         ),
         _checkBox(
-          title: locale.Translations.of(context).trans('togglepadding'),
+          title: locale.Translations.instance!.trans('togglepadding'),
           value: Settings.padding,
           onChanged: (value) async {
             await Settings.setPadding(!Settings.padding);
@@ -145,7 +145,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
           },
         ),
         _checkBox(
-          title: locale.Translations.of(context).trans('disableoverlaybuttons'),
+          title: locale.Translations.instance!.trans('disableoverlaybuttons'),
           value: !Settings.disableOverlayButton,
           onChanged: (value) async {
             await Settings.setDisableOverlayButton(
@@ -159,8 +159,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
         if (!Platform.isIOS)
           _checkBox(
             value: Settings.moveToAppBarToBottom,
-            title:
-                locale.Translations.of(context).trans('movetoappbartobottom'),
+            title: locale.Translations.instance!.trans('movetoappbartobottom'),
             onChanged: (value) async {
               await Settings.setMoveToAppBarToBottom(
                   !Settings.moveToAppBarToBottom);
@@ -172,7 +171,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
           ),
         _checkBox(
           value: Settings.showSlider,
-          title: locale.Translations.of(context).trans('showslider'),
+          title: locale.Translations.instance!.trans('showslider'),
           enabled: Settings.moveToAppBarToBottom,
           onChanged: (value) async {
             await Settings.setShowSlider(!Settings.showSlider);
@@ -184,8 +183,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
         ),
         _checkBox(
           value: Settings.showPageNumberIndicator,
-          title:
-              locale.Translations.of(context).trans('showpagenumberindicator'),
+          title: locale.Translations.instance!.trans('showpagenumberindicator'),
           onChanged: (value) async {
             await Settings.setShowPageNumberIndicator(
                 !Settings.showPageNumberIndicator);
@@ -197,7 +195,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
         ),
         if (!Platform.isIOS)
           _checkBox(
-            title: locale.Translations.of(context).trans('disablefullscreen'),
+            title: locale.Translations.instance!.trans('disablefullscreen'),
             value: !Settings.disableFullScreen,
             onChanged: (value) async {
               await Settings.setDisableFullScreen(!Settings.disableFullScreen);
@@ -230,29 +228,29 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
             ),
             PopupMenuItem<int>(
               value: 1,
-              child: Text(locale.Translations.of(context).trans('high')),
+              child: Text(locale.Translations.instance!.trans('high')),
             ),
             PopupMenuItem<int>(
               value: 2,
-              child: Text(locale.Translations.of(context).trans('middle')),
+              child: Text(locale.Translations.instance!.trans('middle')),
             ),
             PopupMenuItem<int>(
               value: 3,
-              child: Text(locale.Translations.of(context).trans('low')),
+              child: Text(locale.Translations.instance!.trans('low')),
             ),
           ],
           child: ListTile(
             dense: true,
             title: Text(
-              locale.Translations.of(context).trans('imgquality'),
+              locale.Translations.instance!.trans('imgquality'),
               style: const TextStyle(color: Colors.white),
             ),
             trailing: Text(
               [
                 'None',
-                locale.Translations.of(context).trans('high'),
-                locale.Translations.of(context).trans('middle'),
-                locale.Translations.of(context).trans('low')
+                locale.Translations.instance!.trans('high'),
+                locale.Translations.instance!.trans('middle'),
+                locale.Translations.instance!.trans('low')
               ][imgqualityOption],
               style: const TextStyle(color: Colors.white),
             ),
@@ -270,29 +268,29 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
           itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
             PopupMenuItem<int>(
               value: 0,
-              child: Text(locale.Translations.of(context).trans('large')),
+              child: Text(locale.Translations.instance!.trans('large')),
             ),
             PopupMenuItem<int>(
               value: 1,
-              child: Text(locale.Translations.of(context).trans('middle')),
+              child: Text(locale.Translations.instance!.trans('middle')),
             ),
             PopupMenuItem<int>(
               value: 2,
-              child: Text(locale.Translations.of(context).trans('small')),
+              child: Text(locale.Translations.instance!.trans('small')),
             ),
           ],
           child: ListTile(
             dense: true,
             title: Text(
-              locale.Translations.of(context).trans('thumbnailslidersize'),
+              locale.Translations.instance!.trans('thumbnailslidersize'),
               style: const TextStyle(color: Colors.white),
             ),
             trailing: Text(
               [
-                locale.Translations.of(context).trans('verylarge'),
-                locale.Translations.of(context).trans('large'),
-                locale.Translations.of(context).trans('middle'),
-                locale.Translations.of(context).trans('small')
+                locale.Translations.instance!.trans('verylarge'),
+                locale.Translations.instance!.trans('large'),
+                locale.Translations.instance!.trans('middle'),
+                locale.Translations.instance!.trans('small')
               ][Settings.thumbSize],
               style: const TextStyle(color: Colors.white),
             ),
@@ -300,7 +298,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
         ),
         _checkBox(
           value: Settings.showRecordJumpMessage,
-          title: locale.Translations.of(context).trans('showrecordjumpmessage'),
+          title: locale.Translations.instance!.trans('showrecordjumpmessage'),
           onChanged: (value) {
             Settings.setShowRecordJumpMessage(!Settings.showRecordJumpMessage);
             setState(() {});

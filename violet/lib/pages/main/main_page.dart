@@ -113,26 +113,26 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
         uri: _discordUri,
         backgroundColor: const Color(0xFF7189da),
         icon: const Icon(MdiIcons.discord),
-        label: Text(Translations.of(context).trans('maindiscord')),
+        label: Text(Translations.instance!.trans('maindiscord')),
       ),
       CarouselButton(
         uri: _contactUri,
         backgroundColor: Colors.redAccent,
         icon: const Icon(MdiIcons.gmail),
-        label: Text(Translations.of(context).trans('maincontact')),
+        label: Text(Translations.instance!.trans('maincontact')),
       ),
       CarouselButton(
         uri: _gitHubUri,
         backgroundColor: const Color(0xFF24292E),
         icon: const Icon(MdiIcons.github),
-        label: Text(Translations.of(context).trans('maingithub')),
+        label: Text(Translations.instance!.trans('maingithub')),
       ),
     ];
 
     final groups = <Widget>[
       Container(height: 16),
       _BuildGroupWidget(
-        name: Translations.of(context).trans('userstat'),
+        name: Translations.instance!.trans('userstat'),
         content: const _StatAreaWidget(),
       ),
       CarouselSlider(
@@ -188,11 +188,11 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
         }).toList(),
       ),
       _BuildGroupWidget(
-        name: Translations.of(context).trans('versionmanagement'),
+        name: Translations.instance!.trans('versionmanagement'),
         content: const _VersionAreaWidget(),
       ),
       _BuildGroupWidget(
-        name: Translations.of(context).trans('service'),
+        name: Translations.instance!.trans('service'),
         content: const _ServiceAreaWidget(),
       ),
       Container(height: 32),
@@ -223,7 +223,7 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       if (UpdateSyncManager.updateRequire) {
         var bb = await showYesNoDialog(context,
-            '${Translations.of(context).trans('newupdate')} ${UpdateSyncManager.updateMessage} ${Translations.of(context).trans('wouldyouupdate')}');
+            '${Translations.instance!.trans('newupdate')} ${UpdateSyncManager.updateMessage} ${Translations.instance!.trans('wouldyouupdate')}');
         if (bb == false) return;
       } else {
         return;
@@ -340,7 +340,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
           children: [
             Row(
               children: [
-                Text(Translations.of(context).trans('curversion'),
+                Text(Translations.instance!.trans('curversion'),
                     style: const TextStyle(color: Colors.grey)),
                 const Text(
                     ' ${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}'),
@@ -350,14 +350,14 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
                     ' ${UpdateSyncManager.latestVersion}'
                 ? Row(
                     children: [
-                      Text(Translations.of(context).trans('latestversion'),
+                      Text(Translations.instance!.trans('latestversion'),
                           style: const TextStyle(color: Colors.grey)),
                       Text(' ${UpdateSyncManager.latestVersion}'),
                     ],
                   )
                 : Row(
                     children: [
-                      Text(Translations.of(context).trans('curlatestversion'),
+                      Text(Translations.instance!.trans('curlatestversion'),
                           style: const TextStyle(color: Colors.grey)),
                     ],
                   ),
@@ -374,14 +374,14 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
             onPressed: () {
               PlatformNavigator.navigateSlide(context, const PatchNotePage());
             },
-            child: Text(Translations.of(context).trans('patchnote')),
+            child: Text(Translations.instance!.trans('patchnote')),
           ),
         ),
       ],
     );
     var databaseInfo = Row(
       children: [
-        Text(Translations.of(context).trans('database'),
+        Text(Translations.instance!.trans('database'),
             style: const TextStyle(fontWeight: FontWeight.bold)),
         Expanded(child: Container()),
         Column(
@@ -390,7 +390,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(Translations.of(context).trans('local'),
+                Text(Translations.instance!.trans('local'),
                     style: const TextStyle(color: Colors.grey)),
                 FutureBuilder(
                     future: SharedPreferences.getInstance(),
@@ -408,7 +408,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(Translations.of(context).trans('latest'),
+                Text(Translations.instance!.trans('latest'),
                     style: const TextStyle(color: Colors.grey)),
                 Text(
                   ' ${DateFormat('yyyy.MM.dd').format(SyncManager.getLatestDB().getDateTime())}',
@@ -445,8 +445,8 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
                           switching: true,
                         )));
               },
-              child: Text(
-                  '    ${Translations.of(context).trans('switching')}    '),
+              child:
+                  Text('    ${Translations.instance!.trans('switching')}    '),
             ),
             badges.Badge(
               showBadge: syncAvailable,
@@ -458,8 +458,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
                   backgroundColor: Settings.majorColor.withAlpha(220),
                 ),
                 onPressed: _onSyncPressed,
-                child:
-                    Text('    ${Translations.of(context).trans('sync')}    '),
+                child: Text('    ${Translations.instance!.trans('sync')}    '),
               ),
             ),
           ],
@@ -512,7 +511,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
       if (!mounted) return;
       showToast(
         level: ToastLevel.check,
-        message: Translations.of(context).trans('synccomplete'),
+        message: Translations.instance!.trans('synccomplete'),
       );
     });
   }
@@ -534,7 +533,7 @@ class _StatAreaWidget extends StatelessWidget {
           children: [
             Column(
               children: [
-                Text(Translations.of(context).trans('readpresent')),
+                Text(Translations.instance!.trans('readpresent')),
                 Container(height: 8),
                 FutureBuilder(future: Future.sync(
                   () async {
@@ -555,7 +554,7 @@ class _StatAreaWidget extends StatelessWidget {
             ),
             Column(
               children: [
-                Text(Translations.of(context).trans('bookmark')),
+                Text(Translations.instance!.trans('bookmark')),
                 Container(height: 8),
                 FutureBuilder(future: Future.sync(
                   () async {
@@ -576,7 +575,7 @@ class _StatAreaWidget extends StatelessWidget {
             ),
             Column(
               children: [
-                Text(Translations.of(context).trans('download')),
+                Text(Translations.instance!.trans('download')),
                 Container(height: 8),
                 FutureBuilder(future: Future.sync(
                   () async {

@@ -96,7 +96,7 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                         //   // ),
                         // ),
                         Text(
-                          Translations.of(context).trans('realtimebest'),
+                          Translations.instance!.trans('realtimebest'),
                           style: const TextStyle(color: Colors.white),
                         ),
                       ]),

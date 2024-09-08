@@ -55,7 +55,7 @@ class VersionViewPage extends StatelessWidget {
                       const Text(''),
                       const Text('Project-Violet Android App'),
                       Text(
-                        Translations.of(context).trans('infomessage'),
+                        Translations.instance!.trans('infomessage'),
                         textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 10),
                       ),

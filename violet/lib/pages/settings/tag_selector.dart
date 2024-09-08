@@ -88,7 +88,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
               children: <Widget>[
                 ListTile(
                   contentPadding: const EdgeInsets.all(0),
-                  leading: Text('${Translations.of(context).trans('tag')}:'),
+                  leading: Text('${Translations.instance!.trans('tag')}:'),
                   title: TextField(
                     controller: _searchController,
                     minLines: 1,
@@ -102,8 +102,8 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
                   child: _searchLists.isEmpty || _nothing
                       ? Center(
                           child: Text(_nothing
-                              ? Translations.of(context).trans('nosearchresult')
-                              : Translations.of(context)
+                              ? Translations.instance!.trans('nosearchresult')
+                              : Translations.instance!
                                   .trans('inputsearchtoken')))
                       : Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 0),
@@ -120,7 +120,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
                         ),
                 ),
                 widget.what == 'include'
-                    ? Text(Translations.of(context).trans('tagmsgdefault'),
+                    ? Text(Translations.instance!.trans('tagmsgdefault'),
                         style: const TextStyle(fontSize: 14.0))
                     : Container()
               ],
@@ -133,7 +133,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
           style: ElevatedButton.styleFrom(
             backgroundColor: Settings.majorColor,
           ),
-          child: Text(Translations.of(context).trans('ok')),
+          child: Text(Translations.instance!.trans('ok')),
           onPressed: () {
             Navigator.pop(
                 context, Tuple2<int, String>(1, _searchController.text));
@@ -143,7 +143,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
           style: ElevatedButton.styleFrom(
             backgroundColor: Settings.majorColor,
           ),
-          child: Text(Translations.of(context).trans('cancel')),
+          child: Text(Translations.instance!.trans('cancel')),
           onPressed: () {
             Navigator.pop(
                 context, Tuple2<int, String>(0, _searchController.text));

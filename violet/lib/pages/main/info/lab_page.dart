@@ -191,7 +191,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   Widget yesButton = TextButton(
                     style: TextButton.styleFrom(
                         foregroundColor: Settings.majorColor),
-                    child: Text(Translations.of(context).trans('ok')),
+                    child: Text(Translations.instance!.trans('ok')),
                     onPressed: () {
                       Navigator.pop(context, true);
                     },
@@ -199,7 +199,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   Widget noButton = TextButton(
                     style: TextButton.styleFrom(
                         foregroundColor: Settings.majorColor),
-                    child: Text(Translations.of(context).trans('cancel')),
+                    child: Text(Translations.instance!.trans('cancel')),
                     onPressed: () {
                       Navigator.pop(context, false);
                     },
