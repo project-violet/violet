@@ -100,7 +100,7 @@ dependencies:
   flutter_js: ^0.8.0
   flutter_windowmanager: ^0.2.0
   fluttertoast: ^8.2.4
-  freezed_annotation:
+  freezed_annotation: ^2.4.4
   get: ^4.6.6
   gradient_widgets: ^0.6.0
   html: ^0.15.0
@@ -144,13 +144,14 @@ dependencies:
   rust_lib_violet:
     path: rust_builder
   flutter_rust_bridge: 2.0.0-dev.24
+  json_annotation: ^4.9.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.4.4
-  json_serializable: ^6.7.0
-  freezed: ^2.3.5
+  build_runner: ^2.4.11
+  json_serializable: ^6.8.0
+  freezed: ^2.5.2
   drift_sqflite: ^2.0.0
   sqflite_common_ffi:
   flutter_lints: ^3.0.0
