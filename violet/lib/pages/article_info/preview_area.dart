@@ -3,7 +3,6 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/util/iter_helper.dart';
@@ -41,16 +40,15 @@ class PreviewAreaWidget extends StatelessWidget {
           VioletImageProvider prov =
               await ProviderManager.get(queryResult.id());
 
-          return Tuple2(
-              await prov.getSmallImagesUrl(), await prov.getHeader(0));
+          return (await prov.getSmallImagesUrl(), await prov.getHeader(0));
         }),
         builder: (context,
-            AsyncSnapshot<Tuple2<List<String>, Map<String, String>>> snapshot) {
+            AsyncSnapshot<(List<String>, Map<String, String>)> snapshot) {
           if (!snapshot.hasData) {
             return const CircularProgressIndicator();
           }
 
-          final pages = (snapshot.data!.item1)
+          final pages = (snapshot.data!.$1)
               .chunk(30)
               .map((chunk) => GridView.count(
                     controller: null,
@@ -65,7 +63,7 @@ class PreviewAreaWidget extends StatelessWidget {
                         .map((i, e) => MapEntry(
                             i,
                             _buildTappableItem(context, chunk.$1 * 30 + i, e,
-                                snapshot.data!.item2)))
+                                snapshot.data!.$2)))
                         .values
                         .toList(),
                   ))

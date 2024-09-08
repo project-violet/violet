@@ -14,7 +14,6 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/eh/eh_headers.dart';
@@ -307,7 +306,7 @@ class ArticleInfoPage extends StatelessWidget {
           return Provider<ViewerPageProvider>.value(
               value: ViewerPageProvider(
                 // uris: ThumbnailManager.get(queryResult.id())
-                //     .item1,
+                //     .$1,
                 // useWeb: true,
                 uris: List<String>.filled(prov.length(), ''),
                 useProvider: true,
@@ -362,9 +361,10 @@ class TagInfoAreaWidget extends StatelessWidget {
                 ? (queryResult.tags() as String)
                     .split('|')
                     .where((element) => element != '')
-                    .map((e) => Tuple2<String, String>(
-                        e.contains(':') ? e.split(':')[0] : 'tags',
-                        e.contains(':') ? e.split(':')[1] : e))
+                    .map((e) => (
+                          e.contains(':') ? e.split(':')[0] : 'tags',
+                          e.contains(':') ? e.split(':')[1] : e
+                        ))
                     .toList()
                 : []),
         SingleChipWidget(
@@ -378,7 +378,7 @@ class TagInfoAreaWidget extends StatelessWidget {
                 ? (queryResult.artists() as String)
                     .split('|')
                     .where((element) => element != '')
-                    .map((e) => Tuple2<String, String>('artist', e))
+                    .map((e) => ('artist', e))
                     .toList()
                 : []),
         MultiChipWidget(
@@ -388,7 +388,7 @@ class TagInfoAreaWidget extends StatelessWidget {
                 ? (queryResult.groups() as String)
                     .split('|')
                     .where((element) => element != '')
-                    .map((e) => Tuple2<String, String>('group', e))
+                    .map((e) => ('group', e))
                     .toList()
                 : []),
         MultiChipWidget(
@@ -398,7 +398,7 @@ class TagInfoAreaWidget extends StatelessWidget {
                 ? (queryResult.series() as String)
                     .split('|')
                     .where((element) => element != '')
-                    .map((e) => Tuple2<String, String>('series', e))
+                    .map((e) => ('series', e))
                     .toList()
                 : []),
         MultiChipWidget(
@@ -408,7 +408,7 @@ class TagInfoAreaWidget extends StatelessWidget {
                 ? (queryResult.characters() as String)
                     .split('|')
                     .where((element) => element != '')
-                    .map((e) => Tuple2<String, String>('character', e))
+                    .map((e) => ('character', e))
                     .toList()
                 : []),
         SingleChipWidget(
@@ -474,7 +474,7 @@ class SingleChipWidget extends StatelessWidget {
 }
 
 class MultiChipWidget extends StatelessWidget {
-  final List<Tuple2<String, String>> groupName;
+  final List<(String, String)> groupName;
   final String name;
   final String? target;
 
@@ -497,9 +497,8 @@ class MultiChipWidget extends StatelessWidget {
           child: Wrap(
             spacing: 3.0,
             runSpacing: -9.0,
-            children: groupName
-                .map((x) => _Chip(group: x.item1, name: x.item2))
-                .toList(),
+            children:
+                groupName.map((x) => _Chip(group: x.$1, name: x.$2)).toList(),
           ),
         ),
       ],
@@ -524,7 +523,7 @@ class _CommentArea extends StatefulWidget {
 }
 
 class __CommentAreaState extends State<_CommentArea> {
-  List<Tuple3<DateTime, String, String>> comments = [];
+  List<(DateTime, String, String)> comments = [];
 
   @override
   void initState() {
@@ -541,7 +540,7 @@ class __CommentAreaState extends State<_CommentArea> {
             final article = EHParser.parseArticleData(html);
             setState(() {
               comments.addAll(article.comment ?? []);
-              comments.sort((x, y) => x.item1.compareTo(y.item1));
+              comments.sort((x, y) => x.$1.compareTo(y.$1));
             });
             return;
           } catch (_) {}
@@ -557,7 +556,7 @@ class __CommentAreaState extends State<_CommentArea> {
           final article = EHParser.parseArticleData(html);
           setState(() {
             comments.addAll(article.comment ?? []);
-            comments.sort((x, y) => x.item1.compareTo(y.item1));
+            comments.sort((x, y) => x.$1.compareTo(y.$1));
           });
         } catch (_) {}
       }
@@ -575,7 +574,7 @@ class __CommentAreaState extends State<_CommentArea> {
 
 class _InfoAreaWidget extends StatefulWidget {
   final QueryResult queryResult;
-  final List<Tuple3<DateTime, String, String>> comments;
+  final List<(DateTime, String, String)> comments;
 
   const _InfoAreaWidget({
     required this.queryResult,
@@ -638,9 +637,9 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
       var children = List<Widget>.from(widget.comments.map((e) {
         return InkWell(
           onTap: () async {
-            // showOkDialog(context, e.item3, 'Comments');
+            // showOkDialog(context, e.$3, 'Comments');
             AlertDialog alert = AlertDialog(
-              content: SelectableText(e.item3),
+              content: SelectableText(e.$3),
               // actions: [
               //   okButton,
               // ],
@@ -654,7 +653,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
           },
           onLongPress: () async {
             PlatformNavigator.navigateSlide(
-                context, LabSearchCommentsAuthor(e.item2));
+                context, LabSearchCommentsAuthor(e.$2));
           },
           splashColor: Colors.white,
           child: ListTile(
@@ -662,18 +661,17 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
             title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Text(e.item2),
+                  Text(e.$2),
                   Expanded(
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                          DateFormat('yyyy-MM-dd HH:mm')
-                              .format(e.item1.toLocal()),
+                          DateFormat('yyyy-MM-dd HH:mm').format(e.$1.toLocal()),
                           style: const TextStyle(fontSize: 12)),
                     ),
                   ),
                 ]),
-            subtitle: buildTextWithLinks(e.item3),
+            subtitle: buildTextWithLinks(e.$3),
           ),
         );
       }));

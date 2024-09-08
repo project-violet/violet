@@ -6,7 +6,6 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/log/log.dart';
@@ -82,126 +81,124 @@ class HitomiIndexs {
     }
   }
 
-  static List<Tuple2<String, double>> _calculateSimilars(
+  static List<(String, double)> _calculateSimilars(
       Map<String, dynamic> map, String artist) {
     var rr = map[artist];
-    var result = <Tuple2<String, double>>[];
+    var result = <(String, double)>[];
 
     map.forEach((key, value) {
       if (artist == key) return;
       if (key.toLowerCase() == 'n/a') return;
 
       var dist = Distance.cosineDistance(rr, value);
-      result.add(Tuple2<String, double>(key, dist));
+      result.add((key, dist));
     });
 
-    result.sort((x, y) => y.item2.compareTo(x.item2));
+    result.sort((x, y) => y.$2.compareTo(x.$2));
 
     return result;
   }
 
-  static List<Tuple2<String, double>> caclulateSimilarsManual(
+  static List<(String, double)> caclulateSimilarsManual(
       Map<String, dynamic> map, Map<String, dynamic> target) {
-    final result = <Tuple2<String, double>>[];
+    final result = <(String, double)>[];
 
     map.forEach((key, value) {
       if (key.toLowerCase() == 'n/a') return;
 
       final dist = Distance.cosineDistance(target, value);
-      result.add(Tuple2<String, double>(key, dist));
+      result.add((key, dist));
     });
 
-    result.sort((x, y) => y.item2.compareTo(x.item2));
+    result.sort((x, y) => y.$2.compareTo(x.$2));
 
     return result;
   }
 
-  static List<Tuple2<String, double>> calculateSimilarArtists(String artist) {
+  static List<(String, double)> calculateSimilarArtists(String artist) {
     return _calculateSimilars(tagArtist, artist);
   }
 
-  static List<Tuple2<String, double>> calculateSimilarGroups(String group) {
+  static List<(String, double)> calculateSimilarGroups(String group) {
     return _calculateSimilars(tagGroup, group);
   }
 
-  static List<Tuple2<String, double>> calculateSimilarUploaders(
-      String uploader) {
+  static List<(String, double)> calculateSimilarUploaders(String uploader) {
     return _calculateSimilars(tagUploader, uploader);
   }
 
-  static List<Tuple2<String, double>> calculateSimilarSeries(String series) {
+  static List<(String, double)> calculateSimilarSeries(String series) {
     return _calculateSimilars(tagSeries, series);
   }
 
-  static List<Tuple2<String, double>> calculateSimilarCharacter(
-      String character) {
+  static List<(String, double)> calculateSimilarCharacter(String character) {
     return _calculateSimilars(tagCharacter, character);
   }
 
-  static List<Tuple2<String, double>> calculateRelatedCharacterSeries(
-      String series) {
+  static List<(String, double)> calculateRelatedCharacterSeries(String series) {
     if (seriesSeries == null) {
       return _calculateSimilars(characterSeries!, series)
-          .where((element) => element.item2 >= 0.000001)
+          .where((element) => element.$2 >= 0.000001)
           .toList();
     } else {
       var ll = (seriesSeries![series] as Map<String, dynamic>)
           .entries
-          .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
+          .map((e) => (e.key, (e.value as int).toDouble()))
           .toList();
-      ll.sort((x, y) => y.item2.compareTo(x.item2));
+      ll.sort((x, y) => y.$2.compareTo(x.$2));
       return ll;
     }
   }
 
-  static List<Tuple2<String, double>> calculateRelatedSeriesCharacter(
+  static List<(String, double)> calculateRelatedSeriesCharacter(
       String character) {
     if (characterCharacter == null) {
       return _calculateSimilars(seriesCharacter!, character)
-          .where((element) => element.item2 >= 0.000001)
+          .where((element) => element.$2 >= 0.000001)
           .toList();
     } else {
       var ll = (characterCharacter![character] as Map<String, dynamic>)
           .entries
-          .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
+          .map((e) => (e.key, (e.value as int).toDouble()))
           .toList();
-      ll.sort((x, y) => y.item2.compareTo(x.item2));
+      ll.sort((x, y) => y.$2.compareTo(x.$2));
       return ll;
     }
   }
 
-  static List<Tuple2<String, double>> getRelatedCharacters(String series) {
+  static List<(String, double)> getRelatedCharacters(String series) {
     if (!characterSeries!.containsKey(series)) {
-      return <Tuple2<String, double>>[];
+      return <(String, double)>[];
     }
     var ll = (characterSeries![series] as Map<String, dynamic>)
         .entries
-        .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
+        .map((e) => (e.key, (e.value as int).toDouble()))
         .toList();
-    ll.sort((x, y) => y.item2.compareTo(x.item2));
+    ll.sort((x, y) => y.$2.compareTo(x.$2));
     return ll;
   }
 
-  static List<Tuple2<String, double>> getRelatedSeries(String character) {
+  static List<(String, double)> getRelatedSeries(String character) {
     if (!seriesCharacter!.containsKey(character)) {
-      return <Tuple2<String, double>>[];
+      return <(String, double)>[];
     }
     var ll = (seriesCharacter![character] as Map<String, dynamic>)
         .entries
-        .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
+        .map((e) => (e.key, (e.value as int).toDouble()))
         .toList();
-    ll.sort((x, y) => y.item2.compareTo(x.item2));
+    ll.sort((x, y) => y.$2.compareTo(x.$2));
     return ll;
   }
 
-  static List<Tuple2<String, double>> getRelatedTag(String tag) {
-    if (!relatedTag.containsKey(tag)) return <Tuple2<String, double>>[];
+  static List<(String, double)> getRelatedTag(String tag) {
+    if (!relatedTag.containsKey(tag)) return <(String, double)>[];
     var ll = (relatedTag[tag] as List<dynamic>)
-        .map((e) => Tuple2<String, double>(
-            (e as Map<String, dynamic>).entries.first.key,
-            e.entries.first.value.toDouble()))
+        .map((e) => (
+              (e as Map<String, dynamic>).entries.first.key,
+              (e.entries.first.value as int).toDouble()
+            ))
         .toList();
-    ll.sort((x, y) => y.item2.compareTo(x.item2));
+    ll.sort((x, y) => y.$2.compareTo(x.$2));
     return ll;
   }
 }

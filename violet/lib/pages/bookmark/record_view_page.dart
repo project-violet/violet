@@ -109,14 +109,14 @@ class RecordViewPage extends StatelessWidget {
         //         future:
         //             HentaiManager.idSearch(snapshot.data[index].articleId()),
         //         builder: (context,
-        //             AsyncSnapshot<Tuple2<List<QueryResult>, int>> snapshot) {
+        //             AsyncSnapshot<(List<QueryResult), int>> snapshot) {
         //           return Column(
         //             crossAxisAlignment: CrossAxisAlignment.stretch,
         //             children: <Widget>[
         //               snapshot.hasData
         //                   ? Provider<ArticleListItem>.value(
         //                       value: ArticleListItem.fromArticleListItem(
-        //                         queryResult: snapshot.data.item1[0],
+        //                         queryResult: snapshot.data.$1[0],
         //                         addBottomPadding: false,
         //                         width: (width - 16),
         //                         thumbnailTag: Uuid().v4(),
@@ -130,7 +130,7 @@ class RecordViewPage extends StatelessWidget {
         //     snapshot.hasData
         //         ? Provider<ArticleListItem>.value(
         //             value: ArticleListItem.fromArticleListItem(
-        //               queryResult: snapshot.data.item1[0],
+        //               queryResult: snapshot.data.$1[0],
         //               showDetail: true,
         //               addBottomPadding: false,
         //               width: (width - 16),

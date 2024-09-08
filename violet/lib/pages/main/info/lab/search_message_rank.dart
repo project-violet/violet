@@ -4,15 +4,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/pages/segment/card_panel.dart';
 
 class SearchMessageRankPageMemory {
   static String latestSearch = '';
-  static List<Tuple3<String, String, int>> rawSearchLists =
-      <Tuple3<String, String, int>>[];
+  static List<(String, String, int)> rawSearchLists = <(String, String, int)>[];
 }
 
 class SearchMessageRankPage extends StatefulWidget {
@@ -23,8 +21,7 @@ class SearchMessageRankPage extends StatefulWidget {
 }
 
 class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
-  List<Tuple3<String, String, int>> searchLists =
-      <Tuple3<String, String, int>>[];
+  List<(String, String, int)> searchLists = <(String, String, int)>[];
   TextEditingController text =
       TextEditingController(text: SearchMessageRankPageMemory.latestSearch);
 
@@ -40,20 +37,20 @@ class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
         var m = jsonDecode((await http.get(url)).body) as Map<String, dynamic>;
 
         SearchMessageRankPageMemory.rawSearchLists = m.entries
-            .map((e) => Tuple3<String, String, int>(
-                e.key, TagTranslate.disassembly(e.key), e.value as int))
+            .map(
+                (e) => (e.key, TagTranslate.disassembly(e.key), e.value as int))
             .toList();
       }
 
       if (text.text != '') {
         searchLists = SearchMessageRankPageMemory.rawSearchLists
             .where((element) =>
-                element.item2.contains(TagTranslate.disassembly(text.text)))
+                element.$2.contains(TagTranslate.disassembly(text.text)))
             .toList();
-        searchLists.sort((x, y) => y.item1.length.compareTo(x.item1.length));
+        searchLists.sort((x, y) => y.$1.length.compareTo(x.$1.length));
       } else {
         searchLists = SearchMessageRankPageMemory.rawSearchLists.toList();
-        searchLists.sort((x, y) => y.item1.length.compareTo(x.item1.length));
+        searchLists.sort((x, y) => y.$1.length.compareTo(x.$1.length));
       }
 
       setState(() {});
@@ -74,10 +71,10 @@ class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
               itemBuilder: (BuildContext ctxt, int index) {
                 var e = searchLists[index];
                 return ListTile(
-                  title: Text(e.item1),
+                  title: Text(e.$1),
                   dense: true,
                   onTap: () {
-                    Navigator.pop(context, e.item1);
+                    Navigator.pop(context, e.$1);
                   },
                 );
               },
@@ -92,11 +89,11 @@ class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
                   SearchMessageRankPageMemory.latestSearch = text.text;
 
                   searchLists = SearchMessageRankPageMemory.rawSearchLists
-                      .where((element) => element.item2
+                      .where((element) => element.$2
                           .contains(TagTranslate.disassembly(text.text)))
                       .toList();
                   searchLists
-                      .sort((x, y) => y.item1.length.compareTo(x.item1.length));
+                      .sort((x, y) => y.$1.length.compareTo(x.$1.length));
 
                   setState(() {});
                 },

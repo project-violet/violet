@@ -6,10 +6,9 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
-import 'package:tuple/tuple.dart';
 
 class LDI {
-  static List<Tuple2<int, double>>? ldi;
+  static List<(int, double)>? ldi;
 
   static Future<void> init() async {
     String data;
@@ -22,8 +21,8 @@ class LDI {
 
     Map<String, dynamic> dataLdi = json.decode(data);
     ldi = dataLdi.entries
-        .map((x) => Tuple2<int, double>(int.parse(x.key), x.value as double))
+        .map((x) => (int.parse(x.key), x.value as double))
         .toList();
-    ldi!.sort((x, y) => y.item2.compareTo(x.item2));
+    ldi!.sort((x, y) => y.$2.compareTo(x.$2));
   }
 }

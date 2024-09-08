@@ -1,11 +1,10 @@
 import 'dart:convert';
 
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/network/wrapper.dart' as http;
 
 class MessageSearch {
-  static late final List<Tuple3<String, String, int>> autocompleteTarget;
+  static late final List<(String, String, int)> autocompleteTarget;
 
   static bool _init = false;
 
@@ -19,10 +18,9 @@ class MessageSearch {
     var m = jsonDecode((await http.get(url)).body) as Map<String, dynamic>;
 
     autocompleteTarget = m.entries
-        .map((e) => Tuple3<String, String, int>(
-            e.key, TagTranslate.disassembly(e.key), e.value as int))
+        .map((e) => (e.key, TagTranslate.disassembly(e.key), e.value as int))
         .toList();
 
-    autocompleteTarget.sort((x, y) => y.item3.compareTo(x.item3));
+    autocompleteTarget.sort((x, y) => y.$3.compareTo(x.$3));
   }
 }

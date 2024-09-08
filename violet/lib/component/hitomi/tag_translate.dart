@@ -7,7 +7,6 @@ import 'dart:isolate';
 
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/displayed_tag.dart';
 import 'package:violet/component/hitomi/tag_translated_regacy.dart';
@@ -142,44 +141,46 @@ class TagTranslate {
   }
 
   // [<Origin, Translated>]
-  static List<Tuple2<DisplayedTag, int>> containsFuzzing(String part) {
+  static List<(DisplayedTag, int)> containsFuzzing(String part) {
     part = part.replaceAll(' ', '');
     var result = _translateMap.entries
-        .map((e) => Tuple2<DisplayedTag, int>(
-            DisplayedTag(tag: e.key, translated: e.value.split('|')[0]),
-            Distance.levenshteinDistance(
-                e.value.replaceAll(' ', '').split('|')[0].runes.toList(),
-                part.runes.toList())))
+        .map((e) => (
+              DisplayedTag(tag: e.key, translated: e.value.split('|')[0]),
+              Distance.levenshteinDistance(
+                  e.value.replaceAll(' ', '').split('|')[0].runes.toList(),
+                  part.runes.toList())
+            ))
         .toList();
-    result.sort((x, y) => x.item2.compareTo(y.item2));
+    result.sort((x, y) => x.$2.compareTo(y.$2));
     return result;
   }
 
   // [<Origin, Translated>]
-  static List<Tuple2<DisplayedTag, int>> containsFuzzingAndro(String part) {
+  static List<(DisplayedTag, int)> containsFuzzingAndro(String part) {
     part = disassembly(part.replaceAll(' ', ''));
     var result = _reverseAndroMap.entries
-        .map((e) => Tuple2<DisplayedTag, int>(
-            DisplayedTag(
-                tag: e.value,
-                translated: _translateMap[e.value]!.split('|')[0]),
-            Distance.levenshteinDistance(
-                e.key.replaceAll(' ', '').split('|')[0].runes.toList(),
-                part.runes.toList())))
+        .map((e) => (
+              DisplayedTag(
+                  tag: e.value,
+                  translated: _translateMap[e.value]!.split('|')[0]),
+              Distance.levenshteinDistance(
+                  e.key.replaceAll(' ', '').split('|')[0].runes.toList(),
+                  part.runes.toList())
+            ))
         .toList();
-    result.sort((x, y) => x.item2.compareTo(y.item2));
+    result.sort((x, y) => x.$2.compareTo(y.$2));
     return result;
   }
 
   // [<Origin, Translated>]
-  static List<Tuple2<DisplayedTag, int>> containsFuzzingTotal(String part) {
+  static List<(DisplayedTag, int)> containsFuzzingTotal(String part) {
     var result = containsFuzzing(part) + containsFuzzingAndro(part);
-    result.sort((x, y) => x.item2.compareTo(y.item2));
+    result.sort((x, y) => x.$2.compareTo(y.$2));
     var overlap = <String>{};
-    var rresult = <Tuple2<DisplayedTag, int>>[];
+    var rresult = <(DisplayedTag, int)>[];
     for (var element in result) {
-      if (overlap.contains(element.item1.getTag())) continue;
-      overlap.add(element.item1.getTag());
+      if (overlap.contains(element.$1.getTag())) continue;
+      overlap.add(element.$1.getTag());
       rresult.add(element);
     }
     return rresult;

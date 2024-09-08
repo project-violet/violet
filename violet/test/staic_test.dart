@@ -20,7 +20,7 @@ void main() {
         .reversed
         .toList()
         .first
-        .item1;
+        .$1;
 
     const answer =
         'series:danshi koukousei de urekko light novel sakka o shiteiru keredo';
@@ -32,11 +32,11 @@ void main() {
     final query = (await HitomiManager.queryAutoComplete('청춘', true)).toList();
 
     final t1 = query.any((e) =>
-        e.item1.getTag() ==
+        e.$1.getTag() ==
         'series:yahari ore no seishun love come wa machigatteiru');
 
     final t2 = query.any((e) =>
-        e.item1.getTag() ==
+        e.$1.getTag() ==
         'series:seishun buta yarou wa bunny girl senpai no yume o minai');
 
     expect(t1 && t2, true);

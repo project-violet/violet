@@ -13,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
@@ -59,15 +58,15 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   // Artist Articles
   late List<QueryResult> cc;
   // Chart component lists
-  late List<Tuple2<String, int>> lff = <Tuple2<String, int>>[];
-  late List<Tuple2<String, int>> lffOrigin;
+  late List<(String, int)> lff = <(String, int)>[];
+  late List<(String, int)> lffOrigin;
   // Similar Aritsts Info
-  late List<Tuple2<String, double>> similars;
-  late List<Tuple2<String, double>> similarsAll;
-  late List<Tuple2<String, double>> relatedCOSSingle;
-  late List<Tuple2<String, double>> relatedCharacterOrSeries;
-  late List<Tuple2<String, double>> relatedCOSSingleAll;
-  late List<Tuple2<String, double>> relatedCharacterOrSeriesAll;
+  late List<(String, double)> similars;
+  late List<(String, double)> similarsAll;
+  late List<(String, double)> relatedCOSSingle;
+  late List<(String, double)> relatedCharacterOrSeries;
+  late List<(String, double)> relatedCOSSingleAll;
+  late List<(String, double)> relatedCharacterOrSeriesAll;
   // Similar Item Lists
   List<List<QueryResult>> qrs = [];
   List<List<QueryResult>> qrsCOSSingle = [];
@@ -75,7 +74,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   // Title clustering
   late List<List<int>> series;
   // Comments
-  List<Tuple3<DateTime, String, String>>? comments;
+  List<(DateTime, String, String)>? comments;
 
   bool isBookmarked = false;
   FlareControls flareController = FlareControls();
@@ -128,9 +127,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       }
 
       ffstat.forEach((key, value) {
-        lff.add(Tuple2<String, int>(key, value));
+        lff.add((key, value));
       });
-      lff.sort((x, y) => y.item2.compareTo(x.item2));
+      lff.sort((x, y) => y.$2.compareTo(x.$2));
 
       lffOrigin = lff;
       lff = lff.take(5).toList();
@@ -208,8 +207,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         '${widget.type.name}:${widget.name}'))['result'] as List<dynamic>;
 
     comments = tcomments
-        .map((e) => Tuple3<DateTime, String, String>(
-            DateTime.parse(e['TimeStamp']), e['UserAppId'], e['Body']))
+        .map((e) => (
+              DateTime.parse(e['TimeStamp']),
+              e['UserAppId'] as String,
+              e['Body'] as String
+            ))
         .toList()
         .reversed
         .toList();
@@ -217,11 +219,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     if (comments!.isNotEmpty) setState(() {});
   }
 
-  Future<void> querySimilars(List<Tuple2<String, double>> similars,
-      String prefix, List<List<QueryResult>> qrs) async {
+  Future<void> querySimilars(List<(String, double)> similars, String prefix,
+      List<List<QueryResult>> qrs) async {
     var unescape = HtmlUnescape();
     for (int i = 0; i < similars.length; i++) {
-      var postfix = similars[i].item1.toLowerCase().replaceAll(' ', '_');
+      var postfix = similars[i].$1.toLowerCase().replaceAll(' ', '_');
       var queryString = HitomiManager.translate2query(
           '$prefix:$postfix ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
       final qm = QueryManager.queryPagination(queryString);
@@ -444,18 +446,18 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                   isExpanded ? lff.length * 14.0 + 10 : lff.length * 22.0 + 10,
               child: charts.BarChart(
                 [
-                  charts.Series<Tuple2<String, int>, String>(
+                  charts.Series<(String, int), String>(
                       id: 'Sales',
                       data: lff,
-                      domainFn: (Tuple2<String, int> sales, f) =>
-                          sales.item1.contains(':')
-                              ? sales.item1.split(':')[1]
-                              : sales.item1,
-                      measureFn: (Tuple2<String, int> sales, _) => sales.item2,
-                      colorFn: (Tuple2<String, int> sales, _) {
-                        if (sales.item1.startsWith('female:')) {
+                      domainFn: ((String, int) sales, f) =>
+                          sales.$1.contains(':')
+                              ? sales.$1.split(':')[1]
+                              : sales.$1,
+                      measureFn: ((String, int) sales, _) => sales.$2,
+                      colorFn: ((String, int) sales, _) {
+                        if (sales.$1.startsWith('female:')) {
                           return charts.MaterialPalette.pink.shadeDefault;
-                        } else if (sales.item1.startsWith('male:')) {
+                        } else if (sales.$1.startsWith('male:')) {
                           return charts.MaterialPalette.blue.shadeDefault;
                         } else {
                           return charts.MaterialPalette.gray.shadeDefault;
@@ -705,12 +707,12 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         return ThreeArticlePanel(
           tappedRoute: () => ArtistInfoPage(
             type: widget.type,
-            name: e.item1,
+            name: e.$1,
           ),
           title:
-              ' ${e.item1} (${HitomiManager.getArticleCount(widget.type.name, e.item1).toString()})',
+              ' ${e.$1} (${HitomiManager.getArticleCount(widget.type.name, e.$1).toString()})',
           count:
-              '${Translations.instance!.trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+              '${Translations.instance!.trans('score')}: ${e.$2.toStringAsFixed(1)} ',
           articles: qq,
         );
       },
@@ -750,7 +752,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         return InkWell(
           onTap: () async {
             AlertDialog alert = AlertDialog(
-              content: SelectableText(e.item3),
+              content: SelectableText(e.$3),
             );
             await showDialog(
               context: context,
@@ -764,18 +766,17 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Text(e.item2.substring(0, 6)),
+                  Text(e.$2.substring(0, 6)),
                   Expanded(
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                          DateFormat('yyyy-MM-dd HH:mm')
-                              .format(e.item1.toLocal()),
+                          DateFormat('yyyy-MM-dd HH:mm').format(e.$1.toLocal()),
                           style: const TextStyle(fontSize: 12)),
                     ),
                   ),
                 ]),
-            subtitle: Text(e.item3),
+            subtitle: Text(e.$3),
           ),
         );
       }));
@@ -884,12 +885,12 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         return ThreeArticlePanel(
           tappedRoute: () => ArtistInfoPage(
             type: widget.type,
-            name: e.item1,
+            name: e.$1,
           ),
           title:
-              ' ${e.item1} (${HitomiManager.getArticleCount(widget.type.name, e.item1)})',
+              ' ${e.$1} (${HitomiManager.getArticleCount(widget.type.name, e.$1)})',
           count:
-              '${Translations.instance!.trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+              '${Translations.instance!.trans('score')}: ${e.$2.toStringAsFixed(1)} ',
           articles: qq,
         );
       },
@@ -915,12 +916,12 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         return ThreeArticlePanel(
           tappedRoute: () => ArtistInfoPage(
             type: widget.type,
-            name: e.item1,
+            name: e.$1,
           ),
           title:
-              ' ${e.item1} (${HitomiManager.getArticleCount(widget.type.name, e.item1)})',
+              ' ${e.$1} (${HitomiManager.getArticleCount(widget.type.name, e.$1)})',
           count:
-              '${Translations.instance!.trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+              '${Translations.instance!.trans('score')}: ${e.$2.toStringAsFixed(1)} ',
           articles: qq,
         );
       },

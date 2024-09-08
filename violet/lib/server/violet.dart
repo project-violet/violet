@@ -6,7 +6,6 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/log/log.dart';
@@ -31,8 +30,7 @@ class VioletServer {
 
     try {
       final result = (jsonDecode(gg.body)['result'] as List<dynamic>)
-          .map((e) =>
-              Tuple2<int, int>((e as List<dynamic>)[0] as int, (e)[1] as int))
+          .map((e) => ((e as List<dynamic>)[0] as int, (e)[1] as int))
           .toList();
       return result;
     } catch (e, st) {
@@ -52,8 +50,7 @@ class VioletServer {
 
     try {
       final result = (jsonDecode(gg.body)['result'] as List<dynamic>)
-          .map((e) =>
-              Tuple2<int, int>((e as List<dynamic>)[0] as int, (e)[1] as int))
+          .map((e) => ((e as List<dynamic>)[0] as int, (e)[1] as int))
           .toList();
       return result;
     } catch (e, st) {
@@ -297,8 +294,8 @@ class VioletServer {
 
     try {
       final result = (jsonDecode(gg.body)['result'] as List<dynamic>)
-          .map((e) => Tuple3<int, int, int>(
-              (e as List<dynamic>)[0] as int, (e)[1] as int, (e)[2] as int))
+          .map((e) =>
+              ((e as List<dynamic>)[0] as int, (e)[1] as int, (e)[2] as int))
           .toList();
       return result;
     } catch (e, st) {
@@ -322,11 +319,12 @@ class VioletServer {
 
     try {
       final result = (jsonDecode(gg.body)['result'] as List<dynamic>)
-          .map((e) => Tuple4<int, int, int, String>(
-              (e as List<dynamic>)[0] as int,
-              (e)[1] as int,
-              (e)[2] as int,
-              (e)[3] as String))
+          .map((e) => (
+                (e as List<dynamic>)[0] as int,
+                (e)[1] as int,
+                (e)[2] as int,
+                (e)[3] as String
+              ))
           .toList();
       return result;
     } catch (e, st) {
@@ -350,8 +348,8 @@ class VioletServer {
 
     try {
       final result = (jsonDecode(gg.body)['result'] as List<dynamic>)
-          .map((e) => Tuple3<int, int, int>(
-              (e as List<dynamic>)[0] as int, (e)[1] as int, (e)[2] as int))
+          .map((e) =>
+              ((e as List<dynamic>)[0] as int, (e)[1] as int, (e)[2] as int))
           .toList();
       return result;
     } catch (e, st) {
@@ -374,11 +372,12 @@ class VioletServer {
 
     try {
       final result = (jsonDecode(gg.body)['result'] as List<dynamic>)
-          .map((e) => Tuple4<int, DateTime, String, String>(
-              int.parse((e as Map<String, dynamic>)['id'] as String),
-              DateTime.parse((e)['time'] as String),
-              (e)['author'] as String,
-              (e)['body'] as String))
+          .map((e) => (
+                int.parse((e as Map<String, dynamic>)['id'] as String),
+                DateTime.parse((e)['time'] as String),
+                (e)['author'] as String,
+                (e)['body'] as String
+              ))
           .toList();
       return result;
     } catch (e, st) {
@@ -401,11 +400,12 @@ class VioletServer {
 
     try {
       final result = (jsonDecode(gg.body)['result'] as List<dynamic>)
-          .map((e) => Tuple4<int, DateTime, String, String>(
-              int.parse((e as Map<String, dynamic>)['id'] as String),
-              DateTime.parse((e)['time'] as String),
-              (e)['author'] as String,
-              (e)['body'] as String))
+          .map((e) => (
+                int.parse((e as Map<String, dynamic>)['id'] as String),
+                DateTime.parse((e)['time'] as String),
+                (e)['author'] as String,
+                (e)['body'] as String
+              ))
           .toList();
       return result;
     } catch (e, st) {

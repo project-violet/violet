@@ -561,7 +561,7 @@ class HentaiManager {
           case 'Hitomi':
             {
               var urls = await HitomiManager.getImageList(qr.id().toString());
-              if (urls.item1.isEmpty || urls.item2.isEmpty) break;
+              if (urls.$1.isEmpty || urls.$2.isEmpty) break;
               return HitomiImageProvider(urls, qr.id().toString());
             }
 

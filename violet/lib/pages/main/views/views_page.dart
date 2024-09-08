@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
@@ -149,7 +148,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
         var queryRaw =
             '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
         // var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-        queryRaw += '(${value.map((e) => 'Id=${e.item1}').join(' OR ')})';
+        queryRaw += '(${value.map((e) => 'Id=${e.$1}').join(' OR ')})';
         var query = await QueryManager.query(queryRaw);
 
         if (query.results!.isEmpty) return 901;
@@ -159,14 +158,13 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
           qr[element.id().toString()] = element;
         }
 
-        var result = <Tuple2<QueryResult, int>>[];
+        var result = <(QueryResult, int)>[];
         value.forEach((element) {
-          if (qr[element.item1.toString()] == null) {
+          if (qr[element.$1.toString()] == null) {
             // TODO: Handle qurey not found
             return;
           }
-          result.add(Tuple2<QueryResult, int>(
-              qr[element.item1.toString()]!, element.item2));
+          result.add((qr[element.$1.toString()]!, element.$2));
         });
 
         return result;
@@ -224,30 +222,30 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
         //   itemBuilder: (context, index) {
         //     return ListTile(
         //       title: Text(
-        //           '${index + 1}. ' + snapshot.data[index].item1.toString()),
-        //       subtitle: Text(snapshot.data[index].item2.toString()),
+        //           '${index + 1}. ' + snapshot.data[index].$1.toString()),
+        //       subtitle: Text(snapshot.data[index].$2.toString()),
         //     );
         //   },
         // );
         var windowWidth = MediaQuery.of(context).size.width;
 
-        var results = snapshot.data as List<Tuple2<QueryResult, int>>;
+        var results = snapshot.data as List<(QueryResult, int)>;
 
         return ListView(
           physics: const BouncingScrollPhysics(),
           children: results.map((x) {
             return Align(
-              key: Key('views${widget.index}/${x.item1.id()}'),
+              key: Key('views${widget.index}/${x.$1.id()}'),
               alignment: Alignment.center,
               child: Provider<ArticleListItem>.value(
                 value: ArticleListItem.fromArticleListItem(
-                  queryResult: x.item1,
+                  queryResult: x.$1,
                   showDetail: true,
                   addBottomPadding: true,
                   width: (windowWidth - 4.0),
                   thumbnailTag: const Uuid().v4(),
-                  viewed: x.item2,
-                  usableTabList: results.map((e) => e.item1).toList(),
+                  viewed: x.$2,
+                  usableTabList: results.map((e) => e.$1).toList(),
                   // isCheckMode: checkMode,
                   // isChecked: checked.contains(x.id()),
                 ),

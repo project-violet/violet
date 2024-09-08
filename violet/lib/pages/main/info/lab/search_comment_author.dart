@@ -3,7 +3,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/pages/common/utils.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/server/violet.dart';
@@ -19,8 +18,8 @@ class LabSearchCommentsAuthor extends StatefulWidget {
 }
 
 class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
-  List<Tuple4<int, DateTime, String, String>> comments =
-      <Tuple4<int, DateTime, String, String>>[];
+  List<(int, DateTime, String, String)> comments =
+      <(int, DateTime, String, String)>[];
 
   @override
   void initState() {
@@ -29,9 +28,8 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       var tcomments = (await VioletServer.searchCommentAuthor(widget.author))
           as List<dynamic>;
-      comments = tcomments
-          .map((e) => e as Tuple4<int, DateTime, String, String>)
-          .toList();
+      comments =
+          tcomments.map((e) => e as (int, DateTime, String, String)).toList();
       setState(() {});
     });
   }
@@ -49,26 +47,25 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
           return InkWell(
             onTap: () async {
               FocusScope.of(context).unfocus();
-              showArticleInfo(context, e.item1);
+              showArticleInfo(context, e.$1);
             },
             splashColor: Colors.white,
             child: ListTile(
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Text('(${e.item1}) [${e.item3}]'),
+                  Text('(${e.$1}) [${e.$3}]'),
                   Expanded(
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                          DateFormat('yyyy-MM-dd HH:mm')
-                              .format(e.item2.toLocal()),
+                          DateFormat('yyyy-MM-dd HH:mm').format(e.$2.toLocal()),
                           style: const TextStyle(fontSize: 12)),
                     ),
                   ),
                 ],
               ),
-              subtitle: Text(e.item4),
+              subtitle: Text(e.$4),
             ),
           );
         },

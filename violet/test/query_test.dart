@@ -17,7 +17,7 @@ void main() {
       final result0 = await HitomiManager.queryAutoComplete('fema');
       final result1 = await HitomiManager.queryAutoComplete('random:');
 
-      expect(result0[0].item1.toString(), 'female:sole female');
+      expect(result0[0].$1.toString(), 'female:sole female');
       expect(result1.length, 0);
     });
 
@@ -25,8 +25,8 @@ void main() {
       final result0 = await HitomiManager.queryAutoComplete('단독여', true);
       final result1 = await HitomiManager.queryAutoComplete('male:단독', true);
 
-      expect(result0[0].item1.toString(), 'female:sole female');
-      expect(result1[0].item1.toString(), 'male:sole male');
+      expect(result0[0].$1.toString(), 'female:sole female');
+      expect(result1[0].$1.toString(), 'male:sole male');
     });
 
     test('Hitomi Query Auto Complete Fuzzy', () async {
@@ -36,9 +36,9 @@ void main() {
       final result2 =
           await HitomiManager.queryAutoCompleteFuzzy('female:bigbreakfast');
 
-      expect(result0[0].item1.toString(), 'artist:michiking');
-      expect(result1[0].item1.toString(), 'artist:michiking');
-      expect(result2[0].item1.toString(), 'female:big breasts');
+      expect(result0[0].$1.toString(), 'artist:michiking');
+      expect(result1[0].$1.toString(), 'artist:michiking');
+      expect(result2[0].$1.toString(), 'female:big breasts');
     });
 
     test('Hitomi Query To Sql', () {

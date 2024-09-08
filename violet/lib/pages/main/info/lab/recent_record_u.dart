@@ -6,7 +6,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
@@ -28,8 +27,7 @@ class LabRecentRecordsU extends StatefulWidget {
 }
 
 class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
-  List<Tuple3<QueryResult, int, String>> records =
-      <Tuple3<QueryResult, int, String>>[];
+  List<(QueryResult, int, String)> records = <(QueryResult, int, String)>[];
   int latestId = 0;
   int limit = 10;
   late Timer timer;
@@ -72,15 +70,15 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
       var trecords = await VioletServer.recordU(latestId, 10, limit);
       if (trecords is int || trecords == null || trecords.length == 0) return;
 
-      var xrecords = trecords as List<Tuple4<int, int, int, String>>;
+      var xrecords = trecords as List<(int, int, int, String)>;
 
-      latestId = max(latestId,
-          xrecords.reduce((x, y) => x.item1 > y.item1 ? x : y).item1 + 1);
+      latestId =
+          max(latestId, xrecords.reduce((x, y) => x.$1 > y.$1 ? x : y).$1 + 1);
 
       var queryRaw =
           '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
 
-      queryRaw += '(${xrecords.map((e) => 'Id=${e.item2}').join(' OR ')})';
+      queryRaw += '(${xrecords.map((e) => 'Id=${e.$2}').join(' OR ')})';
       var query = await QueryManager.query(queryRaw);
 
       if (query.results!.isEmpty) return;
@@ -90,13 +88,12 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
         qr[element.id().toString()] = element;
       }
 
-      var result = <Tuple3<QueryResult, int, String>>[];
+      var result = <(QueryResult, int, String)>[];
       for (var element in xrecords) {
-        if (qr[element.item2.toString()] == null) {
+        if (qr[element.$2.toString()] == null) {
           continue;
         }
-        result.add(Tuple3<QueryResult, int, String>(
-            qr[element.item2.toString()]!, element.item3, element.item4));
+        result.add((qr[element.$2.toString()]!, element.$3, element.$4));
       }
 
       records.insertAll(0, result);
@@ -121,7 +118,7 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
 
   @override
   Widget build(BuildContext context) {
-    var xrecords = records.where((x) => x.item2 > limit).toList();
+    var xrecords = records.where((x) => x.$2 > limit).toList();
     var windowWidth = MediaQuery.of(context).size.width;
     return CardPanel.build(
       context,
@@ -138,18 +135,18 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
               itemBuilder: (BuildContext ctxt, int index) {
                 return Align(
                   key: Key(
-                      'records$index/${xrecords[xrecords.length - index - 1].item1.id()}'),
+                      'records$index/${xrecords[xrecords.length - index - 1].$1.id()}'),
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
-                      queryResult: xrecords[xrecords.length - index - 1].item1,
+                      queryResult: xrecords[xrecords.length - index - 1].$1,
                       showDetail: true,
                       addBottomPadding: true,
                       width: (windowWidth - 4.0),
                       thumbnailTag: const Uuid().v4(),
-                      seconds: xrecords[xrecords.length - index - 1].item2,
+                      seconds: xrecords[xrecords.length - index - 1].$2,
                       doubleTapCallback: () => _doubleTapCallback(
-                          xrecords[xrecords.length - index - 1].item3),
+                          xrecords[xrecords.length - index - 1].$3),
                     ),
                     child: const ArticleListItemWidget(),
                   ),

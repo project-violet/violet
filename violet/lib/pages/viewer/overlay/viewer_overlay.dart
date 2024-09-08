@@ -13,7 +13,6 @@ import 'package:image_size_getter/file_input.dart';
 import 'package:image_size_getter/image_size_getter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/message_search.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
@@ -889,29 +888,29 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
               var ppattern = TagTranslate.disassembly(pattern);
 
               return MessageSearch.autocompleteTarget
-                  .where((element) => element.item2.startsWith(ppattern))
+                  .where((element) => element.$2.startsWith(ppattern))
                   .toList()
                 ..addAll(MessageSearch.autocompleteTarget
                     .where((element) =>
-                        !element.item2.startsWith(ppattern) &&
-                        element.item2.contains(ppattern))
+                        !element.$2.startsWith(ppattern) &&
+                        element.$2.contains(ppattern))
                     .toList());
             },
-            itemBuilder: (context, Tuple3<String, String, int> suggestion) {
+            itemBuilder: (context, (String, String, int) suggestion) {
               return ListTile(
                 contentPadding:
                     const EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
-                title: Text(suggestion.item1),
+                title: Text(suggestion.$1),
                 trailing: Text(
-                  '${suggestion.item3}회',
+                  '${suggestion.$3}회',
                   style: const TextStyle(color: Colors.grey, fontSize: 10.0),
                 ),
                 dense: true,
               );
             },
             direction: AxisDirection.up,
-            onSuggestionSelected: (Tuple3<String, String, int> suggestion) {
-              c.searchText.text = suggestion.item1;
+            onSuggestionSelected: ((String, String, int) suggestion) {
+              c.searchText.text = suggestion.$1;
               setState(() {});
               Future.delayed(const Duration(milliseconds: 100))
                   .then((value) async {

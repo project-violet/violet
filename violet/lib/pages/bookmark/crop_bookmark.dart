@@ -16,7 +16,6 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_down_button/pull_down_button.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/user/bookmark.dart';
@@ -160,12 +159,13 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
           ProviderManager.insert(query[0].id(), provider);
         }
 
-        return Tuple2(
-            imagesUrlForEvict![index] = await provider.getImageUrl(page),
-            await provider.getHeader(page));
+        return (
+          imagesUrlForEvict![index] = await provider.getImageUrl(page),
+          await provider.getHeader(page)
+        );
       }),
-      builder: (context,
-          AsyncSnapshot<Tuple2<String, Map<String, String>>> snapshot) {
+      builder:
+          (context, AsyncSnapshot<(String, Map<String, String>)> snapshot) {
         final width = (MediaQuery.of(context).size.width -
                 (6.0 / columnCount.value) * (columnCount.value - 1)) /
             columnCount.value;
@@ -194,8 +194,8 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
                 CropImageWidget(
                   articleId: articleId,
                   page: page,
-                  url: snapshot.data!.item1,
-                  headers: snapshot.data!.item2,
+                  url: snapshot.data!.$1,
+                  headers: snapshot.data!.$2,
                   rect: rect,
                   aspectRatio: aspectRatio,
                   columnCount: columnCount.value,

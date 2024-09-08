@@ -5,7 +5,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape.dart';
-import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
@@ -40,7 +39,7 @@ class _ArtistSearchState extends State<ArtistSearch> {
     'tag:full_color': 1,
   };
 
-  List<Tuple2<String, double>> similarsAll = [];
+  List<(String, double)> similarsAll = [];
 
   ObjectKey listViewKey = ObjectKey(const Uuid().v4());
 
@@ -255,7 +254,7 @@ class _ArtistSearchState extends State<ArtistSearch> {
       itemBuilder: (BuildContext ctxt, int index) {
         final e = similarsAll[index];
         return FutureBuilder<List<QueryResult>>(
-          future: artistListfuture(e.item1),
+          future: artistListfuture(e.$1),
           builder: (BuildContext context,
               AsyncSnapshot<List<QueryResult>> snapshot) {
             if (!snapshot.hasData) {
@@ -267,12 +266,12 @@ class _ArtistSearchState extends State<ArtistSearch> {
             return ThreeArticlePanel(
               tappedRoute: () => ArtistInfoPage(
                 type: selectedType,
-                name: e.item1,
+                name: e.$1,
               ),
               title:
-                  ' ${e.item1} (${HitomiManager.getArticleCount(selectedType.name, e.item1)})',
+                  ' ${e.$1} (${HitomiManager.getArticleCount(selectedType.name, e.$1)})',
               count:
-                  '${Translations.instance!.trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+                  '${Translations.instance!.trans('score')}: ${e.$2.toStringAsFixed(1)} ',
               articles: snapshot.data!,
             );
           },

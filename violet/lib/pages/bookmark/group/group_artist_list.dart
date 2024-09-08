@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mdi/mdi.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
@@ -45,7 +44,7 @@ class _GroupArtistListState extends State<GroupArtistList>
   }
 
   Future<void> _sortByLatest() async {
-    var ids = <Tuple2<int, int>>[];
+    var ids = <(int, int)>[];
     for (int i = 0; i < artists.length; i++) {
       var postfix = artists[i].artist().toLowerCase().replaceAll(' ', '_');
       var queryString = HitomiManager.translate2query(
@@ -53,13 +52,13 @@ class _GroupArtistListState extends State<GroupArtistList>
       final qm = QueryManager.queryPagination(queryString);
       qm.itemsPerPage = 1;
       var query = (await qm.next())[0].id();
-      ids.add(Tuple2<int, int>(query, i));
+      ids.add((query, i));
     }
-    ids.sort((e1, e2) => e2.item1.compareTo(e1.item1));
+    ids.sort((e1, e2) => e2.$1.compareTo(e1.$1));
 
     var newedList = <BookmarkArtist>[];
     for (int i = 0; i < artists.length; i++) {
-      newedList.add(artists[ids[i].item2]);
+      newedList.add(artists[ids[i].$2]);
     }
 
     artists = newedList;

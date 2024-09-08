@@ -4,7 +4,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape_small.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
@@ -17,7 +16,7 @@ import 'package:violet/settings/settings.dart';
 
 class SimilarListPage extends StatelessWidget {
   final ArtistType type;
-  final List<Tuple2<String, double>> similarsAll;
+  final List<(String, double)> similarsAll;
 
   const SimilarListPage({
     super.key,
@@ -82,7 +81,7 @@ class SimilarListPage extends StatelessWidget {
         itemBuilder: (BuildContext ctxt, int index) {
           var e = similarsAll[index];
           return FutureBuilder<List<QueryResult>>(
-            future: _future(e.item1),
+            future: _future(e.$1),
             builder: (BuildContext context,
                 AsyncSnapshot<List<QueryResult>> snapshot) {
               if (!snapshot.hasData) {
@@ -94,12 +93,12 @@ class SimilarListPage extends StatelessWidget {
               return ThreeArticlePanel(
                 tappedRoute: () => ArtistInfoPage(
                   type: type,
-                  name: e.item1,
+                  name: e.$1,
                 ),
                 title:
-                    ' ${e.item1} (${HitomiManager.getArticleCount(type.name, e.item1)})',
+                    ' ${e.$1} (${HitomiManager.getArticleCount(type.name, e.$1)})',
                 count:
-                    '${Translations.instance!.trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+                    '${Translations.instance!.trans('score')}: ${e.$2.toStringAsFixed(1)} ',
                 articles: snapshot.data!,
               );
             },
