@@ -52,7 +52,7 @@ dependencies:
   #     path: charts_flutter
   # charts_flutter: ^0.12.0
   community_charts_flutter: ^1.0.1
-  connectivity:
+  connectivity_plus: ^6.0.5 
   convert:
   country_pickers:
     git:

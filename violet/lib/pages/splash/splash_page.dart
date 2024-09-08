@@ -7,7 +7,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:android_intent_plus/android_intent.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:file_picker/file_picker.dart';
@@ -224,7 +224,7 @@ class _SplashPageState extends State<SplashPage> {
 
       // this may be slow down to loading
       _changeMessage('check network...');
-      if (connectivityResult != ConnectivityResult.none) {
+      if (!connectivityResult.contains(ConnectivityResult.none)) {
         _changeMessage('loading script...');
         await ScriptManager.init();
       }
@@ -249,7 +249,7 @@ class _SplashPageState extends State<SplashPage> {
 
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getInt('db_exists') == 1 && !widget.switching) {
-      if (connectivityResult != ConnectivityResult.none) {
+      if (!connectivityResult.contains(ConnectivityResult.none)) {
         try {
           _changeMessage('check sync...');
           await SyncManager.checkSyncLatest(true);

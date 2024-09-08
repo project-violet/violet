@@ -5,7 +5,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
 import 'package:open_file/open_file.dart';
@@ -20,7 +20,7 @@ import 'package:violet/version/update_sync.dart';
 class UpdateManager {
   static Future<void> updateCheck(BuildContext context) async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) return;
+    if (connectivityResult.contains(ConnectivityResult.none)) return;
 
     await UpdateSyncManager.checkUpdateSync();
 
