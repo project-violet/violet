@@ -21,6 +21,7 @@ import { Request, Response } from 'express';
 import { ResLoginUser } from './dtos/res-login-user.dto';
 import { plainToClass } from 'class-transformer';
 import { HmacAuthGuard } from './guards/hmac.guard';
+import { DiscordAuthGuard } from './guards/discord.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -103,5 +104,22 @@ export class AuthController {
     res.clearCookie('access-expires');
     res.clearCookie('refresh-expires');
     res.send();
+  }
+
+  @Get('discord')
+  @Post('discord')
+  @UseGuards(DiscordAuthGuard)
+  @ApiOperation({ summary: 'Login From Discord' })
+  logInDiscord() {
+    return { ok: true };
+  }
+
+  @Get('discord/redirect')
+  @UseGuards(DiscordAuthGuard)
+  @UseGuards(AccessTokenGuard)
+  @ApiOperation({ summary: 'Redirect discord oauth2' })
+  @Redirect('violet://discord-login')
+  async redirect(@CurrentUser() currentUser: User) {
+    return await this.authService.updateDiscordInfo(currentUser);
   }
 }

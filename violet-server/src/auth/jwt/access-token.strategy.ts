@@ -25,7 +25,6 @@ export class AccessTokenStrategy extends PassportStrategy(
 
   async validate(req: Request, payload: JwtPayload) {
     try {
-      console.log('validate');
       const user = await this.userRepository.findOneBy({
         userAppId: payload.userAppId,
       });

@@ -1,4 +1,9 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { UserRegisterDTO } from './dtos/user-register.dto';
 
@@ -8,7 +13,7 @@ export class UserService {
 
   async registerUser(
     dto: UserRegisterDTO,
-  ): Promise<{ ok: boolean; err?: string }> {
+  ): Promise<{ ok: boolean; error?: string }> {
     try {
       if (await this.userRepository.isUserExists(dto.userAppId))
         throw new UnauthorizedException('user app id already exists');
@@ -19,7 +24,24 @@ export class UserService {
     } catch (e) {
       Logger.error(e);
 
-      return { ok: false, err: e };
+      return { ok: false, error: e };
     }
+  }
+
+  async listDiscordUserAppIds(discordId?: string): Promise<string[]> {
+    if (discordId == null) {
+      throw new BadRequestException('discord login is required');
+    }
+
+    const users = await this.userRepository.find({
+      select: {
+        userAppId: true,
+      },
+      where: {
+        discordId: discordId!,
+      },
+    });
+
+    return users.map(({ userAppId }) => userAppId);
   }
 }
