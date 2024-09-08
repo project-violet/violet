@@ -28,10 +28,12 @@ linter:
     sized_box_shrink_expand: true
     prefer_single_quotes: true
     always_use_package_imports: true
+    unrelated_type_equality_checks: true
 
 analyzer:
   errors:
     always_use_package_imports: error
+    unrelated_type_equality_checks: error
   exclude:
     - "rust_builder/**"
     - "lib/src/rust/**"
