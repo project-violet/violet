@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  changes:
+  app-changes:
     runs-on: ubuntu-latest
     # Required permissions
     permissions:
@@ -24,7 +24,7 @@ jobs:
             src:
               - "violet/**"
 
-  format:
+  app-format:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ubuntu-latest
@@ -59,7 +59,7 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-fatal-infos
 
-  ios-build:
+  app-ios-build:
     runs-on: macos-latest
     needs: [format, changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -114,7 +114,7 @@ jobs:
           name: ipa-build
           path: ./violet/Payload.ipa
 
-  android-build:
+  app-android-build:
     runs-on: ubuntu-latest
     needs: [format, changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
