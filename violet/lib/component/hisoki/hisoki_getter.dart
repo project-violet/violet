@@ -3,12 +3,11 @@
 
 import 'dart:convert';
 
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/hisoki/hisoki_hash.dart';
 import 'package:violet/network/wrapper.dart' as http;
 
 class HisokiGetter {
-  static Future<List<Tuple3<String, double, double>>?> getImages(int id) async {
+  static Future<List<(String, double, double)>?> getImages(int id) async {
     var hash = HisokiHash.getHash('$id');
 
     if (hash == null) return null;
@@ -18,11 +17,14 @@ class HisokiGetter {
     var sl = info['sl'] as List<dynamic>;
     var il = info['il'] as List<dynamic>;
 
-    var result = <Tuple3<String, double, double>>[];
+    var result = <(String, double, double)>[];
 
     for (var i = 0; i < il.length; i++) {
-      result.add(Tuple3<String, double, double>('${il[i]}.webp',
-          (sl[i]['w'] as int).toDouble(), (sl[i]['h'] as int).toDouble()));
+      result.add((
+        '${il[i]}.webp',
+        (sl[i]['w'] as int).toDouble(),
+        (sl[i]['h'] as int).toDouble()
+      ));
     }
 
     return result;

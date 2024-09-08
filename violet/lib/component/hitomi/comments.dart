@@ -6,10 +6,9 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
-import 'package:tuple/tuple.dart';
 
 class CommentsCount {
-  static List<Tuple2<int, int>>? counts;
+  static List<(int, int)>? counts;
 
   static Future<void> init() async {
     String data;
@@ -23,8 +22,8 @@ class CommentsCount {
 
     Map<String, dynamic> dataCounts = json.decode(data);
     counts = dataCounts.entries
-        .map((x) => Tuple2<int, int>(int.parse(x.key), x.value as int))
+        .map((x) => (int.parse(x.key), x.value as int))
         .toList();
-    counts!.sort((x, y) => y.item2.compareTo(x.item2));
+    counts!.sort((x, y) => y.$2.compareTo(x.$2));
   }
 }

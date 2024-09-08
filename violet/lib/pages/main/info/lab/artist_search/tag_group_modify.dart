@@ -123,8 +123,8 @@ class _TagGroupModifyState extends State<TagGroupModify> {
       ),
     );
 
-    if (vv != null && vv.item1 == 1) {
-      c.addItems((vv.item2 as String)
+    if (vv != null && vv.$1 == 1) {
+      c.addItems((vv.$2 as String)
           .split(' ')
           .where((element) => element.trim().isNotEmpty)
           .toList());

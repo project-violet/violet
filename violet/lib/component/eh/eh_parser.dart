@@ -5,7 +5,6 @@ import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/log/log.dart';
 
 class EHArticle {
@@ -35,7 +34,7 @@ class EHArticle {
   List<String>? female;
   List<String>? misc;
 
-  List<Tuple3<DateTime, String, String>>? comment;
+  List<(DateTime, String, String)>? comment;
   List<String>? imageLink;
 }
 
@@ -158,7 +157,7 @@ class EHParser {
     if (info.containsKey('misc:')) article.misc = info['misc:'];
 
     var nodeComments = h.querySelectorAll("div[id='cdiv'] > div.c1");
-    var comments = <Tuple3<DateTime, String, String>>[];
+    var comments = <(DateTime, String, String)>[];
 
     var hu = HtmlUnescape();
     var df = DateFormat('dd MMMM yyyy, H:m');
@@ -171,17 +170,18 @@ class EHParser {
           .querySelector('div.c6')!
           .innerHtml
           .replaceAll('<br>', '\r\n'));
-      comments.add(Tuple3<DateTime, String, String>(
-          df.parse(
-              date
-                  .substring(0, date.indexOf(' by'))
-                  .substring('Posted on '.length),
-              true),
-          author,
-          contents));
+      comments.add((
+        df.parse(
+            date
+                .substring(0, date.indexOf(' by'))
+                .substring('Posted on '.length),
+            true),
+        author,
+        contents
+      ));
     }
 
-    comments.sort((x, y) => x.item1.compareTo(y.item1));
+    comments.sort((x, y) => x.$1.compareTo(y.$1));
     article.comment = comments;
 
     return article;

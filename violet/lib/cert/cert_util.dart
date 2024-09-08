@@ -6,11 +6,10 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:pointycastle/export.dart';
-import 'package:tuple/tuple.dart';
 
 // https://github.com/bcgit/pc-dart/blob/master/tutorials/rsa.md
 class CertUtil {
-  static Tuple2<RSAPublicKey, RSAPrivateKey> createRSAKeyPair() {
+  static (RSAPublicKey, RSAPrivateKey) createRSAKeyPair() {
     final secureRandom = SecureRandom('Fortuna')
       ..seed(KeyParameter(Uint8List.fromList(
           List.generate(32, (index) => Random().nextInt(256)))));
@@ -20,8 +19,7 @@ class CertUtil {
           secureRandom));
     final pair = keyGen.generateKeyPair();
 
-    return Tuple2<RSAPublicKey, RSAPrivateKey>(
-        pair.publicKey as RSAPublicKey, pair.privateKey as RSAPrivateKey);
+    return (pair.publicKey as RSAPublicKey, pair.privateKey as RSAPrivateKey);
   }
 
   static Uint8List sign(RSAPrivateKey privateKey, Uint8List dataToSign) {

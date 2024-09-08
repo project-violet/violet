@@ -6,7 +6,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:html/parser.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/context/viewer_context.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
@@ -122,7 +121,7 @@ class ScriptManager {
     return galleryInfo.body;
   }
 
-  static Future<Tuple3<List<String>, List<String>, List<String>>?>
+  static Future<(List<String>, List<String>, List<String>)?>
       runHitomiGetImageList(int id) async {
     if (_scriptCache == null) return null;
 
@@ -138,16 +137,17 @@ class ScriptManager {
       final jResultObject = jsonDecode(jResult);
 
       if (jResultObject is Map<dynamic, dynamic>) {
-        return Tuple3<List<String>, List<String>, List<String>>(
-            (jResultObject['result'] as List<dynamic>)
-                .map((e) => e as String)
-                .toList(),
-            (jResultObject['btresult'] as List<dynamic>)
-                .map((e) => e as String)
-                .toList(),
-            (jResultObject['stresult'] as List<dynamic>)
-                .map((e) => e as String)
-                .toList());
+        return (
+          (jResultObject['result'] as List<dynamic>)
+              .map((e) => e as String)
+              .toList(),
+          (jResultObject['btresult'] as List<dynamic>)
+              .map((e) => e as String)
+              .toList(),
+          (jResultObject['stresult'] as List<dynamic>)
+              .map((e) => e as String)
+              .toList()
+        );
       } else {
         Logger.error('[script-HitomiGetImageList] E: JSError\n'
             'Id: $id\n'

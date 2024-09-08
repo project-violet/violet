@@ -5,7 +5,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/pages/main/info/lab/bookmark/bookmarks.dart';
 import 'package:violet/pages/segment/card_panel.dart';
@@ -105,22 +104,22 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
                   )
                 : FutureBuilder(
                     future: Bookmark.getInstance().then((value) async {
-                      return Tuple2(
-                          await value.isBookmarkUser(data['user'] as String),
-                          await value.isHistoryUser(data['user'] as String));
+                      return (
+                        await value.isBookmarkUser(data['user'] as String),
+                        await value.isHistoryUser(data['user'] as String)
+                      );
                     }),
-                    builder:
-                        (context, AsyncSnapshot<Tuple2<bool, bool>> snapshot) {
+                    builder: (context, AsyncSnapshot<(bool, bool)> snapshot) {
                       if (!snapshot.hasData) return const SizedBox();
 
-                      if (snapshot.data!.item1) {
+                      if (snapshot.data!.$1) {
                         return const Icon(
                           MdiIcons.starCircleOutline,
                           color: Colors.yellow,
                         );
                       }
 
-                      if (snapshot.data!.item2) {
+                      if (snapshot.data!.$2) {
                         return const Icon(
                           MdiIcons.rayStartVertexEnd,
                           color: Colors.grey,

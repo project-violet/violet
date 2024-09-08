@@ -15,7 +15,6 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/population.dart';
@@ -90,8 +89,8 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
       }
       final result = await search;
 
-      c.latestQuery = Tuple2(result, widget.searchKeyWord ?? '');
-      c.queryResult = c.latestQuery!.item1!.results;
+      c.latestQuery = (result, widget.searchKeyWord ?? '');
+      c.queryResult = c.latestQuery!.$1!.results;
       if (c.filterController.isPopulationSort) {
         Population.sortByPopulation(c.queryResult);
       }
@@ -290,9 +289,9 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
         if (rr[0] == 1) {
           final setPage = rr[1] as int;
 
-          c.latestQuery = Tuple2(
+          c.latestQuery = (
             SearchResult(results: [], offset: setPage),
-            c.latestQuery!.item2,
+            c.latestQuery!.$2,
           );
 
           c.doSearch(setPage);
@@ -303,8 +302,8 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
 
   searchBar() {
     final searchHintText = c.latestQuery != null &&
-            c.latestQuery!.item2.trim() != ''
-        ? c.latestQuery!.item2
+            c.latestQuery!.$2.trim() != ''
+        ? c.latestQuery!.$2
         : widget.searchKeyWord ?? trans.Translations.instance!.trans('search');
 
     final textFormField = TextFormField(
@@ -359,7 +358,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
           onTap: showSearchBar,
           onDoubleTap: () async {
             if (widget.searchKeyWord != null) return;
-            c.latestQuery = Tuple2(null, 'random:${Random().nextDouble() + 1}');
+            c.latestQuery = (null, 'random:${Random().nextDouble() + 1}');
             c.doSearch();
           },
         ),
@@ -403,7 +402,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
         builder: (context) {
           return SearchBarPage(
             assetProvider: c.asset,
-            initText: c.latestQuery != null ? c.latestQuery!.item2 : '',
+            initText: c.latestQuery != null ? c.latestQuery!.$2 : '',
             heroController: c.heroFlareControls,
           );
         },
@@ -419,7 +418,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
       });
       if (query == null) return;
 
-      c.latestQuery = Tuple2(null, query);
+      c.latestQuery = (null, query);
       c.doSearch();
     } catch (e, st) {
       await Logger.error(

@@ -3,7 +3,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
@@ -18,8 +17,8 @@ class LabRecentComments extends StatefulWidget {
 }
 
 class _LabRecentCommentsState extends State<LabRecentComments> {
-  List<Tuple4<DateTime, String, String, String>> comments =
-      <Tuple4<DateTime, String, String, String>>[];
+  List<(DateTime, String, String, String)> comments =
+      <(DateTime, String, String, String)>[];
 
   @override
   void initState() {
@@ -30,12 +29,13 @@ class _LabRecentCommentsState extends State<LabRecentComments> {
           (await VioletCommunityAnonymous.getArtistCommentsRecent())['result']
               as List<dynamic>;
       comments = tcomments
-          .map((e) => Tuple4<DateTime, String, String, String>(
-              DateTime.parse(e['TimeStamp']),
-              e['UserAppId'],
-              e['Body'],
-              e['ArtistName']))
-          .where((x) => x.item2 != 'test')
+          .map((e) => (
+                DateTime.parse(e['TimeStamp']),
+                e['UserAppId'] as String,
+                e['Body'] as String,
+                e['ArtistName'] as String
+              ))
+          .where((x) => x.$2 != 'test')
           .toList();
       setState(() {});
     });
@@ -53,8 +53,8 @@ class _LabRecentCommentsState extends State<LabRecentComments> {
           var e = comments[index];
           return InkWell(
             onTap: () async {
-              final group = e.item4.split(':').first;
-              final name = e.item4.split(':').last;
+              final group = e.$4.split(':').first;
+              final name = e.$4.split(':').last;
               _navigate(ArtistInfoPage(
                 type: ArtistTypeHelper.fromString(group)!,
                 name: name,
@@ -65,18 +65,18 @@ class _LabRecentCommentsState extends State<LabRecentComments> {
               title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    Text(e.item4),
+                    Text(e.$4),
                     Expanded(
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: Text(
                             DateFormat('yyyy-MM-dd HH:mm')
-                                .format(e.item1.toLocal()),
+                                .format(e.$1.toLocal()),
                             style: const TextStyle(fontSize: 12)),
                       ),
                     ),
                   ]),
-              subtitle: Text(e.item3),
+              subtitle: Text(e.$3),
             ),
           );
         },

@@ -2,7 +2,6 @@
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/displayed_tag.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/locale/locale.dart';
@@ -46,29 +45,18 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
     if (MediaQuery.of(context).viewInsets.bottom < 1) height = 400;
 
     if (_searchLists.isEmpty && !_nothing) {
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'female'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'male'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'tag'), 0));
+      _searchLists.add((DisplayedTag(group: 'prefix', name: 'female'), 0));
+      _searchLists.add((DisplayedTag(group: 'prefix', name: 'male'), 0));
+      _searchLists.add((DisplayedTag(group: 'prefix', name: 'tag'), 0));
       if (!widget.onlyFMT) {
-        _searchLists.add(Tuple2<DisplayedTag, int>(
-            DisplayedTag(group: 'prefix', name: 'lang'), 0));
-        _searchLists.add(Tuple2<DisplayedTag, int>(
-            DisplayedTag(group: 'prefix', name: 'series'), 0));
-        _searchLists.add(Tuple2<DisplayedTag, int>(
-            DisplayedTag(group: 'prefix', name: 'artist'), 0));
-        _searchLists.add(Tuple2<DisplayedTag, int>(
-            DisplayedTag(group: 'prefix', name: 'group'), 0));
-        _searchLists.add(Tuple2<DisplayedTag, int>(
-            DisplayedTag(group: 'prefix', name: 'uploader'), 0));
-        _searchLists.add(Tuple2<DisplayedTag, int>(
-            DisplayedTag(group: 'prefix', name: 'character'), 0));
-        _searchLists.add(Tuple2<DisplayedTag, int>(
-            DisplayedTag(group: 'prefix', name: 'type'), 0));
-        _searchLists.add(Tuple2<DisplayedTag, int>(
-            DisplayedTag(group: 'prefix', name: 'class'), 0));
+        _searchLists.add((DisplayedTag(group: 'prefix', name: 'lang'), 0));
+        _searchLists.add((DisplayedTag(group: 'prefix', name: 'series'), 0));
+        _searchLists.add((DisplayedTag(group: 'prefix', name: 'artist'), 0));
+        _searchLists.add((DisplayedTag(group: 'prefix', name: 'group'), 0));
+        _searchLists.add((DisplayedTag(group: 'prefix', name: 'uploader'), 0));
+        _searchLists.add((DisplayedTag(group: 'prefix', name: 'character'), 0));
+        _searchLists.add((DisplayedTag(group: 'prefix', name: 'type'), 0));
+        _searchLists.add((DisplayedTag(group: 'prefix', name: 'class'), 0));
       }
     }
 
@@ -135,8 +123,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
           ),
           child: Text(Translations.instance!.trans('ok')),
           onPressed: () {
-            Navigator.pop(
-                context, Tuple2<int, String>(1, _searchController.text));
+            Navigator.pop(context, (1, _searchController.text));
           },
         ),
         ElevatedButton(
@@ -145,15 +132,14 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
           ),
           child: Text(Translations.instance!.trans('cancel')),
           onPressed: () {
-            Navigator.pop(
-                context, Tuple2<int, String>(0, _searchController.text));
+            Navigator.pop(context, (0, _searchController.text));
           },
         ),
       ],
     );
   }
 
-  List<Tuple2<DisplayedTag, int>> _searchLists = <Tuple2<DisplayedTag, int>>[];
+  List<(DisplayedTag, int)> _searchLists = <(DisplayedTag, int)>[];
 
   late final TextEditingController _searchController;
   int? _insertPos, _insertLength;
@@ -208,7 +194,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
       } else {
         _searchLists = result
             .where((element) =>
-                ['female', 'male', 'tag'].contains(element.item1.group))
+                ['female', 'male', 'tag'].contains(element.$1.group))
             .toList();
       }
     });
@@ -216,30 +202,30 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
 
   // Create tag-chip
   // group, name, counts
-  Widget chip(Tuple2<DisplayedTag, int> info) {
-    var tagDisplayed = info.item1.name!.split(':').last;
+  Widget chip((DisplayedTag, int) info) {
+    var tagDisplayed = info.$1.name!.split(':').last;
     var count = '';
     Color color = Colors.grey;
 
     if (_tagTranslation) {
-      tagDisplayed = info.item1.getTranslated();
+      tagDisplayed = info.$1.getTranslated();
     }
 
-    if (info.item2 > 0 && _showCount) count = ' (${info.item2})';
+    if (info.$2 > 0 && _showCount) count = ' (${info.$2})';
 
-    if (info.item1.group == 'female') {
+    if (info.$1.group == 'female') {
       color = Colors.pink;
-    } else if (info.item1.group == 'male') {
+    } else if (info.$1.group == 'male') {
       color = Colors.blue;
-    } else if (info.item1.group == 'prefix') {
+    } else if (info.$1.group == 'prefix') {
       color = Colors.orange;
-    } else if (info.item1.group == 'language') {
+    } else if (info.$1.group == 'language') {
       color = Colors.teal;
-    } else if (info.item1.group == 'series') {
+    } else if (info.$1.group == 'series') {
       color = Colors.cyan;
-    } else if (info.item1.group == 'artist' || info.item1.group == 'group') {
+    } else if (info.$1.group == 'artist' || info.$1.group == 'group') {
       color = Colors.green.withOpacity(0.6);
-    } else if (info.item1.group == 'type') {
+    } else if (info.$1.group == 'type') {
       color = Colors.orange;
     }
 
@@ -247,7 +233,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
       labelPadding: const EdgeInsets.all(0.0),
       avatar: CircleAvatar(
         backgroundColor: Colors.grey.shade600,
-        child: Text(info.item1.group![0].toUpperCase()),
+        child: Text(info.$1.group![0].toUpperCase()),
       ),
       label: Text(
         ' $tagDisplayed$count',
@@ -261,8 +247,8 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
       padding: const EdgeInsets.all(6.0),
       onPressed: () async {
         // Insert text to cursor.
-        if (info.item1.group != 'prefix') {
-          final insert = info.item1.getTag().replaceAll(' ', '_');
+        if (info.$1.group != 'prefix') {
+          final insert = info.$1.getTag().replaceAll(' ', '_');
 
           _searchController.text = _searchText!.substring(0, _insertPos) +
               insert +
@@ -276,16 +262,16 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
           var offset = _searchController.selection.baseOffset;
           if (offset != -1) {
             _searchController.text =
-                '${_searchController.text.substring(0, _searchController.selection.base.offset)}${info.item1.name!}:${_searchController.text.substring(_searchController.selection.base.offset)}';
+                '${_searchController.text.substring(0, _searchController.selection.base.offset)}${info.$1.name!}:${_searchController.text.substring(_searchController.selection.base.offset)}';
             _searchController.selection = TextSelection(
-              baseOffset: offset + info.item1.name!.length + 1,
-              extentOffset: offset + info.item1.name!.length + 1,
+              baseOffset: offset + info.$1.name!.length + 1,
+              extentOffset: offset + info.$1.name!.length + 1,
             );
           } else {
-            _searchController.text = '${info.item1.name!}:';
+            _searchController.text = '${info.$1.name!}:';
             _searchController.selection = TextSelection(
-              baseOffset: info.item1.name!.length + 1,
-              extentOffset: info.item1.name!.length + 1,
+              baseOffset: info.$1.name!.length + 1,
+              extentOffset: info.$1.name!.length + 1,
             );
           }
           await searchProcess(

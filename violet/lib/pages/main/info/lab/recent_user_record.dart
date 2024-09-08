@@ -9,7 +9,6 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
@@ -32,7 +31,7 @@ class LabUserRecentRecords extends StatefulWidget {
 }
 
 class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
-  List<Tuple2<QueryResult, int>> records = <Tuple2<QueryResult, int>>[];
+  List<(QueryResult, int)> records = <(QueryResult, int)>[];
   int limit = 10;
   final ScrollController _controller = ScrollController();
   FlareControls flareController = FlareControls();
@@ -54,19 +53,19 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
           await VioletServer.userRecent(widget.userAppId, 100, limit);
       if (trecords is int || trecords == null || trecords.length == 0) return;
 
-      var xrecords = trecords as List<Tuple3<int, int, int>>;
+      var xrecords = trecords as List<(int, int, int)>;
 
       var queryRaw =
           '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
 
-      queryRaw += '(${xrecords.map((e) => 'Id=${e.item2}').join(' OR ')})';
+      queryRaw += '(${xrecords.map((e) => 'Id=${e.$2}').join(' OR ')})';
       var query = await QueryManager.query(queryRaw);
 
       if (query.results!.isEmpty) return;
 
       /* Statistics -- */
 
-      lff = <Tuple2<String, int>>[];
+      lff = <(String, int)>[];
       lffOrigin = null;
       isExpanded = false;
       femaleTags = 0;
@@ -95,9 +94,9 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
       }
 
       ffstat.forEach((key, value) {
-        lff.add(Tuple2<String, int>(key, value));
+        lff.add((key, value));
       });
-      lff.sort((x, y) => y.item2.compareTo(x.item2));
+      lff.sort((x, y) => y.$2.compareTo(x.$2));
 
       lffOrigin = lff;
       lff = lff.take(5).toList();
@@ -111,13 +110,12 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
         qr[element.id().toString()] = element;
       }
 
-      var result = <Tuple2<QueryResult, int>>[];
+      var result = <(QueryResult, int)>[];
       for (var element in xrecords) {
-        if (qr[element.item2.toString()] == null) {
+        if (qr[element.$2.toString()] == null) {
           continue;
         }
-        result.add(Tuple2<QueryResult, int>(
-            qr[element.item2.toString()]!, element.item3));
+        result.add((qr[element.$2.toString()]!, element.$3));
       }
 
       records.insertAll(0, result);
@@ -150,16 +148,16 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                       }
                       index -= 1;
                       return Align(
-                        key: Key('records$index/${records[index].item1.id()}'),
+                        key: Key('records$index/${records[index].$1.id()}'),
                         alignment: Alignment.center,
                         child: Provider<ArticleListItem>.value(
                           value: ArticleListItem.fromArticleListItem(
-                            queryResult: records[index].item1,
+                            queryResult: records[index].$1,
                             showDetail: true,
                             addBottomPadding: true,
                             width: (windowWidth - 4.0),
                             thumbnailTag: const Uuid().v4(),
-                            seconds: records[index].item2,
+                            seconds: records[index].$2,
                           ),
                           child: const ArticleListItemWidget(),
                         ),
@@ -206,7 +204,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                         activeColor: Settings.majorColor,
                         onChangeEnd: (value) async {
                           limit = value.toInt();
-                          records = <Tuple2<QueryResult, int>>[];
+                          records = <(QueryResult, int)>[];
                           setState(() {});
                           await updateRercord(null);
                         },
@@ -228,8 +226,8 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
   }
 
   // Chart component lists
-  List<Tuple2<String, int>> lff = <Tuple2<String, int>>[];
-  List<Tuple2<String, int>>? lffOrigin;
+  List<(String, int)> lff = <(String, int)>[];
+  List<(String, int)>? lffOrigin;
   bool isExpanded = false;
   // This is used for top color bar
   int femaleTags = 0;
@@ -324,18 +322,17 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                 isExpanded ? lff.length * 14.0 + 10 : lff.length * 22.0 + 10,
             child: charts.BarChart(
               [
-                charts.Series<Tuple2<String, int>, String>(
+                charts.Series<(String, int), String>(
                     id: 'Sales',
                     data: lff,
-                    domainFn: (Tuple2<String, int> sales, f) =>
-                        sales.item1.contains(':')
-                            ? sales.item1.split(':')[1]
-                            : sales.item1,
-                    measureFn: (Tuple2<String, int> sales, _) => sales.item2,
-                    colorFn: (Tuple2<String, int> sales, _) {
-                      if (sales.item1.startsWith('female:')) {
+                    domainFn: ((String, int) sales, f) => sales.$1.contains(':')
+                        ? sales.$1.split(':')[1]
+                        : sales.$1,
+                    measureFn: ((String, int) sales, _) => sales.$2,
+                    colorFn: ((String, int) sales, _) {
+                      if (sales.$1.startsWith('female:')) {
                         return charts.MaterialPalette.pink.shadeDefault;
-                      } else if (sales.item1.startsWith('male:')) {
+                      } else if (sales.$1.startsWith('male:')) {
                         return charts.MaterialPalette.blue.shadeDefault;
                       } else {
                         return charts.MaterialPalette.gray.shadeDefault;

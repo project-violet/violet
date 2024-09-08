@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mdi/mdi.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/main/info/lab/recent_user_record.dart';
@@ -22,8 +21,8 @@ class LabGlobalComments extends StatefulWidget {
 }
 
 class _LabGlobalCommentsState extends State<LabGlobalComments> {
-  List<Tuple5<int, DateTime, String, String, int?>> comments =
-      <Tuple5<int, DateTime, String, String, int?>>[];
+  List<(int, DateTime, String, String, int?)> comments =
+      <(int, DateTime, String, String, int?)>[];
   final ScrollController _controller = ScrollController();
   FocusNode myFocusNode = FocusNode();
 
@@ -42,12 +41,13 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
         'global_general'))['result'] as List<dynamic>;
 
     comments = tcomments
-        .map((e) => Tuple5<int, DateTime, String, String, int?>(
-            e['Id'],
-            DateTime.parse(e['TimeStamp']),
-            e['UserAppId'],
-            e['Body'],
-            e['Parent']))
+        .map((e) => (
+              e['Id'] as int,
+              DateTime.parse(e['TimeStamp']),
+              e['UserAppId'] as String,
+              e['Body'] as String,
+              e['Parent'] as int?,
+            ))
         .toList();
 
     if (comments.isNotEmpty) setState(() {});
@@ -55,7 +55,7 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
 
   @override
   Widget build(BuildContext context) {
-    var pureComments = comments.where((x) => x.item5 == null).toList();
+    var pureComments = comments.where((x) => x.$5 == null).toList();
 
     return CardPanel.build(
       context,
@@ -70,15 +70,14 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
               physics: const BouncingScrollPhysics(),
               itemBuilder: (context, index) {
                 return CommentUnit(
-                  id: pureComments[index].item1,
-                  author: pureComments[index].item3,
-                  body: pureComments[index].item4,
-                  dateTime: pureComments[index].item2,
+                  id: pureComments[index].$1,
+                  author: pureComments[index].$3,
+                  body: pureComments[index].$4,
+                  dateTime: pureComments[index].$2,
                   reply: reply,
                   replies: comments
                       .where((x) =>
-                          x.item5 != null &&
-                          x.item5! == pureComments[index].item1)
+                          x.$5 != null && x.$5! == pureComments[index].$1)
                       .toList()
                       .reversed
                       .toList(),
@@ -211,7 +210,7 @@ class CommentUnit extends StatelessWidget {
   final int id;
   final ReplyCallback? reply;
   final bool isReply;
-  final List<Tuple5<int, DateTime, String, String, int?>> replies;
+  final List<(int, DateTime, String, String, int?)> replies;
 
   static const String dev = '1918c652d3a9';
 
@@ -311,10 +310,10 @@ class CommentUnit extends StatelessWidget {
           replies
               .map(
                 (x) => CommentUnit(
-                  id: x.item1,
-                  dateTime: x.item2,
-                  author: x.item3,
-                  body: x.item4,
+                  id: x.$1,
+                  dateTime: x.$2,
+                  author: x.$3,
+                  body: x.$4,
                   isReply: true,
                   replies: const [],
                 ),

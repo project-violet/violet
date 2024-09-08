@@ -1,12 +1,11 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2021. violet-team. Licensed under the Apache-2.0 License.
 
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/image_provider.dart';
 
 class HisokiImageProvider extends VioletImageProvider {
   int id;
-  List<Tuple3<String, double, double>> infos;
+  List<(String, double, double)> infos;
 
   HisokiImageProvider({required this.infos, required this.id});
 
@@ -30,14 +29,14 @@ class HisokiImageProvider extends VioletImageProvider {
 
   @override
   Future<String> getImageUrl(int page) async {
-    return infos[page].item1;
+    return infos[page].$1;
   }
 
   @override
   bool canGetImageUrlSync() => true;
 
   @override
-  String? getImageUrlSync(int page) => infos[page].item1;
+  String? getImageUrlSync(int page) => infos[page].$1;
 
   @override
   int length() {
@@ -48,8 +47,7 @@ class HisokiImageProvider extends VioletImageProvider {
 
   @override
   Future<double> getEstimatedImageHeight(int page, double baseWidth) async {
-    return _estimatedCache[page] =
-        infos[page].item3 * baseWidth / infos[page].item2;
+    return _estimatedCache[page] = infos[page].$3 * baseWidth / infos[page].$2;
   }
 
   @override

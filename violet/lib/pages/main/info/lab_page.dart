@@ -66,7 +66,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   if (LDI.ldi == null) await LDI.init();
 
                   final rr = await QueryManager.queryIds(
-                      LDI.ldi!.map((e) => e.item1).take(1500).toList());
+                      LDI.ldi!.map((e) => e.$1).take(1500).toList());
 
                   _navigate(ArticleListPage(name: 'LDI DESC', cc: rr));
                 },
@@ -79,10 +79,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 () async {
                   if (LDI.ldi == null) await LDI.init();
 
-                  final rr = await QueryManager.queryIds(LDI.ldi!.reversed
-                      .map((e) => e.item1)
-                      .take(1500)
-                      .toList());
+                  final rr = await QueryManager.queryIds(
+                      LDI.ldi!.reversed.map((e) => e.$1).take(1500).toList());
 
                   _navigate(ArticleListPage(name: 'LDI ASC', cc: rr));
                 },
@@ -265,7 +263,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   if (CommentsCount.counts == null) await CommentsCount.init();
 
                   final rr = await QueryManager.queryIds(CommentsCount.counts!
-                      .map((e) => e.item1)
+                      .map((e) => e.$1)
                       .take(1500)
                       .toList());
 

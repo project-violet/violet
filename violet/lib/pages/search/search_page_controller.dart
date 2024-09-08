@@ -11,7 +11,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/context/modal_bottom_sheet_context.dart';
@@ -42,7 +41,7 @@ class SearchPageController extends GetxController {
   var searchTotalResultCount = 0.obs;
 
   final Semaphore _querySem = Semaphore(maxCount: 1);
-  Tuple2<SearchResult?, String>? latestQuery;
+  (SearchResult?, String)? latestQuery;
   List<QueryResult> queryResult = [];
   List<QueryResult> filterResult = [];
   int baseCount = 0; // using for user custom page index
@@ -175,14 +174,14 @@ class SearchPageController extends GetxController {
 
     try {
       if (_queryEnd ||
-          (latestQuery!.item1 != null && latestQuery!.item1!.offset == -1)) {
+          (latestQuery!.$1 != null && latestQuery!.$1!.offset == -1)) {
         return;
       }
 
       final search = HentaiManager.search(
-        latestQuery!.item2,
-        latestQuery!.item1 == null ? 0 : latestQuery!.item1!.offset,
-        latestQuery!.item1 == null ? 0 : latestQuery!.item1!.next ?? 0,
+        latestQuery!.$2,
+        latestQuery!.$1 == null ? 0 : latestQuery!.$1!.offset,
+        latestQuery!.$1 == null ? 0 : latestQuery!.$1!.next ?? 0,
       );
       if (!Settings.ignoreTimeout) {
         search.timeout(const Duration(seconds: 10), onTimeout: () {
@@ -193,7 +192,7 @@ class SearchPageController extends GetxController {
       }
       var next = await search;
 
-      latestQuery = Tuple2(next, latestQuery!.item2);
+      latestQuery = (next, latestQuery!.$2);
 
       if (next.results.isEmpty) {
         _queryEnd = true;
@@ -208,10 +207,10 @@ class SearchPageController extends GetxController {
       }
 
       if (searchTotalResultCount.value == 0 &&
-          !latestQuery!.item2.contains('random:')) {
+          !latestQuery!.$2.contains('random:')) {
         Future.delayed(const Duration(milliseconds: 100)).then((value) async {
           searchTotalResultCount.value =
-              await HentaiManager.countSearch(latestQuery!.item2);
+              await HentaiManager.countSearch(latestQuery!.$2);
         });
       }
 

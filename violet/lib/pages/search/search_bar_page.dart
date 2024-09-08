@@ -8,7 +8,6 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/displayed_tag.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
@@ -48,8 +47,8 @@ class _SearchBarPageState extends State<SearchBarPage>
   static const _kCurve = Curves.ease;
 
   late AnimationController controller;
-  List<Tuple2<DisplayedTag, int>> _searchLists = <Tuple2<DisplayedTag, int>>[];
-  List<Tuple2<DisplayedTag, int>> _relatedLists = <Tuple2<DisplayedTag, int>>[];
+  List<(DisplayedTag, int)> _searchLists = <(DisplayedTag, int)>[];
+  List<(DisplayedTag, int)> _relatedLists = <(DisplayedTag, int)>[];
 
   late TextEditingController _searchController;
   int? _insertPos, _insertLength;
@@ -103,10 +102,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       ];
 
       for (var element in prefixList) {
-        _searchLists.add(
-          Tuple2<DisplayedTag, int>(
-              DisplayedTag(group: 'prefix', name: element), 0),
-        );
+        _searchLists.add((DisplayedTag(group: 'prefix', name: element), 0));
       }
     }
 
@@ -674,23 +670,22 @@ class _SearchBarPageState extends State<SearchBarPage>
       _relatedLists = HitomiIndexs.getRelatedTag(token.startsWith('tag:')
               ? token.split(':').last.replaceAll('_', ' ')
               : token.replaceAll('_', ' '))
-          .map((e) => Tuple2<DisplayedTag, int>(
-              DisplayedTag(
-                  group: e.item1.split(':').first,
-                  name: e.item1.split(':').last),
-              (e.item2 * 100).toInt()))
+          .map((e) => (
+                DisplayedTag(
+                    group: e.$1.split(':').first, name: e.$1.split(':').last),
+                (e.$2 * 100).toInt()
+              ))
           .toList();
     } else if (token.startsWith('series:')) {
       _relatedLists = HitomiIndexs.getRelatedCharacters(
               token.split(':').last.replaceAll('_', ' '))
-          .map((e) => Tuple2<DisplayedTag, int>(
-              DisplayedTag(group: 'character', name: e.item1), e.item2.toInt()))
+          .map((e) =>
+              (DisplayedTag(group: 'character', name: e.$1), e.$2.toInt()))
           .toList();
     } else if (token.startsWith('character:')) {
       _relatedLists = HitomiIndexs.getRelatedSeries(
               token.split(':').last.replaceAll('_', ' '))
-          .map((e) => Tuple2<DisplayedTag, int>(
-              DisplayedTag(group: 'series', name: e.item1), e.item2.toInt()))
+          .map((e) => (DisplayedTag(group: 'series', name: e.$1), e.$2.toInt()))
           .toList();
     } else {
       _relatedLists.clear();
@@ -701,11 +696,11 @@ class _SearchBarPageState extends State<SearchBarPage>
     _searchText = target;
     latestToken = token;
 
-    final result = <Tuple2<DisplayedTag, int>>[];
+    final result = <(DisplayedTag, int)>[];
 
     if (token == 'page') {
-      result.addAll(['>', '<', '>=', '<=', '=', '<>'].map((e) =>
-          Tuple2<DisplayedTag, int>(DisplayedTag(group: 'page', name: e), 0)));
+      result.addAll(['>', '<', '>=', '<=', '=', '<>']
+          .map((e) => (DisplayedTag(group: 'page', name: e), 0)));
     }
 
     if (!Settings.searchUseFuzzy) {
@@ -777,32 +772,32 @@ class _SearchBarPageState extends State<SearchBarPage>
 
   // Create tag-chip
   // group, name, counts
-  Widget chip(Tuple2<DisplayedTag, int> info, [bool related = false]) {
-    var tagDisplayed = info.item1.name!.split(':').last;
+  Widget chip((DisplayedTag, int) info, [bool related = false]) {
+    var tagDisplayed = info.$1.name!.split(':').last;
     var count = '';
     Color color = Colors.grey;
 
     if (Settings.searchTagTranslation || Settings.searchUseTranslated) {
-      tagDisplayed = info.item1.getTranslated();
+      tagDisplayed = info.$1.getTranslated();
     }
 
-    if (info.item2 > 0 && Settings.searchShowCount) {
-      count = ' (${info.item2.toString() + (related ? '%' : '')})';
+    if (info.$2 > 0 && Settings.searchShowCount) {
+      count = ' (${info.$2.toString() + (related ? '%' : '')})';
     }
 
-    if (info.item1.group == 'female') {
+    if (info.$1.group == 'female') {
       color = Colors.pink;
-    } else if (info.item1.group == 'male') {
+    } else if (info.$1.group == 'male') {
       color = Colors.blue;
-    } else if (info.item1.group == 'prefix') {
+    } else if (info.$1.group == 'prefix') {
       color = Colors.orange;
-    } else if (info.item1.group == 'language') {
+    } else if (info.$1.group == 'language') {
       color = Colors.teal;
-    } else if (info.item1.group == 'series') {
+    } else if (info.$1.group == 'series') {
       color = Colors.cyan;
-    } else if (info.item1.group == 'artist' || info.item1.group == 'group') {
+    } else if (info.$1.group == 'artist' || info.$1.group == 'group') {
       color = Colors.green.withOpacity(0.6);
-    } else if (info.item1.group == 'type' || info.item1.group == 'page') {
+    } else if (info.$1.group == 'type' || info.$1.group == 'page') {
       color = Colors.orange;
     }
 
@@ -884,7 +879,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       labelPadding: const EdgeInsets.all(0.0),
       avatar: CircleAvatar(
         backgroundColor: Colors.grey.shade600,
-        child: Text(info.item1.group![0].toUpperCase()),
+        child: Text(info.$1.group![0].toUpperCase()),
       ),
       label: RichText(
           text: TextSpan(
@@ -902,8 +897,8 @@ class _SearchBarPageState extends State<SearchBarPage>
       padding: const EdgeInsets.all(6.0),
       onPressed: () async {
         // Insert text to cursor.
-        if (info.item1.group != 'prefix') {
-          final insert = info.item1.getTag().replaceAll(' ', '_');
+        if (info.$1.group != 'prefix') {
+          final insert = info.$1.getTag().replaceAll(' ', '_');
 
           _searchController.text = _searchText!.substring(0, _insertPos) +
               insert +
@@ -914,65 +909,63 @@ class _SearchBarPageState extends State<SearchBarPage>
             extentOffset: _insertPos! + insert.length,
           );
 
-          if (info.item1.group == 'tag' ||
-              info.item1.group == 'female' ||
-              info.item1.group == 'male') {
-            _relatedLists = HitomiIndexs.getRelatedTag(info.item1.group == 'tag'
-                    ? info.item1.name!.replaceAll('_', ' ')
-                    : info.item1.getTag().replaceAll('_', ' '))
-                .map((e) => Tuple2<DisplayedTag, int>(
-                    DisplayedTag(
-                        group: e.item1.contains(':')
-                            ? e.item1.split(':').first
-                            : 'tag',
-                        name: e.item1.split(':').last),
-                    (e.item2 * 100).toInt()))
+          if (info.$1.group == 'tag' ||
+              info.$1.group == 'female' ||
+              info.$1.group == 'male') {
+            _relatedLists = HitomiIndexs.getRelatedTag(info.$1.group == 'tag'
+                    ? info.$1.name!.replaceAll('_', ' ')
+                    : info.$1.getTag().replaceAll('_', ' '))
+                .map((e) => (
+                      DisplayedTag(
+                          group: e.$1.contains(':')
+                              ? e.$1.split(':').first
+                              : 'tag',
+                          name: e.$1.split(':').last),
+                      (e.$2 * 100).toInt()
+                    ))
                 .toList();
             setState(() {});
-          } else if (info.item1.group == 'series') {
+          } else if (info.$1.group == 'series') {
             _relatedLists = HitomiIndexs.getRelatedCharacters(
-                    info.item1.name!.replaceAll('_', ' '))
-                .map((e) => Tuple2<DisplayedTag, int>(
-                    DisplayedTag(group: 'character', name: e.item1),
-                    e.item2.toInt()))
+                    info.$1.name!.replaceAll('_', ' '))
+                .map((e) => (
+                      DisplayedTag(group: 'character', name: e.$1),
+                      e.$2.toInt()
+                    ))
                 .toList();
             setState(() {});
-          } else if (info.item1.group == 'character') {
+          } else if (info.$1.group == 'character') {
             _relatedLists = HitomiIndexs.getRelatedSeries(
-                    info.item1.name!.replaceAll('_', ' '))
-                .map((e) => Tuple2<DisplayedTag, int>(
-                    DisplayedTag(group: 'series', name: e.item1),
-                    e.item2.toInt()))
+                    info.$1.name!.replaceAll('_', ' '))
+                .map((e) =>
+                    (DisplayedTag(group: 'series', name: e.$1), e.$2.toInt()))
                 .toList();
             setState(() {});
           }
         } else {
           var offset = _searchController.selection.baseOffset;
           if (offset != -1) {
-            final noColon =
-                info.item1.name == 'random' || info.item1.name == 'page';
+            final noColon = info.$1.name == 'random' || info.$1.name == 'page';
             _searchController.text = _searchController.text
                     .substring(0, _searchController.selection.base.offset) +
-                info.item1.name! +
-                (info.item1.name == 'random'
+                info.$1.name! +
+                (info.$1.name == 'random'
                     ? ' '
-                    : info.item1.name == 'page'
+                    : info.$1.name == 'page'
                         ? ''
                         : ':') +
                 _searchController.text
                     .substring(_searchController.selection.base.offset);
             _searchController.selection = TextSelection(
-              baseOffset: offset + info.item1.name!.length + (noColon ? 0 : 1),
-              extentOffset:
-                  offset + info.item1.name!.length + (noColon ? 0 : 1),
+              baseOffset: offset + info.$1.name!.length + (noColon ? 0 : 1),
+              extentOffset: offset + info.$1.name!.length + (noColon ? 0 : 1),
             );
           } else {
-            final noColon =
-                info.item1.name == 'random' || info.item1.name == 'page';
-            _searchController.text = info.item1.name! + (noColon ? '' : ':');
+            final noColon = info.$1.name == 'random' || info.$1.name == 'page';
+            _searchController.text = info.$1.name! + (noColon ? '' : ':');
             _searchController.selection = TextSelection(
-              baseOffset: info.item1.name!.length + (noColon ? 0 : 1),
-              extentOffset: info.item1.name!.length + (noColon ? 0 : 1),
+              baseOffset: info.$1.name!.length + (noColon ? 0 : 1),
+              extentOffset: info.$1.name!.length + (noColon ? 0 : 1),
             );
           }
           await searchProcess(

@@ -5,7 +5,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
@@ -24,7 +23,7 @@ class LabTopRecent extends StatefulWidget {
 }
 
 class _LabTopRecentState extends State<LabTopRecent> {
-  List<Tuple2<QueryResult, int>> records = <Tuple2<QueryResult, int>>[];
+  List<(QueryResult, int)> records = <(QueryResult, int)>[];
   int limit = 10;
   Timer? timer;
   final ScrollController _controller = ScrollController();
@@ -59,12 +58,12 @@ class _LabTopRecentState extends State<LabTopRecent> {
       var trecords = await VioletServer.topRecent(limit);
       if (trecords is int || trecords == null || trecords.length == 0) return;
 
-      var xrecords = trecords as List<Tuple2<int, int>>;
+      var xrecords = trecords as List<(int, int)>;
 
       var queryRaw =
           '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
 
-      queryRaw += 'Id IN (${xrecords.map((e) => e.item1).join(',')})';
+      queryRaw += 'Id IN (${xrecords.map((e) => e.$1).join(',')})';
       var query = await QueryManager.query(queryRaw);
 
       if (query.results!.isEmpty) return;
@@ -74,13 +73,12 @@ class _LabTopRecentState extends State<LabTopRecent> {
         qr[element.id().toString()] = element;
       }
 
-      var result = <Tuple2<QueryResult, int>>[];
+      var result = <(QueryResult, int)>[];
       for (var element in xrecords) {
-        if (qr[element.item1.toString()] == null) {
+        if (qr[element.$1.toString()] == null) {
           continue;
         }
-        result.add(Tuple2<QueryResult, int>(
-            qr[element.item1.toString()]!, element.item2));
+        result.add((qr[element.$1.toString()]!, element.$2));
       }
 
       records = result;
@@ -132,16 +130,16 @@ class _LabTopRecentState extends State<LabTopRecent> {
               itemCount: records.length,
               itemBuilder: (BuildContext ctxt, int index) {
                 return Align(
-                  key: Key('records$index/${records[index].item1.id()}'),
+                  key: Key('records$index/${records[index].$1.id()}'),
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
-                      queryResult: records[index].item1,
+                      queryResult: records[index].$1,
                       showDetail: true,
                       addBottomPadding: true,
                       width: (windowWidth - 4.0),
                       thumbnailTag: const Uuid().v4(),
-                      viewed: records[index].item2,
+                      viewed: records[index].$2,
                     ),
                     child: const ArticleListItemWidget(),
                   ),

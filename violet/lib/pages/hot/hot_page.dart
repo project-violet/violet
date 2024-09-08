@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
@@ -26,7 +25,7 @@ class HotPage extends StatefulWidget {
   State<HotPage> createState() => _HotPageState();
 }
 
-typedef RequestType = Tuple2<int, List<Tuple2<QueryResult, int>>?>;
+typedef RequestType = (int, List<(QueryResult, int)>?);
 
 class _HotPageState extends ThemeSwitchableState<HotPage>
     with AutomaticKeepAliveClientMixin<HotPage>, DoubleTapToTopMixin {
@@ -70,7 +69,7 @@ class _HotPageState extends ThemeSwitchableState<HotPage>
                 child: CircularProgressIndicator(),
               ),
             );
-          } else if (snapshot.data!.item1 != 200) {
+          } else if (snapshot.data!.$1 != 200) {
             final errmsg = {
               400: 'Bad Request',
               403: 'Forbidden',
@@ -108,9 +107,9 @@ class _HotPageState extends ThemeSwitchableState<HotPage>
                       style: TextStyle(fontSize: 16),
                     ),
                     Text(
-                      errmsg[snapshot.data!.item1] != null
-                          ? 'Error: ${errmsg[snapshot.data!.item1]!}'
-                          : 'Error Code: ${snapshot.data!.item1}',
+                      errmsg[snapshot.data!.$1] != null
+                          ? 'Error: ${errmsg[snapshot.data!.$1]!}'
+                          : 'Error Code: ${snapshot.data!.$1}',
                     )
                   ],
                 ),
@@ -119,12 +118,12 @@ class _HotPageState extends ThemeSwitchableState<HotPage>
           } else {
             final windowWidth = MediaQuery.of(context).size.width;
 
-            final results = snapshot.data!.item2!;
+            final results = snapshot.data!.$2!;
 
             sliverList = SliverList(
               delegate: SliverChildListDelegate(
                 results.map((x) {
-                  final keyStr = 'views$index/${x.item1.id()}';
+                  final keyStr = 'views$index/${x.$1.id()}';
                   if (!itemKeys.containsKey(keyStr)) {
                     itemKeys[keyStr] = GlobalKey();
                   }
@@ -133,14 +132,14 @@ class _HotPageState extends ThemeSwitchableState<HotPage>
                     alignment: Alignment.center,
                     child: Provider<ArticleListItem>.value(
                       value: ArticleListItem.fromArticleListItem(
-                        queryResult: x.item1,
+                        queryResult: x.$1,
                         showDetail: true,
                         showUltra: true,
                         addBottomPadding: true,
                         width: (windowWidth - 4.0),
                         thumbnailTag: const Uuid().v4(),
-                        viewed: x.item2,
-                        usableTabList: results.map((e) => e.item1).toList(),
+                        viewed: x.$2,
+                        usableTabList: results.map((e) => e.$1).toList(),
                       ),
                       child: const ArticleListItemWidget(),
                     ),
@@ -186,20 +185,20 @@ class _HotPageState extends ThemeSwitchableState<HotPage>
       final value = await VioletServer.top(0, 600, i2t());
 
       if (value is int) {
-        return RequestType(value, null);
+        return (value, null);
       }
 
       if (value == null || value.length == 0) {
-        return const RequestType(900, null);
+        return const (900, null);
       }
 
       var queryRaw =
           '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
-      queryRaw += '(${value.map((e) => 'Id=${e.item1}').join(' OR ')})';
+      queryRaw += '(${value.map((e) => 'Id=${e.$1}').join(' OR ')})';
       final query = await QueryManager.query(queryRaw);
 
       if (query.results!.isEmpty) {
-        return const Tuple2<int, List<Tuple2<QueryResult, int>>?>(901, null);
+        return const (901, null);
       }
 
       final qr = <String, QueryResult>{};
@@ -207,19 +206,18 @@ class _HotPageState extends ThemeSwitchableState<HotPage>
         qr[element.id().toString()] = element;
       }
 
-      final result = <Tuple2<QueryResult, int>>[];
+      final result = <(QueryResult, int)>[];
       value.forEach((element) {
-        if (qr[element.item1.toString()] == null) {
+        if (qr[element.$1.toString()] == null) {
           // TODO: Handle qurey not found
           return;
         }
-        result.add(Tuple2<QueryResult, int>(
-            qr[element.item1.toString()]!, element.item2));
+        result.add((qr[element.$1.toString()]!, element.$2));
       });
 
       if (reload) setState(() {});
 
-      return RequestType(200, result);
+      return (200, result);
     });
   }
 

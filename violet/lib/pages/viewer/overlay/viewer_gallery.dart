@@ -7,7 +7,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/style/palette.dart';
@@ -253,13 +252,13 @@ class _ViewerGalleryState extends State<ViewerGallery> {
 
     return FutureBuilder(
       future: Future.sync(() async {
-        return Tuple2<List<String>, Map<String, String>>(
+        return (
           await _pageInfo.provider!.getSmallImagesUrl(),
           await _pageInfo.provider!.getHeader(0),
         );
       }),
       builder: (context,
-          AsyncSnapshot<Tuple2<List<String>, Map<String, String>>> snapshot) {
+          AsyncSnapshot<(List<String>, Map<String, String>)> snapshot) {
         if (!snapshot.hasData) {
           return SliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -289,8 +288,8 @@ class _ViewerGalleryState extends State<ViewerGallery> {
                 child: Stack(
                   children: <Widget>[
                     CachedNetworkImage(
-                      imageUrl: snapshot.data!.item1[index],
-                      httpHeaders: snapshot.data!.item2,
+                      imageUrl: snapshot.data!.$1[index],
+                      httpHeaders: snapshot.data!.$2,
                       fit: BoxFit.cover,
                       width: double.infinity,
                       height: double.infinity,

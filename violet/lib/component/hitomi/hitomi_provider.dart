@@ -4,14 +4,13 @@
 import 'dart:convert';
 
 import 'package:image_size_getter/image_size_getter.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/script/script_manager.dart';
 
 class HitomiImageProvider extends VioletImageProvider {
-  Tuple3<List<String>, List<String>, List<String>?> urls;
+  (List<String>, List<String>, List<String>?) urls;
   String id;
 
   HitomiImageProvider(this.urls, this.id);
@@ -21,12 +20,12 @@ class HitomiImageProvider extends VioletImageProvider {
 
   @override
   Future<List<String>> getSmallImagesUrl() async {
-    return urls.item3 ?? [];
+    return urls.$3 ?? [];
   }
 
   @override
   Future<String> getThumbnailUrl() async {
-    return urls.item2[0];
+    return urls.$2[0];
   }
 
   @override
@@ -42,18 +41,18 @@ class HitomiImageProvider extends VioletImageProvider {
 
   @override
   Future<String> getImageUrl(int page) async {
-    return urls.item1[page];
+    return urls.$1[page];
   }
 
   @override
   bool canGetImageUrlSync() => true;
 
   @override
-  String getImageUrlSync(int page) => urls.item1[page];
+  String getImageUrlSync(int page) => urls.$1[page];
 
   @override
   int length() {
-    return urls.item1.length;
+    return urls.$1.length;
   }
 
   List<double>? _heightCache;
@@ -61,17 +60,16 @@ class HitomiImageProvider extends VioletImageProvider {
 
   @override
   Future<double> getEstimatedImageHeight(int page, double baseWidth) async {
-    if (urls.item3 == null || urls.item3!.length <= page) return -1;
+    if (urls.$3 == null || urls.$3!.length <= page) return -1;
 
     if (_estimatedCache == null) {
-      _estimatedCache = List<double>.filled(urls.item3!.length, 0);
+      _estimatedCache = List<double>.filled(urls.$3!.length, 0);
     } else if (_estimatedCache![page] != 0) {
       return _estimatedCache![page];
     }
 
     final header = await getHeader(page);
-    final image =
-        (await http.get(urls.item3![page], headers: header)).bodyBytes;
+    final image = (await http.get(urls.$3![page], headers: header)).bodyBytes;
     final thumbSize = ImageSizeGetter.getSize(MemoryInput(image));
 
     // w1:h1=w2:h2
@@ -98,29 +96,29 @@ class HitomiImageProvider extends VioletImageProvider {
 
   @override
   Future<void> refreshPartial(List<bool> target) async {
-    if (urls.item1.length != target.length) {
+    if (urls.$1.length != target.length) {
       await refresh();
       return;
     }
 
     final turls = await HitomiManager.getImageList(id);
 
-    for (var i = 0; i < turls.item1.length; i++) {
-      if (target[i]) urls.item1[i] = turls.item1[i];
+    for (var i = 0; i < turls.$1.length; i++) {
+      if (target[i]) urls.$1[i] = turls.$1[i];
     }
   }
 
   @override
   Future<double> getOriginalImageHeight(int page) async {
     if (_heightCache == null) {
-      _heightCache = List<double>.filled(urls.item3!.length, 0);
+      _heightCache = List<double>.filled(urls.$3!.length, 0);
     } else if (_heightCache![page] != 0) {
       return _heightCache![page];
     }
 
     final info = await ScriptManager.getGalleryInfo(id);
     if (info == null) {
-      _heightCache = List<double>.filled(urls.item3!.length, -1);
+      _heightCache = List<double>.filled(urls.$3!.length, -1);
       return -1;
     }
 

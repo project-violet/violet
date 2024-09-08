@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart' as trans;
@@ -32,9 +31,9 @@ class _FilterPageState extends State<FilterPage> {
 
   bool test = false;
 
-  final _tags = <Tuple3<String, String, int>>[];
+  final _tags = <(String, String, int)>[];
   final _groupCount = <String, int>{};
-  final _groups = <Tuple2<String, int>>[];
+  final _groups = <(String, int)>[];
 
   _initTagPad() {
     Map<String, int> tags = <String, int>{};
@@ -58,7 +57,7 @@ class _FilterPageState extends State<FilterPage> {
         name = key.split(':')[1];
       }
       _groupCount[group] = _groupCount[group]! + 1;
-      _tags.add(Tuple3<String, String, int>(group, name, value));
+      _tags.add((group, name, value));
       if (!c.tagStates.containsKey('$group|$name')) {
         c.tagStates['$group|$name'] = false;
       }
@@ -74,10 +73,9 @@ class _FilterPageState extends State<FilterPage> {
     append('class', 'Class');
     append('type', 'Type');
     append('uploader', 'Uploader');
-    _groupCount
-        .forEach((key, value) => _groups.add(Tuple2<String, int>(key, value)));
-    _groups.sort((a, b) => b.item2.compareTo(a.item2));
-    _tags.sort((a, b) => b.item3.compareTo(a.item3));
+    _groupCount.forEach((key, value) => _groups.add((key, value)));
+    _groups.sort((a, b) => b.$2.compareTo(a.$2));
+    _tags.sort((a, b) => b.$3.compareTo(a.$3));
   }
 
   void append(String group, String vv) {
@@ -95,7 +93,7 @@ class _FilterPageState extends State<FilterPage> {
     }
     _groupCount[group] = _groupCount[group]! + tags.length;
     tags.forEach((key, value) {
-      _tags.add(Tuple3<String, String, int>(group, key, value));
+      _tags.add((group, key, value));
       if (!c.tagStates.containsKey('$group|$key')) {
         c.tagStates['$group|$key'] = false;
       }
@@ -240,21 +238,21 @@ class _FilterPageState extends State<FilterPage> {
 
   _buildTagsPanel() {
     var tags = _tags
-        .where((element) => c.tagStates['${element.item1}|${element.item2}']!)
+        .where((element) => c.tagStates['${element.$1}|${element.$2}']!)
         .toList();
 
     if (c.isSearch) {
       tags += _tags
           .where((element) =>
-              ('${element.item1}:${element.item2}')
+              ('${element.$1}:${element.$2}')
                   .contains(_searchController.text) &&
-              !c.tagStates['${element.item1}|${element.item2}']!)
+              !c.tagStates['${element.$1}|${element.$2}']!)
           .toList();
     } else {
       tags += _tags
           .where((element) =>
-              c.groupStates[element.item1]! &&
-              !c.tagStates['${element.item1}|${element.item2}']!)
+              c.groupStates[element.$1]! &&
+              !c.tagStates['${element.$1}|${element.$2}']!)
           .toList();
     }
 
@@ -265,12 +263,12 @@ class _FilterPageState extends State<FilterPage> {
         children: tags.take(100).map(
           (element) {
             return _Chip(
-              selected: c.tagStates['${element.item1}|${element.item2}']!,
-              group: element.item1,
-              name: element.item2,
-              count: element.item3,
+              selected: c.tagStates['${element.$1}|${element.$2}']!,
+              group: element.$1,
+              name: element.$2,
+              count: element.$3,
               callback: (selected) {
-                c.tagStates['${element.item1}|${element.item2}'] = selected;
+                c.tagStates['${element.$1}|${element.$2}'] = selected;
               },
             );
           },
@@ -284,12 +282,12 @@ class _FilterPageState extends State<FilterPage> {
         runSpacing: -13.0,
         children: _groups
             .map((element) => _Chip(
-                  count: element.item2,
-                  group: element.item1,
-                  name: element.item1,
-                  selected: c.groupStates[element.item1]!,
+                  count: element.$2,
+                  group: element.$1,
+                  name: element.$1,
+                  selected: c.groupStates[element.$1]!,
                   callback: (value) {
-                    c.groupStates[element.item1] = value;
+                    c.groupStates[element.$1] = value;
                     setState(() {});
                   },
                 ))
@@ -336,9 +334,9 @@ class _FilterPageState extends State<FilterPage> {
           label: Text(trans.Translations.instance!.trans('selectall')),
           onSelected: (bool value) {
             _tags
-                .where((element) => c.groupStates[element.item1]!)
+                .where((element) => c.groupStates[element.$1]!)
                 .forEach((element) {
-              c.tagStates['${element.item1}|${element.item2}'] = true;
+              c.tagStates['${element.$1}|${element.$2}'] = true;
             });
             setState(() {});
           },
@@ -347,9 +345,9 @@ class _FilterPageState extends State<FilterPage> {
           label: Text(trans.Translations.instance!.trans('deselectall')),
           onSelected: (bool value) {
             _tags
-                .where((element) => c.groupStates[element.item1]!)
+                .where((element) => c.groupStates[element.$1]!)
                 .forEach((element) {
-              c.tagStates['${element.item1}|${element.item2}'] = false;
+              c.tagStates['${element.$1}|${element.$2}'] = false;
             });
             setState(() {});
           },
@@ -358,10 +356,10 @@ class _FilterPageState extends State<FilterPage> {
           label: Text(trans.Translations.instance!.trans('inverse')),
           onSelected: (bool value) {
             _tags
-                .where((element) => c.groupStates[element.item1]!)
+                .where((element) => c.groupStates[element.$1]!)
                 .forEach((element) {
-              c.tagStates['${element.item1}|${element.item2}'] =
-                  !c.tagStates['${element.item1}|${element.item2}']!;
+              c.tagStates['${element.$1}|${element.$2}'] =
+                  !c.tagStates['${element.$1}|${element.$2}']!;
             });
             setState(() {});
           },

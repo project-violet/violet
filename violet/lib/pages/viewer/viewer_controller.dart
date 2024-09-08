@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
 import 'package:violet/pages/viewer/others/scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
@@ -88,7 +87,7 @@ class ViewerController extends GetxController {
   SuggestionsBoxController? suggestionsBoxController;
 
   /// Is enabled search?
-  var messages = <Tuple5<double, int, int, double, List<double>>>[];
+  var messages = <(double, int, int, double, List<double>)>[];
   String latestSearch = '';
   var messageIndex = 0.obs;
 
@@ -267,7 +266,7 @@ class ViewerController extends GetxController {
   }
 
   gotoSearchIndex() {
-    final index = messages[messageIndex.value - 1].item3;
+    final index = messages[messageIndex.value - 1].$3;
 
     jump(index);
   }
@@ -276,24 +275,25 @@ class ViewerController extends GetxController {
     suggestionsBoxController!.close();
     if (latestSearch == searchText.text) return;
     latestSearch == searchText.text;
-    messages = <Tuple5<double, int, int, double, List<double>>>[];
+    messages = <(double, int, int, double, List<double>)>[];
 
     final tmessages =
         (await VioletServer.searchMessageWord(articleId, searchText.text))
             as List<dynamic>;
     messages = tmessages
-        .map((e) => Tuple5<double, int, int, double, List<double>>(
-            double.parse(e['MatchScore'] as String),
-            e['Id'] as int,
-            e['Page'] as int,
-            double.parse(e['Correctness'].toString()),
-            (e['Rect'] as List<dynamic>)
-                .map((e) => double.parse(e.toString()))
-                .toList()))
+        .map((e) => (
+              double.parse(e['MatchScore'] as String),
+              e['Id'] as int,
+              e['Page'] as int,
+              double.parse(e['Correctness'].toString()),
+              (e['Rect'] as List<dynamic>)
+                  .map((e) => double.parse(e.toString()))
+                  .toList()
+            ))
         .toList();
 
-    messages = messages.where((e) => e.item1 >= 80.0).toList();
-    messages.sort((a, b) => a.item3.compareTo(b.item3));
+    messages = messages.where((e) => e.$1 >= 80.0).toList();
+    messages.sort((a, b) => a.$3.compareTo(b.$3));
 
     messageIndex.value = 1;
 

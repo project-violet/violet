@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/record.dart';
@@ -80,7 +79,7 @@ class _StatisticsState extends State<Statistics> {
 
       /* -- Statistics -- */
 
-      lff = <Tuple2<String, int>>[];
+      lff = <(String, int)>[];
       lffOrigin = null;
       femaleTags = 0;
       maleTags = 0;
@@ -138,9 +137,9 @@ class _StatisticsState extends State<Statistics> {
       }
 
       ffstat.forEach((key, value) {
-        lff.add(Tuple2<String, int>(key, value));
+        lff.add((key, value));
       });
-      lff.sort((x, y) => y.item2.compareTo(x.item2));
+      lff.sort((x, y) => y.$2.compareTo(x.$2));
 
       lffOrigin = lff;
       if (!isExpanded) {
@@ -333,8 +332,8 @@ class _StatisticsState extends State<Statistics> {
   }
 
   // Chart component lists
-  List<Tuple2<String, int>> lff = <Tuple2<String, int>>[];
-  List<Tuple2<String, int>>? lffOrigin;
+  List<(String, int)> lff = <(String, int)>[];
+  List<(String, int)>? lffOrigin;
   bool isExpanded = false;
   // This is used for top color bar
   int femaleTags = 0;
@@ -490,18 +489,17 @@ class _StatisticsState extends State<Statistics> {
                 isExpanded ? lff.length * 14.0 + 10 : lff.length * 22.0 + 10,
             child: charts.BarChart(
               [
-                charts.Series<Tuple2<String, int>, String>(
+                charts.Series<(String, int), String>(
                     id: 'Sales',
                     data: lff,
-                    domainFn: (Tuple2<String, int> sales, f) =>
-                        sales.item1.contains(':')
-                            ? sales.item1.split(':')[1]
-                            : sales.item1,
-                    measureFn: (Tuple2<String, int> sales, _) => sales.item2,
-                    colorFn: (Tuple2<String, int> sales, _) {
-                      if (sales.item1.startsWith('female:')) {
+                    domainFn: ((String, int) sales, f) => sales.$1.contains(':')
+                        ? sales.$1.split(':')[1]
+                        : sales.$1,
+                    measureFn: ((String, int) sales, _) => sales.$2,
+                    colorFn: ((String, int) sales, _) {
+                      if (sales.$1.startsWith('female:')) {
                         return charts.MaterialPalette.pink.shadeDefault;
-                      } else if (sales.item1.startsWith('male:')) {
+                      } else if (sales.$1.startsWith('male:')) {
                         return charts.MaterialPalette.blue.shadeDefault;
                       } else {
                         return charts.MaterialPalette.gray.shadeDefault;
@@ -569,14 +567,12 @@ class _StatisticsState extends State<Statistics> {
   String yvalue = '';
 
   _statusChart() {
-    final seriesList = charts.Series<Tuple2<DateTime, int>, DateTime>(
+    final seriesList = charts.Series<(DateTime, int), DateTime>(
       id: 'time',
       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-      domainFn: (v, _) => v.item1,
-      measureFn: (v, _) => v.item2,
-      data: timePerDate.entries
-          .map((e) => Tuple2<DateTime, int>(e.key, e.value ~/ 60))
-          .toList(),
+      domainFn: (v, _) => v.$1,
+      measureFn: (v, _) => v.$2,
+      data: timePerDate.entries.map((e) => (e.key, e.value ~/ 60)).toList(),
     );
     return Column(
       children: [

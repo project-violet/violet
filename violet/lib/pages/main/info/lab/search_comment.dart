@@ -3,7 +3,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/pages/common/utils.dart';
 import 'package:violet/pages/main/info/lab/search_comment_author.dart';
 import 'package:violet/pages/segment/card_panel.dart';
@@ -18,8 +17,8 @@ class LabSearchComments extends StatefulWidget {
 }
 
 class _LabSearchCommentsState extends State<LabSearchComments> {
-  List<Tuple4<int, DateTime, String, String>> comments =
-      <Tuple4<int, DateTime, String, String>>[];
+  List<(int, DateTime, String, String)> comments =
+      <(int, DateTime, String, String)>[];
   TextEditingController text = TextEditingController();
 
   @override
@@ -29,9 +28,8 @@ class _LabSearchCommentsState extends State<LabSearchComments> {
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       var tcomments =
           (await VioletServer.searchComment(text.text)) as List<dynamic>;
-      comments = tcomments
-          .map((e) => e as Tuple4<int, DateTime, String, String>)
-          .toList();
+      comments =
+          tcomments.map((e) => e as (int, DateTime, String, String)).toList();
       setState(() {});
     });
   }
@@ -52,30 +50,30 @@ class _LabSearchCommentsState extends State<LabSearchComments> {
                 return InkWell(
                   onTap: () async {
                     FocusScope.of(context).unfocus();
-                    showArticleInfo(context, e.item1);
+                    showArticleInfo(context, e.$1);
                   },
                   onLongPress: () async {
                     FocusScope.of(context).unfocus();
-                    _navigate(LabSearchCommentsAuthor(e.item3));
+                    _navigate(LabSearchCommentsAuthor(e.$3));
                   },
                   splashColor: Colors.white,
                   child: ListTile(
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        Text('(${e.item1}) [${e.item3}]'),
+                        Text('(${e.$1}) [${e.$3}]'),
                         Expanded(
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: Text(
                                 DateFormat('yyyy-MM-dd HH:mm')
-                                    .format(e.item2.toLocal()),
+                                    .format(e.$2.toLocal()),
                                 style: const TextStyle(fontSize: 12)),
                           ),
                         ),
                       ],
                     ),
-                    subtitle: Text(e.item4),
+                    subtitle: Text(e.$4),
                   ),
                 );
               },
@@ -89,7 +87,7 @@ class _LabSearchCommentsState extends State<LabSearchComments> {
               var tcomments = (await VioletServer.searchComment(text.text))
                   as List<dynamic>;
               comments = tcomments
-                  .map((e) => e as Tuple4<int, DateTime, String, String>)
+                  .map((e) => e as (int, DateTime, String, String))
                   .toList();
               setState(() {});
             },

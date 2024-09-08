@@ -631,8 +631,8 @@ class _SettingsPageState extends State<SettingsPage>
                     const TagSelectorDialog(what: 'include'),
               );
 
-              if (vv != null && vv.item1 == 1) {
-                Settings.setIncludeTags(vv.item2);
+              if (vv != null && vv.$1 == 1) {
+                Settings.setIncludeTags(vv.$2);
                 setState(() {
                   _shouldReload = true;
                 });
@@ -653,8 +653,8 @@ class _SettingsPageState extends State<SettingsPage>
                     const TagSelectorDialog(what: 'exclude'),
               );
 
-              if (vv.item1 == 1) {
-                Settings.setExcludeTags(vv.item2);
+              if (vv.$1 == 1) {
+                Settings.setExcludeTags(vv.$2);
                 setState(() {
                   _shouldReload = true;
                 });

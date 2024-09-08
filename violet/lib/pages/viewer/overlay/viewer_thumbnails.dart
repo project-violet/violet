@@ -9,7 +9,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/hitomi_provider.dart';
 import 'package:violet/component/image_provider.dart';
@@ -149,7 +148,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
               try {
                 var urls =
                     await HitomiManager.getImageList(_pageInfo.id.toString());
-                if (urls.item1.isNotEmpty && urls.item2.isNotEmpty) {
+                if (urls.$1.isNotEmpty && urls.$2.isNotEmpty) {
                   prov = HitomiImageProvider(urls, _pageInfo.id.toString());
                   ProviderManager.insert(_pageInfo.id * 1000000, prov);
                 }
@@ -159,11 +158,10 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
             prov = await ProviderManager.get(_pageInfo.id * 1000000);
           }
 
-          return Tuple2(
-              await prov.getSmallImagesUrl(), await prov.getHeader(0));
+          return (await prov.getSmallImagesUrl(), await prov.getHeader(0));
         }),
         builder: (context,
-            AsyncSnapshot<Tuple2<List<String>, Map<String, String>>> snapshot) {
+            AsyncSnapshot<(List<String>, Map<String, String>)> snapshot) {
           if (!snapshot.hasData) {
             return const CircularProgressIndicator();
           }
@@ -178,7 +176,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
             childAspectRatio: 3 / 4,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            children: snapshot.data!.item1
+            children: snapshot.data!.$1
                 .asMap()
                 .map((i, e) => MapEntry(
                     i,
@@ -186,7 +184,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
                       i,
                       CachedNetworkImage(
                         imageUrl: e,
-                        httpHeaders: snapshot.data!.item2,
+                        httpHeaders: snapshot.data!.$2,
                         filterQuality: FilterQuality.high,
                         fit: BoxFit.cover,
                       ),

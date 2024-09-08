@@ -7,7 +7,6 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/component/image_provider.dart';
@@ -31,11 +30,11 @@ class LabSearchMessage extends StatefulWidget {
 }
 
 class _LabSearchMessageState extends State<LabSearchMessage> {
-  List<Tuple5<double, int, int, double, List<double>>> messages =
-      <Tuple5<double, int, int, double, List<double>>>[];
+  List<(double, int, int, double, List<double>)> messages =
+      <(double, int, int, double, List<double>)>[];
   TextEditingController text = TextEditingController(text: '은근슬쩍');
   String latestSearch = '은근슬쩍';
-  List<Tuple3<String, String, int>>? autocompleteTarget;
+  List<(String, String, int)>? autocompleteTarget;
 
   @override
   void initState() {
@@ -45,14 +44,15 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
       var tmessages = (await VioletServer.searchMessage('contains', text.text))
           as List<dynamic>;
       messages = tmessages
-          .map((e) => Tuple5<double, int, int, double, List<double>>(
-              double.parse(e['MatchScore'] as String),
-              e['Id'] as int,
-              e['Page'] as int,
-              e['Correctness'] as double,
-              (e['Rect'] as List<dynamic>)
-                  .map((e) => double.parse(e.toString()))
-                  .toList()))
+          .map((e) => (
+                double.parse(e['MatchScore'] as String),
+                e['Id'] as int,
+                e['Page'] as int,
+                e['Correctness'] as double,
+                (e['Rect'] as List<dynamic>)
+                    .map((e) => double.parse(e.toString()))
+                    .toList()
+              ))
           .toList();
 
       if (_height == null) {
@@ -74,11 +74,10 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
       var m = jsonDecode((await http.get(url)).body) as Map<String, dynamic>;
 
       autocompleteTarget = m.entries
-          .map((e) => Tuple3<String, String, int>(
-              e.key, TagTranslate.disassembly(e.key), e.value as int))
+          .map((e) => (e.key, TagTranslate.disassembly(e.key), e.value as int))
           .toList();
 
-      autocompleteTarget!.sort((x, y) => y.item3.compareTo(x.item3));
+      autocompleteTarget!.sort((x, y) => y.$3.compareTo(x.$3));
 
       setState(() {});
     });
@@ -127,24 +126,24 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   future: Future.delayed(const Duration(milliseconds: 100))
                       .then((value) async {
                     VioletImageProvider provider;
-                    if (ProviderManager.isExists(e.item2)) {
-                      provider = await ProviderManager.get(e.item2);
+                    if (ProviderManager.isExists(e.$2)) {
+                      provider = await ProviderManager.get(e.$2);
                     } else {
                       final query =
-                          (await HentaiManager.idSearch(e.item2.toString()))
+                          (await HentaiManager.idSearch(e.$2.toString()))
                               .results;
                       provider = await HentaiManager.getImageProvider(query[0]);
                       await provider.init();
                       ProviderManager.insert(query[0].id(), provider);
                     }
 
-                    return Tuple2(
-                        _urls![index] = await provider.getImageUrl(e.item3),
-                        await provider.getHeader(e.item3));
+                    return (
+                      _urls![index] = await provider.getImageUrl(e.$3),
+                      await provider.getHeader(e.$3)
+                    );
                   }),
                   builder: (context,
-                      AsyncSnapshot<Tuple2<String, Map<String, String>>>
-                          snapshot) {
+                      AsyncSnapshot<(String, Map<String, String>)> snapshot) {
                     if (!snapshot.hasData) {
                       return Column(
                         children: [
@@ -161,8 +160,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                             ),
                           ),
                           ListTile(
-                            title: Text('${e.item2} (${e.item3 + 1} Page)'),
-                            subtitle: Text('Score: ${e.item1}'),
+                            title: Text('${e.$2} (${e.$3 + 1} Page)'),
+                            subtitle: Text('Score: ${e.$1}'),
                           ),
                         ],
                       );
@@ -170,7 +169,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                     return InkWell(
                       onTap: () async {
                         FocusScope.of(context).unfocus();
-                        showArticleInfo(context, e.item2);
+                        showArticleInfo(context, e.$2);
                       },
                       splashColor: Colors.white,
                       child: Column(
@@ -188,8 +187,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                   fadeInDuration:
                                       const Duration(microseconds: 500),
                                   fadeInCurve: Curves.easeIn,
-                                  imageUrl: snapshot.data!.item1,
-                                  httpHeaders: snapshot.data!.item2,
+                                  imageUrl: snapshot.data!.$1,
+                                  httpHeaders: snapshot.data!.$2,
                                   progressIndicatorBuilder:
                                       (context, string, progress) {
                                     return SizedBox(
@@ -231,15 +230,15 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                               ),
                               FutureBuilder(
                                 future: _calculateImageDimension(
-                                    snapshot.data!.item1, snapshot.data!.item2),
+                                    snapshot.data!.$1, snapshot.data!.$2),
                                 builder:
                                     (context, AsyncSnapshot<Size> snapshot2) {
                                   if (!snapshot2.hasData) return Container();
 
-                                  var brtx = e.item5[0];
-                                  var brty = e.item5[1];
-                                  var brbx = e.item5[2];
-                                  var brby = e.item5[3];
+                                  var brtx = e.$5[0];
+                                  var brty = e.$5[1];
+                                  var brbx = e.$5[2];
+                                  var brby = e.$5[3];
 
                                   var w = snapshot2.data!.width;
 
@@ -266,8 +265,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                             ],
                           ),
                           ListTile(
-                            title: Text('${e.item2} (${e.item3 + 1} Page)'),
-                            subtitle: Text('Score: ${e.item1}'),
+                            title: Text('${e.$2} (${e.$3 + 1} Page)'),
+                            subtitle: Text('Score: ${e.$1}'),
                           ),
                         ],
                       ),
@@ -288,8 +287,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   value: selected,
                   onChanged: (String? value) async {
                     if (value == selected) return;
-                    messages =
-                        <Tuple5<double, int, int, double, List<double>>>[];
+                    messages = <(double, int, int, double, List<double>)>[];
 
                     setState(() {
                       selected = value!;
@@ -297,15 +295,15 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                     var tmessages = (await VioletServer.searchMessage(
                         selected.toLowerCase(), text.text)) as List<dynamic>;
                     messages = tmessages
-                        .map((e) =>
-                            Tuple5<double, int, int, double, List<double>>(
-                                double.parse(e['MatchScore'] as String),
-                                e['Id'] as int,
-                                e['Page'] as int,
-                                e['Correctness'] as double,
-                                (e['Rect'] as List<dynamic>)
-                                    .map((e) => double.parse(e.toString()))
-                                    .toList()))
+                        .map((e) => (
+                              double.parse(e['MatchScore'] as String),
+                              e['Id'] as int,
+                              e['Page'] as int,
+                              e['Correctness'] as double,
+                              (e['Rect'] as List<dynamic>)
+                                  .map((e) => double.parse(e.toString()))
+                                  .toList(),
+                            ))
                         .toList();
 
                     evictImageUrls(_urls);
@@ -324,28 +322,27 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                 child: TypeAheadField(
                   suggestionsCallback: (pattern) async {
                     if (autocompleteTarget == null) {
-                      return <Tuple3<String, String, int>>[];
+                      return <(String, String, int)>[];
                     }
 
                     var ppattern = TagTranslate.disassembly(pattern);
 
                     return autocompleteTarget!
-                        .where((element) => element.item2.startsWith(ppattern))
+                        .where((element) => element.$2.startsWith(ppattern))
                         .toList()
                       ..addAll(autocompleteTarget!
                           .where((element) =>
-                              !element.item2.startsWith(ppattern) &&
-                              element.item2.contains(ppattern))
+                              !element.$2.startsWith(ppattern) &&
+                              element.$2.contains(ppattern))
                           .toList());
                   },
-                  itemBuilder:
-                      (context, Tuple3<String, String, int> suggestion) {
+                  itemBuilder: (context, (String, String, int) suggestion) {
                     return ListTile(
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 0.0, horizontal: 16.0),
-                      title: Text(suggestion.item1),
+                      title: Text(suggestion.$1),
                       trailing: Text(
-                        '${suggestion.item3}회',
+                        '${suggestion.$3}회',
                         style:
                             const TextStyle(color: Colors.grey, fontSize: 10.0),
                       ),
@@ -353,9 +350,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                     );
                   },
                   direction: AxisDirection.up,
-                  onSuggestionSelected:
-                      (Tuple3<String, String, int> suggestion) {
-                    text.text = suggestion.item1;
+                  onSuggestionSelected: ((String, String, int) suggestion) {
+                    text.text = suggestion.$1;
                     setState(() {});
                     Future.delayed(const Duration(milliseconds: 100))
                         .then((value) async {
@@ -410,21 +406,22 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
   Future<void> _onModifiedText() async {
     if (latestSearch == text.text) return;
     latestSearch = text.text;
-    messages = <Tuple5<double, int, int, double, List<double>>>[];
+    messages = <(double, int, int, double, List<double>)>[];
 
     setState(() {});
     var tmessages =
         (await VioletServer.searchMessage(selected.toLowerCase(), text.text))
             as List<dynamic>;
     messages = tmessages
-        .map((e) => Tuple5<double, int, int, double, List<double>>(
-            double.parse(e['MatchScore'] as String),
-            e['Id'] as int,
-            e['Page'] as int,
-            double.parse(e['Correctness'].toString()),
-            (e['Rect'] as List<dynamic>)
-                .map((e) => double.parse(e.toString()))
-                .toList()))
+        .map((e) => (
+              double.parse(e['MatchScore'] as String),
+              e['Id'] as int,
+              e['Page'] as int,
+              double.parse(e['Correctness'].toString()),
+              (e['Rect'] as List<dynamic>)
+                  .map((e) => double.parse(e.toString()))
+                  .toList()
+            ))
         .toList();
 
     evictImageUrls(_urls);

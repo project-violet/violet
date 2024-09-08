@@ -11,7 +11,6 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
@@ -723,10 +722,10 @@ class _ThumbnailWidget extends StatelessWidget {
         future: HitomiManager.getImageList(id.toString()).then((value) async {
           var header =
               await ScriptManager.runHitomiGetHeaderContent(id.toString());
-          return Tuple2(value.item1[0], header);
+          return (value.$1[0], header);
         }),
-        builder: (context,
-            AsyncSnapshot<Tuple2<String, Map<String, String>>> snapshot) {
+        builder:
+            (context, AsyncSnapshot<(String, Map<String, String>)> snapshot) {
           if (!snapshot.hasData || snapshot.data == null) {
             return _getLoadingAnimation();
           }
@@ -734,9 +733,9 @@ class _ThumbnailWidget extends StatelessWidget {
           return Hero(
             tag: thumbnailTag!,
             child: CachedNetworkImage(
-              imageUrl: snapshot.data!.item1,
+              imageUrl: snapshot.data!.$1,
               fit: BoxFit.cover,
-              httpHeaders: snapshot.data!.item2,
+              httpHeaders: snapshot.data!.$2,
               imageBuilder: (context, imageProvider) => Container(
                 decoration: BoxDecoration(
                   image:

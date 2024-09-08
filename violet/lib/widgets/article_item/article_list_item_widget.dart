@@ -12,7 +12,6 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
@@ -634,9 +633,10 @@ class _DetailWidget extends StatelessWidget {
     final tags = (c.articleListItem.queryResult.tags() as String)
         .split('|')
         .where((element) => element != '')
-        .map((e) => Tuple2<String, String>(
-            e.contains(':') ? e.split(':')[0] : 'tags',
-            e.contains(':') ? e.split(':')[1] : e))
+        .map((e) => (
+              e.contains(':') ? e.split(':')[0] : 'tags',
+              e.contains(':') ? e.split(':')[1] : e
+            ))
         .toList();
 
     if (Settings.useTabletMode) {
@@ -644,15 +644,13 @@ class _DetailWidget extends StatelessWidget {
         spacing: 3.0,
         maxLines: 3,
         runSpacing: -10.0,
-        children:
-            tags.map((x) => TagChip(group: x.item1, name: x.item2)).toList(),
+        children: tags.map((x) => TagChip(group: x.$1, name: x.$2)).toList(),
       );
     } else {
       return Wrap(
         spacing: 3.0,
         runSpacing: -10.0,
-        children:
-            tags.map((x) => TagChip(group: x.item1, name: x.item2)).toList(),
+        children: tags.map((x) => TagChip(group: x.$1, name: x.$2)).toList(),
       );
     }
   }

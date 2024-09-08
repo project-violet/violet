@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/title_cluster.dart';
 import 'package:violet/database/query.dart';
@@ -107,7 +106,7 @@ class SeriesFinder {
       }
     }
 
-    var seriesList = <Tuple2<String, List<QueryResult>>>[];
+    var seriesList = <(String, List<QueryResult>)>[];
 
     for (var i = 0; i < artists.length; i++) {
       var kv = artists.entries.elementAt(i);
@@ -124,8 +123,8 @@ class SeriesFinder {
           .where((element) => element.length > 1)
           .toList()
           .forEach((element) {
-        seriesList.add(Tuple2<String, List<QueryResult>>(
-            'artist:${kv.key}', element.map((e) => qr[kv.value[e]]).toList()));
+        seriesList.add(
+            ('artist:${kv.key}', element.map((e) => qr[kv.value[e]]).toList()));
       });
     }
 
@@ -144,14 +143,14 @@ class SeriesFinder {
           .where((element) => element.length > 1)
           .toList()
           .forEach((element) {
-        seriesList.add(Tuple2<String, List<QueryResult>>(
-            'group:${kv.key}', element.map((e) => qr[kv.value[e]]).toList()));
+        seriesList.add(
+            ('group:${kv.key}', element.map((e) => qr[kv.value[e]]).toList()));
       });
     }
 
-    seriesList.sort((x, y) => x.item2.length.compareTo(y.item2.length));
+    seriesList.sort((x, y) => x.$2.length.compareTo(y.$2.length));
     for (var element in seriesList) {
-      print('[${element.item2.length}] ${element.item1}');
+      print('[${element.$2.length}] ${element.$1}');
     }
   }
 }

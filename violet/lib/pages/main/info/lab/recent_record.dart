@@ -6,7 +6,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
@@ -26,7 +25,7 @@ class LabRecentRecords extends StatefulWidget {
 }
 
 class _LabRecentRecordsState extends State<LabRecentRecords> {
-  List<Tuple2<QueryResult, int>> records = <Tuple2<QueryResult, int>>[];
+  List<(QueryResult, int)> records = <(QueryResult, int)>[];
   int latestId = 0;
   int limit = 10;
   late Timer timer;
@@ -69,15 +68,15 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
       var trecords = await VioletServer.record(latestId, 10, limit);
       if (trecords is int || trecords == null || trecords.length == 0) return;
 
-      var xrecords = trecords as List<Tuple3<int, int, int>>;
+      var xrecords = trecords as List<(int, int, int)>;
 
-      latestId = max(latestId,
-          xrecords.reduce((x, y) => x.item1 > y.item1 ? x : y).item1 + 1);
+      latestId =
+          max(latestId, xrecords.reduce((x, y) => x.$1 > y.$1 ? x : y).$1 + 1);
 
       var queryRaw =
           '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
 
-      queryRaw += '(${xrecords.map((e) => 'Id=${e.item2}').join(' OR ')})';
+      queryRaw += '(${xrecords.map((e) => 'Id=${e.$2}').join(' OR ')})';
       var query = await QueryManager.query(queryRaw);
 
       if (query.results!.isEmpty) return;
@@ -87,13 +86,12 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
         qr[element.id().toString()] = element;
       }
 
-      var result = <Tuple2<QueryResult, int>>[];
+      var result = <(QueryResult, int)>[];
       for (var element in xrecords) {
-        if (qr[element.item2.toString()] == null) {
+        if (qr[element.$2.toString()] == null) {
           continue;
         }
-        result.add(Tuple2<QueryResult, int>(
-            qr[element.item2.toString()]!, element.item3));
+        result.add((qr[element.$2.toString()]!, element.$3));
       }
 
       records.insertAll(0, result);
@@ -118,7 +116,7 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
 
   @override
   Widget build(BuildContext context) {
-    var xrecords = records.where((x) => x.item2 > limit).toList();
+    var xrecords = records.where((x) => x.$2 > limit).toList();
     var windowWidth = MediaQuery.of(context).size.width;
     return CardPanel.build(
       context,
@@ -135,16 +133,16 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
               itemBuilder: (BuildContext ctxt, int index) {
                 return Align(
                   key: Key(
-                      'records$index/${xrecords[xrecords.length - index - 1].item1.id()}'),
+                      'records$index/${xrecords[xrecords.length - index - 1].$1.id()}'),
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
-                      queryResult: xrecords[xrecords.length - index - 1].item1,
+                      queryResult: xrecords[xrecords.length - index - 1].$1,
                       showDetail: true,
                       addBottomPadding: true,
                       width: (windowWidth - 4.0),
                       thumbnailTag: const Uuid().v4(),
-                      seconds: xrecords[xrecords.length - index - 1].item2,
+                      seconds: xrecords[xrecords.length - index - 1].$2,
                     ),
                     child: const ArticleListItemWidget(),
                   ),
