@@ -37,7 +37,7 @@
     "crypto": "^1.0.1",
     "ioredis": "^5.3.2",
     "joi": "^17.11.0",
-    "mysql2": "^3.6.5",
+    "mysql2": "^3.11.0",
     "nest-winston": "^1.9.4",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",
