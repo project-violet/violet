@@ -11,13 +11,11 @@ import 'package:violet/pages/segment/three_article_panel.dart';
 import 'package:violet/settings/settings.dart';
 
 class SeriesListPage extends StatelessWidget {
-  final String prefix;
   final List<List<int>> series;
   final List<QueryResult> cc;
 
   const SeriesListPage({
     super.key,
-    required this.prefix,
     required this.series,
     required this.cc,
   });

@@ -41,6 +41,7 @@ import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 import 'package:violet/util/helper.dart';
+import 'package:violet/util/strings.dart';
 import 'package:violet/widgets/debounce_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
@@ -632,7 +633,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
                   child: Text(
-                    e.$1.split(' ').map((e) => e.capitalize()).join(' '),
+                    e.$1.split(' ').map((e) => e.titlecase()).join(' '),
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 20.0),
                   ),
@@ -1237,11 +1238,5 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     if (qm.results!.isEmpty) return;
 
     queryResults[int.parse(url)] = qm.results!.first;
-  }
-}
-
-extension StringExtension on String {
-  String capitalize() {
-    return '${this[0].toUpperCase()}${substring(1).toLowerCase()}';
   }
 }

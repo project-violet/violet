@@ -48,13 +48,8 @@ class _GroupArtistListState extends State<GroupArtistList>
     var ids = <Tuple2<int, int>>[];
     for (int i = 0; i < artists.length; i++) {
       var postfix = artists[i].artist().toLowerCase().replaceAll(' ', '_');
-      var queryString = HitomiManager.translate2query('${[
-        'artist',
-        'group',
-        'uploader',
-        'series',
-        'character'
-      ][artists[i].type()]}:$postfix ${Settings.includeTags}');
+      var queryString = HitomiManager.translate2query(
+          '${artists[i].type().name}:$postfix ${Settings.includeTags}');
       final qm = QueryManager.queryPagination(queryString);
       qm.itemsPerPage = 1;
       var query = (await qm.next())[0].id();
@@ -70,15 +65,10 @@ class _GroupArtistListState extends State<GroupArtistList>
     artists = newedList;
   }
 
-  Future<List<QueryResult>> _future(String e, int type) async {
+  Future<List<QueryResult>> _future(String e, ArtistType type) async {
     var postfix = e.toLowerCase().replaceAll(' ', '_');
-    var queryString = HitomiManager.translate2query('${[
-      'artist',
-      'group',
-      'uploader',
-      'series',
-      'character'
-    ][type]}:$postfix ${Settings.includeTags}');
+    var queryString = HitomiManager.translate2query(
+        '${type.name}:$postfix ${Settings.includeTags}');
     final qm = QueryManager.queryPagination(queryString);
     qm.itemsPerPage = 4;
     return await qm.next();
@@ -244,7 +234,7 @@ class _GroupArtistListState extends State<GroupArtistList>
       color: checkMode &&
               checked
                   .where((element) =>
-                      element.item1 == e.type() && element.item2 == e.artist())
+                      element.$1 == e.type() && element.$2 == e.artist())
                   .isNotEmpty
           ? Colors.amber
           : Colors.transparent,
@@ -256,8 +246,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                 e.artist(),
                 checked
                     .where((element) =>
-                        element.item1 == e.type() &&
-                        element.item2 == e.artist())
+                        element.$1 == e.type() && element.$2 == e.artist())
                     .isEmpty);
             setState(() {});
             return;
@@ -266,11 +255,8 @@ class _GroupArtistListState extends State<GroupArtistList>
           PlatformNavigator.navigateSlide(
             context,
             ArtistInfoPage(
-              isGroup: e.type() == 1,
-              isUploader: e.type() == 2,
-              isSeries: e.type() == 3,
-              isCharacter: e.type() == 4,
-              artist: e.artist(),
+              name: e.artist(),
+              type: e.type(),
             ),
           );
         },
@@ -290,19 +276,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                        ' ${[
-                          'artist',
-                          'group',
-                          'uploader',
-                          'series',
-                          'character'
-                        ][e.type()]}:${e.artist()} (${HitomiManager.getArticleCount([
-                              'artist',
-                              'group',
-                              'uploader',
-                              'series',
-                              'character'
-                            ][e.type()], e.artist())})',
+                        ' ${e.type().name}:${e.artist()} (${HitomiManager.getArticleCount(e.type().name, e.artist())})',
                         style: const TextStyle(fontSize: 17)),
                   ],
                 ),
@@ -357,8 +331,7 @@ class _GroupArtistListState extends State<GroupArtistList>
         FloatingActionButton(
           onPressed: () {
             for (var element in artists) {
-              checked
-                  .add(Tuple2<int, String>(element.type(), element.artist()));
+              checked.add((element.type(), element.artist()));
             }
             setState(() {});
           },
@@ -376,7 +349,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                 Translations.of(context).trans('bookmark'))) {
               var bookmark = await Bookmark.getInstance();
               for (var element in checked) {
-                await bookmark.unbookmarkArtist(element.item2, element.item1);
+                await bookmark.unbookmarkArtist(element.$2, element.$1);
               }
               checked.clear();
               refresh();
@@ -419,23 +392,23 @@ class _GroupArtistListState extends State<GroupArtistList>
 
   bool checkMode = false;
   bool checkModePre = false;
-  List<Tuple2<int, String>> checked = [];
+  List<(ArtistType, String)> checked = [];
 
-  void longpress(int type, String artist) {
+  void longpress(ArtistType type, String artist) {
     if (!checkMode) {
       checkMode = true;
       checkModePre = true;
-      checked.add(Tuple2<int, String>(type, artist));
+      checked.add((type, artist));
       setState(() {});
     }
   }
 
-  void check(int type, String artist, bool check) {
+  void check(ArtistType type, String artist, bool check) {
     if (check) {
-      checked.add(Tuple2<int, String>(type, artist));
+      checked.add((type, artist));
     } else {
-      checked.removeWhere(
-          (element) => element.item1 == type && element.item2 == artist);
+      checked
+          .removeWhere((element) => element.$1 == type && element.$2 == artist);
       if (checked.isEmpty) {
         setState(() {
           checkModePre = false;
@@ -506,8 +479,8 @@ class _GroupArtistListState extends State<GroupArtistList>
         for (int i = 0; i < artists.length; i++) {
           invIdIndex['${artists[i].artist()}|${artists[i].type()}'] = i;
         }
-        checked.sort((x, y) => invIdIndex['${x.item2}|${x.item1}']!
-            .compareTo(invIdIndex['${y.item2}|${y.item1}']!));
+        checked.sort((x, y) => invIdIndex['${x.$2}|${x.$1}']!
+            .compareTo(invIdIndex['${y.$2}|${y.$1}']!));
 
         // 1. Get bookmark articles on source groupid
         var bm = await Bookmark.getInstance();
@@ -523,10 +496,10 @@ class _GroupArtistListState extends State<GroupArtistList>
 
         for (var e in checked.reversed) {
           // 3. Delete source bookmarks
-          await bm.unbookmarkArtist(e.item2, e.item1);
+          await bm.unbookmarkArtist(e.$2, e.$1);
           // 4. Add src bookmarks with new groupid
           await bm.insertArtist(
-              e.item2, e.item1, DateTime.now(), groups[choose].id());
+              e.$2, e.$1, DateTime.now(), groups[choose].id());
         }
 
         // 5. Update UI

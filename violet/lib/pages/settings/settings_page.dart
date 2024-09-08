@@ -2153,8 +2153,12 @@ class _SettingsPageState extends State<SettingsPage>
                     await bookmark.insertArticle(tar, DateTime.now(), group);
                   } else if (tar.contains(':') &&
                       ['artist', 'group'].contains(tar.split(':')[0])) {
-                    await bookmark.bookmarkArtist(tar.split(':')[1],
-                        tar.split(':')[0] == 'artist' ? 0 : 1, group);
+                    await bookmark.bookmarkArtist(
+                        tar.split(':')[1],
+                        tar.split(':')[0] == 'artist'
+                            ? ArtistType.artist
+                            : ArtistType.group,
+                        group);
                   }
                 }
 

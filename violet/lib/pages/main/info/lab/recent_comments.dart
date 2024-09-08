@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tuple/tuple.dart';
+import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
@@ -52,14 +53,11 @@ class _LabRecentCommentsState extends State<LabRecentComments> {
           var e = comments[index];
           return InkWell(
             onTap: () async {
-              var group = e.item4.split(':').first;
-              var name = e.item4.split(':').last;
+              final group = e.item4.split(':').first;
+              final name = e.item4.split(':').last;
               _navigate(ArtistInfoPage(
-                isGroup: group == 'groups' || group == 'group',
-                isUploader: group == 'uploader',
-                isCharacter: group == 'character',
-                isSeries: group == 'series',
-                artist: name,
+                type: ArtistTypeHelper.fromString(group)!,
+                name: name,
               ));
             },
             splashColor: Colors.white,

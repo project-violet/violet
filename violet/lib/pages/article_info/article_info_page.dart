@@ -22,6 +22,7 @@ import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hitomi/related.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
@@ -372,22 +373,22 @@ class TagInfoAreaWidget extends StatelessWidget {
             'language'),
         MultiChipWidget(
             queryResult.artists(),
-            Translations.of(context).trans('artists'),
+            Translations.of(context).trans('artist'),
             queryResult.artists() != null
                 ? (queryResult.artists() as String)
                     .split('|')
                     .where((element) => element != '')
-                    .map((e) => Tuple2<String, String>('artists', e))
+                    .map((e) => Tuple2<String, String>('artist', e))
                     .toList()
                 : []),
         MultiChipWidget(
             queryResult.groups(),
-            Translations.of(context).trans('groups'),
+            Translations.of(context).trans('group'),
             queryResult.groups() != null
                 ? (queryResult.groups() as String)
                     .split('|')
                     .where((element) => element != '')
-                    .map((e) => Tuple2<String, String>('groups', e))
+                    .map((e) => Tuple2<String, String>('group', e))
                     .toList()
                 : []),
         MultiChipWidget(
@@ -924,14 +925,14 @@ class _Chip extends StatelessWidget {
         size: 18.0,
         color: Colors.white,
       );
-    } else if (group == 'artists') {
+    } else if (group == 'artist') {
       mustHasMorePad = false;
       avatar = const Icon(
         MdiIcons.account,
         size: 18.0,
         color: Colors.white,
       );
-    } else if (group == 'groups') {
+    } else if (group == 'group') {
       mustHasMorePad = false;
       avatar = const Icon(
         MdiIcons.accountGroup,
@@ -989,21 +990,11 @@ class _Chip extends StatelessWidget {
         }
       },
       onTap: () async {
-        if ((group == 'groups' ||
-                group == 'artists' ||
-                group == 'uploader' ||
-                group == 'series' ||
-                group == 'character') &&
-            name.toLowerCase() != 'n/a') {
+        final type = ArtistTypeHelper.fromString(group);
+        if (type != null && name.toLowerCase() != 'n/a') {
           PlatformNavigator.navigateSlide(
             context,
-            ArtistInfoPage(
-              isGroup: group == 'groups',
-              isUploader: group == 'uploader',
-              isCharacter: group == 'character',
-              isSeries: group == 'series',
-              artist: name,
-            ),
+            ArtistInfoPage(name: name, type: type),
           );
         } else if (group == 'id') {
           Clipboard.setData(ClipboardData(text: name));

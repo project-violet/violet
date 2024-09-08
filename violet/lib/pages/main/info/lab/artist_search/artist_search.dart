@@ -11,6 +11,7 @@ import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/main/info/lab/artist_search/tag_group_modify.dart';
@@ -29,7 +30,7 @@ class ArtistSearch extends StatefulWidget {
 }
 
 class _ArtistSearchState extends State<ArtistSearch> {
-  String selectedType = 'artists';
+  ArtistType selectedType = ArtistType.artist;
 
   Map<String, int> tagGroup = {
     'female:sole_female': 10,
@@ -47,11 +48,11 @@ class _ArtistSearchState extends State<ArtistSearch> {
     final tagGroup = <String, dynamic>{};
 
     final tagSrcs = {
-      'artists': HitomiIndexs.tagArtist,
-      'groups': HitomiIndexs.tagGroup,
-      'series': HitomiIndexs.tagSeries,
-      'character': HitomiIndexs.tagCharacter,
-      'uploader': HitomiIndexs.tagUploader,
+      ArtistType.artist: HitomiIndexs.tagArtist,
+      ArtistType.group: HitomiIndexs.tagGroup,
+      ArtistType.series: HitomiIndexs.tagSeries,
+      ArtistType.character: HitomiIndexs.tagCharacter,
+      ArtistType.uploader: HitomiIndexs.tagUploader,
     };
 
     for (var element in this.tagGroup.entries) {
@@ -217,19 +218,19 @@ class _ArtistSearchState extends State<ArtistSearch> {
   }
 
   typeSelector() {
-    final dropDown = DropdownButton<String>(
+    final dropDown = DropdownButton<ArtistType>(
       value: selectedType,
-      items: <String>['artists', 'groups', 'series', 'character', 'uploader']
-          .map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
+      items: ArtistType.values
+          .map<DropdownMenuItem<ArtistType>>((ArtistType value) {
+        return DropdownMenuItem<ArtistType>(
           value: value,
           child: Text(
-            Translations.instance!.trans(value),
+            Translations.instance!.trans(value.name),
             style: const TextStyle(fontSize: 16),
           ),
         );
       }).toList(),
-      onChanged: (String? newValue) {
+      onChanged: (ArtistType? newValue) {
         similarsAll = [];
 
         setState(() {
@@ -243,15 +244,6 @@ class _ArtistSearchState extends State<ArtistSearch> {
     );
 
     return dropDown;
-  }
-
-  String getNormalizedType() {
-    if (selectedType == 'artists') {
-      return 'artist';
-    } else if (selectedType == 'groups') {
-      return 'group';
-    }
-    return selectedType;
   }
 
   artistListArea() {
@@ -272,18 +264,13 @@ class _ArtistSearchState extends State<ArtistSearch> {
               );
             }
 
-            final type = getNormalizedType();
-
             return ThreeArticlePanel(
               tappedRoute: () => ArtistInfoPage(
-                isGroup: type == 'group',
-                isUploader: type == 'uploader',
-                isCharacter: type == 'character',
-                isSeries: type == 'series',
-                artist: e.item1,
+                type: selectedType,
+                name: e.item1,
               ),
               title:
-                  ' ${e.item1} (${HitomiManager.getArticleCount(type, e.item1)})',
+                  ' ${e.item1} (${HitomiManager.getArticleCount(selectedType.name, e.item1)})',
               count:
                   '${Translations.of(context).trans('score')}: ${e.item2.toStringAsFixed(1)} ',
               articles: snapshot.data!,
@@ -297,11 +284,10 @@ class _ArtistSearchState extends State<ArtistSearch> {
   Future<List<QueryResult>> artistListfuture(String e) async {
     final unescape = HtmlUnescape();
 
-    final prefix = getNormalizedType();
     final postfix = e.toLowerCase().replaceAll(' ', '_');
 
     final queryString = HitomiManager.translate2query(
-        '$prefix:$postfix ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
+        '${selectedType.name}:$postfix ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
     final qm = QueryManager.queryPagination(queryString);
     qm.itemsPerPage = 10;
 

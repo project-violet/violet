@@ -48,14 +48,9 @@ class _GroupArtistListState extends State<LabGroupArtistList>
   Future<void> _sortByLatest() async {
     var ids = <Tuple2<int, int>>[];
     for (int i = 0; i < artists.length; i++) {
-      var postfix = artists[i].artist().toLowerCase().replaceAll(' ', '_');
-      var queryString = HitomiManager.translate2query('${[
-        'artist',
-        'group',
-        'uploader',
-        'series',
-        'character'
-      ][artists[i].type()]}:$postfix ${Settings.includeTags}');
+      final postfix = artists[i].artist().toLowerCase().replaceAll(' ', '_');
+      final queryString = HitomiManager.translate2query(
+          '${artists[i].type().name}:$postfix ${Settings.includeTags}');
       final qm = QueryManager.queryPagination(queryString);
       qm.itemsPerPage = 1;
       var query = (await qm.next())[0].id();
@@ -71,15 +66,10 @@ class _GroupArtistListState extends State<LabGroupArtistList>
     artists = newedList;
   }
 
-  Future<List<QueryResult>> _future(String e, int type) async {
+  Future<List<QueryResult>> _future(String e, ArtistType type) async {
     var postfix = e.toLowerCase().replaceAll(' ', '_');
-    var queryString = HitomiManager.translate2query('${[
-      'artist',
-      'group',
-      'uploader',
-      'series',
-      'character'
-    ][type]}:$postfix ${Settings.includeTags}');
+    var queryString = HitomiManager.translate2query(
+        '${type.name}:$postfix ${Settings.includeTags}');
     final qm = QueryManager.queryPagination(queryString);
     qm.itemsPerPage = 3;
     return await qm.next();
@@ -222,11 +212,8 @@ class _GroupArtistListState extends State<LabGroupArtistList>
           PlatformNavigator.navigateSlide(
             context,
             ArtistInfoPage(
-              isGroup: e.type() == 1,
-              isUploader: e.type() == 2,
-              isSeries: e.type() == 3,
-              isCharacter: e.type() == 4,
-              artist: e.artist(),
+              type: e.type(),
+              name: e.artist(),
             ),
           );
         },
@@ -241,19 +228,7 @@ class _GroupArtistListState extends State<LabGroupArtistList>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                        ' ${[
-                          'artist',
-                          'group',
-                          'uploader',
-                          'series',
-                          'character'
-                        ][e.type()]}:${e.artist()} (${HitomiManager.getArticleCount([
-                              'artist',
-                              'group',
-                              'uploader',
-                              'series',
-                              'character'
-                            ][e.type()], e.artist())})',
+                        ' ${e.type().name}:${e.artist()} (${HitomiManager.getArticleCount(e.type().name, e.artist())})',
                         style: const TextStyle(fontSize: 17)),
                   ],
                 ),
