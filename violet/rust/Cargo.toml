@@ -11,3 +11,4 @@ flutter_rust_bridge = "=2.0.0-dev.24"
 sevenz-rust = { version = "0.2" }
 hyper = { version = "0.13" }
 hyper-tls = { version = "0.4" }
+openssl = { version = "0.10", features = ["vendored"] }
