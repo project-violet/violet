@@ -6,6 +6,7 @@ import { AccessTokenStrategy } from './jwt/access-token.strategy';
 import { RefreshTokenStrategy } from './jwt/refresh-token.strategy';
 import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
+import { DiscordStrategy } from './discord/discord.strategy';
 
 @Module({
   imports: [JwtModule.register({}), UserModule],
@@ -14,6 +15,7 @@ import { JwtModule } from '@nestjs/jwt';
     UserRepository,
     AccessTokenStrategy,
     RefreshTokenStrategy,
+    DiscordStrategy,
   ],
   controllers: [AuthController],
 })
