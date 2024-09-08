@@ -44,14 +44,13 @@ export class HmacAuthGuard implements CanActivate {
       throw new BadRequestException();
     }
 
-    return this.authTest(token, valid, this.configService.get<string>('SALT'));
+    return this.buildHmac(token) == valid;
   }
 
-  authTest(token, valid, salt) {
+  buildHmac(token: string): string {
     const mac = crypto.createHash('sha512');
+    const salt = this.configService.get<string>('SALT');
     const hmac = mac.update(token + salt);
-    const hash = hmac.digest('hex').substr(0, 7);
-
-    return hash == valid;
+    return hmac.digest('hex').slice(0, 7);
   }
 }
