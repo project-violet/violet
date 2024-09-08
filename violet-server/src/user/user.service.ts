@@ -1,4 +1,9 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { UserRegisterDTO } from './dtos/user-register.dto';
 
@@ -21,5 +26,22 @@ export class UserService {
 
       return { ok: false, error: e };
     }
+  }
+
+  async listDiscordUserAppIds(discordId?: string): Promise<string[]> {
+    if (discordId == null) {
+      throw new BadRequestException('discord login is required');
+    }
+
+    const users = await this.userRepository.find({
+      select: {
+        userAppId: true,
+      },
+      where: {
+        discordId: discordId!,
+      },
+    });
+
+    return users.map(({ userAppId }) => userAppId);
   }
 }
