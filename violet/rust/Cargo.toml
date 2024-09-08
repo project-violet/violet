@@ -38,4 +38,5 @@ ajson = "0.2"
 async-std = { version = "1.5", features = ["std"], default-features = false }
 
 [target.'cfg(not(windows))'.dependencies]
+rlimit = "0.3"
 openssl = { version = "0.10", features = ["vendored"] }
