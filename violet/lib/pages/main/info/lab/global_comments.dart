@@ -174,6 +174,8 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
                           modReply = false;
                         }
                         text.text = '';
+
+                        if (!context.mounted) return;
                         FocusScope.of(context).unfocus();
                         setState(() {});
                         await readComments();

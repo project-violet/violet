@@ -216,6 +216,8 @@ class ViewerController extends GetxController {
     if (index < 0 || maxPage <= index) return;
 
     await load(index);
+
+    if (!context.mounted) return;
     await precacheImage(
       CachedNetworkImageProvider(
         urlCache[index]!.value,

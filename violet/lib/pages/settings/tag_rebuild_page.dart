@@ -29,6 +29,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       await indexing();
 
+      if (!mounted) return;
       Navigator.pop(context);
     });
   }

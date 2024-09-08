@@ -73,8 +73,8 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
           }),
           _dialButton(MdiIcons.group, 'newgroup', () async {
             (await Bookmark.getInstance()).createGroup(
-                Translations.of(context).trans('newgroup'),
-                Translations.of(context).trans('newgroup'),
+                Translations.instance!.trans('newgroup'),
+                Translations.instance!.trans('newgroup'),
                 Colors.orange);
             setState(() {});
           }),
@@ -91,7 +91,7 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
               ? Palette.blackThemeBackground
               : Colors.grey.shade800
           : Colors.white,
-      label: Translations.of(context).trans(label),
+      label: Translations.instance!.trans(label),
       labelStyle: TextStyle(
         fontSize: 14.0,
         color: Settings.themeWhat ? Colors.white : Colors.grey.shade800,

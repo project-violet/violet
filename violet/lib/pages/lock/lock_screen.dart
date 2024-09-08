@@ -263,9 +263,11 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
 
     if (dialog != null && dialog) {
       if (text.text == 'violet.jjang') {
-        await showOkDialog(context, Translations.of(context).trans('resetpin'),
+        if (!mounted) return;
+        await showOkDialog(context, Translations.instance!.trans('resetpin'),
             Translations.of(context).trans('authmanager'));
 
+        if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/SplashPage');
       } else {
         _controller.forward();
@@ -273,10 +275,11 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
           _controller.reverse();
           setState(() {});
         });
+        if (!mounted) return;
         await showOkDialog(
             context,
-            Translations.of(context).trans('notcorrectsecondpass'),
-            Translations.of(context).trans('authmanager'));
+            Translations.instance!.trans('notcorrectsecondpass'),
+            Translations.instance!.trans('authmanager'));
       }
     }
   }
@@ -286,6 +289,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
     final pinPass = prefs.getString('pinPass');
 
     if (!widget.isRegisterMode && _pin.join() == pinPass) {
+      if (!mounted) return;
       if (widget.isSecureMode) {
         Navigator.of(context).pop();
       } else {

@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:math';
 
@@ -395,6 +397,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
 
     c.heroFlareControls.play('search2close');
 
+    if (!mounted) return;
     final query = await Navigator.push<String>(
       context,
       MaterialPageRoute(

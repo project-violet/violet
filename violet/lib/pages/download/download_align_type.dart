@@ -63,6 +63,8 @@ class DownloadAlignType extends StatelessWidget {
           softWrap: false, style: TextStyle(color: getColor(selection))),
       onTap: () async {
         await Settings.setDownloadAlignType(selection);
+
+        if (!context.mounted) return;
         Navigator.pop(context);
       },
     );

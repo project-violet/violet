@@ -266,6 +266,7 @@ class _UserStatusCardState extends State<UserStatusCard>
 
                     if (ync == true) {
                       // signin
+                      if (!mounted) return;
                       var r = await showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -279,6 +280,7 @@ class _UserStatusCardState extends State<UserStatusCard>
                       if (await VioletCommunitySession.checkUserAppId(
                               _userAppId) !=
                           'success') {
+                        if (!mounted) return;
                         await showOkDialog(
                             context,
                             'You cannot continue, there is an account registered with your UserAppId.'
@@ -286,6 +288,7 @@ class _UserStatusCardState extends State<UserStatusCard>
                             ' If you forgot your login information, please contact developer.');
                         return;
                       }
+                      if (!mounted) return;
                       var r = await showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -300,10 +303,12 @@ class _UserStatusCardState extends State<UserStatusCard>
                       if (await VioletCommunitySession.signUp(
                               r[0], r[1], _userAppId, r[2]) ==
                           'success') {
+                        if (!mounted) return;
                         await showOkDialog(context, 'Sign up is complete!');
                         id = r[0];
                         pw = r[1];
                       } else {
+                        if (!mounted) return;
                         await showOkDialog(
                             context, 'Registration has been declined!');
                         return;

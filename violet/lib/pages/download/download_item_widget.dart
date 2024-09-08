@@ -255,7 +255,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
           icon: Icons.download,
           level: ToastLevel.check,
           message:
-              '${widget.item.info()!.split('[')[1].split(']').first}${Translations.of(context).trans('download')} ${Translations.of(context).trans('complete')}',
+              '${widget.item.info()!.split('[')[1].split(']').first}${Translations.instance!.trans('download')} ${Translations.instance!.trans('complete')}',
         );
       }
     });
@@ -325,6 +325,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
           await (await User.getInstance())
               .insertUserLog(int.tryParse(widget.item.url()) ?? -1, 0);
 
+          if (!context.mounted) return;
           Navigator.push(
             context,
             MaterialPageRoute(

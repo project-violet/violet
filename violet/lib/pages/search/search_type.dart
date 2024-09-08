@@ -67,6 +67,7 @@ class SearchType extends StatelessWidget {
           softWrap: false, style: TextStyle(color: getColor(selection))),
       onTap: () async {
         await Settings.setSearchResultType(selection);
+        if (!context.mounted) return;
         Navigator.pop(context);
       },
     );

@@ -73,6 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
         (cookies.containsKey('sk') || cookies.containsKey('igneous'))) {
       // await sessionStore.setSession(cookieString);
       // await _cookieManager.clearCookies();
+      if (!mounted) return;
       Navigator.pop(context, cookieString);
     } else if (cookies.containsKey('ipb_member_id')) {
       controller.loadUrl('https://exhentai.org');

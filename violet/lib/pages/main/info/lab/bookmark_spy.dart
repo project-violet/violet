@@ -136,6 +136,7 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
               var bookmark = await Bookmark.getInstance();
               await bookmark.setHistoryUser(data['user'] as String);
 
+              if (!mounted) return;
               await PlatformNavigator.navigateSlide(
                   context, LabBookmarkPage(userAppId: data['user'] as String));
 

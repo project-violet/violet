@@ -26,6 +26,7 @@ Future showArticleInfo(BuildContext context, int id) async {
     final isBookmarked =
         await (await Bookmark.getInstance()).isBookmark(qr.id());
 
+    if (!context.mounted) return;
     Provider<ArticleInfo>? cache;
     showModalBottomSheet(
       context: context,

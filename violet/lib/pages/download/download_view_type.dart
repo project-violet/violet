@@ -61,6 +61,8 @@ class DownloadViewType extends StatelessWidget {
           softWrap: false, style: TextStyle(color: getColor(selection))),
       onTap: () async {
         await Settings.setDownloadResultType(selection);
+
+        if (!context.mounted) return;
         Navigator.pop(context);
       },
     );

@@ -207,6 +207,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
                   });
                   await dbraw.close();
 
+                  if (!mounted) return;
                   await showOkDialog(
                       context, '북마크 그룹을 성공적으로 끌어왔습니다!', 'Bookmark Spy');
                 }

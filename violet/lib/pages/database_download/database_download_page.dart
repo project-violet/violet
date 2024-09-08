@@ -186,6 +186,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
         message: Translations.instance!.trans('dbdcomplete'),
       );
 
+      if (!mounted) return;
       Navigator.of(context).pushReplacementNamed('/AfterLoading');
 
       return;

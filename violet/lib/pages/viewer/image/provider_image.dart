@@ -229,6 +229,7 @@ class ImageCropBookmark extends StatelessWidget {
           '$articleId(${page}p): [${area.toString().split('(')[1].split(')')[0]}] Saved!',
     );
 
+    if (!context.mounted) return;
     Navigator.pop(context);
   }
 }

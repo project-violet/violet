@@ -118,7 +118,9 @@ class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
                     version: data['vid'] as String,
                   ));
 
+              if (!mounted) return;
               if (await showYesNoDialog(context, '이 북마크 버전을 선택할까요?')) {
+                if (!mounted) return;
                 Navigator.pop(context, data['vid']);
               }
             },

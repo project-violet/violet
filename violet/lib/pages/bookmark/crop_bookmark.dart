@@ -246,6 +246,7 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
 
     var headers = await prov.getHeader(0);
 
+    if (!mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -281,6 +282,7 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
               onTap: () async {
                 final crops =
                     await (await Bookmark.getInstance()).getCropImages();
+                if (!context.mounted) return;
                 await showOkDialog(
                     context, jsonEncode(crops), 'Export Crop Bookmarks');
               },
@@ -392,6 +394,7 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
                   bookmarks.add(bookmark);
                 }
 
+                if (!context.mounted) return;
                 PlatformNavigator.navigateSlide(
                   context,
                   CropBookmarkPage(

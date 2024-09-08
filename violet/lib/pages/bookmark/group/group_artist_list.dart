@@ -429,6 +429,7 @@ class _GroupArtistListState extends State<GroupArtistList>
     groups =
         groups.where((e) => e.id() != currentGroup && e.id() != 1).toList();
     int choose = -9999;
+    if (!mounted) return;
     if (await showDialog(
             context: context,
             builder: (BuildContext context) => AlertDialog(
@@ -463,13 +464,14 @@ class _GroupArtistListState extends State<GroupArtistList>
                   ),
                 )) ==
         1) {
+      if (!mounted) return;
       if (await showYesNoDialog(
           context,
-          Translations.of(context)
+          Translations.instance!
               .trans('movetoto')
               .replaceAll('%1', groups[choose].name())
               .replaceAll('%2', checked.length.toString()),
-          Translations.of(context).trans('movebookmark'))) {
+          Translations.instance!.trans('movebookmark'))) {
         // There is a way to change only the group, but there is also re-register a new bookmark.
         // I chose the latter to suit the user's intentions.
 

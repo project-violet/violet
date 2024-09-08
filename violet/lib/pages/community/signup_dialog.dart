@@ -37,17 +37,20 @@ class _SignUpDialogState extends State<SignUpDialog> {
         }
 
         if (await VioletCommunitySession.checkId(id) != 'success') {
+          if (!context.mounted) return;
           await showOkDialog(
               context, 'Id already exists. Please use a different ID.');
           return;
         }
 
         if (await VioletCommunitySession.checkNickName(nn) != 'success') {
+          if (!context.mounted) return;
           await showOkDialog(context,
               'NickName already exists. Please use a different NickName.');
           return;
         }
 
+        if (!context.mounted) return;
         Navigator.pop(context,
             [_idController.text, _pwController.text, _nnController.text]);
       },

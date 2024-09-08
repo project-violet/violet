@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:io';
 
@@ -581,7 +583,7 @@ class _SplashPageState extends State<SplashPage> {
         await Directory('${dir.path}/data').delete(recursive: true);
       } catch (_) {}
     }
-    print(Translations.of(context).dbLanguageCode);
+    if (!mounted) return;
     Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => DataBaseDownloadPage(
               dbType: _database == Database.all
@@ -718,8 +720,10 @@ class _SplashPageState extends State<SplashPage> {
         .path;
 
     if (filename == null) {
-      await showOkDialog(
-          context, Translations.of(context).trans('dbalreadyerr'));
+      if (mounted) {
+        await showOkDialog(
+            context, Translations.of(context).trans('dbalreadyerr'));
+      }
       return '';
     }
 

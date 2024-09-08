@@ -71,6 +71,7 @@ class _GroupModifyPageState extends State<GroupModifyPage> {
                       context,
                       Translations.of(context).trans('deletegroupmsg'),
                       Translations.of(context).trans('bookmark'))) {
+                    if (!context.mounted) return;
                     Navigator.pop(context, [2]);
                   }
                 },

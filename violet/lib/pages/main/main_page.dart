@@ -232,6 +232,7 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
       if (!await Permission.manageExternalStorage.isGranted) {
         if (await Permission.manageExternalStorage.request() ==
             PermissionStatus.denied) {
+          if (!mounted) return;
           await showOkDialog(context,
               'If you do not allow file permissions, you cannot continue :(');
           return;
@@ -285,8 +286,9 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
       final prefs = await SharedPreferences.getInstance();
       if (prefs.getBool('usevioletserver_check') != null) return;
 
+      if (!mounted) return;
       var bb = await showYesNoDialog(
-          context, Translations.of(context).trans('violetservermsg'));
+          context, Translations.instance!.trans('violetservermsg'));
       if (bb == false) {
         await prefs.setBool('usevioletserver_check', false);
         return;
@@ -475,7 +477,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
         latestDB.difference(DateTime.parse(lastDB)).inHours < 1) {
       showToast(
         level: ToastLevel.check,
-        message: Translations.of(context).trans('thisislatestbookmark'),
+        message: Translations.instance!.trans('thisislatestbookmark'),
       );
       return;
     }
@@ -492,6 +494,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
       syncAvailable = false;
     });
 
+    if (!mounted) return;
     await Navigator.of(context)
         .push(MaterialPageRoute(
             builder: (context) => DataBaseDownloadPage(
@@ -506,6 +509,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
       HitomiManager.tagmap = jsonDecode(text);
       await DataBaseManager.reloadInstance();
 
+      if (!mounted) return;
       showToast(
         level: ToastLevel.check,
         message: Translations.of(context).trans('synccomplete'),

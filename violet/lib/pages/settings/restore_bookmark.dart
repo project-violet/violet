@@ -119,10 +119,13 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
           level: ToastLevel.error,
           message: 'Bookmark Restoring Error!',
         );
+
+        if (!mounted) return;
         Navigator.pop(context, false);
         return;
       }
 
+      if (!mounted) return;
       Navigator.pop(context, true);
     });
   }

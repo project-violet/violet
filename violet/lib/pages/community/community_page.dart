@@ -227,6 +227,7 @@ class _CommunityPageState extends State<CommunityPage>
 
                             if (ync == true) {
                               // signin
+                              if (!mounted) return;
                               var r = await showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
@@ -240,6 +241,7 @@ class _CommunityPageState extends State<CommunityPage>
                               if (await VioletCommunitySession.checkUserAppId(
                                       _userAppId) !=
                                   'success') {
+                                if (!mounted) return;
                                 await showOkDialog(
                                     context,
                                     'You cannot continue,'
@@ -250,6 +252,7 @@ class _CommunityPageState extends State<CommunityPage>
                                     ' please contact developer.');
                                 return;
                               }
+                              if (!mounted) return;
                               var r = await showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
@@ -264,11 +267,13 @@ class _CommunityPageState extends State<CommunityPage>
                               if (await VioletCommunitySession.signUp(
                                       r[0], r[1], _userAppId, r[2]) ==
                                   'success') {
+                                if (!mounted) return;
                                 await showOkDialog(
                                     context, 'Sign up is complete!');
                                 id = r[0];
                                 pw = r[1];
                               } else {
+                                if (!mounted) return;
                                 await showOkDialog(
                                     context, 'Registration has been declined!');
                                 return;

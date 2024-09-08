@@ -27,11 +27,13 @@ class _SignInDialogState extends State<SignInDialog> {
         var pw = _descController.text.trim();
 
         if (await VioletCommunitySession.signIn(id, pw) == null) {
+          if (!context.mounted) return;
           await showOkDialog(context,
               'User is not registered, or password is different. If you continue to get this, please contact the developer.');
           return;
         }
 
+        if (!context.mounted) return;
         Navigator.pop(context, [_nameController.text, _descController.text]);
       },
     );

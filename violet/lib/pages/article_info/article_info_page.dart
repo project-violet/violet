@@ -299,6 +299,7 @@ class ArticleInfoPage extends StatelessWidget {
       navigatorFunc = Navigator.pushReplacement;
     }
 
+    if (!context.mounted) return;
     navigatorFunc(
       context,
       MaterialPageRoute(
@@ -983,6 +984,7 @@ class _Chip extends StatelessWidget {
             Settings.excludeTags
                 .add('${normalize(group)}:${name.replaceAll(' ', '_')}');
             await Settings.setExcludeTags(Settings.excludeTags.join(' '));
+            if (!context.mounted) return;
             await showOkDialog(context, '제외태그에 성공적으로 추가했습니다!');
           }
         } else {
