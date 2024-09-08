@@ -13,13 +13,24 @@ import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 
+class ImageList {
+  final List<String> urls;
+  final List<String> bigThumbnails;
+  final List<String>? smallThumbnails;
+
+  const ImageList({
+    required this.urls,
+    required this.bigThumbnails,
+    this.smallThumbnails,
+  });
+}
+
 class HitomiManager {
   // [Image List], [Big Thumbnail List (Perhaps only two are valid.)], [Small Thubmnail List]
-  static Future<(List<String>, List<String>, List<String>)> getImageList(
-      String id) async {
+  static Future<ImageList> getImageList(String id) async {
     final result = await ScriptManager.runHitomiGetImageList(int.parse(id));
     if (result != null) return result;
-    return const (<String>[], <String>[], <String>[]);
+    return const ImageList(urls: [], bigThumbnails: []);
   }
 
   static int? getArticleCount(String classification, String name) {

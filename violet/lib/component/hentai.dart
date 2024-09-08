@@ -560,9 +560,13 @@ class HentaiManager {
 
           case 'Hitomi':
             {
-              var urls = await HitomiManager.getImageList(qr.id().toString());
-              if (urls.$1.isEmpty || urls.$2.isEmpty) break;
-              return HitomiImageProvider(urls, qr.id().toString());
+              final imgList =
+                  await HitomiManager.getImageList(qr.id().toString());
+              if (imgList.bigThumbnails.isEmpty ||
+                  imgList.bigThumbnails.isEmpty) {
+                break;
+              }
+              return HitomiImageProvider(imgList, qr.id().toString());
             }
 
           case 'Hisoki':

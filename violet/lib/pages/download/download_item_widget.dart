@@ -722,7 +722,7 @@ class _ThumbnailWidget extends StatelessWidget {
         future: HitomiManager.getImageList(id.toString()).then((value) async {
           var header =
               await ScriptManager.runHitomiGetHeaderContent(id.toString());
-          return (value.$1[0], header);
+          return (value.urls[0], header);
         }),
         builder:
             (context, AsyncSnapshot<(String, Map<String, String>)> snapshot) {
