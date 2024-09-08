@@ -191,7 +191,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   Widget yesButton = TextButton(
                     style: TextButton.styleFrom(
                         foregroundColor: Settings.majorColor),
-                    child: Text(Translations.of(context).trans('ok')),
+                    child: Text(Translations.instance!.trans('ok')),
                     onPressed: () {
                       Navigator.pop(context, true);
                     },
@@ -199,7 +199,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   Widget noButton = TextButton(
                     style: TextButton.styleFrom(
                         foregroundColor: Settings.majorColor),
-                    child: Text(Translations.of(context).trans('cancel')),
+                    child: Text(Translations.instance!.trans('cancel')),
                     onPressed: () {
                       Navigator.pop(context, false);
                     },
@@ -220,11 +220,13 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   );
                   if (dialog == true) {
                     if (getValid('${text.text}saltff') == '605f372') {
+                      if (!context.mounted) return;
                       await showOkDialog(context, 'Successful!');
 
                       final prefs = await SharedPreferences.getInstance();
                       await prefs.setString('labmasterkey', text.text);
                     } else {
+                      if (!context.mounted) return;
                       await showOkDialog(context, 'Fail!');
                     }
                   }
@@ -287,6 +289,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 null,
                 () async {
                   if (!await _checkMaterKey()) {
+                    if (!context.mounted) return;
                     await showOkDialog(context, 'You cannot use this feature!');
                     return;
                   }
@@ -327,6 +330,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 null,
                 () async {
                   if (!await _checkMaterKey()) {
+                    if (!context.mounted) return;
                     await showOkDialog(context, 'You cannot use this feature!');
                     return;
                   }

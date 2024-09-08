@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
@@ -134,14 +135,20 @@ class ArtistListPage extends StatelessWidget {
                   final articleCount =
                       HitomiManager.getArticleCount(classification, name);
 
+                  late final ArtistType type;
+                  if (isLast && classification == 'group') {
+                    type = ArtistType.group;
+                  } else {
+                    type = ArtistType.artist;
+                  }
+
                   return InkWell(
                     onTap: () async {
                       PlatformNavigator.navigateSlide(
                         context,
                         ArtistInfoPage(
-                          isGroup: isLast && classification == 'group',
-                          isUploader: false,
-                          artist: name,
+                          type: type,
+                          name: name,
                         ),
                       );
                     },

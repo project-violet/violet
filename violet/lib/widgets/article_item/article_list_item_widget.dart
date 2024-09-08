@@ -331,6 +331,7 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
 
     await prov.init();
 
+    if (!mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -385,7 +386,7 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
               ? Colors.redAccent.withOpacity(0.8)
               : Colors.greenAccent.withOpacity(0.8),
           msg:
-              '${data.queryResult.id()}${locale.Translations.of(context).trans(c.isBookmarked.value ? 'removetobookmark' : 'addtobookmark')}',
+              '${data.queryResult.id()}${locale.Translations.instance!.trans(c.isBookmarked.value ? 'removetobookmark' : 'addtobookmark')}',
         ),
         ignorePointer: true,
         gravity: ToastGravity.BOTTOM,
@@ -764,7 +765,9 @@ class TagChip extends StatelessWidget {
           if (yn) {
             Settings.excludeTags.add(targetTag);
             await Settings.setExcludeTags(Settings.excludeTags.join(' '));
-            await showOkDialog(context, '제외태그에 성공적으로 추가했습니다!');
+            if (context.mounted) {
+              await showOkDialog(context, '제외태그에 성공적으로 추가했습니다!');
+            }
           }
         } else {
           await showOkDialog(context, '$targetTag 태그는 이미 제외태그에 추가된 항목입니다!');

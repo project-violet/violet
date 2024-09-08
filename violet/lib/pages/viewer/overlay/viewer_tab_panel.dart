@@ -417,6 +417,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
 
     var isBookmarked = await (await Bookmark.getInstance()).isBookmark(e.id());
 
+    if (!mounted) return;
     Provider<ArticleInfo>? cache;
     showModalBottomSheet(
       context: context,
@@ -464,6 +465,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
 
     var headers = await prov.getHeader(0);
 
+    if (!mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(

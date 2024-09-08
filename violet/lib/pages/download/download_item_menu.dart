@@ -73,7 +73,7 @@ class DownloadImageMenu extends StatelessWidget {
       BuildContext context, IconData icon, String text, int selection) {
     return ListTile(
       leading: Icon(icon, color: getColor(selection)),
-      title: Text(text, //Translations.of(context).trans(text),
+      title: Text(text, //Translations.instance!.trans(text),
           style: TextStyle(color: getColor(selection))),
       onTap: () async {
         Navigator.pop(context, selection);

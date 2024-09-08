@@ -163,7 +163,7 @@ class _TagGroupItem extends StatelessWidget {
 
     Widget okButton = TextButton(
       style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
-      child: Text(trans.Translations.of(context).trans('ok')),
+      child: Text(trans.Translations.instance!.trans('ok')),
       onPressed: () {
         Navigator.pop(context, true);
       },
@@ -171,7 +171,7 @@ class _TagGroupItem extends StatelessWidget {
 
     Widget cancelButton = TextButton(
       style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
-      child: Text(trans.Translations.of(context).trans('cancel')),
+      child: Text(trans.Translations.instance!.trans('cancel')),
       onPressed: () {
         Navigator.pop(context, false);
       },

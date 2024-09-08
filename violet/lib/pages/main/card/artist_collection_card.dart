@@ -84,7 +84,7 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
                         //   // ),
                         // ),
                         Text(
-                          Translations.of(context).trans('artistcollection'),
+                          Translations.instance!.trans('artistcollection'),
                           style: const TextStyle(
                               // fontFamily: "Calibre-Semibold",
                               // fontSize: 18,

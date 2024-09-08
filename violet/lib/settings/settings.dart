@@ -23,10 +23,6 @@ class Settings {
   // Bookmark Git Settings
   static late String bookmarkRepository; // default 'example/bookmark'
   static late String bookmarkHost; // default 'gitee.com'
-  static late String
-      bookmarkPrivateKey; // default '-----BEGIN OPENSSH PRIVATE KEY-----\n-----END OPENSSH PRIVATE KEY-----'
-  static late String bookmarkPublicKey; // default ''
-  static late String bookmarkPrivateKeyPassword; // default ''
 
   // Timeout Settings
   static late bool ignoreTimeout; // default false
@@ -36,9 +32,8 @@ class Settings {
   static late bool themeWhat; // default false == light
   static late Color majorColor; // default purple
   static late Color majorAccentColor;
-  static late int
-      searchResultType; // 0: 3 Grid, 1: 2 Grid, 2: Big Line, 3: Detail, 4: Ultra
-  static late int downloadResultType;
+  static late SearchResultType searchResultType;
+  static late DownloadResultType downloadResultType;
   static late int downloadAlignType;
   static late bool themeFlat;
   static late bool themeBlack; // default false
@@ -163,8 +158,10 @@ class Settings {
   }
 
   static Future<void> init() async {
-    searchResultType = await _getInt('searchResultType', 4);
-    downloadResultType = await _getInt('downloadResultType', 3);
+    searchResultType =
+        SearchResultType.values[await _getInt('searchResultType', 4)];
+    downloadResultType =
+        DownloadResultType.values[await _getInt('downloadResultType', 3)];
     downloadAlignType = await _getInt('downloadAlignType', 0);
 
     var includetags = prefs.getString('includetags');
@@ -326,10 +323,6 @@ class Settings {
     bookmarkRepository =
         await _getString('bookmarkRepository', 'example/bookmark');
     bookmarkHost = await _getString('bookmarkHost', 'gitee.com');
-    bookmarkPrivateKey = await _getString('bookmarkPrivateKey',
-        '-----BEGIN OPENSSH PRIVATE KEY-----\n-----END OPENSSH PRIVATE KEY-----');
-    bookmarkPrivateKeyPassword =
-        await _getString('bookmarkPrivateKeyPassword', '');
     ignoreTimeout = await _getBool('ignoretimeout');
     useVioletServer = await _getBool('usevioletserver');
     useDrawer = await _getBool('usedrawer');
@@ -532,35 +525,16 @@ class Settings {
     await prefs.setString('bookmarkHost', bookmarkHost);
   }
 
-  static Future<void> setBookmarkPrivateKey(String value) async {
-    bookmarkPrivateKey = value;
-
-    await prefs.setString('bookmarkPrivateKey', bookmarkPrivateKey);
-  }
-
-  static Future<void> setBookmarkPublicKey(String value) async {
-    bookmarkPublicKey = value;
-
-    await prefs.setString('bookmarkPublicKey', bookmarkPublicKey);
-  }
-
-  static Future<void> setBookmarkPrivateKeyPassword(String value) async {
-    bookmarkPrivateKeyPassword = value;
-
-    await prefs.setString(
-        'bookmarkPrivateKeyPassword', bookmarkPrivateKeyPassword);
-  }
-
-  static Future<void> setSearchResultType(int wh) async {
+  static Future<void> setSearchResultType(SearchResultType wh) async {
     searchResultType = wh;
 
-    await prefs.setInt('searchResultType', searchResultType);
+    await prefs.setInt('searchResultType', searchResultType.index);
   }
 
-  static Future<void> setDownloadResultType(int wh) async {
+  static Future<void> setDownloadResultType(DownloadResultType wh) async {
     downloadResultType = wh;
 
-    await prefs.setInt('downloadResultType', downloadResultType);
+    await prefs.setInt('downloadResultType', downloadResultType.index);
   }
 
   static Future<void> setDownloadAlignType(int wh) async {
@@ -904,5 +878,53 @@ class Settings {
     liteMode = nn;
 
     await prefs.setBool('liteMode', nn);
+  }
+}
+
+enum SearchResultType {
+  threeGrid,
+  twoGrid,
+  bigLine,
+  detail,
+  ultra,
+}
+
+extension SearchResultTypeExtension on SearchResultType {
+  bool get isUltra {
+    return this == SearchResultType.ultra;
+  }
+
+  bool get isDetailLike {
+    switch (this) {
+      case SearchResultType.detail:
+      case SearchResultType.ultra:
+        return true;
+
+      default:
+        return false;
+    }
+  }
+}
+
+enum DownloadResultType {
+  threeGrid,
+  twoGrid,
+  bigLine,
+  detail,
+}
+
+extension DownloadResultTypeExtension on DownloadResultType {
+  bool get isThreeGrid => this == DownloadResultType.threeGrid;
+  bool get isDetail => this == DownloadResultType.detail;
+
+  bool get isGridLike {
+    switch (this) {
+      case DownloadResultType.threeGrid:
+      case DownloadResultType.twoGrid:
+        return true;
+
+      default:
+        return false;
+    }
   }
 }

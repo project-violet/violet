@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -181,7 +183,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _themeGroup() {
     return [
-      SettingGroupName(name: Translations.of(context).trans('theme')),
+      SettingGroupName(name: Translations.instance!.trans('theme')),
       _buildItems([
         InkWell(
           customBorder: const RoundedRectangleBorder(
@@ -198,7 +200,7 @@ class _SettingsPageState extends State<SettingsPage>
               ).createShader(bounds),
               child: const Icon(MdiIcons.themeLightDark, color: Colors.white),
             ),
-            title: Text(Translations.of(context).trans('darkmode')),
+            title: Text(Translations.instance!.trans('darkmode')),
             trailing: SizedBox(
               width: 50,
               height: 50,
@@ -236,7 +238,7 @@ class _SettingsPageState extends State<SettingsPage>
             ).createShader(bounds),
             child: const Icon(MdiIcons.formatColorFill, color: Colors.white),
           ),
-          title: Text(Translations.of(context).trans('colorsetting')),
+          title: Text(Translations.instance!.trans('colorsetting')),
           trailing: const Icon(
               // Icons.message,
               Icons.keyboard_arrow_right),
@@ -245,7 +247,7 @@ class _SettingsPageState extends State<SettingsPage>
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text(Translations.of(context).trans('selectcolor')),
+                  title: Text(Translations.instance!.trans('selectcolor')),
                   content: SingleChildScrollView(
                     child: BlockPicker(
                       pickerColor: Settings.majorColor,
@@ -311,7 +313,7 @@ class _SettingsPageState extends State<SettingsPage>
               : null,
           child: ListTile(
             leading: Icon(MdiIcons.brightness3, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('blackmode')),
+            title: Text(Translations.instance!.trans('blackmode')),
             trailing: Switch(
               value: Settings.themeBlack,
               onChanged: _themeSwitch
@@ -366,7 +368,7 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             child: ListTile(
               leading: Icon(Mdi.buffer, color: Settings.majorColor),
-              title: Text(Translations.of(context).trans('useflattheme')),
+              title: Text(Translations.instance!.trans('useflattheme')),
               trailing: Switch(
                 value: Settings.themeFlat,
                 onChanged: (newValue) async {
@@ -389,7 +391,7 @@ class _SettingsPageState extends State<SettingsPage>
         InkWell(
           child: ListTile(
             leading: Icon(MdiIcons.tabletDashboard, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('usetabletmode')),
+            title: Text(Translations.instance!.trans('usetabletmode')),
             trailing: Switch(
               value: Settings.useTabletMode,
               onChanged: (newValue) async {
@@ -413,7 +415,7 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             child: ListTile(
               leading: Icon(MdiIcons.cellphoneText, color: Settings.majorColor),
-              title: Text(Translations.of(context).trans('userdrawer')),
+              title: Text(Translations.instance!.trans('userdrawer')),
               trailing: Switch(
                 value: Settings.useDrawer,
                 onChanged: (newValue) async {
@@ -452,7 +454,7 @@ class _SettingsPageState extends State<SettingsPage>
                   bottomRight: Radius.circular(8.0))),
           child: ListTile(
             leading: Icon(MdiIcons.feather, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('litemode')),
+            title: Text(Translations.instance!.trans('litemode')),
             trailing: Switch(
               value: Settings.liteMode,
               onChanged: (newValue) async {
@@ -490,7 +492,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _communityGroup() {
     return [
-      SettingGroupName(name: Translations.of(context).trans('community')),
+      SettingGroupName(name: Translations.instance!.trans('community')),
       _buildItems(
         [
           InkWell(
@@ -503,7 +505,7 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.discord,
                 color: Color(0xFF7189da),
               ),
-              title: Text(Translations.of(context).trans('discord')),
+              title: Text(Translations.instance!.trans('discord')),
               trailing: const Icon(Icons.open_in_new),
             ),
             onTap: () async {
@@ -518,7 +520,7 @@ class _SettingsPageState extends State<SettingsPage>
               MdiIcons.gmail,
               color: Colors.redAccent,
             ),
-            title: Text(Translations.of(context).trans('contact')),
+            title: Text(Translations.instance!.trans('contact')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               final url = Uri(
@@ -536,7 +538,7 @@ class _SettingsPageState extends State<SettingsPage>
           ListTile(
             leading:
                 Icon(MdiIcons.accessPointNetwork, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('realtimeuserrecord')),
+            title: Text(Translations.instance!.trans('realtimeuserrecord')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               PlatformNavigator.navigateSlide(
@@ -546,7 +548,7 @@ class _SettingsPageState extends State<SettingsPage>
           ListTile(
             leading:
                 Icon(MdiIcons.commentTextMultiple, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('comment')),
+            title: Text(Translations.instance!.trans('comment')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               PlatformNavigator.navigateSlide(
@@ -558,7 +560,7 @@ class _SettingsPageState extends State<SettingsPage>
                 color: Settings.themeWhat
                     ? Colors.yellowAccent
                     : Colors.yellow.shade900),
-            title: Text(Translations.of(context).trans('artistcollection')),
+            title: Text(Translations.instance!.trans('artistcollection')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               PlatformNavigator.navigateSlide(
@@ -568,7 +570,7 @@ class _SettingsPageState extends State<SettingsPage>
           ListTile(
             leading:
                 const Icon(MdiIcons.bookOpenPageVariant, color: Colors.brown),
-            title: Text(Translations.of(context).trans('usermanual')),
+            title: Text(Translations.instance!.trans('usermanual')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               PlatformNavigator.navigateSlide(context, const UserManualPage());
@@ -582,7 +584,7 @@ class _SettingsPageState extends State<SettingsPage>
             child: ListTile(
               leading: const Icon(MdiIcons.frequentlyAskedQuestions,
                   color: Colors.orange),
-              title: Text(Translations.of(context).trans('faq')),
+              title: Text(Translations.instance!.trans('faq')),
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () {
@@ -596,7 +598,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _searchGroup() {
     return [
-      SettingGroupName(name: Translations.of(context).trans('search')),
+      SettingGroupName(name: Translations.instance!.trans('search')),
       _buildItems(
         [
           InkWell(
@@ -612,9 +614,9 @@ class _SettingsPageState extends State<SettingsPage>
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(Translations.of(context).trans('defaulttag')),
+                  Text(Translations.instance!.trans('defaulttag')),
                   Text(
-                    Translations.of(context).trans('currenttag') +
+                    Translations.instance!.trans('currenttag') +
                         Settings.includeTags,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -642,7 +644,7 @@ class _SettingsPageState extends State<SettingsPage>
               MdiIcons.tagOff,
               color: Settings.majorColor,
             ),
-            title: Text(Translations.of(context).trans('excludetag')),
+            title: Text(Translations.instance!.trans('excludetag')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               final vv = await showDialog(
@@ -665,13 +667,13 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.tooltipEdit,
                 color: Settings.majorColor,
               ),
-              title: Text(Translations.of(context).trans('tagrebuild')),
+              title: Text(Translations.instance!.trans('tagrebuild')),
               trailing: const Icon(Icons.keyboard_arrow_right),
               onTap: () async {
                 if (await showYesNoDialog(
                     context,
-                    Translations.of(context).trans('tagrebuildmsg'),
-                    Translations.of(context).trans('tagrebuild'))) {
+                    Translations.instance!.trans('tagrebuildmsg'),
+                    Translations.instance!.trans('tagrebuild'))) {
                   await showDialog(
                     context: context,
                     builder: (BuildContext context) => const TagRebuildPage(),
@@ -683,7 +685,7 @@ class _SettingsPageState extends State<SettingsPage>
                   showToast(
                     level: ToastLevel.check,
                     message:
-                        '${Translations.of(context).trans('tagrebuild')} ${Translations.of(context).trans('complete')}',
+                        '${Translations.instance!.trans('tagrebuild')} ${Translations.instance!.trans('complete')}',
                   );
                 }
               },
@@ -722,7 +724,7 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.searchWeb,
                 color: Settings.majorColor,
               ),
-              title: Text(Translations.of(context).trans('usewebsearch')),
+              title: Text(Translations.instance!.trans('usewebsearch')),
               trailing: Switch(
                 value: Settings.searchNetwork,
                 onChanged: (newValue) async {
@@ -753,8 +755,7 @@ class _SettingsPageState extends State<SettingsPage>
                   MdiIcons.searchWeb,
                   color: Settings.majorColor,
                 ),
-                title:
-                    Text(Translations.of(context).trans('usesearchexpunged')),
+                title: Text(Translations.instance!.trans('usesearchexpunged')),
                 trailing: Switch(
                   value: Settings.searchExpunged,
                   onChanged: (newValue) async {
@@ -814,7 +815,7 @@ class _SettingsPageState extends State<SettingsPage>
                 Widget okButton = TextButton(
                   style: TextButton.styleFrom(
                       foregroundColor: Settings.majorColor),
-                  child: Text(Translations.of(context).trans('ok')),
+                  child: Text(Translations.instance!.trans('ok')),
                   onPressed: () {
                     try {
                       cats = int.parse(catsController.text);
@@ -829,7 +830,7 @@ class _SettingsPageState extends State<SettingsPage>
                 Widget cancelButton = TextButton(
                   style: TextButton.styleFrom(
                       foregroundColor: Settings.majorColor),
-                  child: Text(Translations.of(context).trans('cancel')),
+                  child: Text(Translations.instance!.trans('cancel')),
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -873,7 +874,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _systemGroup() {
     return [
-      SettingGroupName(name: Translations.of(context).trans('system')),
+      SettingGroupName(name: Translations.instance!.trans('system')),
       _buildItems(
         [
           InkWell(
@@ -883,7 +884,7 @@ class _SettingsPageState extends State<SettingsPage>
                     topRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(Icons.receipt, color: Settings.majorColor),
-              title: Text(Translations.of(context).trans('logrecord')),
+              title: Text(Translations.instance!.trans('logrecord')),
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () {
@@ -892,7 +893,7 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           ListTile(
             leading: Icon(Icons.language, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('language')),
+            title: Text(Translations.instance!.trans('language')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () {
               showDialog(
@@ -908,7 +909,7 @@ class _SettingsPageState extends State<SettingsPage>
                         title: const Text('Select Language'),
                         onValuePicked: (Country country) async {
                           var exc = country as ExCountry;
-                          await Translations.of(context).load(exc.toString());
+                          await Translations.instance!.load(exc.toString());
                           await Settings.setLanguage(exc.toString());
                           setState(() {
                             _shouldReload = true;
@@ -944,8 +945,7 @@ class _SettingsPageState extends State<SettingsPage>
           if (Settings.language == 'ko')
             ListTile(
               leading: Icon(Icons.translate, color: Settings.majorColor),
-              title:
-                  Text(Translations.of(context).trans('translatetagtokorean')),
+              title: Text(Translations.instance!.trans('translatetagtokorean')),
               trailing: Switch(
                 value: Settings.translateTags,
                 onChanged: (newValue) async {
@@ -967,7 +967,7 @@ class _SettingsPageState extends State<SettingsPage>
           ListTile(
             leading:
                 Icon(MdiIcons.imageSizeSelectLarge, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('lowresmode')),
+            title: Text(Translations.instance!.trans('lowresmode')),
             trailing: Switch(
               value: Settings.useLowPerf,
               onChanged: (newValue) async {
@@ -989,7 +989,7 @@ class _SettingsPageState extends State<SettingsPage>
           if (!Settings.liteMode)
             ListTile(
               leading: Icon(Mdi.tableArrowRight, color: Settings.majorColor),
-              title: Text(Translations.of(context).trans('exportlog')),
+              title: Text(Translations.instance!.trans('exportlog')),
               trailing: const Icon(Icons.keyboard_arrow_right),
               onTap: () async {
                 final ext = Platform.isIOS
@@ -1018,13 +1018,13 @@ class _SettingsPageState extends State<SettingsPage>
 
                 showToast(
                   level: ToastLevel.check,
-                  message: Translations.of(context).trans('complete'),
+                  message: Translations.instance!.trans('complete'),
                 );
               },
             ),
           ListTile(
             leading: Icon(Icons.info_outline, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('info')),
+            title: Text(Translations.instance!.trans('info')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await showDialog(
@@ -1037,7 +1037,7 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           ListTile(
             leading: const Icon(MdiIcons.fileSign, color: Colors.cyan),
-            title: Text(Translations.of(context).trans('patchnote')),
+            title: Text(Translations.instance!.trans('patchnote')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               PlatformNavigator.navigateSlide(context, const PatchNotePage());
@@ -1050,7 +1050,7 @@ class _SettingsPageState extends State<SettingsPage>
                     bottomRight: Radius.circular(8.0))),
             child: ListTile(
               leading: const Icon(MdiIcons.flask, color: Color(0xFF73BE1E)),
-              title: Text(Translations.of(context).trans('lab')),
+              title: Text(Translations.instance!.trans('lab')),
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
@@ -1064,7 +1064,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _securityGroup() {
     return [
-      SettingGroupName(name: Translations.of(context).trans('security')),
+      SettingGroupName(name: Translations.instance!.trans('security')),
       _buildItems(
         [
           InkWell(
@@ -1078,7 +1078,7 @@ class _SettingsPageState extends State<SettingsPage>
                 Icons.lock_outline,
                 color: Settings.majorColor,
               ),
-              title: Text(Translations.of(context).trans('lockapp')),
+              title: Text(Translations.instance!.trans('lockapp')),
               trailing: const Icon(
                   // Icons.message,
                   Icons.keyboard_arrow_right),
@@ -1102,7 +1102,7 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.shieldLockOutline,
                 color: Settings.majorColor,
               ),
-              title: Text(Translations.of(context).trans('securemode')),
+              title: Text(Translations.instance!.trans('securemode')),
               trailing: Switch(
                 value: Settings.useSecureMode,
                 onChanged: (newValue) async {
@@ -1141,7 +1141,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _databaseGroup() {
     return [
-      SettingGroupName(name: Translations.of(context).trans('database')),
+      SettingGroupName(name: Translations.instance!.trans('database')),
       _buildItems(
         [
           InkWell(
@@ -1158,7 +1158,7 @@ class _SettingsPageState extends State<SettingsPage>
             child: ListTile(
               leading:
                   Icon(MdiIcons.swapHorizontal, color: Settings.majorColor),
-              title: Text(Translations.of(context).trans('switching')),
+              title: Text(Translations.instance!.trans('switching')),
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
           ),
@@ -1168,14 +1168,14 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.databaseEdit,
                 color: Settings.majorColor,
               ),
-              title: Text(Translations.of(context).trans('dbrebuild')),
+              title: Text(Translations.instance!.trans('dbrebuild')),
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
               if (await showYesNoDialog(
                   context,
-                  Translations.of(context).trans('dbrebuildmsg'),
-                  Translations.of(context).trans('dbrebuild'))) {
+                  Translations.instance!.trans('dbrebuildmsg'),
+                  Translations.instance!.trans('dbrebuild'))) {
                 await showDialog(
                   context: context,
                   builder: (BuildContext context) => const DBRebuildPage(),
@@ -1184,7 +1184,7 @@ class _SettingsPageState extends State<SettingsPage>
                 showToast(
                   level: ToastLevel.check,
                   message:
-                      '${Translations.of(context).trans('dbrebuild')} ${Translations.of(context).trans('complete')}',
+                      '${Translations.instance!.trans('dbrebuild')} ${Translations.instance!.trans('complete')}',
                 );
               }
             },
@@ -1195,7 +1195,7 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.vectorIntersection,
                 color: Settings.majorColor,
               ),
-              title: Text(Translations.of(context).trans('dbopt')),
+              title: Text(Translations.instance!.trans('dbopt')),
               trailing: Switch(
                 value: Settings.useOptimizeDatabase,
                 onChanged: (newValue) async {
@@ -1230,8 +1230,7 @@ class _SettingsPageState extends State<SettingsPage>
                   latestDB.difference(DateTime.parse(lastDB)).inHours < 1) {
                 showToast(
                   level: ToastLevel.check,
-                  message:
-                      Translations.of(context).trans('thisislatestbookmark'),
+                  message: Translations.instance!.trans('thisislatestbookmark'),
                 );
                 return;
               }
@@ -1261,14 +1260,14 @@ class _SettingsPageState extends State<SettingsPage>
 
                   showToast(
                     level: ToastLevel.check,
-                    message: Translations.of(context).trans('synccomplete'),
+                    message: Translations.instance!.trans('synccomplete'),
                   );
                 },
               );
             },
             child: ListTile(
               leading: Icon(MdiIcons.databaseSync, color: Settings.majorColor),
-              title: Text(Translations.of(context).trans('syncmanual')),
+              title: Text(Translations.instance!.trans('syncmanual')),
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
           ),
@@ -1279,7 +1278,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _networkingGroup() {
     return [
-      SettingGroupName(name: Translations.of(context).trans('network')),
+      SettingGroupName(name: Translations.instance!.trans('network')),
       _buildItems(
         [
           // InkWell(
@@ -1305,7 +1304,7 @@ class _SettingsPageState extends State<SettingsPage>
                 Icons.router,
                 color: Settings.majorColor,
               ),
-              title: Text(Translations.of(context).trans('routing_rule')),
+              title: Text(Translations.instance!.trans('routing_rule')),
               trailing: const Icon(Icons.keyboard_arrow_right),
               onTap: () async {
                 await showDialog(
@@ -1328,7 +1327,7 @@ class _SettingsPageState extends State<SettingsPage>
               color: Settings.majorColor,
             ),
             title:
-                Text('Image ${Translations.of(context).trans('routing_rule')}'),
+                Text('Image ${Translations.instance!.trans('routing_rule')}'),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await showDialog(
@@ -1343,7 +1342,7 @@ class _SettingsPageState extends State<SettingsPage>
               MdiIcons.commentSearch,
               color: Settings.majorColor,
             ),
-            title: Text(Translations.of(context).trans('messagesearchapi')),
+            title: Text(Translations.instance!.trans('messagesearchapi')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               TextEditingController text =
@@ -1351,7 +1350,7 @@ class _SettingsPageState extends State<SettingsPage>
               Widget okButton = TextButton(
                 style:
                     TextButton.styleFrom(foregroundColor: Settings.majorColor),
-                child: Text(Translations.of(context).trans('ok')),
+                child: Text(Translations.instance!.trans('ok')),
                 onPressed: () {
                   Navigator.pop(context, true);
                 },
@@ -1359,7 +1358,7 @@ class _SettingsPageState extends State<SettingsPage>
               Widget cancelButton = TextButton(
                 style:
                     TextButton.styleFrom(foregroundColor: Settings.majorColor),
-                child: Text(Translations.of(context).trans('cancel')),
+                child: Text(Translations.instance!.trans('cancel')),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
@@ -1367,7 +1366,7 @@ class _SettingsPageState extends State<SettingsPage>
               Widget defaultButton = TextButton(
                 style:
                     TextButton.styleFrom(foregroundColor: Settings.majorColor),
-                child: Text(Translations.of(context).trans('default')),
+                child: Text(Translations.instance!.trans('default')),
                 onPressed: () {
                   _shouldReload = true;
                   setState(
@@ -1398,7 +1397,7 @@ class _SettingsPageState extends State<SettingsPage>
               MdiIcons.timerOff,
               color: Settings.majorColor,
             ),
-            title: Text(Translations.of(context).trans('ignoretimeout')),
+            title: Text(Translations.instance!.trans('ignoretimeout')),
             trailing: Switch(
               value: Settings.ignoreTimeout,
               onChanged: (newValue) async {
@@ -1422,7 +1421,7 @@ class _SettingsPageState extends State<SettingsPage>
                 width: 25,
                 height: 25,
               ),
-              title: Text(Translations.of(context).trans('usevioletserver')),
+              title: Text(Translations.instance!.trans('usevioletserver')),
               trailing: Switch(
                 value: Settings.useVioletServer,
                 onChanged: (newValue) async {
@@ -1449,7 +1448,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _downloadGroup() {
     return [
-      SettingGroupName(name: Translations.of(context).trans('download')),
+      SettingGroupName(name: Translations.instance!.trans('download')),
       _buildItems(
         [
           InkWell(
@@ -1471,7 +1470,7 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.downloadLock,
                 color: Settings.majorColor,
               ),
-              title: Text(Translations.of(context).trans('useinnerstorage')),
+              title: Text(Translations.instance!.trans('useinnerstorage')),
               trailing: Switch(
                 value: Settings.useInnerStorage,
                 onChanged: Platform.isIOS
@@ -1496,19 +1495,19 @@ class _SettingsPageState extends State<SettingsPage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  Translations.of(context).trans('threadcount'),
+                  Translations.instance!.trans('threadcount'),
                 ),
                 FutureBuilder(
                   builder:
                       (context, AsyncSnapshot<SharedPreferences> snapshot) {
                     if (!snapshot.hasData) {
                       return Text(
-                        '${Translations.of(context).trans('curthread')}: ',
+                        '${Translations.instance!.trans('curthread')}: ',
                         overflow: TextOverflow.ellipsis,
                       );
                     }
                     return Text(
-                      '${Translations.of(context).trans('curthread')}: ${snapshot.data!.getInt('thread_count')}',
+                      '${Translations.instance!.trans('curthread')}: ${snapshot.data!.getInt('thread_count')}',
                       overflow: TextOverflow.ellipsis,
                     );
                   },
@@ -1530,23 +1529,23 @@ class _SettingsPageState extends State<SettingsPage>
                 onPressed: () async {
                   if (int.tryParse(text.text) == null) {
                     await showOkDialog(
-                        context, Translations.of(context).trans('putonlynum'));
+                        context, Translations.instance!.trans('putonlynum'));
                     return;
                   }
                   if (int.parse(text.text) > 128) {
                     await showOkDialog(
-                        context, Translations.of(context).trans('toomuch'));
+                        context, Translations.instance!.trans('toomuch'));
                     return;
                   }
                   if (int.parse(text.text) == 0) {
                     await showOkDialog(
-                        context, Translations.of(context).trans('threadzero'));
+                        context, Translations.instance!.trans('threadzero'));
                     return;
                   }
 
                   Navigator.pop(context, true);
                 },
-                child: Text(Translations.of(context).trans('change'),
+                child: Text(Translations.instance!.trans('change'),
                     style: TextStyle(color: Settings.majorColor)),
               );
               Widget noButton = TextButton(
@@ -1555,14 +1554,14 @@ class _SettingsPageState extends State<SettingsPage>
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
-                child: Text(Translations.of(context).trans('cancel'),
+                child: Text(Translations.instance!.trans('cancel'),
                     style: TextStyle(color: Settings.majorColor)),
               );
               var dialog = await showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
                   contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                  title: Text(Translations.of(context).trans('setthread')),
+                  title: Text(Translations.instance!.trans('setthread')),
                   content: TextField(
                     controller: text,
                     autofocus: true,
@@ -1582,7 +1581,7 @@ class _SettingsPageState extends State<SettingsPage>
 
                 showToast(
                   level: ToastLevel.check,
-                  message: Translations.of(context).trans('changedthread'),
+                  message: Translations.instance!.trans('changedthread'),
                 );
 
                 setState(() {});
@@ -1602,7 +1601,7 @@ class _SettingsPageState extends State<SettingsPage>
                     Widget yesButton = TextButton(
                       style: TextButton.styleFrom(
                           foregroundColor: Settings.majorColor),
-                      child: Text(Translations.of(context).trans('ok')),
+                      child: Text(Translations.instance!.trans('ok')),
                       onPressed: () {
                         Navigator.pop(context, true);
                       },
@@ -1610,7 +1609,7 @@ class _SettingsPageState extends State<SettingsPage>
                     Widget noButton = TextButton(
                       style: TextButton.styleFrom(
                           foregroundColor: Settings.majorColor),
-                      child: Text(Translations.of(context).trans('cancel')),
+                      child: Text(Translations.instance!.trans('cancel')),
                       onPressed: () {
                         Navigator.pop(context, false);
                       },
@@ -1618,7 +1617,7 @@ class _SettingsPageState extends State<SettingsPage>
                     Widget defaultButton = TextButton(
                       style: TextButton.styleFrom(
                           foregroundColor: Settings.majorColor),
-                      child: Text(Translations.of(context).trans('default')),
+                      child: Text(Translations.instance!.trans('default')),
                       onPressed: () {
                         _shouldReload = true;
                         Settings.getDefaultDownloadPath()
@@ -1630,8 +1629,8 @@ class _SettingsPageState extends State<SettingsPage>
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
                         contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                        title: Text(
-                            Translations.of(context).trans('downloadpath')),
+                        title:
+                            Text(Translations.instance!.trans('downloadpath')),
                         content: TextField(
                           controller: text,
                           autofocus: true,
@@ -1659,9 +1658,9 @@ class _SettingsPageState extends State<SettingsPage>
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(Translations.of(context).trans('downloadpath')),
+                  Text(Translations.instance!.trans('downloadpath')),
                   Text(
-                    '${Translations.of(context).trans('curdownloadpath')}: ${Settings.downloadBasePath}',
+                    '${Translations.instance!.trans('curdownloadpath')}: ${Settings.downloadBasePath}',
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
@@ -1684,9 +1683,9 @@ class _SettingsPageState extends State<SettingsPage>
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(Translations.of(context).trans('downloadrule')),
+                  Text(Translations.instance!.trans('downloadrule')),
                   Text(
-                    '${Translations.of(context).trans('curdownloadrule')}: ${Settings.downloadRule}',
+                    '${Translations.instance!.trans('curdownloadrule')}: ${Settings.downloadRule}',
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
@@ -1699,7 +1698,7 @@ class _SettingsPageState extends State<SettingsPage>
               Widget okButton = TextButton(
                 style:
                     TextButton.styleFrom(foregroundColor: Settings.majorColor),
-                child: Text(Translations.of(context).trans('ok')),
+                child: Text(Translations.instance!.trans('ok')),
                 onPressed: () {
                   Navigator.pop(context, true);
                 },
@@ -1707,7 +1706,7 @@ class _SettingsPageState extends State<SettingsPage>
               Widget cancelButton = TextButton(
                 style:
                     TextButton.styleFrom(foregroundColor: Settings.majorColor),
-                child: Text(Translations.of(context).trans('cancel')),
+                child: Text(Translations.instance!.trans('cancel')),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
@@ -1715,7 +1714,7 @@ class _SettingsPageState extends State<SettingsPage>
               Widget defaultButton = TextButton(
                 style:
                     TextButton.styleFrom(foregroundColor: Settings.majorColor),
-                child: Text(Translations.of(context).trans('default')),
+                child: Text(Translations.instance!.trans('default')),
                 onPressed: () {
                   _shouldReload = true;
                   setState(() =>
@@ -1729,7 +1728,7 @@ class _SettingsPageState extends State<SettingsPage>
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
                   contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                  title: Text(Translations.of(context).trans('downloadrule')),
+                  title: Text(Translations.instance!.trans('downloadrule')),
                   content: TextField(
                     controller: text,
                     autofocus: true,
@@ -1766,7 +1765,7 @@ class _SettingsPageState extends State<SettingsPage>
      */
 
     return [
-      SettingGroupName(name: Translations.of(context).trans('bookmark')),
+      SettingGroupName(name: Translations.instance!.trans('bookmark')),
       _buildItems(
         [
           InkWell(
@@ -1781,7 +1780,7 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.bookArrowUpOutline,
                 color: Settings.majorColor,
               ),
-              title: Text(Translations.of(context).trans('autobackupbookmark')),
+              title: Text(Translations.instance!.trans('autobackupbookmark')),
               trailing: Switch(
                 value: Settings.autobackupBookmark,
                 // onChanged: setAutoBackupBookmark,
@@ -1797,13 +1796,13 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.bookArrowDownOutline,
                 color: Settings.majorColor,
               ),
-              title: Text(Translations.of(context).trans('restoringbookmark')),
+              title: Text(Translations.instance!.trans('restoringbookmark')),
               trailing: const Icon(Icons.keyboard_arrow_right),
               onTap: () async {
                 await showOkDialog(
                     context,
-                    Translations.of(context).trans('restorebookmarkmsg'),
-                    Translations.of(context).trans('warning'));
+                    Translations.instance!.trans('restorebookmarkmsg'),
+                    Translations.instance!.trans('warning'));
 
                 final prefs = await SharedPreferences.getInstance();
                 var myappid = prefs.getString('fa_userid');
@@ -1814,7 +1813,7 @@ class _SettingsPageState extends State<SettingsPage>
                 Widget okButton = TextButton(
                   style: TextButton.styleFrom(
                       foregroundColor: Settings.majorColor),
-                  child: Text(Translations.of(context).trans('ok')),
+                  child: Text(Translations.instance!.trans('ok')),
                   onPressed: () {
                     Navigator.pop(context, true);
                   },
@@ -1822,7 +1821,7 @@ class _SettingsPageState extends State<SettingsPage>
                 Widget cancelButton = TextButton(
                   style: TextButton.styleFrom(
                       foregroundColor: Settings.majorColor),
-                  child: Text(Translations.of(context).trans('cancel')),
+                  child: Text(Translations.instance!.trans('cancel')),
                   onPressed: () {
                     Navigator.pop(context, false);
                   },
@@ -1853,7 +1852,7 @@ class _SettingsPageState extends State<SettingsPage>
                     await showOkDialog(
                         context,
                         "Invalid User-App-Id! If you're still getting this error, contact the developer.",
-                        Translations.of(context).trans('restoringbookmark'));
+                        Translations.instance!.trans('restoringbookmark'));
                     return;
                   }
 
@@ -1863,7 +1862,7 @@ class _SettingsPageState extends State<SettingsPage>
                     await showOkDialog(
                         context,
                         '북마크 버전 정보를 가져오는데 오류가 발생했습니다. UserAppId와 함께 개발자에게 문의하시기 바랍니다.',
-                        Translations.of(context).trans('restoringbookmark'));
+                        Translations.instance!.trans('restoringbookmark'));
                     return;
                   }
 
@@ -1914,13 +1913,13 @@ class _SettingsPageState extends State<SettingsPage>
 
                 showToast(
                   level: ToastLevel.check,
-                  message: Translations.of(context).trans('importbookmark'),
+                  message: Translations.instance!.trans('importbookmark'),
                 );
               },
             ),
           ListTile(
             leading: Icon(MdiIcons.import, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('importingbookmark')),
+            title: Text(Translations.instance!.trans('importingbookmark')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await FilePicker.platform.clearTemporaryFiles();
@@ -1930,7 +1929,7 @@ class _SettingsPageState extends State<SettingsPage>
               if (pickedFilePath == null) {
                 showToast(
                   level: ToastLevel.error,
-                  message: Translations.of(context).trans('noselectedb'),
+                  message: Translations.instance!.trans('noselectedb'),
                 );
 
                 return;
@@ -1947,7 +1946,7 @@ class _SettingsPageState extends State<SettingsPage>
 
               showToast(
                 level: ToastLevel.check,
-                message: Translations.of(context).trans('importbookmark'),
+                message: Translations.instance!.trans('importbookmark'),
               );
             },
           ),
@@ -1956,7 +1955,7 @@ class _SettingsPageState extends State<SettingsPage>
               MdiIcons.export,
               color: Settings.majorColor,
             ),
-            title: Text(Translations.of(context).trans('exportingbookmark')),
+            title: Text(Translations.instance!.trans('exportingbookmark')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               final dir = Platform.isIOS
@@ -1985,7 +1984,7 @@ class _SettingsPageState extends State<SettingsPage>
 
               showToast(
                 level: ToastLevel.check,
-                message: Translations.of(context).trans('exportbookmark'),
+                message: Translations.instance!.trans('exportbookmark'),
               );
             },
           ),
@@ -1995,7 +1994,7 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.cloudSearchOutline,
                 color: Settings.majorColor,
               ),
-              title: Text(Translations.of(context).trans('importfromeh')),
+              title: Text(Translations.instance!.trans('importfromeh')),
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
@@ -2005,7 +2004,7 @@ class _SettingsPageState extends State<SettingsPage>
               if (ehc == null || ehc == '') {
                 showToast(
                   level: ToastLevel.error,
-                  message: Translations.of(context).trans('setcookiefirst'),
+                  message: Translations.instance!.trans('setcookiefirst'),
                 );
                 return;
               }
@@ -2018,7 +2017,7 @@ class _SettingsPageState extends State<SettingsPage>
               if (EHBookmark.bookmarkInfo == null) {
                 showToast(
                   level: ToastLevel.warning,
-                  message: Translations.of(context).trans('bookmarkisempty'),
+                  message: Translations.instance!.trans('bookmarkisempty'),
                 );
                 return;
               }
@@ -2030,7 +2029,7 @@ class _SettingsPageState extends State<SettingsPage>
 
               var qqq = await showYesNoDialog(
                   context,
-                  Translations.of(context)
+                  Translations.instance!
                       .trans('ensurecreatebookmark')
                       .replaceAll('\$1', count.toString()));
               if (qqq) {
@@ -2053,7 +2052,7 @@ class _SettingsPageState extends State<SettingsPage>
                 showToast(
                   level: ToastLevel.check,
                   message:
-                      Translations.of(context).trans('completeimportbookmark'),
+                      Translations.instance!.trans('completeimportbookmark'),
                 );
               }
             },
@@ -2069,7 +2068,7 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.cloudSearchOutline,
                 color: Settings.majorColor,
               ),
-              title: Text(Translations.of(context).trans('importfromjson')),
+              title: Text(Translations.instance!.trans('importfromjson')),
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
@@ -2096,8 +2095,7 @@ class _SettingsPageState extends State<SettingsPage>
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title:
-                        Text(Translations.of(context).trans('importfromjson')),
+                    title: Text(Translations.instance!.trans('importfromjson')),
                     contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
                     actions: [
                       importButton,
@@ -2110,7 +2108,7 @@ class _SettingsPageState extends State<SettingsPage>
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(Translations.of(context)
+                          Text(Translations.instance!
                               .trans('pasteyourbookmarktext')),
                           Row(
                             children: [
@@ -2153,8 +2151,12 @@ class _SettingsPageState extends State<SettingsPage>
                     await bookmark.insertArticle(tar, DateTime.now(), group);
                   } else if (tar.contains(':') &&
                       ['artist', 'group'].contains(tar.split(':')[0])) {
-                    await bookmark.bookmarkArtist(tar.split(':')[1],
-                        tar.split(':')[0] == 'artist' ? 0 : 1, group);
+                    await bookmark.bookmarkArtist(
+                        tar.split(':')[1],
+                        tar.split(':')[0] == 'artist'
+                            ? ArtistType.artist
+                            : ArtistType.group,
+                        group);
                   }
                 }
 
@@ -2175,7 +2177,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _componetGroup() {
     return [
-      SettingGroupName(name: Translations.of(context).trans('component')),
+      SettingGroupName(name: Translations.instance!.trans('component')),
       _buildItems(
         [
           InkWell(
@@ -2266,7 +2268,7 @@ class _SettingsPageState extends State<SettingsPage>
                 Widget okButton = TextButton(
                   style: TextButton.styleFrom(
                       foregroundColor: Settings.majorColor),
-                  child: Text(Translations.of(context).trans('ok')),
+                  child: Text(Translations.instance!.trans('ok')),
                   onPressed: () {
                     Navigator.pop(context, true);
                   },
@@ -2274,7 +2276,7 @@ class _SettingsPageState extends State<SettingsPage>
                 Widget cancelButton = TextButton(
                   style: TextButton.styleFrom(
                       foregroundColor: Settings.majorColor),
-                  child: Text(Translations.of(context).trans('cancel')),
+                  child: Text(Translations.instance!.trans('cancel')),
                   onPressed: () {
                     Navigator.pop(context, false);
                   },
@@ -2361,7 +2363,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _viewGroup() {
     return [
-      SettingGroupName(name: Translations.of(context).trans('view')),
+      SettingGroupName(name: Translations.instance!.trans('view')),
       _buildItems(
         [
           InkWell(
@@ -2372,8 +2374,7 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.progressClock,
                 color: Settings.majorColor,
               ),
-              title:
-                  Text(Translations.of(context).trans('showarticleprogress')),
+              title: Text(Translations.instance!.trans('showarticleprogress')),
               trailing: Switch(
                 value: Settings.showArticleProgress,
                 onChanged: (newValue) async {
@@ -2401,7 +2402,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _updateGroup() {
     return [
-      SettingGroupName(name: Translations.of(context).trans('update')),
+      SettingGroupName(name: Translations.instance!.trans('update')),
       _buildItems(
         [
           InkWell(
@@ -2415,7 +2416,7 @@ class _SettingsPageState extends State<SettingsPage>
                 Icons.update,
                 color: Settings.majorColor,
               ),
-              title: Text(Translations.of(context).trans('checkupdate')),
+              title: Text(Translations.instance!.trans('checkupdate')),
               trailing: const Icon(
                   // Icons.message,
                   Icons.keyboard_arrow_right),
@@ -2426,12 +2427,12 @@ class _SettingsPageState extends State<SettingsPage>
               if (UpdateSyncManager.updateRequire) {
                 showToast(
                   level: ToastLevel.check,
-                  message: Translations.of(context).trans('newupdate'),
+                  message: Translations.instance!.trans('newupdate'),
                 );
               } else {
                 showToast(
                   level: ToastLevel.check,
-                  message: Translations.of(context).trans('latestver'),
+                  message: Translations.instance!.trans('latestver'),
                 );
               }
             },
@@ -2446,7 +2447,7 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.cellphoneArrowDown,
                 color: Settings.majorColor,
               ),
-              title: Text(Translations.of(context).trans('manualupdate')),
+              title: Text(Translations.instance!.trans('manualupdate')),
               trailing: const Icon(
                   // Icons.message,
                   Icons.keyboard_arrow_right),
@@ -2457,7 +2458,7 @@ class _SettingsPageState extends State<SettingsPage>
               if (!UpdateSyncManager.updateRequire) {
                 showToast(
                   level: ToastLevel.check,
-                  message: Translations.of(context).trans('latestver'),
+                  message: Translations.instance!.trans('latestver'),
                 );
                 return;
               }
@@ -2465,7 +2466,7 @@ class _SettingsPageState extends State<SettingsPage>
               if (Platform.isIOS) {
                 showToast(
                   level: ToastLevel.warning,
-                  message: Translations.of(context).trans('cannotuseios'),
+                  message: Translations.instance!.trans('cannotuseios'),
                 );
                 return;
               }
@@ -2484,7 +2485,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   List<Widget> _etcGroup() {
     return [
-      SettingGroupName(name: Translations.of(context).trans('etc')),
+      SettingGroupName(name: Translations.instance!.trans('etc')),
       _buildItems(
         [
           if (!Settings.liteMode)
@@ -2498,7 +2499,7 @@ class _SettingsPageState extends State<SettingsPage>
                   MdiIcons.discord,
                   color: Color(0xFF7189da),
                 ),
-                title: Text(Translations.of(context).trans('discord')),
+                title: Text(Translations.instance!.trans('discord')),
                 trailing: const Icon(Icons.open_in_new),
               ),
               onTap: () async {
@@ -2514,8 +2515,7 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.github,
                 color: Colors.black,
               ),
-              title:
-                  Text('GitHub ${Translations.of(context).trans('project')}'),
+              title: Text('GitHub ${Translations.instance!.trans('project')}'),
               trailing: const Icon(Icons.open_in_new),
               onTap: () async {
                 final url = Uri.parse('https://github.com/project-violet/');
@@ -2536,7 +2536,7 @@ class _SettingsPageState extends State<SettingsPage>
                   color: Colors.black,
                 ),
                 title:
-                    Text('GitHub ${Translations.of(context).trans('project')}'),
+                    Text('GitHub ${Translations.instance!.trans('project')}'),
                 trailing: const Icon(Icons.open_in_new),
               ),
               onTap: () async {
@@ -2552,7 +2552,7 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.gmail,
                 color: Colors.redAccent,
               ),
-              title: Text(Translations.of(context).trans('contact')),
+              title: Text(Translations.instance!.trans('contact')),
               trailing: const Icon(Icons.keyboard_arrow_right),
               onTap: () async {
                 final url = Uri(
@@ -2572,7 +2572,7 @@ class _SettingsPageState extends State<SettingsPage>
               MdiIcons.heart,
               color: Colors.orange,
             ),
-            title: Text(Translations.of(context).trans('donate')),
+            title: Text(Translations.instance!.trans('donate')),
             trailing: const Icon(
                 // Icons.email,
                 Icons.open_in_new),
@@ -2609,7 +2609,7 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.library,
                 color: Settings.majorColor,
               ),
-              title: Text(Translations.of(context).trans('license')),
+              title: Text(Translations.instance!.trans('license')),
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () {

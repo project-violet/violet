@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -41,6 +43,7 @@ import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 import 'package:violet/util/helper.dart';
+import 'package:violet/util/strings.dart';
 import 'package:violet/widgets/debounce_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
@@ -208,7 +211,8 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
         queryResults[element.id()] = element;
       }
 
-      if (Settings.downloadAlignType != 0 && Settings.downloadResultType == 0) {
+      if (Settings.downloadAlignType != 0 &&
+          Settings.downloadResultType.isThreeGrid) {
         setState(() {});
       }
     });
@@ -248,7 +252,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
               ],
             ),
             if (Settings.downloadAlignType != 0 &&
-                Settings.downloadResultType == 0)
+                Settings.downloadResultType.isThreeGrid)
               indexBar(),
           ],
         ),
@@ -264,16 +268,15 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
       <int, GlobalKey<DownloadItemWidgetState>>{};
 
   _getDownloadWidgetKey() {
-    if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1) {
+    if (Settings.downloadResultType.isGridLike) {
       return downloadItemWidgetKeys1;
     }
-    if (Settings.downloadResultType == 2 || Settings.downloadResultType == 3) {
-      if (Settings.useTabletMode ||
-          MediaQuery.of(context).orientation == Orientation.landscape) {
-        return downloadItemWidgetKeys2;
-      } else {
-        return downloadItemWidgetKeys3;
-      }
+
+    if (Settings.useTabletMode ||
+        MediaQuery.of(context).orientation == Orientation.landscape) {
+      return downloadItemWidgetKeys2;
+    } else {
+      return downloadItemWidgetKeys3;
     }
   }
 
@@ -281,8 +284,9 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
   Widget _panel() {
     var windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
 
-    if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1) {
-      if (Settings.downloadAlignType != 0 && Settings.downloadResultType == 0) {
+    if (Settings.downloadResultType.isGridLike) {
+      if (Settings.downloadAlignType != 0 &&
+          Settings.downloadResultType.isThreeGrid) {
         return FutureBuilder(
           future: getGroupBy(),
           builder: (context, snapshot) {
@@ -295,7 +299,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
         );
       }
 
-      var mm = Settings.downloadResultType == 0 ? 3 : 2;
+      var mm = Settings.downloadResultType.isThreeGrid ? 3 : 2;
       return SliverPadding(
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
           sliver: SliverGrid(
@@ -335,8 +339,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
               childCount: filterResult.length,
             ),
           ));
-    } else if (Settings.downloadResultType == 2 ||
-        Settings.downloadResultType == 3) {
+    } else {
       if (Settings.useTabletMode ||
           MediaQuery.of(context).orientation == Orientation.landscape) {
         return SliverPadding(
@@ -367,7 +370,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                 child: DownloadItemWidget(
                   key: downloadItemWidgetKeys2[filterResult[index].id()],
                   initialStyle: DownloadListItem(
-                    showDetail: Settings.downloadResultType == 3,
+                    showDetail: Settings.downloadResultType.isDetail,
                     addBottomPadding: true,
                     width: windowWidth - 4.0,
                   ),
@@ -394,7 +397,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                 child: DownloadItemWidget(
                   key: downloadItemWidgetKeys3[e.id()],
                   initialStyle: DownloadListItem(
-                    showDetail: Settings.downloadResultType == 3,
+                    showDetail: Settings.downloadResultType.isDetail,
                     addBottomPadding: true,
                     width: windowWidth - 4.0,
                   ),
@@ -408,8 +411,6 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
         );
       }
     }
-
-    throw Exception('unreachable');
   }
 
   Future<List<(String, List<DownloadItemModel>)>> getGroupBy() async {
@@ -505,7 +506,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
 
   void _scrollChanged() {
     if (!(Settings.downloadAlignType != 0 &&
-        Settings.downloadResultType == 0)) {
+        Settings.downloadResultType.isThreeGrid)) {
       return;
     }
 
@@ -585,7 +586,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
 
   Widget _panelGroupBy(List<(String, List<DownloadItemModel>)> groupBy) {
     final windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
-    final columnCount = Settings.downloadResultType == 0 ? 3 : 2;
+    final columnCount = Settings.downloadResultType.isThreeGrid ? 3 : 2;
     final effectiveColumnCount =
         Settings.useTabletMode ? columnCount * 2 : columnCount;
 
@@ -632,7 +633,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
                   child: Text(
-                    e.$1.split(' ').map((e) => e.capitalize()).join(' '),
+                    e.$1.split(' ').map((e) => e.titlecase()).join(' '),
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 20.0),
                   ),
@@ -734,7 +735,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                             disabledBorder: InputBorder.none,
                             contentPadding: const EdgeInsets.only(
                                 left: 15, bottom: 11, top: 11, right: 15),
-                            hintText: Translations.of(context).trans('addurl')),
+                            hintText: Translations.instance!.trans('addurl')),
                       ),
                       leading: const SizedBox(
                         width: 25,
@@ -768,7 +769,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                       Widget yesButton = TextButton(
                         style: TextButton.styleFrom(
                             foregroundColor: Settings.majorColor),
-                        child: Text(Translations.of(context).trans('ok')),
+                        child: Text(Translations.instance!.trans('ok')),
                         onPressed: () {
                           Navigator.pop(context, true);
                         },
@@ -776,7 +777,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                       Widget noButton = TextButton(
                         style: TextButton.styleFrom(
                             foregroundColor: Settings.majorColor),
-                        child: Text(Translations.of(context).trans('cancel')),
+                        child: Text(Translations.instance!.trans('cancel')),
                         onPressed: () {
                           Navigator.pop(context, false);
                         },
@@ -788,8 +789,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                         builder: (BuildContext context) => AlertDialog(
                           contentPadding:
                               const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                          title:
-                              Text(Translations.of(context).trans('writeurl')),
+                          title: Text(Translations.instance!.trans('writeurl')),
                           content: TextField(
                             controller: text,
                             autofocus: true,
@@ -1237,11 +1237,5 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     if (qm.results!.isEmpty) return;
 
     queryResults[int.parse(url)] = qm.results!.first;
-  }
-}
-
-extension StringExtension on String {
-  String capitalize() {
-    return '${this[0].toUpperCase()}${substring(1).toLowerCase()}';
   }
 }

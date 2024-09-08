@@ -8,6 +8,7 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
@@ -15,29 +16,21 @@ import 'package:violet/pages/segment/three_article_panel.dart';
 import 'package:violet/settings/settings.dart';
 
 class SimilarListPage extends StatelessWidget {
-  final String prefix;
-  final bool isGroup;
-  final bool isUploader;
-  final bool isSeries;
-  final bool isCharacter;
+  final ArtistType type;
   final List<Tuple2<String, double>> similarsAll;
 
   const SimilarListPage({
     super.key,
-    required this.prefix,
     required this.similarsAll,
-    required this.isGroup,
-    required this.isUploader,
-    required this.isSeries,
-    required this.isCharacter,
+    required this.type,
   });
 
   Future<List<QueryResult>> _future(String e) async {
     var unescape = HtmlUnescape();
     var postfix = e.toLowerCase().replaceAll(' ', '_');
-    if (isUploader) postfix = e;
+    if (type.isUploader) postfix = e;
     var queryString = HitomiManager.translate2query(
-        '$prefix$postfix ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
+        '${type.name}:$postfix ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
     final qm = QueryManager.queryPagination(queryString);
     qm.itemsPerPage = 10;
 
@@ -98,29 +91,15 @@ class SimilarListPage extends StatelessWidget {
                 );
               }
 
-              var type = 'artist';
-              if (isGroup) {
-                type = 'group';
-              } else if (isUploader) {
-                type = 'uploader';
-              } else if (isSeries) {
-                type = 'series';
-              } else if (isCharacter) {
-                type = 'character';
-              }
-
               return ThreeArticlePanel(
                 tappedRoute: () => ArtistInfoPage(
-                  isGroup: isGroup,
-                  isUploader: isUploader,
-                  isCharacter: isCharacter,
-                  isSeries: isSeries,
-                  artist: e.item1,
+                  type: type,
+                  name: e.item1,
                 ),
                 title:
-                    ' ${e.item1} (${HitomiManager.getArticleCount(type, e.item1)})',
+                    ' ${e.item1} (${HitomiManager.getArticleCount(type.name, e.item1)})',
                 count:
-                    '${Translations.of(context).trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+                    '${Translations.instance!.trans('score')}: ${e.item2.toStringAsFixed(1)} ',
                 articles: snapshot.data!,
               );
             },

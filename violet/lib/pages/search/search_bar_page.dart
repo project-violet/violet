@@ -198,7 +198,7 @@ class _SearchBarPageState extends State<SearchBarPage>
             ),
             contentPadding:
                 const EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
-            hintText: Translations.of(context).trans('search'),
+            hintText: Translations.instance!.trans('search'),
           ),
         ),
         leading: Container(
@@ -231,7 +231,7 @@ class _SearchBarPageState extends State<SearchBarPage>
         style: ElevatedButton.styleFrom(
           backgroundColor: Settings.majorColor,
         ),
-        child: Text(Translations.of(context).trans('search')),
+        child: Text(Translations.instance!.trans('search')),
         onPressed: () async {
           var search = _searchController.text;
           if (search.split(' ').any((x) => x == 'random')) {
@@ -289,8 +289,8 @@ class _SearchBarPageState extends State<SearchBarPage>
     if (_searchLists.isEmpty || _nothing) {
       return Center(
           child: Text(_nothing
-              ? Translations.of(context).trans('nosearchresult')
-              : Translations.of(context).trans('inputsearchtoken')));
+              ? Translations.instance!.trans('nosearchresult')
+              : Translations.instance!.trans('inputsearchtoken')));
     }
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -308,7 +308,7 @@ class _SearchBarPageState extends State<SearchBarPage>
   _searchRelatedPanel() {
     if (_relatedLists.isEmpty) {
       return Center(
-          child: Text(Translations.of(context).trans('nosearchresult')));
+          child: Text(Translations.instance!.trans('nosearchresult')));
     }
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -386,8 +386,8 @@ class _SearchBarPageState extends State<SearchBarPage>
                     ListTile(
                       leading:
                           Icon(Icons.translate, color: Settings.majorColor),
-                      title: Text(
-                          Translations.of(context).trans('tagtranslation')),
+                      title:
+                          Text(Translations.instance!.trans('tagtranslation')),
                       trailing: Switch(
                         value: Settings.searchTagTranslation,
                         onChanged: (newValue) async {
@@ -443,7 +443,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                     ),
                   ListTile(
                     leading: Icon(MdiIcons.counter, color: Settings.majorColor),
-                    title: Text(Translations.of(context).trans('showcount')),
+                    title: Text(Translations.instance!.trans('showcount')),
                     trailing: Switch(
                       value: Settings.searchShowCount,
                       onChanged: (newValue) async {
@@ -470,7 +470,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                   ListTile(
                     leading:
                         Icon(MdiIcons.chartBubble, color: Settings.majorColor),
-                    title: Text(Translations.of(context).trans('fuzzysearch')),
+                    title: Text(Translations.instance!.trans('fuzzysearch')),
                     trailing: Switch(
                       value: Settings.searchUseFuzzy,
                       onChanged: (newValue) async {
@@ -506,7 +506,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                   //     max: 2000.0,
                   //     divisions: (2000 - 60) ~/ 30,
                   //     label:
-                  //         '$_searchResultMaximum${Translations.of(context).trans('tagdisplay')}',
+                  //         '$_searchResultMaximum${Translations.instance!.trans('tagdisplay')}',
                   //     onChanged: (double value) {
                   //       setState(() {
                   //         _searchResultMaximum =

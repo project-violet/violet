@@ -61,6 +61,42 @@ class BookmarkArticle {
   }
 }
 
+enum ArtistType { artist, group, uploader, series, character }
+
+extension ArtistTypeExtension on ArtistType {
+  bool get isGroup => this == ArtistType.group;
+  bool get isUploader => this == ArtistType.uploader;
+  bool get isCharacter => this == ArtistType.character;
+  bool get isSeries => this == ArtistType.series;
+}
+
+class ArtistTypeHelper {
+  static ArtistType? fromString(String name) {
+    switch (name.toLowerCase()) {
+      case 'artist':
+      case 'artists':
+        return ArtistType.artist;
+
+      case 'group':
+      case 'groups':
+        return ArtistType.group;
+
+      case 'uploader':
+      case 'uploaders':
+        return ArtistType.uploader;
+
+      case 'series':
+        return ArtistType.series;
+
+      case 'character':
+      case 'characters':
+        return ArtistType.character;
+    }
+
+    return null;
+  }
+}
+
 class BookmarkArtist {
   Map<String, dynamic> result;
   BookmarkArtist({required this.result});
@@ -72,7 +108,8 @@ class BookmarkArtist {
   // 2: uploader
   // 3: series
   // 4: character
-  int type() => result['IsGroup']; // backward compatibility
+  ArtistType type() =>
+      ArtistType.values[result['IsGroup']]; // backward compatibility
   String datetime() => result['DateTime'];
   int group() => result['GroupId'];
 
@@ -233,17 +270,17 @@ class Bookmark {
     bookmarkSet!.add(int.parse(article));
   }
 
-  Future<void> insertArtist(String artist, int isgroup,
+  Future<void> insertArtist(String artist, ArtistType type,
       [DateTime? datetime, int group = 1]) async {
     datetime ??= DateTime.now();
     var db = await CommonUserDatabase.getInstance();
     await db.insert('BookmarkArtist', {
       'Artist': artist,
-      'IsGroup': isgroup,
+      'IsGroup': type.index,
       'DateTime': datetime.toString(),
       'GroupId': group,
     });
-    bookmarkArtistSet![isgroup]!.add(artist);
+    bookmarkArtistSet![type]!.add(artist);
   }
 
   Future<void> insertUser(String user,
@@ -454,17 +491,15 @@ class Bookmark {
     bookmarkSet!.remove(id);
   }
 
-  Map<int, HashSet<String>>? bookmarkArtistSet;
-  Future<bool> isBookmarkArtist(String name, int type) async {
+  Map<ArtistType, HashSet<String>>? bookmarkArtistSet;
+  Future<bool> isBookmarkArtist(String name, ArtistType type) async {
     if (bookmarkArtistSet == null) {
-      var artist = await getArtist();
-      bookmarkArtistSet = <int, HashSet<String>>{};
-      bookmarkArtistSet![0] = HashSet<String>();
-      bookmarkArtistSet![1] = HashSet<String>();
-      bookmarkArtistSet![2] = HashSet<String>();
-      bookmarkArtistSet![3] = HashSet<String>();
-      bookmarkArtistSet![4] = HashSet<String>();
-      for (var element in artist) {
+      final artist = await getArtist();
+      bookmarkArtistSet = <ArtistType, HashSet<String>>{};
+      for (final type in ArtistType.values) {
+        bookmarkArtistSet![type] = HashSet<String>();
+      }
+      for (final element in artist) {
         bookmarkArtistSet![element.type()]!.add(element.artist());
       }
     }
@@ -498,19 +533,18 @@ class Bookmark {
     return historyUserSet!.contains(user);
   }
 
-  Future<void> bookmarkArtist(String name, int type, [int group = 1]) async {
+  Future<void> bookmarkArtist(String name, ArtistType type,
+      [int group = 1]) async {
     if (await isBookmarkArtist(name, type)) return;
     bookmarkArtistSet![type]!.add(name);
     await insertArtist(name, type, null, group);
   }
 
-  Future<void> unbookmarkArtist(String name, int type) async {
+  Future<void> unbookmarkArtist(String name, ArtistType type) async {
     if (!await isBookmarkArtist(name, type)) return;
     var db = await CommonUserDatabase.getInstance();
     await db.delete('BookmarkArtist', 'Artist=? AND IsGroup=?', [name, type]);
     bookmarkArtistSet![type]!.remove(name);
-
-    print('delete $name, $type');
   }
 
   Future<void> bookmarkUser(String user, [int group = 1]) async {

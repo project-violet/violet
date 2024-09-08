@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:io';
 
@@ -420,7 +422,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   _firstPage() {
-    final translations = Translations.of(context);
+    final translations = Translations.instance!;
 
     return Visibility(
       visible: showFirst,
@@ -523,8 +525,8 @@ class _SplashPageState extends State<SplashPage> {
         Expanded(
           child: Text(
             widget.switching
-                ? '${Translations.of(context).trans('database')} ${Translations.of(context).trans('switching')}'
-                : Translations.of(context).trans('welcome'),
+                ? '${Translations.instance!.trans('database')} ${Translations.instance!.trans('switching')}'
+                : Translations.instance!.trans('welcome'),
             maxLines: 4,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
@@ -554,7 +556,7 @@ class _SplashPageState extends State<SplashPage> {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text(Translations.of(context).trans('download')),
+                Text(Translations.instance!.trans('download')),
                 const Icon(Icons.keyboard_arrow_right),
               ],
             ),
@@ -568,8 +570,8 @@ class _SplashPageState extends State<SplashPage> {
     if (_database == Database.all) {
       if (!await showYesNoDialog(
           context,
-          Translations.of(context).trans('dbwarn'),
-          Translations.of(context).trans('warning'))) {
+          Translations.instance!.trans('dbwarn'),
+          Translations.instance!.trans('warning'))) {
         return;
       }
     }
@@ -581,12 +583,12 @@ class _SplashPageState extends State<SplashPage> {
         await Directory('${dir.path}/data').delete(recursive: true);
       } catch (_) {}
     }
-    print(Translations.of(context).dbLanguageCode);
+    if (!mounted) return;
     Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => DataBaseDownloadPage(
               dbType: _database == Database.all
                   ? 'global'
-                  : Translations.of(context).dbLanguageCode,
+                  : Translations.instance!.dbLanguageCode,
             )));
   }
 
@@ -600,7 +602,7 @@ class _SplashPageState extends State<SplashPage> {
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 100),
           child: GestureDetector(
             child: SizedBox(
-              child: Text(Translations.of(context).trans('dbalready'),
+              child: Text(Translations.instance!.trans('dbalready'),
                   style: TextStyle(
                       color: widget.switching
                           ? Settings.majorAccentColor
@@ -615,7 +617,7 @@ class _SplashPageState extends State<SplashPage> {
             //       builder: (context) => DataBaseDownloadPage(
             //             dbType: _database == Database.all
             //                 ? 'global'
-            //                 : Translations.of(context).locale.languageCode,
+            //                 : Translations.instance!.locale.languageCode,
             //             isExistsDataBase: true,
             //             dbPath: path,
             //           )));
@@ -671,7 +673,7 @@ class _SplashPageState extends State<SplashPage> {
                     title: const Text('Select Language'),
                     onValuePicked: (Country country) async {
                       var exc = country as ExCountry;
-                      await Translations.of(context).load(exc.toString());
+                      await Translations.instance!.load(exc.toString());
                       await Settings.setLanguage(exc.toString());
                       await Settings.resetIncludeTags();
                       setState(() {});
@@ -718,8 +720,10 @@ class _SplashPageState extends State<SplashPage> {
         .path;
 
     if (filename == null) {
-      await showOkDialog(
-          context, Translations.of(context).trans('dbalreadyerr'));
+      if (mounted) {
+        await showOkDialog(
+            context, Translations.instance!.trans('dbalreadyerr'));
+      }
       return '';
     }
 

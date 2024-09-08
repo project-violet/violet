@@ -51,7 +51,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                       Container(height: 4),
                       Icon(Icons.star,
                           color: Settings.themeWhat ? null : Colors.black),
-                      Text(Translations.of(context).trans('daily'),
+                      Text(Translations.instance!.trans('daily'),
                           style: Settings.themeWhat
                               ? null
                               : const TextStyle(color: Colors.black)),
@@ -66,7 +66,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                       Container(height: 4),
                       Icon(MdiIcons.calendarWeek,
                           color: Settings.themeWhat ? null : Colors.black),
-                      Text(Translations.of(context).trans('weekly'),
+                      Text(Translations.instance!.trans('weekly'),
                           style: Settings.themeWhat
                               ? null
                               : const TextStyle(color: Colors.black)),
@@ -81,7 +81,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                       Container(height: 4),
                       Icon(MdiIcons.calendarMonth,
                           color: Settings.themeWhat ? null : Colors.black),
-                      Text(Translations.of(context).trans('monthly'),
+                      Text(Translations.instance!.trans('monthly'),
                           style: Settings.themeWhat
                               ? null
                               : const TextStyle(color: Colors.black)),
@@ -96,7 +96,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                       Container(height: 4),
                       Icon(MdiIcons.heart,
                           color: Settings.themeWhat ? null : Colors.black),
-                      Text(Translations.of(context).trans('alltime'),
+                      Text(Translations.instance!.trans('alltime'),
                           style: Settings.themeWhat
                               ? null
                               : const TextStyle(color: Colors.black)),

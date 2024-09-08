@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:math';
 
@@ -300,11 +302,10 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
   }
 
   searchBar() {
-    final searchHintText =
-        c.latestQuery != null && c.latestQuery!.item2.trim() != ''
-            ? c.latestQuery!.item2
-            : widget.searchKeyWord ??
-                trans.Translations.of(context).trans('search');
+    final searchHintText = c.latestQuery != null &&
+            c.latestQuery!.item2.trim() != ''
+        ? c.latestQuery!.item2
+        : widget.searchKeyWord ?? trans.Translations.instance!.trans('search');
 
     final textFormField = TextFormField(
       cursorColor: Colors.black,
@@ -395,6 +396,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
 
     c.heroFlareControls.play('search2close');
 
+    if (!mounted) return;
     final query = await Navigator.push<String>(
       context,
       MaterialPageRoute(
@@ -571,12 +573,13 @@ class ResultPanelWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final columnCount = Settings.searchResultType == 0 ? 3 : 2;
+    final columnCount =
+        Settings.searchResultType == SearchResultType.threeGrid ? 3 : 2;
     final windowWidth = MediaQuery.of(context).size.width;
 
     switch (Settings.searchResultType) {
-      case 0:
-      case 1:
+      case SearchResultType.threeGrid:
+      case SearchResultType.twoGrid:
         final simpleModeColumnCount =
             Settings.useTabletMode ? columnCount * 2 : columnCount;
         return SliverPadding(
@@ -602,14 +605,14 @@ class ResultPanelWidget extends StatelessWidget {
               ),
             ));
 
-      case 2:
-      case 3:
-      case 4:
+      case SearchResultType.bigLine:
+      case SearchResultType.detail:
+      case SearchResultType.ultra:
         if (Settings.useTabletMode ||
             MediaQuery.of(context).orientation == Orientation.landscape) {
           const kDetailModeColumnCount = 2;
           final aspectRatioHeight =
-              Settings.useTabletMode && Settings.searchResultType == 4
+              Settings.useTabletMode && Settings.searchResultType.isUltra
                   ? 220
                   : 130;
 
@@ -634,8 +637,8 @@ class ResultPanelWidget extends StatelessWidget {
                   index,
                   windowWidth,
                   (windowWidth - 4.0) / kDetailModeColumnCount,
-                  showDetail: Settings.searchResultType >= 3,
-                  showUltra: Settings.searchResultType == 4,
+                  showDetail: Settings.searchResultType.isDetailLike,
+                  showUltra: Settings.searchResultType.isUltra,
                   addBottomPadding: true,
                 );
               },
@@ -650,8 +653,8 @@ class ResultPanelWidget extends StatelessWidget {
                   index,
                   windowWidth,
                   windowWidth - 4.0,
-                  showDetail: Settings.searchResultType >= 3,
-                  showUltra: Settings.searchResultType == 4,
+                  showDetail: Settings.searchResultType.isDetailLike,
+                  showUltra: Settings.searchResultType.isUltra,
                   addBottomPadding: true,
                 );
               },

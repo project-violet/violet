@@ -33,22 +33,17 @@ import 'package:violet/pages/segment/three_article_panel.dart';
 import 'package:violet/server/community/anon.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
+import 'package:violet/util/strings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class ArtistInfoPage extends StatefulWidget {
-  final String artist;
-  final bool isGroup;
-  final bool isUploader;
-  final bool isSeries;
-  final bool isCharacter;
+  final String name;
+  final ArtistType type;
 
   const ArtistInfoPage({
     super.key,
-    required this.artist,
-    this.isGroup = false,
-    this.isUploader = false,
-    this.isSeries = false,
-    this.isCharacter = false,
+    required this.name,
+    required this.type,
   });
 
   @override
@@ -61,8 +56,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   int femaleTags = 0;
   int maleTags = 0;
   int tags = 0;
-  // Artist? Group? Uploader?
-  late String prefix;
   // Artist Articles
   late List<QueryResult> cc;
   // Chart component lists
@@ -95,28 +88,13 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       //
       // Check bookmark
       //
-      var type = widget.isGroup
-          ? 1
-          : widget.isUploader
-              ? 2
-              : widget.isSeries
-                  ? 3
-                  : widget.isCharacter
-                      ? 4
-                      : 0;
       isBookmarked = await (await Bookmark.getInstance())
-          .isBookmarkArtist(widget.artist, type);
+          .isBookmarkArtist(widget.name, widget.type);
 
       //
       //  Get query
       //
-      cc = await query([
-        widget.artist,
-        widget.isGroup,
-        widget.isUploader,
-        widget.isSeries,
-        widget.isCharacter
-      ]);
+      cc = await query();
 
       //
       //  Title based article clustering
@@ -162,58 +140,51 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       //
       //  Similar Artists (or group, uploader)
       //
-
-      if (widget.isGroup) {
-        similars = HitomiIndexs.calculateSimilarGroups(widget.artist);
-      } else if (widget.isUploader) {
-        similars = HitomiIndexs.calculateSimilarUploaders(widget.artist);
-      } else if (widget.isSeries) {
-        similars = HitomiIndexs.calculateSimilarSeries(widget.artist);
-      } else if (widget.isCharacter) {
-        similars = HitomiIndexs.calculateSimilarCharacter(widget.artist);
-      } else {
-        similars = HitomiIndexs.calculateSimilarArtists(widget.artist);
+      switch (widget.type) {
+        case ArtistType.artist:
+          similars = HitomiIndexs.calculateSimilarArtists(widget.name);
+          break;
+        case ArtistType.group:
+          similars = HitomiIndexs.calculateSimilarGroups(widget.name);
+          break;
+        case ArtistType.uploader:
+          similars = HitomiIndexs.calculateSimilarUploaders(widget.name);
+          break;
+        case ArtistType.series:
+          similars = HitomiIndexs.calculateSimilarSeries(widget.name);
+          break;
+        case ArtistType.character:
+          similars = HitomiIndexs.calculateSimilarCharacter(widget.name);
+          break;
       }
 
       similarsAll = similars;
       similars = similars.take(6).toList();
 
-      prefix = 'artist:';
-      if (widget.isGroup) {
-        prefix = 'group:';
-      } else if (widget.isUploader) {
-        prefix = 'uploader:';
-      } else if (widget.isSeries) {
-        prefix = 'series:';
-      } else if (widget.isCharacter) {
-        prefix = 'character:';
-      }
+      await querySimilars(similars, widget.type.name, qrs);
 
-      await querySimilars(similars, prefix, qrs);
-
-      if (widget.isCharacter || widget.isSeries) {
-        if (widget.isCharacter) {
+      if (widget.type.isCharacter || widget.type.isSeries) {
+        if (widget.type.isCharacter) {
           relatedCharacterOrSeriesAll =
-              HitomiIndexs.calculateRelatedSeriesCharacter(widget.artist);
-          relatedCOSSingleAll = HitomiIndexs.getRelatedSeries(widget.artist);
+              HitomiIndexs.calculateRelatedSeriesCharacter(widget.name);
+          relatedCOSSingleAll = HitomiIndexs.getRelatedSeries(widget.name);
         } else {
           relatedCharacterOrSeriesAll =
-              HitomiIndexs.calculateRelatedCharacterSeries(widget.artist);
-          relatedCOSSingleAll =
-              HitomiIndexs.getRelatedCharacters(widget.artist);
+              HitomiIndexs.calculateRelatedCharacterSeries(widget.name);
+          relatedCOSSingleAll = HitomiIndexs.getRelatedCharacters(widget.name);
         }
         relatedCharacterOrSeries = relatedCharacterOrSeriesAll.take(6).toList();
         relatedCOSSingle = relatedCOSSingleAll.take(6).toList();
 
         await querySimilars(
           relatedCharacterOrSeries,
-          widget.isCharacter ? 'character:' : 'series:',
+          widget.type.name,
           qrsCharacterOrSeries,
         );
 
         await querySimilars(
           relatedCOSSingle,
-          widget.isCharacter ? 'series:' : 'character:',
+          widget.type.name,
           qrsCOSSingle,
         );
       }
@@ -233,17 +204,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   }
 
   Future<void> readComments() async {
-    var tcomments =
-        (await VioletCommunityAnonymous.getArtistComments((widget.isGroup
-                ? 'group:'
-                : widget.isUploader
-                    ? 'uploader:'
-                    : widget.isSeries
-                        ? 'series:'
-                        : widget.isCharacter
-                            ? 'character:'
-                            : 'artist:') +
-            widget.artist))['result'] as List<dynamic>;
+    final tcomments = (await VioletCommunityAnonymous.getArtistComments(
+        '${widget.type.name}:${widget.name}'))['result'] as List<dynamic>;
 
     comments = tcomments
         .map((e) => Tuple3<DateTime, String, String>(
@@ -261,7 +223,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     for (int i = 0; i < similars.length; i++) {
       var postfix = similars[i].item1.toLowerCase().replaceAll(' ', '_');
       var queryString = HitomiManager.translate2query(
-          '$prefix$postfix ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
+          '$prefix:$postfix ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
       final qm = QueryManager.queryPagination(queryString);
       qm.itemsPerPage = 10;
 
@@ -306,20 +268,15 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     }
   }
 
-  Future<List<QueryResult>> query(dynamic obj) async {
-    var artist = obj[0] as String;
-    var isGroup = obj[1] as bool;
-    var isUploader = obj[2] as bool;
-    var isSeries = obj[3] as bool;
-    var isCharacter = obj[4] as bool;
-
-    var query = HitomiManager.translate2query(
-        '${isGroup ? 'group:' : isUploader ? 'uploader:' : isSeries ? 'series:' : isCharacter ? 'character:' : 'artist:'}${artist.replaceAll(' ', '_')} ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
-
-    // DateTime dt = DateTime.now();
-    QueryManager qm = await QueryManager.query('$query ORDER BY Id DESC');
-    // print((DateTime.now().difference(dt)).inSeconds);
-
+  Future<List<QueryResult>> query() async {
+    final token = '${widget.type.name}:${widget.name.replaceAll(' ', '_')}';
+    final excludes = Settings.excludeTags
+        .where((e) => e.trim() != '')
+        .map((e) => '-$e')
+        .join(' ');
+    final query = HitomiManager.translate2query(
+        '$token ${Settings.includeTags} $excludes');
+    final qm = await QueryManager.query('$query ORDER BY Id DESC');
     return qm.results!;
   }
 
@@ -402,17 +359,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
               controller: flareController,
             ),
           ),
-          Text(
-              (widget.isGroup
-                      ? 'Groups: '
-                      : widget.isUploader
-                          ? 'Uploader: '
-                          : widget.isSeries
-                              ? 'Series: '
-                              : widget.isCharacter
-                                  ? 'Character: '
-                                  : 'Artist: ') +
-                  widget.artist,
+          Text('${widget.type.name.titlecase()}: ${widget.name}',
               style:
                   const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         ],
@@ -420,28 +367,19 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       onTap: () async {
         isBookmarked = !isBookmarked;
 
-        var type = widget.isGroup
-            ? 1
-            : widget.isUploader
-                ? 2
-                : widget.isSeries
-                    ? 3
-                    : widget.isCharacter
-                        ? 4
-                        : 0;
         showToast(
           level: ToastLevel.check,
           message:
-              '${widget.artist}${Translations.of(context).trans(isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
+              '${widget.name}${Translations.instance!.trans(isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
         );
 
         if (!isBookmarked) {
           await (await Bookmark.getInstance())
-              .unbookmarkArtist(widget.artist, type);
+              .unbookmarkArtist(widget.name, widget.type);
           flareController.play('Unlike');
         } else {
           await (await Bookmark.getInstance())
-              .bookmarkArtist(widget.artist, type);
+              .bookmarkArtist(widget.name, widget.type);
           flareController.play('Like');
         }
       },
@@ -552,7 +490,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 header: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                   child: Text(
-                      '${Translations.of(context).trans('articles')} (${cc.length})'),
+                      '${Translations.instance!.trans('articles')} (${cc.length})'),
                 ),
                 expanded: Column(children: <Widget>[
                   articleArea(),
@@ -560,16 +498,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                       visible: cc.length > maxItemCount,
                       child: more(() => ArticleListPage(
                           cc: cc,
-                          name: (widget.isGroup
-                                  ? 'Groups: '
-                                  : widget.isUploader
-                                      ? 'Uploader: '
-                                      : widget.isSeries
-                                          ? 'Series: '
-                                          : widget.isCharacter
-                                              ? 'Character: '
-                                              : 'Artist: ') +
-                              widget.artist)))
+                          name:
+                              '${widget.type.name.titlecase()}: ${widget.name}')))
                 ]),
                 collapsed: Container(),
               ),
@@ -587,7 +517,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 header: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                   child: Text(
-                      '${Translations.of(context).trans('comment')} (${(comments != null ? comments!.length : 0)})'),
+                      '${Translations.instance!.trans('comment')} (${(comments != null ? comments!.length : 0)})'),
                 ),
                 expanded: commentArea(),
                 collapsed: Container(),
@@ -595,7 +525,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             ),
           ),
         ),
-        widget.isCharacter || widget.isSeries
+        widget.type.isCharacter || widget.type.isSeries
             ? ExpandableNotifier(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -608,7 +538,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                       header: Padding(
                         padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                         child: Text(
-                            '${Translations.of(context).trans('related')} ${widget.isSeries ? Translations.of(context).trans('iseries') : Translations.of(context).trans('icharacter')}'),
+                            '${Translations.instance!.trans('related')} ${widget.type.isSeries ? Translations.instance!.trans('iseries') : Translations.instance!.trans('icharacter')}'),
                       ),
                       expanded: relatedArea(),
                       collapsed: Container(),
@@ -617,7 +547,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 ),
               )
             : Container(),
-        widget.isCharacter || widget.isSeries
+        widget.type.isCharacter || widget.type.isSeries
             ? ExpandableNotifier(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -630,7 +560,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                       header: Padding(
                         padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                         child: Text(
-                            '${Translations.of(context).trans('related')} ${widget.isCharacter ? Translations.of(context).trans('iseries') : Translations.of(context).trans('icharacter')}'),
+                            '${Translations.instance!.trans('related')} ${widget.type.isCharacter ? Translations.instance!.trans('iseries') : Translations.instance!.trans('icharacter')}'),
                       ),
                       expanded: relatedSingleArea(),
                       collapsed: Container(),
@@ -650,7 +580,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 header: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                   child: Text(
-                      '${Translations.of(context).trans('similar')} ${widget.isGroup ? Translations.of(context).trans('igroups') : widget.isUploader ? Translations.of(context).trans('iuploader') : widget.isSeries ? Translations.of(context).trans('iseries') : widget.isCharacter ? Translations.of(context).trans('icharacter') : Translations.of(context).trans('iartists')}'),
+                      '${Translations.instance!.trans('similar')} ${widget.type.isGroup ? Translations.instance!.trans('igroups') : widget.type.isUploader ? Translations.instance!.trans('iuploader') : widget.type.isSeries ? Translations.instance!.trans('iseries') : widget.type.isCharacter ? Translations.instance!.trans('icharacter') : Translations.instance!.trans('iartists')}'),
                 ),
                 expanded: similarArea(),
                 collapsed: Container(),
@@ -669,7 +599,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 header: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                   child: Text(
-                      '${Translations.of(context).trans('series')} (${series.length})'),
+                      '${Translations.instance!.trans('series')} (${series.length})'),
                 ),
                 expanded: seriesArea(),
                 collapsed: Container(),
@@ -694,7 +624,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [Text(Translations.of(context).trans('more'))],
+          children: [Text(Translations.instance!.trans('more'))],
         ),
       ),
     );
@@ -765,40 +695,22 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       itemBuilder: (BuildContext ctxt, int index) {
         if (index == similars.length) {
           return more(() => SimilarListPage(
-                prefix: prefix,
                 similarsAll: similarsAll,
-                isGroup: widget.isGroup,
-                isUploader: widget.isUploader,
-                isCharacter: widget.isCharacter,
-                isSeries: widget.isSeries,
+                type: widget.type,
               ));
         }
         var e = similars[index];
         var qq = qrs[index];
 
-        var type = 'artist';
-        if (widget.isGroup) {
-          type = 'group';
-        } else if (widget.isUploader) {
-          type = 'uploader';
-        } else if (widget.isSeries) {
-          type = 'series';
-        } else if (widget.isCharacter) {
-          type = 'character';
-        }
-
         return ThreeArticlePanel(
           tappedRoute: () => ArtistInfoPage(
-            isGroup: widget.isGroup,
-            isUploader: widget.isUploader,
-            isCharacter: widget.isCharacter,
-            isSeries: widget.isSeries,
-            artist: e.item1,
+            type: widget.type,
+            name: e.item1,
           ),
           title:
-              ' ${e.item1} (${HitomiManager.getArticleCount(type, e.item1).toString()})',
+              ' ${e.item1} (${HitomiManager.getArticleCount(widget.type.name, e.item1).toString()})',
           count:
-              '${Translations.of(context).trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+              '${Translations.instance!.trans('score')}: ${e.item2.toStringAsFixed(1)} ',
           articles: qq,
         );
       },
@@ -816,7 +728,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         if (index == 6) {
           return more(() => SeriesListPage(
                 cc: cc,
-                prefix: prefix,
                 series: series,
               ));
         }
@@ -889,7 +800,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 height: 100,
                 child: Align(
                   child: Text(
-                    Translations.of(context).trans('nocomment'),
+                    Translations.instance!.trans('nocomment'),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -908,33 +819,22 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         TextEditingController text = TextEditingController();
         Widget okButton = TextButton(
           style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
-          child: Text(Translations.of(context).trans('ok')),
+          child: Text(Translations.instance!.trans('ok')),
           onPressed: () async {
             if (text.text.length < 5 || text.text.length > 500) {
               await showOkDialog(context, 'Comment too short or long!',
-                  Translations.of(context).trans('comment'));
+                  Translations.instance!.trans('comment'));
               return;
             }
             await VioletCommunityAnonymous.postArtistComment(
-                null,
-                (widget.isGroup
-                        ? 'group:'
-                        : widget.isUploader
-                            ? 'uploader:'
-                            : widget.isSeries
-                                ? 'series:'
-                                : widget.isCharacter
-                                    ? 'character:'
-                                    : 'artist:') +
-                    widget.artist,
-                text.text);
+                null, '${widget.type.name}:${widget.name}', text.text);
             await readComments();
             Navigator.pop(context, true);
           },
         );
         Widget cancelButton = TextButton(
           style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
-          child: Text(Translations.of(context).trans('cancel')),
+          child: Text(Translations.instance!.trans('cancel')),
           onPressed: () {
             Navigator.pop(context, false);
           },
@@ -944,7 +844,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           context: context,
           builder: (BuildContext context) => AlertDialog(
             contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-            title: Text(Translations.of(context).trans('writecomment')),
+            title: Text(Translations.instance!.trans('writecomment')),
             content: TextField(
               controller: text,
               autofocus: true,
@@ -958,7 +858,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [Text(Translations.of(context).trans('writecomment'))],
+          children: [Text(Translations.instance!.trans('writecomment'))],
         ),
       ),
     );
@@ -973,32 +873,23 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       itemBuilder: (BuildContext ctxt, int index) {
         if (index == relatedCharacterOrSeries.length) {
           return more(() => SimilarListPage(
-                prefix: prefix,
                 similarsAll: relatedCharacterOrSeriesAll,
-                isGroup: widget.isGroup,
-                isUploader: widget.isUploader,
-                isCharacter: widget.isCharacter,
-                isSeries: widget.isSeries,
+                type: widget.type,
               ));
         }
 
         var e = relatedCharacterOrSeries[index];
         var qq = qrsCharacterOrSeries[index];
 
-        var cls = 'character';
-        if (widget.isSeries) cls = 'series';
-
         return ThreeArticlePanel(
           tappedRoute: () => ArtistInfoPage(
-            isGroup: widget.isGroup,
-            isUploader: widget.isUploader,
-            isCharacter: widget.isCharacter,
-            isSeries: widget.isSeries,
-            artist: e.item1,
+            type: widget.type,
+            name: e.item1,
           ),
-          title: ' ${e.item1} (${HitomiManager.getArticleCount(cls, e.item1)})',
+          title:
+              ' ${e.item1} (${HitomiManager.getArticleCount(widget.type.name, e.item1)})',
           count:
-              '${Translations.of(context).trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+              '${Translations.instance!.trans('score')}: ${e.item2.toStringAsFixed(1)} ',
           articles: qq,
         );
       },
@@ -1014,31 +905,22 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       itemBuilder: (BuildContext ctxt, int index) {
         if (index == relatedCOSSingle.length) {
           return more(() => SimilarListPage(
-                prefix: widget.isCharacter ? 'series:' : 'character:',
                 similarsAll: relatedCOSSingleAll,
-                isGroup: widget.isGroup,
-                isUploader: widget.isUploader,
-                isSeries: widget.isCharacter,
-                isCharacter: widget.isSeries,
+                type: widget.type,
               ));
         }
         var e = relatedCOSSingle[index];
         var qq = qrsCOSSingle[index];
 
-        var cls = 'character';
-        if (widget.isCharacter) cls = 'series';
-
         return ThreeArticlePanel(
           tappedRoute: () => ArtistInfoPage(
-            isGroup: widget.isGroup,
-            isUploader: widget.isUploader,
-            isSeries: widget.isCharacter,
-            isCharacter: widget.isSeries,
-            artist: e.item1,
+            type: widget.type,
+            name: e.item1,
           ),
-          title: ' ${e.item1} (${HitomiManager.getArticleCount(cls, e.item1)})',
+          title:
+              ' ${e.item1} (${HitomiManager.getArticleCount(widget.type.name, e.item1)})',
           count:
-              '${Translations.of(context).trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+              '${Translations.instance!.trans('score')}: ${e.item2.toStringAsFixed(1)} ',
           articles: qq,
         );
       },

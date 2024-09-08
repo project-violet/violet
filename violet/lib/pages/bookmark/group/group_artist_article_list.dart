@@ -51,13 +51,8 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
         if (artists.isEmpty) return <QueryResult>[];
 
         final queryString = HitomiManager.translate2query(artists
-            .map((e) => '${[
-                  'artist',
-                  'group',
-                  'uploader',
-                  'series',
-                  'character'
-                ][e.type()]}:${e.artist().toLowerCase().replaceAll(' ', '_')} ${Settings.includeTags}')
+            .map((e) =>
+                '${e.type().name}:${e.artist().toLowerCase().replaceAll(' ', '_')} ${Settings.includeTags}')
             .join(' or '));
 
         final qm = QueryManager.queryPagination(queryString);

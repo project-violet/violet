@@ -21,6 +21,7 @@ class _ImportFromEHPageState extends State<ImportFromEHPage> {
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       await EHBookmark.process();
 
+      if (!mounted) return;
       Navigator.pop(context);
     });
   }

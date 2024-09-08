@@ -26,6 +26,7 @@ class UpdateManager {
 
     // Update is only available for Android.
     if (Platform.isAndroid) {
+      if (!context.mounted) return;
       updateCheckAndDownload(context); // @dependent: android
     }
   }
@@ -45,7 +46,7 @@ class UpdateManager {
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       if (UpdateSyncManager.updateRequire) {
         var bb = await showYesNoDialog(context,
-            '${Translations.of(context).trans('newupdate')} ${UpdateSyncManager.updateMessage} ${Translations.of(context).trans('wouldyouupdate')}');
+            '${Translations.instance!.trans('newupdate')} ${UpdateSyncManager.updateMessage} ${Translations.instance!.trans('wouldyouupdate')}');
         if (bb == false) return;
       } else {
         return;
@@ -54,6 +55,7 @@ class UpdateManager {
       if (!await Permission.manageExternalStorage.isGranted) {
         if (await Permission.manageExternalStorage.request() ==
             PermissionStatus.denied) {
+          if (!context.mounted) return;
           await showOkDialog(context,
               'If you do not allow file permissions, you cannot continue :(');
           return;
@@ -95,8 +97,9 @@ class UpdateManager {
       final prefs = await SharedPreferences.getInstance();
       if (prefs.getBool('usevioletserver_check') != null) return;
 
+      if (!context.mounted) return;
       final bb = await showYesNoDialog(
-          context, Translations.of(context).trans('violetservermsg'));
+          context, Translations.instance!.trans('violetservermsg'));
       if (bb == false) {
         await prefs.setBool('usevioletserver_check', false);
         return;

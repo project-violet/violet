@@ -24,6 +24,7 @@ class _DBRebuildPagePageState extends State<DBRebuildPage> {
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       await indexing();
 
+      if (!mounted) return;
       Navigator.pop(context);
     });
   }

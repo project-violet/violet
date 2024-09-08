@@ -45,14 +45,14 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
     super.didChangeDependencies();
 
     _message ??= widget.isRegisterMode
-        ? Translations.of(context).trans('insertpinforregister')
-        : Translations.of(context).trans('insertpinforcheck');
+        ? Translations.instance!.trans('insertpinforregister')
+        : Translations.instance!.trans('insertpinforcheck');
   }
 
   @override
   Widget build(BuildContext context) {
     final header = Text(
-      Translations.of(context).trans('pinauth'),
+      Translations.instance!.trans('pinauth'),
       style: const TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 20.0,
@@ -79,7 +79,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
         child: GestureDetector(
           onTap: _passwordMissing,
           child: Text.rich(TextSpan(
-              text: Translations.of(context).trans('missingpass'),
+              text: Translations.instance!.trans('missingpass'),
               style: const TextStyle(
                 color: Colors.blue,
                 decoration: TextDecoration.underline,
@@ -231,7 +231,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
   Future<void> _passwordMissing() async {
     final Widget yesButton = TextButton(
       style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
-      child: Text(Translations.of(context).trans('ok')),
+      child: Text(Translations.instance!.trans('ok')),
       onPressed: () {
         Navigator.pop(context, true);
       },
@@ -239,7 +239,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
 
     final Widget noButton = TextButton(
       style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
-      child: Text(Translations.of(context).trans('cancel')),
+      child: Text(Translations.instance!.trans('cancel')),
       onPressed: () {
         Navigator.pop(context, false);
       },
@@ -252,7 +252,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
       context: context,
       builder: (BuildContext context) => AlertDialog(
         contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-        title: Text(Translations.of(context).trans('entersecondpass')),
+        title: Text(Translations.instance!.trans('entersecondpass')),
         content: TextField(
           controller: text,
           autofocus: true,
@@ -263,9 +263,11 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
 
     if (dialog != null && dialog) {
       if (text.text == 'violet.jjang') {
-        await showOkDialog(context, Translations.of(context).trans('resetpin'),
-            Translations.of(context).trans('authmanager'));
+        if (!mounted) return;
+        await showOkDialog(context, Translations.instance!.trans('resetpin'),
+            Translations.instance!.trans('authmanager'));
 
+        if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/SplashPage');
       } else {
         _controller.forward();
@@ -273,10 +275,11 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
           _controller.reverse();
           setState(() {});
         });
+        if (!mounted) return;
         await showOkDialog(
             context,
-            Translations.of(context).trans('notcorrectsecondpass'),
-            Translations.of(context).trans('authmanager'));
+            Translations.instance!.trans('notcorrectsecondpass'),
+            Translations.instance!.trans('authmanager'));
       }
     }
   }
@@ -286,6 +289,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
     final pinPass = prefs.getString('pinPass');
 
     if (!widget.isRegisterMode && _pin.join() == pinPass) {
+      if (!mounted) return;
       if (widget.isSecureMode) {
         Navigator.of(context).pop();
       } else {
@@ -319,7 +323,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
       _controller.reverse();
       _pin = List.filled(4, null);
       setState(() {
-        _message = Translations.of(context).trans('pinisnotcorrect');
+        _message = Translations.instance!.trans('pinisnotcorrect');
       });
     });
   }
@@ -329,7 +333,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
     Future.delayed(const Duration(milliseconds: 300)).then((value) {
       showToast(
         level: ToastLevel.check,
-        message: Translations.of(context).trans('pinisregistered'),
+        message: Translations.instance!.trans('pinisregistered'),
       );
       Navigator.pop(context);
     });
@@ -339,7 +343,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
     _isFirstPINInserted = true;
     _firstPIN = _pin.join();
     _pin = List.filled(4, null);
-    _message = Translations.of(context).trans('retrypin');
+    _message = Translations.instance!.trans('retrypin');
     Future.delayed(const Duration(milliseconds: 300)).then((value) {
       setState(() {});
     });

@@ -186,6 +186,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
         message: Translations.instance!.trans('dbdcomplete'),
       );
 
+      if (!mounted) return;
       Navigator.of(context).pushReplacementNamed('/AfterLoading');
 
       return;
@@ -445,11 +446,11 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
   @override
   Widget build(BuildContext context) {
     if (baseString == '') {
-      baseString = Translations.of(context).trans('dbdwaitforrequest');
+      baseString = Translations.instance!.trans('dbdwaitforrequest');
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text(Translations.of(context).trans('dbdname')),
+        title: Text(Translations.instance!.trans('dbdname')),
         backgroundColor: Colors.purple,
       ),
       body: Center(
@@ -467,7 +468,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
                         height: 20.0,
                       ),
                       Text(
-                        "${Translations.of(context).trans('dbddownloading')} $progressString",
+                        "${Translations.instance!.trans('dbddownloading')} $progressString",
                         style: const TextStyle(
                           color: Colors.white,
                         ),

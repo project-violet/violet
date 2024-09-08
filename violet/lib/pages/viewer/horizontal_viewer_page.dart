@@ -223,6 +223,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
               c.urlCache[page.toInt() + 2]!.value);
         }
         await c.precache(context, page.toInt() - 1);
+        if (!mounted) return;
         await c.precache(context, page.toInt() + 1);
       }
     }

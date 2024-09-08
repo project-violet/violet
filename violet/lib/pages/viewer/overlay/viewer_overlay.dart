@@ -137,6 +137,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
               borderRadius: const BorderRadius.all(Radius.circular(8.0)),
               onPressed: () async {
                 await c.close();
+                if (!mounted) return;
                 Navigator.pop(context, c.page.value);
               },
               child: Row(
@@ -255,6 +256,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
       color: Colors.white,
       onPressed: () async {
         await c.close();
+        if (!mounted) return;
         Navigator.pop(context, c.page.value);
       },
     );
@@ -269,6 +271,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
             await (await Bookmark.getInstance()).isBookmark(c.articleId);
 
         if (c.bookmark.value) {
+          if (!mounted) return;
           if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
         }
 
@@ -281,7 +284,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
             ignoreDrawer: true,
             reverse: true,
             msg:
-                '${c.articleId}${locale.Translations.of(context).trans(!c.bookmark.value ? 'addtobookmark' : 'removetobookmark')}',
+                '${c.articleId}${locale.Translations.instance!.trans(!c.bookmark.value ? 'addtobookmark' : 'removetobookmark')}',
           ),
           gravity: ToastGravity.TOP,
           toastDuration: const Duration(seconds: 4),
@@ -326,6 +329,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
         c.isStaring = false;
         c.stopTimer();
 
+        if (!mounted) return;
         Provider<ArticleInfo>? cache;
         showModalBottomSheet(
           context: context,

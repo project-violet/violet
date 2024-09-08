@@ -11,12 +11,12 @@ import 'package:violet/style/palette.dart';
 class SearchType extends StatelessWidget {
   const SearchType({super.key});
 
-  Color getColor(int i) {
+  Color getColor(SearchResultType type) {
     return Settings.themeWhat
-        ? Settings.searchResultType == i
+        ? Settings.searchResultType == type
             ? Colors.grey.shade200
             : Colors.grey.shade400
-        : Settings.searchResultType == i
+        : Settings.searchResultType == type
             ? Colors.grey.shade900
             : Colors.grey.shade400;
   }
@@ -36,11 +36,16 @@ class SearchType extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 child: Column(
                   children: <Widget>[
-                    _typeItem(context, Icons.grid_on, 'srt0', 0),
-                    _typeItem(context, MdiIcons.gridLarge, 'srt1', 1),
-                    _typeItem(context, MdiIcons.viewAgendaOutline, 'srt2', 2),
-                    _typeItem(context, MdiIcons.formatListText, 'srt3', 3),
-                    _typeItem(context, MdiIcons.viewSplitVertical, 'srt4', 4,
+                    _typeItem(context, Icons.grid_on, 'srt0',
+                        SearchResultType.threeGrid),
+                    _typeItem(context, MdiIcons.gridLarge, 'srt1',
+                        SearchResultType.twoGrid),
+                    _typeItem(context, MdiIcons.viewAgendaOutline, 'srt2',
+                        SearchResultType.bigLine),
+                    _typeItem(context, MdiIcons.formatListText, 'srt3',
+                        SearchResultType.detail),
+                    _typeItem(context, MdiIcons.viewSplitVertical, 'srt4',
+                        SearchResultType.ultra,
                         flip: true),
                   ],
                 ),
@@ -52,16 +57,17 @@ class SearchType extends StatelessWidget {
     );
   }
 
-  Widget _typeItem(
-      BuildContext context, IconData icon, String text, int selection,
+  Widget _typeItem(BuildContext context, IconData icon, String text,
+      SearchResultType selection,
       {bool flip = false}) {
     return ListTile(
       leading: Transform.scale(
           scaleX: flip ? -1 : 1, child: Icon(icon, color: getColor(selection))),
-      title: Text(Translations.of(context).trans(text),
+      title: Text(Translations.instance!.trans(text),
           softWrap: false, style: TextStyle(color: getColor(selection))),
       onTap: () async {
         await Settings.setSearchResultType(selection);
+        if (!context.mounted) return;
         Navigator.pop(context);
       },
     );

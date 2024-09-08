@@ -272,12 +272,13 @@ class _ViewerPageState extends State<ViewerPage> {
     }
 
     if (!moveAnywhere) {
+      if (!mounted) return;
       final isJump = await showYesNoDialog(
         context,
-        locale.Translations.of(context)
+        locale.Translations.instance!
             .trans('recordmessage')
             .replaceAll('%s', e.lastPage().toString()),
-        locale.Translations.of(context).trans('record'),
+        locale.Translations.instance!.trans('record'),
       );
       if (!isJump) return;
 
@@ -304,6 +305,7 @@ class _ViewerPageState extends State<ViewerPage> {
     var prov = await ProviderManager.get(article.id());
     var headers = await prov.getHeader(0);
 
+    if (!mounted) return;
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(

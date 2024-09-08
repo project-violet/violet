@@ -22,6 +22,7 @@ import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hitomi/related.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
@@ -103,7 +104,7 @@ class ArticleInfoPage extends StatelessWidget {
                       child: SizedBox(
                         width: (width - 32 - 64 - 32) / 2,
                         child: Text(
-                          Translations.of(context).trans('download'),
+                          Translations.instance!.trans('download'),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -119,7 +120,7 @@ class ArticleInfoPage extends StatelessWidget {
                       child: SizedBox(
                         width: (width - 32 - 64 - 32) / 2,
                         child: Text(
-                          Translations.of(context).trans('read'),
+                          Translations.instance!.trans('read'),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -147,8 +148,7 @@ class ArticleInfoPage extends StatelessWidget {
                                 const Duration(milliseconds: 500)),
                         header: Padding(
                           padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
-                          child:
-                              Text(Translations.of(context).trans('preview')),
+                          child: Text(Translations.instance!.trans('preview')),
                         ),
                         expanded: PreviewAreaWidget(
                           queryResult: data.queryResult,
@@ -179,7 +179,7 @@ class ArticleInfoPage extends StatelessWidget {
                           header: Padding(
                             padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                             child: Text(
-                                '${Translations.of(context).trans('related')} ${Translations.of(context).trans('articles')}'),
+                                '${Translations.instance!.trans('related')} ${Translations.instance!.trans('articles')}'),
                           ),
                           expanded: _RelatedArea(
                               relatedIds:
@@ -206,7 +206,7 @@ class ArticleInfoPage extends StatelessWidget {
           child: Container(
             width: (width - 32 - 64 - 32) / 2,
             child: Text(
-              Translations.of(context).trans('download'),
+              Translations.instance!.trans('download'),
               textAlign: TextAlign.center,
             ),
           ),
@@ -220,7 +220,7 @@ class ArticleInfoPage extends StatelessWidget {
           child: Container(
             width: (width - 32 - 64 - 32) / 2,
             child: Text(
-              Translations.of(context).trans('read'),
+              Translations.instance!.trans('read'),
               textAlign: TextAlign.center,
             ),
           ),
@@ -265,7 +265,7 @@ class ArticleInfoPage extends StatelessWidget {
       icon: Icons.download,
       level: ToastLevel.check,
       message:
-          '${data.queryResult.id()}${Translations.of(context).trans('addtodownloadqueue')}',
+          '${data.queryResult.id()}${Translations.instance!.trans('addtodownloadqueue')}',
     );
 
     await ScriptManager.refresh();
@@ -298,6 +298,7 @@ class ArticleInfoPage extends StatelessWidget {
       navigatorFunc = Navigator.pushReplacement;
     }
 
+    if (!context.mounted) return;
     navigatorFunc(
       context,
       MaterialPageRoute(
@@ -356,7 +357,7 @@ class TagInfoAreaWidget extends StatelessWidget {
       children: [
         MultiChipWidget(
             queryResult.tags(),
-            Translations.of(context).trans('tags'),
+            Translations.instance!.trans('tags'),
             queryResult.tags() != null
                 ? (queryResult.tags() as String)
                     .split('|')
@@ -368,31 +369,31 @@ class TagInfoAreaWidget extends StatelessWidget {
                 : []),
         SingleChipWidget(
             queryResult.language(),
-            Translations.of(context).trans('language').split(' ')[0].trim(),
+            Translations.instance!.trans('language').split(' ')[0].trim(),
             'language'),
         MultiChipWidget(
             queryResult.artists(),
-            Translations.of(context).trans('artists'),
+            Translations.instance!.trans('artist'),
             queryResult.artists() != null
                 ? (queryResult.artists() as String)
                     .split('|')
                     .where((element) => element != '')
-                    .map((e) => Tuple2<String, String>('artists', e))
+                    .map((e) => Tuple2<String, String>('artist', e))
                     .toList()
                 : []),
         MultiChipWidget(
             queryResult.groups(),
-            Translations.of(context).trans('groups'),
+            Translations.instance!.trans('group'),
             queryResult.groups() != null
                 ? (queryResult.groups() as String)
                     .split('|')
                     .where((element) => element != '')
-                    .map((e) => Tuple2<String, String>('groups', e))
+                    .map((e) => Tuple2<String, String>('group', e))
                     .toList()
                 : []),
         MultiChipWidget(
             queryResult.series(),
-            Translations.of(context).trans('series'),
+            Translations.instance!.trans('series'),
             queryResult.series() != null
                 ? (queryResult.series() as String)
                     .split('|')
@@ -402,7 +403,7 @@ class TagInfoAreaWidget extends StatelessWidget {
                 : []),
         MultiChipWidget(
             queryResult.characters(),
-            Translations.of(context).trans('character'),
+            Translations.instance!.trans('character'),
             queryResult.characters() != null
                 ? (queryResult.characters() as String)
                     .split('|')
@@ -411,13 +412,13 @@ class TagInfoAreaWidget extends StatelessWidget {
                     .toList()
                 : []),
         SingleChipWidget(
-            queryResult.type(), Translations.of(context).trans('type'), 'type'),
+            queryResult.type(), Translations.instance!.trans('type'), 'type'),
         SingleChipWidget(queryResult.uploader(),
-            Translations.of(context).trans('uploader'), 'uploader'),
+            Translations.instance!.trans('uploader'), 'uploader'),
         SingleChipWidget(queryResult.id().toString(),
-            Translations.of(context).trans('id'), 'id'),
+            Translations.instance!.trans('id'), 'id'),
         SingleChipWidget(queryResult.classname(),
-            Translations.of(context).trans('class'), 'class'),
+            Translations.instance!.trans('class'), 'class'),
         Container(height: 10),
       ],
     );
@@ -599,7 +600,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
             header: Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
               child: Text(
-                  '${Translations.of(context).trans('comment')} (${widget.comments.length})'),
+                  '${Translations.instance!.trans('comment')} (${widget.comments.length})'),
             ),
             expanded: commentArea(context),
             collapsed: Container(),
@@ -716,7 +717,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
         TextEditingController text = TextEditingController();
         Widget okButton = TextButton(
           style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
-          child: Text(Translations.of(context).trans('ok')),
+          child: Text(Translations.instance!.trans('ok')),
           onPressed: () async {
             if ((await EHSession.postComment(
                         'https://exhentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}',
@@ -732,7 +733,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
         );
         Widget cancelButton = TextButton(
           style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
-          child: Text(Translations.of(context).trans('cancel')),
+          child: Text(Translations.instance!.trans('cancel')),
           onPressed: () {
             Navigator.pop(context, false);
           },
@@ -924,14 +925,14 @@ class _Chip extends StatelessWidget {
         size: 18.0,
         color: Colors.white,
       );
-    } else if (group == 'artists') {
+    } else if (group == 'artist') {
       mustHasMorePad = false;
       avatar = const Icon(
         MdiIcons.account,
         size: 18.0,
         color: Colors.white,
       );
-    } else if (group == 'groups') {
+    } else if (group == 'group') {
       mustHasMorePad = false;
       avatar = const Icon(
         MdiIcons.accountGroup,
@@ -982,6 +983,7 @@ class _Chip extends StatelessWidget {
             Settings.excludeTags
                 .add('${normalize(group)}:${name.replaceAll(' ', '_')}');
             await Settings.setExcludeTags(Settings.excludeTags.join(' '));
+            if (!context.mounted) return;
             await showOkDialog(context, '제외태그에 성공적으로 추가했습니다!');
           }
         } else {
@@ -989,27 +991,17 @@ class _Chip extends StatelessWidget {
         }
       },
       onTap: () async {
-        if ((group == 'groups' ||
-                group == 'artists' ||
-                group == 'uploader' ||
-                group == 'series' ||
-                group == 'character') &&
-            name.toLowerCase() != 'n/a') {
+        final type = ArtistTypeHelper.fromString(group);
+        if (type != null && name.toLowerCase() != 'n/a') {
           PlatformNavigator.navigateSlide(
             context,
-            ArtistInfoPage(
-              isGroup: group == 'groups',
-              isUploader: group == 'uploader',
-              isCharacter: group == 'character',
-              isSeries: group == 'series',
-              artist: name,
-            ),
+            ArtistInfoPage(name: name, type: type),
           );
         } else if (group == 'id') {
           Clipboard.setData(ClipboardData(text: name));
           showToast(
             level: ToastLevel.check,
-            message: Translations.of(context).trans('copied'),
+            message: Translations.instance!.trans('copied'),
           );
         }
       },
@@ -1042,7 +1034,7 @@ class _RelatedArea extends StatelessWidget {
               () => ArticleListPage(
                   cc: snapshot.data!,
                   name:
-                      '${Translations.of(context).trans('related')} ${Translations.of(context).trans('articles')}'),
+                      '${Translations.instance!.trans('related')} ${Translations.instance!.trans('articles')}'),
             ),
           ),
         ]);
@@ -1060,7 +1052,7 @@ class _RelatedArea extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [Text(Translations.of(context).trans('more'))],
+          children: [Text(Translations.instance!.trans('more'))],
         ),
       ),
     );

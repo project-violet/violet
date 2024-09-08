@@ -20,7 +20,7 @@ Future<void> showOkDialog(BuildContext context, String message,
           onPressed: () {
             Navigator.pop(context);
           },
-          child: Text(Translations.of(context).trans('ok')),
+          child: Text(Translations.instance!.trans('ok')),
         ),
       ],
     ),
@@ -61,7 +61,7 @@ Future<bool> showOkCancelDialog({
               Navigator.pop(context, true);
             }
           },
-          child: Text(okText ?? Translations.of(context).trans('ok')),
+          child: Text(okText ?? Translations.instance!.trans('ok')),
         ),
         TextButton(
           style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
@@ -72,7 +72,7 @@ Future<bool> showOkCancelDialog({
               Navigator.pop(context, false);
             }
           },
-          child: Text(cancelText ?? Translations.of(context).trans('cancel')),
+          child: Text(cancelText ?? Translations.instance!.trans('cancel')),
         ),
       ],
     ),
@@ -92,14 +92,14 @@ Future<bool> showYesNoDialog(BuildContext context, String message,
           onPressed: () {
             Navigator.pop(context, true);
           },
-          child: Text(Translations.of(context).trans('yes')),
+          child: Text(Translations.instance!.trans('yes')),
         ),
         TextButton(
           style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
           onPressed: () {
             Navigator.pop(context, false);
           },
-          child: Text(Translations.of(context).trans('no')),
+          child: Text(Translations.instance!.trans('no')),
         ),
       ],
     ),
@@ -120,14 +120,14 @@ Future<bool?> showYesNoCancelDialog(BuildContext context, String message,
           onPressed: () {
             Navigator.pop(context, true);
           },
-          child: Text(Translations.of(context).trans('yes')),
+          child: Text(Translations.instance!.trans('yes')),
         ),
         TextButton(
           style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
           onPressed: () {
             Navigator.pop(context, false);
           },
-          child: Text(Translations.of(context).trans('no')),
+          child: Text(Translations.instance!.trans('no')),
         ),
       ],
     ),

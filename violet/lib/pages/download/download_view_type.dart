@@ -10,12 +10,12 @@ import 'package:violet/style/palette.dart';
 class DownloadViewType extends StatelessWidget {
   const DownloadViewType({super.key});
 
-  Color getColor(int i) {
+  Color getColor(DownloadResultType type) {
     return Settings.themeWhat
-        ? Settings.downloadResultType == i
+        ? Settings.downloadResultType == type
             ? Colors.grey.shade200
             : Colors.grey.shade400
-        : Settings.downloadResultType == i
+        : Settings.downloadResultType == type
             ? Colors.grey.shade900
             : Colors.grey.shade400;
   }
@@ -35,10 +35,14 @@ class DownloadViewType extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 child: Column(
                   children: <Widget>[
-                    _typeItem(context, Icons.grid_on, 'srt0', 0),
-                    _typeItem(context, MdiIcons.gridLarge, 'srt1', 1),
-                    _typeItem(context, MdiIcons.viewAgendaOutline, 'srt2', 2),
-                    _typeItem(context, MdiIcons.formatListText, 'srt3', 3),
+                    _typeItem(context, Icons.grid_on, 'srt0',
+                        DownloadResultType.threeGrid),
+                    _typeItem(context, MdiIcons.gridLarge, 'srt1',
+                        DownloadResultType.twoGrid),
+                    _typeItem(context, MdiIcons.viewAgendaOutline, 'srt2',
+                        DownloadResultType.bigLine),
+                    _typeItem(context, MdiIcons.formatListText, 'srt3',
+                        DownloadResultType.detail),
                   ],
                 ),
               ),
@@ -49,14 +53,16 @@ class DownloadViewType extends StatelessWidget {
     );
   }
 
-  Widget _typeItem(
-      BuildContext context, IconData icon, String text, int selection) {
+  Widget _typeItem(BuildContext context, IconData icon, String text,
+      DownloadResultType selection) {
     return ListTile(
       leading: Icon(icon, color: getColor(selection)),
-      title: Text(Translations.of(context).trans(text),
+      title: Text(Translations.instance!.trans(text),
           softWrap: false, style: TextStyle(color: getColor(selection))),
       onTap: () async {
         await Settings.setDownloadResultType(selection);
+
+        if (!context.mounted) return;
         Navigator.pop(context);
       },
     );

@@ -35,13 +35,13 @@ class _GroupModifyPageState extends State<GroupModifyPage> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(Translations.of(context).trans('modifygroupinfo')),
+      title: Text(Translations.instance!.trans('modifygroupinfo')),
       contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Row(children: [
-            Text('${Translations.of(context).trans('name')}: '),
+            Text('${Translations.instance!.trans('name')}: '),
             Expanded(
               child: TextField(
                 controller: _nameController,
@@ -49,7 +49,7 @@ class _GroupModifyPageState extends State<GroupModifyPage> {
             ),
           ]),
           Row(children: [
-            Text('${Translations.of(context).trans('desc')}: '),
+            Text('${Translations.instance!.trans('desc')}: '),
             Expanded(
               child: TextField(
                 controller: _descController,
@@ -65,12 +65,13 @@ class _GroupModifyPageState extends State<GroupModifyPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                 ),
-                child: Text(Translations.of(context).trans('delete')),
+                child: Text(Translations.instance!.trans('delete')),
                 onPressed: () async {
                   if (await showYesNoDialog(
                       context,
-                      Translations.of(context).trans('deletegroupmsg'),
-                      Translations.of(context).trans('bookmark'))) {
+                      Translations.instance!.trans('deletegroupmsg'),
+                      Translations.instance!.trans('bookmark'))) {
+                    if (!context.mounted) return;
                     Navigator.pop(context, [2]);
                   }
                 },
@@ -80,7 +81,7 @@ class _GroupModifyPageState extends State<GroupModifyPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Settings.majorColor,
                 ),
-                child: Text(Translations.of(context).trans('ok')),
+                child: Text(Translations.instance!.trans('ok')),
                 onPressed: () {
                   Navigator.pop(context, [
                     1,
@@ -94,7 +95,7 @@ class _GroupModifyPageState extends State<GroupModifyPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Settings.majorColor,
                 ),
-                child: Text(Translations.of(context).trans('cancel')),
+                child: Text(Translations.instance!.trans('cancel')),
                 onPressed: () {
                   Navigator.pop(context, [0]);
                 },

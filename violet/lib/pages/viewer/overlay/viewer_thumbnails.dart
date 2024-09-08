@@ -294,6 +294,8 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
       AlertDialog alert = AlertDialog(
         content: SelectableText(infoText),
       );
+
+      if (!mounted) return;
       await showDialog(
         context: context,
         builder: (BuildContext context) {

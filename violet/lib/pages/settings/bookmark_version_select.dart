@@ -107,7 +107,7 @@ class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
           child: ListTile(
             title: Text(
                 timeago.format(DateTime.parse(data['dt']).toLocal(),
-                    locale: Translations.of(context).locale.languageCode),
+                    locale: Translations.instance!.locale.languageCode),
                 style: const TextStyle(fontSize: 16.0)),
             subtitle: Text(formatBytes(data['size'] as int, 2)),
             onTap: () async {
@@ -118,7 +118,9 @@ class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
                     version: data['vid'] as String,
                   ));
 
+              if (!mounted) return;
               if (await showYesNoDialog(context, '이 북마크 버전을 선택할까요?')) {
+                if (!mounted) return;
                 Navigator.pop(context, data['vid']);
               }
             },
