@@ -10,6 +10,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/context/viewer_context.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
+import 'package:violet/script/freezed/script_model.dart';
 import 'package:violet/script/script_webview.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
@@ -134,25 +135,13 @@ class ScriptManager {
       if (galleryInfo.statusCode != 200) return null;
       _runtime.evaluate(galleryInfo.body);
       final jResult = _runtime.evaluate('hitomi_get_image_list()').stringResult;
-      final jResultObject = jsonDecode(jResult);
+      final jResultImageList = ScriptImageList.fromJson(jsonDecode(jResult));
 
-      if (jResultObject is Map<dynamic, dynamic>) {
-        return ImageList(
-            urls: (jResultObject['result'] as List<dynamic>)
-                .map((e) => e as String)
-                .toList(),
-            bigThumbnails: (jResultObject['btresult'] as List<dynamic>)
-                .map((e) => e as String)
-                .toList(),
-            smallThumbnails: (jResultObject['stresult'] as List<dynamic>)
-                .map((e) => e as String)
-                .toList());
-      } else {
-        Logger.error('[script-HitomiGetImageList] E: JSError\n'
-            'Id: $id\n'
-            'Message: $jResult');
-        return null;
-      }
+      return ImageList(
+        urls: jResultImageList.result,
+        bigThumbnails: jResultImageList.btresult,
+        smallThumbnails: jResultImageList.stresult,
+      );
     } catch (e, st) {
       Logger.error('[script-HitomiGetImageList] E: $e\n'
           'Id: $id\n'
