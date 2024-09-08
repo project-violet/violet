@@ -23,10 +23,6 @@ class Settings {
   // Bookmark Git Settings
   static late String bookmarkRepository; // default 'example/bookmark'
   static late String bookmarkHost; // default 'gitee.com'
-  static late String
-      bookmarkPrivateKey; // default '-----BEGIN OPENSSH PRIVATE KEY-----\n-----END OPENSSH PRIVATE KEY-----'
-  static late String bookmarkPublicKey; // default ''
-  static late String bookmarkPrivateKeyPassword; // default ''
 
   // Timeout Settings
   static late bool ignoreTimeout; // default false
@@ -326,10 +322,6 @@ class Settings {
     bookmarkRepository =
         await _getString('bookmarkRepository', 'example/bookmark');
     bookmarkHost = await _getString('bookmarkHost', 'gitee.com');
-    bookmarkPrivateKey = await _getString('bookmarkPrivateKey',
-        '-----BEGIN OPENSSH PRIVATE KEY-----\n-----END OPENSSH PRIVATE KEY-----');
-    bookmarkPrivateKeyPassword =
-        await _getString('bookmarkPrivateKeyPassword', '');
     ignoreTimeout = await _getBool('ignoretimeout');
     useVioletServer = await _getBool('usevioletserver');
     useDrawer = await _getBool('usedrawer');
@@ -530,25 +522,6 @@ class Settings {
     bookmarkHost = value;
 
     await prefs.setString('bookmarkHost', bookmarkHost);
-  }
-
-  static Future<void> setBookmarkPrivateKey(String value) async {
-    bookmarkPrivateKey = value;
-
-    await prefs.setString('bookmarkPrivateKey', bookmarkPrivateKey);
-  }
-
-  static Future<void> setBookmarkPublicKey(String value) async {
-    bookmarkPublicKey = value;
-
-    await prefs.setString('bookmarkPublicKey', bookmarkPublicKey);
-  }
-
-  static Future<void> setBookmarkPrivateKeyPassword(String value) async {
-    bookmarkPrivateKeyPassword = value;
-
-    await prefs.setString(
-        'bookmarkPrivateKeyPassword', bookmarkPrivateKeyPassword);
   }
 
   static Future<void> setSearchResultType(int wh) async {
