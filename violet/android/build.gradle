@@ -23,6 +23,14 @@ allprojects {
 
 rootProject.buildDir = '../build'
 subprojects {
+    // Build error handling https://github.com/flutter/flutter/issues/153281#issuecomment-2287902896
+    afterEvaluate {
+        android {
+            compileSdkVersion 34
+        }
+    }
+}
+subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
 subprojects {
