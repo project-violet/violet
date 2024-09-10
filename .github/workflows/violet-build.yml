@@ -114,7 +114,7 @@ jobs:
           mv Payload.zip Payload.ipa
 
       - name: Upload IPA
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ipa-build
           path: ./violet/Payload.ipa
@@ -160,7 +160,7 @@ jobs:
           flutter build apk --release
 
       - name: Upload APK
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: apk-build
           path: ./violet/build/app/outputs/apk/release/app-release.apk
