@@ -159,7 +159,7 @@ class HitomiIndexes {
     } else {
       var ll = (characterCharacter![character] as Map<String, dynamic>)
           .entries
-          .map((e) => (e.key, (e.value as int).toDouble()))
+          .map((e) => (e.key, (e.value as num).toDouble()))
           .toList();
       ll.sort((x, y) => y.$2.compareTo(x.$2));
       return ll;
@@ -172,7 +172,7 @@ class HitomiIndexes {
     }
     var ll = (characterSeries![series] as Map<String, dynamic>)
         .entries
-        .map((e) => (e.key, (e.value as int).toDouble()))
+        .map((e) => (e.key, (e.value as num).toDouble()))
         .toList();
     ll.sort((x, y) => y.$2.compareTo(x.$2));
     return ll;
@@ -184,7 +184,7 @@ class HitomiIndexes {
     }
     var ll = (seriesCharacter![character] as Map<String, dynamic>)
         .entries
-        .map((e) => (e.key, (e.value as int).toDouble()))
+        .map((e) => (e.key, (e.value as num).toDouble()))
         .toList();
     ll.sort((x, y) => y.$2.compareTo(x.$2));
     return ll;
@@ -195,7 +195,7 @@ class HitomiIndexes {
     var ll = (relatedTag[tag] as List<dynamic>)
         .map((e) => (
               (e as Map<String, dynamic>).entries.first.key,
-              (e.entries.first.value as int).toDouble()
+              (e.entries.first.value as num).toDouble()
             ))
         .toList();
     ll.sort((x, y) => y.$2.compareTo(x.$2));
