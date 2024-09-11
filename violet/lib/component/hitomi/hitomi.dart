@@ -322,11 +322,13 @@ class QueryTranslator {
       where += parseParentheses(token, negative);
       where += parseExpression();
       where += nextToken();
+    } else if (token == ')') {
+      return token;
     } else {
       where += parseTitle(token, negative);
     }
 
-    if (hasMoreTokens()) {
+    if (hasMoreTokens() && lookAhead() != ')') {
       String logicalOp = parseLogicalOperator();
       where += logicalOp + parseExpression();
     }

@@ -47,11 +47,15 @@ void main() {
           'female:sole_female (lang:korean or lang:n/a)');
       final result1 = HitomiManager.translate2query(
           'female:sole_female -(female:mother female:milf)');
+      final result2 = HitomiManager.translate2query(
+          '(lang:korean or lang:n/a) -female:sole_female');
 
       expect(result0,
           'SELECT * FROM HitomiColumnModel WHERE Tags LIKE \'%|female:sole female|%\' AND (Language LIKE \'%korean%\' OR Language LIKE \'%n/a%\')  AND ExistOnHitomi=1');
       expect(result1,
           'SELECT * FROM HitomiColumnModel WHERE Tags LIKE \'%|female:sole female|%\' AND NOT (Tags LIKE \'%|female:mother|%\' AND Tags LIKE \'%|female:milf|%\')  AND ExistOnHitomi=1');
+      expect(result2,
+          'SELECT * FROM HitomiColumnModel WHERE (Language LIKE \'%korean%\' OR Language LIKE \'%n/a%\')  AND ExistOnHitomi=1');
     });
   });
 }
