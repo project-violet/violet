@@ -11,7 +11,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/displayed_tag.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/component/hitomi/indexs.dart';
+import 'package:violet/component/hitomi/indexes.dart';
 import 'package:violet/context/modal_bottom_sheet_context.dart';
 import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
@@ -667,7 +667,7 @@ class _SearchBarPageState extends State<SearchBarPage>
     if (token.startsWith('female:') ||
         token.startsWith('male:') ||
         token.startsWith('tag:')) {
-      _relatedLists = HitomiIndexs.getRelatedTag(token.startsWith('tag:')
+      _relatedLists = HitomiIndexes.getRelatedTag(token.startsWith('tag:')
               ? token.split(':').last.replaceAll('_', ' ')
               : token.replaceAll('_', ' '))
           .map((e) => (
@@ -677,13 +677,13 @@ class _SearchBarPageState extends State<SearchBarPage>
               ))
           .toList();
     } else if (token.startsWith('series:')) {
-      _relatedLists = HitomiIndexs.getRelatedCharacters(
+      _relatedLists = HitomiIndexes.getRelatedCharacters(
               token.split(':').last.replaceAll('_', ' '))
           .map((e) =>
               (DisplayedTag(group: 'character', name: e.$1), e.$2.toInt()))
           .toList();
     } else if (token.startsWith('character:')) {
-      _relatedLists = HitomiIndexs.getRelatedSeries(
+      _relatedLists = HitomiIndexes.getRelatedSeries(
               token.split(':').last.replaceAll('_', ' '))
           .map((e) => (DisplayedTag(group: 'series', name: e.$1), e.$2.toInt()))
           .toList();
@@ -912,7 +912,7 @@ class _SearchBarPageState extends State<SearchBarPage>
           if (info.$1.group == 'tag' ||
               info.$1.group == 'female' ||
               info.$1.group == 'male') {
-            _relatedLists = HitomiIndexs.getRelatedTag(info.$1.group == 'tag'
+            _relatedLists = HitomiIndexes.getRelatedTag(info.$1.group == 'tag'
                     ? info.$1.name!.replaceAll('_', ' ')
                     : info.$1.getTag().replaceAll('_', ' '))
                 .map((e) => (
@@ -926,7 +926,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                 .toList();
             setState(() {});
           } else if (info.$1.group == 'series') {
-            _relatedLists = HitomiIndexs.getRelatedCharacters(
+            _relatedLists = HitomiIndexes.getRelatedCharacters(
                     info.$1.name!.replaceAll('_', ' '))
                 .map((e) => (
                       DisplayedTag(group: 'character', name: e.$1),
@@ -935,7 +935,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                 .toList();
             setState(() {});
           } else if (info.$1.group == 'character') {
-            _relatedLists = HitomiIndexs.getRelatedSeries(
+            _relatedLists = HitomiIndexes.getRelatedSeries(
                     info.$1.name!.replaceAll('_', ' '))
                 .map((e) =>
                     (DisplayedTag(group: 'series', name: e.$1), e.$2.toInt()))

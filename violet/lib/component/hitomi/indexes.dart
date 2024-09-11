@@ -11,7 +11,7 @@ import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/log/log.dart';
 
 // This is used for estimation similiar Aritst/Group/Uplaoder with each others.
-class HitomiIndexs {
+class HitomiIndexes {
   // Tag, Index
   // Map<String, int>
   static late Map<String, dynamic> tagIndex;
@@ -67,7 +67,7 @@ class HitomiIndexs {
       final path11 = File('${directory.path}$subdir/series-series.json');
       seriesSeries = jsonDecode(await path11.readAsString());
     } catch (e, st) {
-      Logger.error('[Hitomi-Indexs] E: $e\n'
+      Logger.error('[Hitomi-Indexes] E: $e\n'
           '$st');
     }
 

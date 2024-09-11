@@ -8,7 +8,7 @@ import 'package:html_unescape/html_unescape.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/component/hitomi/indexs.dart';
+import 'package:violet/component/hitomi/indexes.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart';
@@ -47,11 +47,11 @@ class _ArtistSearchState extends State<ArtistSearch> {
     final tagGroup = <String, dynamic>{};
 
     final tagSrcs = {
-      ArtistType.artist: HitomiIndexs.tagArtist,
-      ArtistType.group: HitomiIndexs.tagGroup,
-      ArtistType.series: HitomiIndexs.tagSeries,
-      ArtistType.character: HitomiIndexs.tagCharacter,
-      ArtistType.uploader: HitomiIndexs.tagUploader,
+      ArtistType.artist: HitomiIndexes.tagArtist,
+      ArtistType.group: HitomiIndexes.tagGroup,
+      ArtistType.series: HitomiIndexes.tagSeries,
+      ArtistType.character: HitomiIndexes.tagCharacter,
+      ArtistType.uploader: HitomiIndexes.tagUploader,
     };
 
     for (var element in this.tagGroup.entries) {
@@ -61,10 +61,10 @@ class _ArtistSearchState extends State<ArtistSearch> {
         key = key.substring(4);
       }
 
-      if (HitomiIndexs.tagIndex.containsKey(key)) {
-        tagGroup[HitomiIndexs.tagIndex[key].toString()] = element.value;
-      } else if (HitomiIndexs.tagIndex.containsKey(key.replaceAll('_', ' '))) {
-        tagGroup[HitomiIndexs.tagIndex[key.replaceAll('_', ' ')].toString()] =
+      if (HitomiIndexes.tagIndex.containsKey(key)) {
+        tagGroup[HitomiIndexes.tagIndex[key].toString()] = element.value;
+      } else if (HitomiIndexes.tagIndex.containsKey(key.replaceAll('_', ' '))) {
+        tagGroup[HitomiIndexes.tagIndex[key.replaceAll('_', ' ')].toString()] =
             element.value;
       }
     }
@@ -72,7 +72,7 @@ class _ArtistSearchState extends State<ArtistSearch> {
     print(tagGroup);
 
     similarsAll =
-        HitomiIndexs.caclulateSimilarsManual(tagSrcs[selectedType]!, tagGroup);
+        HitomiIndexes.caclulateSimilarsManual(tagSrcs[selectedType]!, tagGroup);
 
     setState(() {});
   }

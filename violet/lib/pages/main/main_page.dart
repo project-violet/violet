@@ -18,7 +18,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/component/hitomi/indexs.dart';
+import 'package:violet/component/hitomi/indexes.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/download.dart';
@@ -501,7 +501,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
                   isSync: true,
                 )))
         .then((value) async {
-      HitomiIndexs.init();
+      HitomiIndexes.init();
       final directory = await getApplicationDocumentsDirectory();
       final path = File('${directory.path}/data/index.json');
       final text = path.readAsStringSync();
