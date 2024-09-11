@@ -11,7 +11,7 @@ import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/log/log.dart';
 
 // This is used for estimation similiar Aritst/Group/Uplaoder with each others.
-class HitomiIndexs {
+class HitomiIndexes {
   // Tag, Index
   // Map<String, int>
   static late Map<String, dynamic> tagIndex;
@@ -67,7 +67,7 @@ class HitomiIndexs {
       final path11 = File('${directory.path}$subdir/series-series.json');
       seriesSeries = jsonDecode(await path11.readAsString());
     } catch (e, st) {
-      Logger.error('[Hitomi-Indexs] E: $e\n'
+      Logger.error('[Hitomi-Indexes] E: $e\n'
           '$st');
     }
 
@@ -159,7 +159,7 @@ class HitomiIndexs {
     } else {
       var ll = (characterCharacter![character] as Map<String, dynamic>)
           .entries
-          .map((e) => (e.key, (e.value as int).toDouble()))
+          .map((e) => (e.key, (e.value as num).toDouble()))
           .toList();
       ll.sort((x, y) => y.$2.compareTo(x.$2));
       return ll;
@@ -172,7 +172,7 @@ class HitomiIndexs {
     }
     var ll = (characterSeries![series] as Map<String, dynamic>)
         .entries
-        .map((e) => (e.key, (e.value as int).toDouble()))
+        .map((e) => (e.key, (e.value as num).toDouble()))
         .toList();
     ll.sort((x, y) => y.$2.compareTo(x.$2));
     return ll;
@@ -184,7 +184,7 @@ class HitomiIndexs {
     }
     var ll = (seriesCharacter![character] as Map<String, dynamic>)
         .entries
-        .map((e) => (e.key, (e.value as int).toDouble()))
+        .map((e) => (e.key, (e.value as num).toDouble()))
         .toList();
     ll.sort((x, y) => y.$2.compareTo(x.$2));
     return ll;
@@ -195,7 +195,7 @@ class HitomiIndexs {
     var ll = (relatedTag[tag] as List<dynamic>)
         .map((e) => (
               (e as Map<String, dynamic>).entries.first.key,
-              (e.entries.first.value as int).toDouble()
+              (e.entries.first.value as num).toDouble()
             ))
         .toList();
     ll.sort((x, y) => y.$2.compareTo(x.$2));

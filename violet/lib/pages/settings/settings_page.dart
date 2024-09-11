@@ -28,7 +28,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/component/eh/eh_bookmark.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/component/hitomi/indexs.dart';
+import 'package:violet/component/hitomi/indexes.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/downloader/isolate_downloader.dart';
@@ -679,7 +679,7 @@ class _SettingsPageState extends State<SettingsPage>
                     builder: (BuildContext context) => const TagRebuildPage(),
                   );
 
-                  await HitomiIndexs.init();
+                  await HitomiIndexes.init();
                   HitomiManager.reloadIndex();
 
                   showToast(
@@ -1251,7 +1251,7 @@ class _SettingsPageState extends State<SettingsPage>
                           )))
                   .then(
                 (value) async {
-                  HitomiIndexs.init();
+                  HitomiIndexes.init();
                   final directory = await getApplicationDocumentsDirectory();
                   final path = File('${directory.path}/data/index.json');
                   final text = path.readAsStringSync();

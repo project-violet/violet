@@ -19,7 +19,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:violet/component/hitomi/indexs.dart';
+import 'package:violet/component/hitomi/indexes.dart';
 import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/component/hitomi/related.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
@@ -211,7 +211,7 @@ class _SplashPageState extends State<SplashPage> {
       await User.load();
       await Variables.init();
       _changeMessage('loading index...');
-      await HitomiIndexs.init();
+      await HitomiIndexes.init();
       _changeMessage('loading translate...');
       await TagTranslate.init();
       _changeMessage('init population...');

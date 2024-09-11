@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/component/hitomi/indexs.dart';
+import 'package:violet/component/hitomi/indexes.dart';
 import 'package:violet/component/hitomi/title_cluster.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
@@ -141,19 +141,19 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       //
       switch (widget.type) {
         case ArtistType.artist:
-          similars = HitomiIndexs.calculateSimilarArtists(widget.name);
+          similars = HitomiIndexes.calculateSimilarArtists(widget.name);
           break;
         case ArtistType.group:
-          similars = HitomiIndexs.calculateSimilarGroups(widget.name);
+          similars = HitomiIndexes.calculateSimilarGroups(widget.name);
           break;
         case ArtistType.uploader:
-          similars = HitomiIndexs.calculateSimilarUploaders(widget.name);
+          similars = HitomiIndexes.calculateSimilarUploaders(widget.name);
           break;
         case ArtistType.series:
-          similars = HitomiIndexs.calculateSimilarSeries(widget.name);
+          similars = HitomiIndexes.calculateSimilarSeries(widget.name);
           break;
         case ArtistType.character:
-          similars = HitomiIndexs.calculateSimilarCharacter(widget.name);
+          similars = HitomiIndexes.calculateSimilarCharacter(widget.name);
           break;
       }
 
@@ -165,12 +165,12 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       if (widget.type.isCharacter || widget.type.isSeries) {
         if (widget.type.isCharacter) {
           relatedCharacterOrSeriesAll =
-              HitomiIndexs.calculateRelatedSeriesCharacter(widget.name);
-          relatedCOSSingleAll = HitomiIndexs.getRelatedSeries(widget.name);
+              HitomiIndexes.calculateRelatedSeriesCharacter(widget.name);
+          relatedCOSSingleAll = HitomiIndexes.getRelatedSeries(widget.name);
         } else {
           relatedCharacterOrSeriesAll =
-              HitomiIndexs.calculateRelatedCharacterSeries(widget.name);
-          relatedCOSSingleAll = HitomiIndexs.getRelatedCharacters(widget.name);
+              HitomiIndexes.calculateRelatedCharacterSeries(widget.name);
+          relatedCOSSingleAll = HitomiIndexes.getRelatedCharacters(widget.name);
         }
         relatedCharacterOrSeries = relatedCharacterOrSeriesAll.take(6).toList();
         relatedCOSSingle = relatedCOSSingleAll.take(6).toList();
