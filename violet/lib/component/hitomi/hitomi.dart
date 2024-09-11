@@ -270,110 +270,142 @@ class HitomiManager {
     return result;
   }
 
-  static String translate2query(String tokens, {bool filter = true}) {
-    tokens = tokens.trim();
-    final nn = int.tryParse(tokens.split(' ')[0]);
+  static String translate2query(String query, {bool filter = true}) {
+    query = query.trim();
+    final nn = int.tryParse(query.split(' ')[0]);
     if (nn != null) {
       return 'SELECT * FROM HitomiColumnModel WHERE Id=$nn';
     }
 
     final filterExistsOnHitomi = !Settings.searchPure && filter;
 
-    if (tokens.isEmpty) {
+    if (query.isEmpty) {
       return 'SELECT * FROM HitomiColumnModel ${filterExistsOnHitomi ? 'WHERE ExistOnHitomi=1' : ''}';
     }
 
-    final split =
-        splitTokens(tokens).map((x) => x.trim()).where((x) => x != '').toList();
-    var where = '';
-
-    for (int i = 0; i < split.length; i++) {
-      var negative = false;
-      var token = split[i];
-
-      if (split[i].startsWith('-')) {
-        negative = true;
-        if (split[i] == '-') {
-          token = split[++i];
-        } else {
-          token = token.substring(1);
-        }
-      }
-
-      if (token.contains(':')) {
-        final ss = token.split(':');
-        final column = findColumnByTag(ss[0]);
-        if (column == '') return '';
-
-        var name = '';
-        switch (ss[0]) {
-          case 'male':
-          case 'female':
-            name = '|${token.replaceAll('_', ' ')}|';
-            break;
-
-          case 'tag':
-          case 'series':
-          case 'artist':
-          case 'character':
-          case 'group':
-            name = '|${ss[1].replaceAll('_', ' ')}|';
-            break;
-
-          case 'uploader':
-            name = ss[1];
-            break;
-
-          case 'lang':
-          case 'type':
-          case 'class':
-            name = ss[1].replaceAll('_', ' ');
-            break;
-
-          case 'recent':
-            return 'SELECT * FROM HitomiColumnModel ${filterExistsOnHitomi ? 'where ExistOnHitomi=1' : ''}';
-        }
-
-        var compare = "$column LIKE '%$name%'";
-        if (column == 'Uploader') compare += ' COLLATE NOCASE';
-        if (negative) {
-          where += '($compare) IS NOT 1';
-        } else {
-          where += compare;
-        }
-      } else if (token.startsWith('page') &&
-          (token.contains('>') || token.contains('=') || token.contains('<'))) {
-        final re = RegExp(r'page([\=\<\>]{1,2})(\d+)');
-        if (re.hasMatch(token)) {
-          final matches = re.allMatches(token).elementAt(0);
-          where += 'Files ${matches.group(1)} ${matches.group(2)}';
-        }
-      } else if (token == '(' || token == ')') {
-        if (negative) where += 'NOT ';
-        where += token;
-      } else {
-        if (negative) {
-          where += "Title NOT LIKE '%$token%'";
-        } else {
-          where += "Title LIKE '%$token%'";
-        }
-      }
-
-      if (i != split.length - 1) {
-        if (split[i + 1].toLowerCase() == 'or') {
-          where += ' OR ';
-          i++;
-        } else if (token != '(' && split[i + 1] != ')') {
-          where += ' AND ';
-        }
-      }
-    }
+    final tokens =
+        splitTokens(query).map((x) => x.trim()).where((x) => x != '').toList();
+    final where = QueryTranslator(tokens).parseExpression();
 
     return 'SELECT * FROM HitomiColumnModel WHERE $where ${filterExistsOnHitomi ? ' AND ExistOnHitomi=1' : ''}';
   }
+}
 
-  static String findColumnByTag(String name) {
-    switch (name) {
+class QueryTranslator {
+  final List<String> tokens;
+  int index = 0;
+
+  QueryTranslator(this.tokens);
+
+  String parseExpression() {
+    if (index >= tokens.length) return '';
+
+    String token = nextToken();
+    var where = '';
+    bool negative = false;
+
+    if (token.startsWith('-')) {
+      negative = true;
+      if (token == '-') {
+        token = nextToken();
+      } else {
+        token = token.substring(1);
+      }
+    }
+
+    if (token.contains(':')) {
+      where += parseTag(token, negative);
+    } else if (token.startsWith('page') &&
+        (token.contains('>') || token.contains('=') || token.contains('<'))) {
+      where += parsePageExpression(token, negative);
+    } else if (token == '(') {
+      where += parseParentheses(token, negative);
+      where += parseExpression();
+      where += nextToken();
+    } else {
+      where += parseTitle(token, negative);
+    }
+
+    if (hasMoreTokens()) {
+      String logicalOp = parseLogicalOperator();
+      where += logicalOp + parseExpression();
+    }
+
+    return where;
+  }
+
+  String parseTag(String token, bool negative) {
+    var ss = token.split(':');
+    var column = findColumnByTag(ss[0]);
+    if (column == '') return '';
+
+    var name = '';
+    switch (ss[0]) {
+      case 'male':
+      case 'female':
+        name = '|${token.replaceAll('_', ' ')}|';
+        break;
+
+      case 'tag':
+      case 'series':
+      case 'artist':
+      case 'character':
+      case 'group':
+        name = '|${ss[1].replaceAll('_', ' ')}|';
+        break;
+
+      case 'uploader':
+        name = ss[1];
+        break;
+
+      case 'lang':
+      case 'type':
+      case 'class':
+        name = ss[1].replaceAll('_', ' ');
+        break;
+
+      case 'recent':
+        return 'SELECT * FROM HitomiColumnModel';
+    }
+
+    var compare = "$column LIKE '%$name%'";
+    if (column == 'Uploader') compare += ' COLLATE NOCASE';
+
+    return (negative ? '($compare) IS NOT 1' : compare);
+  }
+
+  String parsePageExpression(String token, bool negative) {
+    final re = RegExp(r'page([\=\<\>]{1,2})(\d+)');
+    if (re.hasMatch(token)) {
+      final matches = re.allMatches(token).elementAt(0);
+      return 'Files ${matches.group(1)} ${matches.group(2)}';
+    }
+    return '';
+  }
+
+  String parseParentheses(String token, bool negative) {
+    return negative ? 'NOT $token' : token;
+  }
+
+  String parseTitle(String token, bool negative) {
+    return negative ? "Title NOT LIKE '%$token%'" : "Title LIKE '%$token%'";
+  }
+
+  String parseLogicalOperator() {
+    String next = lookAhead();
+    if (next.toLowerCase() == 'or') {
+      nextToken();
+      return ' OR ';
+    }
+    return ' AND ';
+  }
+
+  String nextToken() => tokens[index++];
+  String lookAhead() => index < tokens.length ? tokens[index] : '';
+  bool hasMoreTokens() => index < tokens.length - 1;
+
+  static String findColumnByTag(String tag) {
+    switch (tag) {
       case 'male':
       case 'female':
       case 'tag':
@@ -404,6 +436,6 @@ class HitomiManager {
         return 'Class';
     }
 
-    return name;
+    return tag;
   }
 }
