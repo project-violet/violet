@@ -153,6 +153,7 @@ jobs:
           wget -q ${{ secrets.SECRET_WSALT }} || echo 'String getValid(String vToken) { return vToken; }' > wsalt.dart
           cd ../..
           python3 preprocess-android.py
+          sudo apt install libssl-dev
 
       - name: Build
         run: |
