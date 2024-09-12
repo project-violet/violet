@@ -10,7 +10,7 @@ import {
 import { CommentService } from './comment.service';
 import { HmacAuthGuard } from 'src/auth/guards/hmac.guard';
 import { CommentPostDto } from './dtos/comment-post.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { User } from 'src/user/entity/user.entity';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
@@ -23,6 +23,10 @@ export class CommentController {
 
   @Get('/')
   @UsePipes(new ValidationPipe({ transform: true }))
+  @ApiCreatedResponse({
+    description: 'Comment Elements',
+    type: CommentGetResponseDto,
+  })
   @ApiOperation({ summary: 'Get Comment' })
   @UseGuards(HmacAuthGuard)
   @UseGuards(AccessTokenGuard)

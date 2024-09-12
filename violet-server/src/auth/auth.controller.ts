@@ -47,14 +47,16 @@ export class AuthController {
   async logIn(
     @Body() dto: UserRegisterDTO,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<void> {
+  ): Promise<Tokens> {
     const { tokens } = await this.authService.verifyUserAndSignJWT(dto);
 
     res.cookie('jwt-access', tokens.accessToken, { httpOnly: true });
     res.cookie('jwt-refresh', tokens.refreshToken, { httpOnly: true });
+    return tokens;
   }
 
   @Get('/refresh')
+  @ApiCreatedResponse({ description: 'jwt token', type: ResLoginUser })
   @ApiOperation({ summary: 'Get refresh token' })
   async refreshToken(
     @Req() req: Request,

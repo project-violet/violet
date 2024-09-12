@@ -5,6 +5,7 @@ import { UserService } from './user.service';
 import { HmacAuthGuard } from 'src/auth/guards/hmac.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
+import { ListDiscordUserAppIdsResponseDto } from './dtos/list-discord.dto';
 
 @ApiTags('user')
 @Controller('user')
@@ -23,11 +24,14 @@ export class UserController {
 
   @Get('discord')
   @ApiOperation({ summary: 'Get userAppIds registered by discord id' })
-  @ApiCreatedResponse({ description: '' })
+  @ApiCreatedResponse({
+    description: '',
+    type: ListDiscordUserAppIdsResponseDto,
+  })
   @UseGuards(AccessTokenGuard)
   async listDiscordUserAppIds(
     @CurrentUser('discordId') discordId?: string,
-  ): Promise<string[]> {
+  ): Promise<ListDiscordUserAppIdsResponseDto> {
     return await this.userService.listDiscordUserAppIds(discordId);
   }
 }
