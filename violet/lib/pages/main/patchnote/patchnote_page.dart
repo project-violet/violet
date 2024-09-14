@@ -22,6 +22,14 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2024, 9, 14),
+    version: '1.32.1 Patch',
+    contents: [
+      'user crop bookmark',
+      'stability and performance optimization',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2024, 5, 26),
     version: '1.32.0 Minor',
     contents: [
