@@ -322,6 +322,9 @@ class QueryTranslator {
       where += parseParentheses(token, negative);
       where += parseExpression();
       where += nextToken();
+      if (hasMoreTokens()) {
+        where += parseLogicalExpression();
+      }
     } else if (token == ')') {
       return token;
     } else {
@@ -329,8 +332,7 @@ class QueryTranslator {
     }
 
     if (hasMoreTokens() && lookAhead() != ')') {
-      String logicalOp = parseLogicalOperator();
-      where += logicalOp + parseExpression();
+      where += parseLogicalExpression();
     }
 
     return where;
@@ -393,18 +395,21 @@ class QueryTranslator {
     return negative ? "Title NOT LIKE '%$token%'" : "Title LIKE '%$token%'";
   }
 
-  String parseLogicalOperator() {
+  String parseLogicalExpression() {
     String next = lookAhead();
+    late String op;
     if (next.toLowerCase() == 'or') {
       nextToken();
-      return ' OR ';
+      op = 'OR';
+    } else {
+      op = 'AND';
     }
-    return ' AND ';
+    return ' $op ${parseExpression()}';
   }
 
   String nextToken() => tokens[index++];
   String lookAhead() => index < tokens.length ? tokens[index] : '';
-  bool hasMoreTokens() => index < tokens.length - 1;
+  bool hasMoreTokens() => index < tokens.length;
 
   static String findColumnByTag(String tag) {
     switch (tag) {

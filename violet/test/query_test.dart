@@ -55,7 +55,7 @@ void main() {
       expect(result1,
           'SELECT * FROM HitomiColumnModel WHERE Tags LIKE \'%|female:sole female|%\' AND NOT (Tags LIKE \'%|female:mother|%\' AND Tags LIKE \'%|female:milf|%\')  AND ExistOnHitomi=1');
       expect(result2,
-          'SELECT * FROM HitomiColumnModel WHERE (Language LIKE \'%korean%\' OR Language LIKE \'%n/a%\')  AND ExistOnHitomi=1');
+          'SELECT * FROM HitomiColumnModel WHERE (Language LIKE \'%korean%\' OR Language LIKE \'%n/a%\') AND (Tags LIKE \'%|female:sole female|%\') IS NOT 1  AND ExistOnHitomi=1');
     });
   });
 }
