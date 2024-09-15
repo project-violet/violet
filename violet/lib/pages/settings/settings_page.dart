@@ -647,14 +647,14 @@ class _SettingsPageState extends State<SettingsPage>
             title: Text(Translations.instance!.trans('excludetag')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
-              final vv = await showDialog(
+              final vv = await showDialog<(int, String)?>(
                 context: context,
                 builder: (BuildContext context) =>
                     const TagSelectorDialog(what: 'exclude'),
               );
 
-              if (vv.$1 == 1) {
-                Settings.setExcludeTags(vv.$2);
+              if (vv?.$1 == 1) {
+                Settings.setExcludeTags(vv!.$2);
                 setState(() {
                   _shouldReload = true;
                 });
