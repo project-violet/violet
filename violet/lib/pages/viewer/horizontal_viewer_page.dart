@@ -90,12 +90,13 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
     return Obx(
       () => Stack(
         children: [
-          Visibility.maintain(
-            child: OrientationBuilder(builder: (context, orientation) {
-              c.jump(c.page.value);
-              return const SizedBox.shrink();
-            }),
-          ),
+          // TODO: 없어도 될 것 같은데 뭐지
+          // Visibility.maintain(
+          //   child: OrientationBuilder(builder: (context, orientation) {
+          //     c.jump(c.page.value);
+          //     return const SizedBox.shrink();
+          //   }),
+          // ),
           Container(
             decoration: const BoxDecoration(
               color: Colors.black,
