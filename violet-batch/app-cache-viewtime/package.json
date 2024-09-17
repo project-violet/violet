@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "config": "^3.3.7",
-    "sync-mysql": "^3.0.1"
+    "sync-mysql": "^3.0.1",
+    "violet-batch": "file:"
   }
 }
