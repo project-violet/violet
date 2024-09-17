@@ -28,6 +28,7 @@
     "react-scripts": "5.0.1",
     "typescript": "^4.6.4",
     "typescript-plugin-css-modules": "^3.4.0",
+    "vms-web": "file:",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
