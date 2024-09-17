@@ -18,3 +18,23 @@ pub async fn decompress_7z(src: String, dest: String) {
     sevenz_rust::decompress_file_with_extract_fn(src, dest, to_parent_entry_extract_fn)
         .expect("complete");
 }
+
+#[cfg(test)]
+mod tests {
+    use super::decompress_7z;
+
+    #[test]
+    fn test_decompress() {
+        tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap()
+            .block_on(async {
+                decompress_7z(
+                    "../test/rawdata-korean.7z".to_string(),
+                    "../test/rawdata".to_string(),
+                )
+                .await;
+            });
+    }
+}
