@@ -7,14 +7,13 @@ import {
 import { UserRepository } from './user.repository';
 import { UserRegisterDTO } from './dtos/user-register.dto';
 import { ListDiscordUserAppIdsResponseDto } from './dtos/list-discord.dto';
+import { CommonResponseDto } from 'src/common/dtos/common.dto';
 
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async registerUser(
-    dto: UserRegisterDTO,
-  ): Promise<{ ok: boolean; error?: string }> {
+  async registerUser(dto: UserRegisterDTO): Promise<CommonResponseDto> {
     try {
       if (await this.userRepository.isUserExists(dto.userAppId))
         throw new UnauthorizedException('user app id already exists');

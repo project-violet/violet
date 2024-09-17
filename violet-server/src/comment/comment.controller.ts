@@ -15,6 +15,7 @@ import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { User } from 'src/user/entity/user.entity';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 import { CommentGetDto, CommentGetResponseDto } from './dtos/comment-get.dto';
+import { CommonResponseDto } from 'src/common/dtos/common.dto';
 
 @ApiTags('comment')
 @Controller('comment')
@@ -42,7 +43,7 @@ export class CommentController {
   async postComment(
     @CurrentUser() currentUser: User,
     @Body() dto: CommentPostDto,
-  ): Promise<{ ok: boolean; error?: string }> {
+  ): Promise<CommonResponseDto> {
     return await this.commentService.postComment(currentUser, dto);
   }
 }

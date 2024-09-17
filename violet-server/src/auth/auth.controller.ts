@@ -22,6 +22,7 @@ import { ResLoginUser } from './dtos/res-login-user.dto';
 import { plainToClass } from 'class-transformer';
 import { HmacAuthGuard } from './guards/hmac.guard';
 import { DiscordAuthGuard } from './guards/discord.guard';
+import { CommonResponseDto } from 'src/common/dtos/common.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -112,7 +113,7 @@ export class AuthController {
   @Post('discord')
   @UseGuards(DiscordAuthGuard)
   @ApiOperation({ summary: 'Login From Discord' })
-  logInDiscord() {
+  logInDiscord(): CommonResponseDto {
     return { ok: true };
   }
 
