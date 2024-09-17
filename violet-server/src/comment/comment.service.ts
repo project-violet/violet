@@ -7,6 +7,7 @@ import {
   CommentGetResponseDto,
   CommentGetResponseDtoElement,
 } from './dtos/comment-get.dto';
+import { CommonResponseDto } from 'src/common/dtos/common.dto';
 
 @Injectable()
 export class CommentService {
@@ -26,7 +27,7 @@ export class CommentService {
   async postComment(
     user: User,
     dto: CommentPostDto,
-  ): Promise<{ ok: boolean; err?: string }> {
+  ): Promise<CommonResponseDto> {
     try {
       await this.repository.createComment(user, dto);
 
@@ -34,7 +35,7 @@ export class CommentService {
     } catch (e) {
       Logger.error(e);
 
-      return { ok: false, err: e };
+      return { ok: false, error: e };
     }
   }
 }

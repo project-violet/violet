@@ -11,6 +11,7 @@ import { UserRepository } from 'src/user/user.repository';
 import { ResLoginUser } from './dtos/res-login-user.dto';
 import { Tokens } from './jwt/jwt.token';
 import { User } from 'src/user/entity/user.entity';
+import { CommonResponseDto } from 'src/common/dtos/common.dto';
 
 @Injectable()
 export class AuthService {
@@ -102,9 +103,7 @@ export class AuthService {
     await this.userRepository.update({ userAppId }, { refreshToken: null });
   }
 
-  async updateDiscordInfo(
-    user: User,
-  ): Promise<{ ok: boolean; error?: string }> {
+  async updateDiscordInfo(user: User): Promise<CommonResponseDto> {
     try {
       const { userAppId, discordId, avatar } = user;
       await this.userRepository.update({ userAppId }, { discordId, avatar });

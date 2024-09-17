@@ -22,6 +22,7 @@ import { ResLoginUser } from './dtos/res-login-user.dto';
 import { plainToClass } from 'class-transformer';
 import { HmacAuthGuard } from './guards/hmac.guard';
 import { DiscordAuthGuard } from './guards/discord.guard';
+import { CommonResponseDto } from 'src/common/dtos/common.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -47,14 +48,16 @@ export class AuthController {
   async logIn(
     @Body() dto: UserRegisterDTO,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<void> {
+  ): Promise<Tokens> {
     const { tokens } = await this.authService.verifyUserAndSignJWT(dto);
 
     res.cookie('jwt-access', tokens.accessToken, { httpOnly: true });
     res.cookie('jwt-refresh', tokens.refreshToken, { httpOnly: true });
+    return tokens;
   }
 
   @Get('/refresh')
+  @ApiCreatedResponse({ description: 'jwt token', type: ResLoginUser })
   @ApiOperation({ summary: 'Get refresh token' })
   async refreshToken(
     @Req() req: Request,
@@ -110,7 +113,7 @@ export class AuthController {
   @Post('discord')
   @UseGuards(DiscordAuthGuard)
   @ApiOperation({ summary: 'Login From Discord' })
-  logInDiscord() {
+  logInDiscord(): CommonResponseDto {
     return { ok: true };
   }
 

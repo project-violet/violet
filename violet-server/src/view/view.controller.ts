@@ -8,7 +8,12 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ViewService } from './view.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ViewGetRequestDto, ViewGetResponseDto } from './dtos/view-get.dto';
 import { HmacAuthGuard } from 'src/auth/guards/hmac.guard';
 import { ViewPostRequestDto } from './dtos/view-post.dto';
@@ -24,7 +29,8 @@ export class ViewController {
   @Get()
   @UsePipes(new ValidationPipe({ transform: true }))
   @ApiOperation({ summary: 'Get article read view' })
-  @ApiResponse({
+  @ApiCreatedResponse({
+    description: 'View Result (Article, Count)',
     type: ViewGetResponseDto,
   })
   // @UseGuards(HmacAuthGuard)

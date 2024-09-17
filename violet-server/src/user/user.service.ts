@@ -6,14 +6,14 @@ import {
 } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { UserRegisterDTO } from './dtos/user-register.dto';
+import { ListDiscordUserAppIdsResponseDto } from './dtos/list-discord.dto';
+import { CommonResponseDto } from 'src/common/dtos/common.dto';
 
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async registerUser(
-    dto: UserRegisterDTO,
-  ): Promise<{ ok: boolean; error?: string }> {
+  async registerUser(dto: UserRegisterDTO): Promise<CommonResponseDto> {
     try {
       if (await this.userRepository.isUserExists(dto.userAppId))
         throw new UnauthorizedException('user app id already exists');
@@ -28,7 +28,9 @@ export class UserService {
     }
   }
 
-  async listDiscordUserAppIds(discordId?: string): Promise<string[]> {
+  async listDiscordUserAppIds(
+    discordId?: string,
+  ): Promise<ListDiscordUserAppIdsResponseDto> {
     if (discordId == null) {
       throw new BadRequestException('discord login is required');
     }
@@ -42,6 +44,6 @@ export class UserService {
       },
     });
 
-    return users.map(({ userAppId }) => userAppId);
+    return { userAppIds: users.map(({ userAppId }) => userAppId) };
   }
 }
