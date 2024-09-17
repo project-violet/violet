@@ -9,6 +9,7 @@ import 'package:chopper/chopper.dart';
 import 'client_mapping.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart' show MultipartFile;
 import 'package:chopper/chopper.dart' as chopper;
 
 part 'api.swagger.chopper.dart';
@@ -27,7 +28,7 @@ abstract class Api extends ChopperService {
     ErrorConverter? errorConverter,
     Converter? converter,
     Uri? baseUrl,
-    List<Interceptor>? interceptors,
+    Iterable<dynamic>? interceptors,
   }) {
     if (client != null) {
       return _$Api(client);
@@ -63,13 +64,17 @@ abstract class Api extends ChopperService {
   Future<chopper.Response> _apiV2HmacGet();
 
   ///Get Comment
-  Future<chopper.Response> apiV2CommentGet({required CommentGetDto? body}) {
+  Future<chopper.Response<CommentGetResponseDto>> apiV2CommentGet(
+      {required CommentGetDto? body}) {
+    generatedMapping.putIfAbsent(
+        CommentGetResponseDto, () => CommentGetResponseDto.fromJsonFactory);
+
     return _apiV2CommentGet(body: body);
   }
 
   ///Get Comment
   @Get(path: '/api/v2/comment')
-  Future<chopper.Response> _apiV2CommentGet(
+  Future<chopper.Response<CommentGetResponseDto>> _apiV2CommentGet(
       {@Body() required CommentGetDto? body});
 
   ///Post Comment
@@ -99,13 +104,18 @@ abstract class Api extends ChopperService {
       {@Body() required UserRegisterDTO? body});
 
   ///Get userAppIds registered by discord id
-  Future<chopper.Response> apiV2UserDiscordGet() {
+  Future<chopper.Response<ListDiscordUserAppIdsResponseDto>>
+      apiV2UserDiscordGet() {
+    generatedMapping.putIfAbsent(ListDiscordUserAppIdsResponseDto,
+        () => ListDiscordUserAppIdsResponseDto.fromJsonFactory);
+
     return _apiV2UserDiscordGet();
   }
 
   ///Get userAppIds registered by discord id
   @Get(path: '/api/v2/user/discord')
-  Future<chopper.Response> _apiV2UserDiscordGet();
+  Future<chopper.Response<ListDiscordUserAppIdsResponseDto>>
+      _apiV2UserDiscordGet();
 
   ///Get current user information
   Future<chopper.Response<User>> apiV2AuthGet() {
@@ -144,13 +154,16 @@ abstract class Api extends ChopperService {
   Future<chopper.Response> _apiV2AuthDelete();
 
   ///Get refresh token
-  Future<chopper.Response> apiV2AuthRefreshGet() {
+  Future<chopper.Response<ResLoginUser>> apiV2AuthRefreshGet() {
+    generatedMapping.putIfAbsent(
+        ResLoginUser, () => ResLoginUser.fromJsonFactory);
+
     return _apiV2AuthRefreshGet();
   }
 
   ///Get refresh token
   @Get(path: '/api/v2/auth/refresh')
-  Future<chopper.Response> _apiV2AuthRefreshGet();
+  Future<chopper.Response<ResLoginUser>> _apiV2AuthRefreshGet();
 
   ///Login From Discord
   Future<chopper.Response> apiV2AuthDiscordGet() {
@@ -174,11 +187,14 @@ abstract class Api extends ChopperService {
   ///@param offset Offset
   ///@param count Count
   ///@param type Type
-  Future<chopper.Response> apiV2ViewGet({
+  Future<chopper.Response<ViewGetResponseDto>> apiV2ViewGet({
     required num? offset,
     required num? count,
     String? type,
   }) {
+    generatedMapping.putIfAbsent(
+        ViewGetResponseDto, () => ViewGetResponseDto.fromJsonFactory);
+
     return _apiV2ViewGet(offset: offset, count: count, type: type);
   }
 
@@ -187,7 +203,7 @@ abstract class Api extends ChopperService {
   ///@param count Count
   ///@param type Type
   @Get(path: '/api/v2/view')
-  Future<chopper.Response> _apiV2ViewGet({
+  Future<chopper.Response<ViewGetResponseDto>> _apiV2ViewGet({
     @Query('offset') required num? offset,
     @Query('count') required num? count,
     @Query('type') String? type,
@@ -287,6 +303,50 @@ extension $CommentGetDtoExtension on CommentGetDto {
 
   CommentGetDto copyWithWrapped({Wrapped<String>? where}) {
     return CommentGetDto(where: (where != null ? where.value : this.where));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
+class CommentGetResponseDto {
+  const CommentGetResponseDto({
+    required this.elements,
+  });
+
+  factory CommentGetResponseDto.fromJson(Map<String, dynamic> json) =>
+      _$CommentGetResponseDtoFromJson(json);
+
+  static const toJsonFactory = _$CommentGetResponseDtoToJson;
+  Map<String, dynamic> toJson() => _$CommentGetResponseDtoToJson(this);
+
+  @JsonKey(name: 'elements', defaultValue: <String>[])
+  final List<String> elements;
+  static const fromJsonFactory = _$CommentGetResponseDtoFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is CommentGetResponseDto &&
+            (identical(other.elements, elements) ||
+                const DeepCollectionEquality()
+                    .equals(other.elements, elements)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(elements) ^ runtimeType.hashCode;
+}
+
+extension $CommentGetResponseDtoExtension on CommentGetResponseDto {
+  CommentGetResponseDto copyWith({List<String>? elements}) {
+    return CommentGetResponseDto(elements: elements ?? this.elements);
+  }
+
+  CommentGetResponseDto copyWithWrapped({Wrapped<List<String>>? elements}) {
+    return CommentGetResponseDto(
+        elements: (elements != null ? elements.value : this.elements));
   }
 }
 
@@ -395,6 +455,55 @@ extension $UserRegisterDTOExtension on UserRegisterDTO {
   UserRegisterDTO copyWithWrapped({Wrapped<String>? userAppId}) {
     return UserRegisterDTO(
         userAppId: (userAppId != null ? userAppId.value : this.userAppId));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
+class ListDiscordUserAppIdsResponseDto {
+  const ListDiscordUserAppIdsResponseDto({
+    required this.userAppIds,
+  });
+
+  factory ListDiscordUserAppIdsResponseDto.fromJson(
+          Map<String, dynamic> json) =>
+      _$ListDiscordUserAppIdsResponseDtoFromJson(json);
+
+  static const toJsonFactory = _$ListDiscordUserAppIdsResponseDtoToJson;
+  Map<String, dynamic> toJson() =>
+      _$ListDiscordUserAppIdsResponseDtoToJson(this);
+
+  @JsonKey(name: 'userAppIds', defaultValue: <String>[])
+  final List<String> userAppIds;
+  static const fromJsonFactory = _$ListDiscordUserAppIdsResponseDtoFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is ListDiscordUserAppIdsResponseDto &&
+            (identical(other.userAppIds, userAppIds) ||
+                const DeepCollectionEquality()
+                    .equals(other.userAppIds, userAppIds)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(userAppIds) ^ runtimeType.hashCode;
+}
+
+extension $ListDiscordUserAppIdsResponseDtoExtension
+    on ListDiscordUserAppIdsResponseDto {
+  ListDiscordUserAppIdsResponseDto copyWith({List<String>? userAppIds}) {
+    return ListDiscordUserAppIdsResponseDto(
+        userAppIds: userAppIds ?? this.userAppIds);
+  }
+
+  ListDiscordUserAppIdsResponseDto copyWithWrapped(
+      {Wrapped<List<String>>? userAppIds}) {
+    return ListDiscordUserAppIdsResponseDto(
+        userAppIds: (userAppIds != null ? userAppIds.value : this.userAppIds));
   }
 }
 
@@ -532,6 +641,25 @@ extension $TokensExtension on Tokens {
         refreshToken:
             (refreshToken != null ? refreshToken.value : this.refreshToken));
   }
+}
+
+@JsonSerializable(explicitToJson: true)
+class ResLoginUser {
+  const ResLoginUser();
+
+  factory ResLoginUser.fromJson(Map<String, dynamic> json) =>
+      _$ResLoginUserFromJson(json);
+
+  static const toJsonFactory = _$ResLoginUserToJson;
+  Map<String, dynamic> toJson() => _$ResLoginUserToJson(this);
+
+  static const fromJsonFactory = _$ResLoginUserFromJson;
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode => runtimeType.hashCode;
 }
 
 @JsonSerializable(explicitToJson: true)

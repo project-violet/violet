@@ -24,8 +24,12 @@ mixin _$ScriptImageList {
   List<String> get btresult => throw _privateConstructorUsedError;
   List<String> get stresult => throw _privateConstructorUsedError;
 
+  /// Serializes this ScriptImageList to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of ScriptImageList
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ScriptImageListCopyWith<ScriptImageList> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -50,6 +54,8 @@ class _$ScriptImageListCopyWithImpl<$Res, $Val extends ScriptImageList>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ScriptImageList
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -94,6 +100,8 @@ class __$$ScriptImageListImplCopyWithImpl<$Res>
       _$ScriptImageListImpl _value, $Res Function(_$ScriptImageListImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ScriptImageList
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -183,7 +191,7 @@ class _$ScriptImageListImpl
             const DeepCollectionEquality().equals(other._stresult, _stresult));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -191,7 +199,9 @@ class _$ScriptImageListImpl
       const DeepCollectionEquality().hash(_btresult),
       const DeepCollectionEquality().hash(_stresult));
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ScriptImageList
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ScriptImageListImplCopyWith<_$ScriptImageListImpl> get copyWith =>
@@ -221,8 +231,11 @@ abstract class _ScriptImageList implements ScriptImageList {
   List<String> get btresult;
   @override
   List<String> get stresult;
+
+  /// Create a copy of ScriptImageList
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ScriptImageListImplCopyWith<_$ScriptImageListImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

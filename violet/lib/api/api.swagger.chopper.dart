@@ -40,7 +40,8 @@ final class _$Api extends Api {
   }
 
   @override
-  Future<Response<dynamic>> _apiV2CommentGet({required CommentGetDto? body}) {
+  Future<Response<CommentGetResponseDto>> _apiV2CommentGet(
+      {required CommentGetDto? body}) {
     final Uri $url = Uri.parse('/api/v2/comment');
     final $body = body;
     final Request $request = Request(
@@ -49,7 +50,7 @@ final class _$Api extends Api {
       client.baseUrl,
       body: $body,
     );
-    return client.send<dynamic, dynamic>($request);
+    return client.send<CommentGetResponseDto, CommentGetResponseDto>($request);
   }
 
   @override
@@ -79,14 +80,15 @@ final class _$Api extends Api {
   }
 
   @override
-  Future<Response<dynamic>> _apiV2UserDiscordGet() {
+  Future<Response<ListDiscordUserAppIdsResponseDto>> _apiV2UserDiscordGet() {
     final Uri $url = Uri.parse('/api/v2/user/discord');
     final Request $request = Request(
       'GET',
       $url,
       client.baseUrl,
     );
-    return client.send<dynamic, dynamic>($request);
+    return client.send<ListDiscordUserAppIdsResponseDto,
+        ListDiscordUserAppIdsResponseDto>($request);
   }
 
   @override
@@ -125,14 +127,14 @@ final class _$Api extends Api {
   }
 
   @override
-  Future<Response<dynamic>> _apiV2AuthRefreshGet() {
+  Future<Response<ResLoginUser>> _apiV2AuthRefreshGet() {
     final Uri $url = Uri.parse('/api/v2/auth/refresh');
     final Request $request = Request(
       'GET',
       $url,
       client.baseUrl,
     );
-    return client.send<dynamic, dynamic>($request);
+    return client.send<ResLoginUser, ResLoginUser>($request);
   }
 
   @override
@@ -158,7 +160,7 @@ final class _$Api extends Api {
   }
 
   @override
-  Future<Response<dynamic>> _apiV2ViewGet({
+  Future<Response<ViewGetResponseDto>> _apiV2ViewGet({
     required num? offset,
     required num? count,
     String? type,
@@ -175,7 +177,7 @@ final class _$Api extends Api {
       client.baseUrl,
       parameters: $params,
     );
-    return client.send<dynamic, dynamic>($request);
+    return client.send<ViewGetResponseDto, ViewGetResponseDto>($request);
   }
 
   @override

@@ -16,6 +16,21 @@ Map<String, dynamic> _$CommentGetDtoToJson(CommentGetDto instance) =>
       'where': instance.where,
     };
 
+CommentGetResponseDto _$CommentGetResponseDtoFromJson(
+        Map<String, dynamic> json) =>
+    CommentGetResponseDto(
+      elements: (json['elements'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
+    );
+
+Map<String, dynamic> _$CommentGetResponseDtoToJson(
+        CommentGetResponseDto instance) =>
+    <String, dynamic>{
+      'elements': instance.elements,
+    };
+
 CommentPostDto _$CommentPostDtoFromJson(Map<String, dynamic> json) =>
     CommentPostDto(
       where: json['where'] as String,
@@ -38,6 +53,21 @@ UserRegisterDTO _$UserRegisterDTOFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$UserRegisterDTOToJson(UserRegisterDTO instance) =>
     <String, dynamic>{
       'userAppId': instance.userAppId,
+    };
+
+ListDiscordUserAppIdsResponseDto _$ListDiscordUserAppIdsResponseDtoFromJson(
+        Map<String, dynamic> json) =>
+    ListDiscordUserAppIdsResponseDto(
+      userAppIds: (json['userAppIds'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
+    );
+
+Map<String, dynamic> _$ListDiscordUserAppIdsResponseDtoToJson(
+        ListDiscordUserAppIdsResponseDto instance) =>
+    <String, dynamic>{
+      'userAppIds': instance.userAppIds,
     };
 
 User _$UserFromJson(Map<String, dynamic> json) => User(
@@ -63,6 +93,12 @@ Map<String, dynamic> _$TokensToJson(Tokens instance) => <String, dynamic>{
       'accessToken': instance.accessToken,
       'refreshToken': instance.refreshToken,
     };
+
+ResLoginUser _$ResLoginUserFromJson(Map<String, dynamic> json) =>
+    ResLoginUser();
+
+Map<String, dynamic> _$ResLoginUserToJson(ResLoginUser instance) =>
+    <String, dynamic>{};
 
 ViewGetResponseDto _$ViewGetResponseDtoFromJson(Map<String, dynamic> json) =>
     ViewGetResponseDto(
