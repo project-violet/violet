@@ -38,6 +38,7 @@ analyzer:
     unrelated_type_equality_checks: error
   exclude:
     - "rust_builder/**"
+    - "lib/api/**"
     - "lib/src/rust/**"
     - "lib/pages/viewer/others/**"
     - "lib/server/salt.dart"
