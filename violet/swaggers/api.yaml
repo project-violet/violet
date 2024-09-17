@@ -30,8 +30,12 @@ paths:
             schema:
               $ref: '#/components/schemas/CommentGetDto'
       responses:
-        '200':
-          description: ''
+        '201':
+          description: Comment Elements
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentGetResponseDto'
       tags:
         - comment
     post:
@@ -73,6 +77,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDiscordUserAppIdsResponseDto'
       tags:
         - user
   /api/v2/auth:
@@ -123,8 +131,12 @@ paths:
       summary: Get refresh token
       parameters: []
       responses:
-        '200':
-          description: ''
+        '201':
+          description: jwt token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResLoginUser'
       tags:
         - auth
   /api/v2/auth/discord:
@@ -171,8 +183,8 @@ paths:
           schema:
             type: string
       responses:
-        default:
-          description: ''
+        '201':
+          description: View Result (Article, Count)
           content:
             application/json:
               schema:
@@ -251,6 +263,16 @@ components:
           description: Where to get
       required:
         - where
+    CommentGetResponseDto:
+      type: object
+      properties:
+        elements:
+          description: Comment Elements
+          type: array
+          items:
+            type: string
+      required:
+        - elements
     CommentPostDto:
       type: object
       properties:
@@ -274,6 +296,16 @@ components:
           description: User App Id
       required:
         - userAppId
+    ListDiscordUserAppIdsResponseDto:
+      type: object
+      properties:
+        userAppIds:
+          description: User App Ids
+          type: array
+          items:
+            type: string
+      required:
+        - userAppIds
     User:
       type: object
       properties:
@@ -308,6 +340,9 @@ components:
       required:
         - accessToken
         - refreshToken
+    ResLoginUser:
+      type: object
+      properties: {}
     ViewGetResponseDto:
       type: object
       properties:

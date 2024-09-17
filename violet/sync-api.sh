@@ -1,0 +1,1 @@
+curl http://localhost:3000/api/v2/docs-yaml -o swaggers/api.yaml
