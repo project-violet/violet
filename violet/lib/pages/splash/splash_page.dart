@@ -34,6 +34,7 @@ import 'package:violet/other/ex_country.dart';
 import 'package:violet/other/named_color.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/script/script_manager.dart';
+import 'package:violet/server/violet_v2.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
@@ -221,6 +222,8 @@ class _SplashPageState extends State<SplashPage> {
       // await HisokiHash.init();
       _changeMessage('init downloader...');
       await IsolateDownloader.getInstance();
+      _changeMessage('init api...');
+      VioletServerV2.init();
 
       // this may be slow down to loading
       _changeMessage('check network...');
