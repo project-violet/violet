@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { ViewModule } from './view/view.module';
 import { RedisModule } from './redis/redis.module';
 import * as Joi from 'joi';
+import { AWSModule } from './aws/aws.module';
 
 export const envValidationSchema = Joi.object({
   NODE_ENV: Joi.string().valid('dev', 'prod', 'test').required(),
@@ -26,6 +27,12 @@ export const envValidationSchema = Joi.object({
   REDIS_HOST: Joi.string().required(),
   REDIS_PORT: Joi.string().required(),
   IS_MASTER_NODE: Joi.bool().required(),
+  DISCORD_CLIENT_ID: Joi.string().required(),
+  DISCORD_CLIENT_SECRET: Joi.string().required(),
+  DISCORD_REDIRECT_URI: Joi.string().required(),
+  AWS_ACCESS_KEY: Joi.string().required(),
+  AWS_SECRET_ACCESS_KEY: Joi.string().required(),
+  DEFAULT_REGION_NAME: Joi.string().required(),
 });
 
 @Module({
@@ -54,6 +61,7 @@ export const envValidationSchema = Joi.object({
     AuthModule,
     ViewModule,
     RedisModule,
+    AWSModule,
   ],
   controllers: [AppController],
   providers: [AppService],
