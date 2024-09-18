@@ -514,6 +514,9 @@ class User {
     required this.createdAt,
     required this.updatedAt,
     required this.userAppId,
+    required this.discordId,
+    required this.avatar,
+    required this.nickname,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
@@ -529,6 +532,12 @@ class User {
   final DateTime updatedAt;
   @JsonKey(name: 'userAppId')
   final String userAppId;
+  @JsonKey(name: 'discordId')
+  final String discordId;
+  @JsonKey(name: 'avatar')
+  final String avatar;
+  @JsonKey(name: 'nickname')
+  final String nickname;
   static const fromJsonFactory = _$UserFromJson;
 
   @override
@@ -545,7 +554,15 @@ class User {
                     .equals(other.updatedAt, updatedAt)) &&
             (identical(other.userAppId, userAppId) ||
                 const DeepCollectionEquality()
-                    .equals(other.userAppId, userAppId)));
+                    .equals(other.userAppId, userAppId)) &&
+            (identical(other.discordId, discordId) ||
+                const DeepCollectionEquality()
+                    .equals(other.discordId, discordId)) &&
+            (identical(other.avatar, avatar) ||
+                const DeepCollectionEquality().equals(other.avatar, avatar)) &&
+            (identical(other.nickname, nickname) ||
+                const DeepCollectionEquality()
+                    .equals(other.nickname, nickname)));
   }
 
   @override
@@ -557,6 +574,9 @@ class User {
       const DeepCollectionEquality().hash(createdAt) ^
       const DeepCollectionEquality().hash(updatedAt) ^
       const DeepCollectionEquality().hash(userAppId) ^
+      const DeepCollectionEquality().hash(discordId) ^
+      const DeepCollectionEquality().hash(avatar) ^
+      const DeepCollectionEquality().hash(nickname) ^
       runtimeType.hashCode;
 }
 
@@ -565,24 +585,36 @@ extension $UserExtension on User {
       {double? id,
       DateTime? createdAt,
       DateTime? updatedAt,
-      String? userAppId}) {
+      String? userAppId,
+      String? discordId,
+      String? avatar,
+      String? nickname}) {
     return User(
         id: id ?? this.id,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
-        userAppId: userAppId ?? this.userAppId);
+        userAppId: userAppId ?? this.userAppId,
+        discordId: discordId ?? this.discordId,
+        avatar: avatar ?? this.avatar,
+        nickname: nickname ?? this.nickname);
   }
 
   User copyWithWrapped(
       {Wrapped<double>? id,
       Wrapped<DateTime>? createdAt,
       Wrapped<DateTime>? updatedAt,
-      Wrapped<String>? userAppId}) {
+      Wrapped<String>? userAppId,
+      Wrapped<String>? discordId,
+      Wrapped<String>? avatar,
+      Wrapped<String>? nickname}) {
     return User(
         id: (id != null ? id.value : this.id),
         createdAt: (createdAt != null ? createdAt.value : this.createdAt),
         updatedAt: (updatedAt != null ? updatedAt.value : this.updatedAt),
-        userAppId: (userAppId != null ? userAppId.value : this.userAppId));
+        userAppId: (userAppId != null ? userAppId.value : this.userAppId),
+        discordId: (discordId != null ? discordId.value : this.discordId),
+        avatar: (avatar != null ? avatar.value : this.avatar),
+        nickname: (nickname != null ? nickname.value : this.nickname));
   }
 }
 

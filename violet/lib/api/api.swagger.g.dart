@@ -75,6 +75,9 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
       userAppId: json['userAppId'] as String,
+      discordId: json['discordId'] as String,
+      avatar: json['avatar'] as String,
+      nickname: json['nickname'] as String,
     );
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
@@ -82,6 +85,9 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
       'userAppId': instance.userAppId,
+      'discordId': instance.discordId,
+      'avatar': instance.avatar,
+      'nickname': instance.nickname,
     };
 
 Tokens _$TokensFromJson(Map<String, dynamic> json) => Tokens(

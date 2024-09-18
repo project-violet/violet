@@ -323,11 +323,23 @@ components:
         userAppId:
           type: string
           description: User Id
+        discordId:
+          type: string
+          description: Discord Id
+        avatar:
+          type: string
+          description: Avatar
+        nickname:
+          type: string
+          description: Nickname
       required:
         - id
         - createdAt
         - updatedAt
         - userAppId
+        - discordId
+        - avatar
+        - nickname
     Tokens:
       type: object
       properties:
