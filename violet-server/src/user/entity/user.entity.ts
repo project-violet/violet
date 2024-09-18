@@ -15,13 +15,22 @@ export class User extends CoreEntity {
   @Column({ unique: true })
   userAppId: string;
 
+  @ApiProperty({
+    description: 'Discord Id',
+  })
   @Column({ nullable: true })
   @Index()
   discordId?: string;
 
+  @ApiProperty({
+    description: 'Avatar',
+  })
   @Column({ nullable: true })
   avatar?: string;
 
+  @ApiProperty({
+    description: 'Nickname',
+  })
   @Column({ unique: true, nullable: true })
   nickname?: string;
 
