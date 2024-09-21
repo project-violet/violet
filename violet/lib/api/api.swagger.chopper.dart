@@ -67,6 +67,17 @@ final class _$Api extends Api {
   }
 
   @override
+  Future<Response<User>> _apiV2UserGet() {
+    final Uri $url = Uri.parse('/api/v2/user');
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
+    return client.send<User, User>($request);
+  }
+
+  @override
   Future<Response<dynamic>> _apiV2UserPost({required UserRegisterDTO? body}) {
     final Uri $url = Uri.parse('/api/v2/user');
     final $body = body;
@@ -89,17 +100,6 @@ final class _$Api extends Api {
     );
     return client.send<ListDiscordUserAppIdsResponseDto,
         ListDiscordUserAppIdsResponseDto>($request);
-  }
-
-  @override
-  Future<Response<User>> _apiV2AuthGet() {
-    final Uri $url = Uri.parse('/api/v2/auth');
-    final Request $request = Request(
-      'GET',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<User, User>($request);
   }
 
   @override

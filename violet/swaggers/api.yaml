@@ -54,6 +54,19 @@ paths:
       tags:
         - comment
   /api/v2/user:
+    get:
+      operationId: UserController_getCurrentUser
+      summary: Get current user information
+      parameters: []
+      responses:
+        '201':
+          description: User Information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      tags:
+        - user
     post:
       operationId: UserController_registerUser
       summary: Register User
@@ -84,19 +97,6 @@ paths:
       tags:
         - user
   /api/v2/auth:
-    get:
-      operationId: AuthController_getCurrentUser
-      summary: Get current user information
-      parameters: []
-      responses:
-        '201':
-          description: User Information
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-      tags:
-        - auth
     post:
       operationId: AuthController_logIn
       summary: Login
@@ -312,24 +312,6 @@ components:
       required:
         - where
         - body
-    UserRegisterDTO:
-      type: object
-      properties:
-        userAppId:
-          type: string
-          description: User App Id
-      required:
-        - userAppId
-    ListDiscordUserAppIdsResponseDto:
-      type: object
-      properties:
-        userAppIds:
-          description: User App Ids
-          type: array
-          items:
-            type: string
-      required:
-        - userAppIds
     User:
       type: object
       properties:
@@ -364,6 +346,24 @@ components:
         - discordId
         - avatar
         - nickname
+    UserRegisterDTO:
+      type: object
+      properties:
+        userAppId:
+          type: string
+          description: User App Id
+      required:
+        - userAppId
+    ListDiscordUserAppIdsResponseDto:
+      type: object
+      properties:
+        userAppIds:
+          description: User App Ids
+          type: array
+          items:
+            type: string
+      required:
+        - userAppIds
     Tokens:
       type: object
       properties:

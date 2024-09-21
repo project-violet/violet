@@ -90,6 +90,17 @@ abstract class Api extends ChopperService {
   Future<chopper.Response> _apiV2CommentPost(
       {@Body() required CommentPostDto? body});
 
+  ///Get current user information
+  Future<chopper.Response<User>> apiV2UserGet() {
+    generatedMapping.putIfAbsent(User, () => User.fromJsonFactory);
+
+    return _apiV2UserGet();
+  }
+
+  ///Get current user information
+  @Get(path: '/api/v2/user')
+  Future<chopper.Response<User>> _apiV2UserGet();
+
   ///Register User
   Future<chopper.Response> apiV2UserPost({required UserRegisterDTO? body}) {
     return _apiV2UserPost(body: body);
@@ -116,17 +127,6 @@ abstract class Api extends ChopperService {
   @Get(path: '/api/v2/user/discord')
   Future<chopper.Response<ListDiscordUserAppIdsResponseDto>>
       _apiV2UserDiscordGet();
-
-  ///Get current user information
-  Future<chopper.Response<User>> apiV2AuthGet() {
-    generatedMapping.putIfAbsent(User, () => User.fromJsonFactory);
-
-    return _apiV2AuthGet();
-  }
-
-  ///Get current user information
-  @Get(path: '/api/v2/auth')
-  Future<chopper.Response<User>> _apiV2AuthGet();
 
   ///Login
   Future<chopper.Response<Tokens>> apiV2AuthPost(
@@ -507,99 +507,6 @@ extension $CommentPostDtoExtension on CommentPostDto {
 }
 
 @JsonSerializable(explicitToJson: true)
-class UserRegisterDTO {
-  const UserRegisterDTO({
-    required this.userAppId,
-  });
-
-  factory UserRegisterDTO.fromJson(Map<String, dynamic> json) =>
-      _$UserRegisterDTOFromJson(json);
-
-  static const toJsonFactory = _$UserRegisterDTOToJson;
-  Map<String, dynamic> toJson() => _$UserRegisterDTOToJson(this);
-
-  @JsonKey(name: 'userAppId')
-  final String userAppId;
-  static const fromJsonFactory = _$UserRegisterDTOFromJson;
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other is UserRegisterDTO &&
-            (identical(other.userAppId, userAppId) ||
-                const DeepCollectionEquality()
-                    .equals(other.userAppId, userAppId)));
-  }
-
-  @override
-  String toString() => jsonEncode(this);
-
-  @override
-  int get hashCode =>
-      const DeepCollectionEquality().hash(userAppId) ^ runtimeType.hashCode;
-}
-
-extension $UserRegisterDTOExtension on UserRegisterDTO {
-  UserRegisterDTO copyWith({String? userAppId}) {
-    return UserRegisterDTO(userAppId: userAppId ?? this.userAppId);
-  }
-
-  UserRegisterDTO copyWithWrapped({Wrapped<String>? userAppId}) {
-    return UserRegisterDTO(
-        userAppId: (userAppId != null ? userAppId.value : this.userAppId));
-  }
-}
-
-@JsonSerializable(explicitToJson: true)
-class ListDiscordUserAppIdsResponseDto {
-  const ListDiscordUserAppIdsResponseDto({
-    required this.userAppIds,
-  });
-
-  factory ListDiscordUserAppIdsResponseDto.fromJson(
-          Map<String, dynamic> json) =>
-      _$ListDiscordUserAppIdsResponseDtoFromJson(json);
-
-  static const toJsonFactory = _$ListDiscordUserAppIdsResponseDtoToJson;
-  Map<String, dynamic> toJson() =>
-      _$ListDiscordUserAppIdsResponseDtoToJson(this);
-
-  @JsonKey(name: 'userAppIds', defaultValue: <String>[])
-  final List<String> userAppIds;
-  static const fromJsonFactory = _$ListDiscordUserAppIdsResponseDtoFromJson;
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other is ListDiscordUserAppIdsResponseDto &&
-            (identical(other.userAppIds, userAppIds) ||
-                const DeepCollectionEquality()
-                    .equals(other.userAppIds, userAppIds)));
-  }
-
-  @override
-  String toString() => jsonEncode(this);
-
-  @override
-  int get hashCode =>
-      const DeepCollectionEquality().hash(userAppIds) ^ runtimeType.hashCode;
-}
-
-extension $ListDiscordUserAppIdsResponseDtoExtension
-    on ListDiscordUserAppIdsResponseDto {
-  ListDiscordUserAppIdsResponseDto copyWith({List<String>? userAppIds}) {
-    return ListDiscordUserAppIdsResponseDto(
-        userAppIds: userAppIds ?? this.userAppIds);
-  }
-
-  ListDiscordUserAppIdsResponseDto copyWithWrapped(
-      {Wrapped<List<String>>? userAppIds}) {
-    return ListDiscordUserAppIdsResponseDto(
-        userAppIds: (userAppIds != null ? userAppIds.value : this.userAppIds));
-  }
-}
-
-@JsonSerializable(explicitToJson: true)
 class User {
   const User({
     required this.id,
@@ -707,6 +614,99 @@ extension $UserExtension on User {
         discordId: (discordId != null ? discordId.value : this.discordId),
         avatar: (avatar != null ? avatar.value : this.avatar),
         nickname: (nickname != null ? nickname.value : this.nickname));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
+class UserRegisterDTO {
+  const UserRegisterDTO({
+    required this.userAppId,
+  });
+
+  factory UserRegisterDTO.fromJson(Map<String, dynamic> json) =>
+      _$UserRegisterDTOFromJson(json);
+
+  static const toJsonFactory = _$UserRegisterDTOToJson;
+  Map<String, dynamic> toJson() => _$UserRegisterDTOToJson(this);
+
+  @JsonKey(name: 'userAppId')
+  final String userAppId;
+  static const fromJsonFactory = _$UserRegisterDTOFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is UserRegisterDTO &&
+            (identical(other.userAppId, userAppId) ||
+                const DeepCollectionEquality()
+                    .equals(other.userAppId, userAppId)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(userAppId) ^ runtimeType.hashCode;
+}
+
+extension $UserRegisterDTOExtension on UserRegisterDTO {
+  UserRegisterDTO copyWith({String? userAppId}) {
+    return UserRegisterDTO(userAppId: userAppId ?? this.userAppId);
+  }
+
+  UserRegisterDTO copyWithWrapped({Wrapped<String>? userAppId}) {
+    return UserRegisterDTO(
+        userAppId: (userAppId != null ? userAppId.value : this.userAppId));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
+class ListDiscordUserAppIdsResponseDto {
+  const ListDiscordUserAppIdsResponseDto({
+    required this.userAppIds,
+  });
+
+  factory ListDiscordUserAppIdsResponseDto.fromJson(
+          Map<String, dynamic> json) =>
+      _$ListDiscordUserAppIdsResponseDtoFromJson(json);
+
+  static const toJsonFactory = _$ListDiscordUserAppIdsResponseDtoToJson;
+  Map<String, dynamic> toJson() =>
+      _$ListDiscordUserAppIdsResponseDtoToJson(this);
+
+  @JsonKey(name: 'userAppIds', defaultValue: <String>[])
+  final List<String> userAppIds;
+  static const fromJsonFactory = _$ListDiscordUserAppIdsResponseDtoFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is ListDiscordUserAppIdsResponseDto &&
+            (identical(other.userAppIds, userAppIds) ||
+                const DeepCollectionEquality()
+                    .equals(other.userAppIds, userAppIds)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(userAppIds) ^ runtimeType.hashCode;
+}
+
+extension $ListDiscordUserAppIdsResponseDtoExtension
+    on ListDiscordUserAppIdsResponseDto {
+  ListDiscordUserAppIdsResponseDto copyWith({List<String>? userAppIds}) {
+    return ListDiscordUserAppIdsResponseDto(
+        userAppIds: userAppIds ?? this.userAppIds);
+  }
+
+  ListDiscordUserAppIdsResponseDto copyWithWrapped(
+      {Wrapped<List<String>>? userAppIds}) {
+    return ListDiscordUserAppIdsResponseDto(
+        userAppIds: (userAppIds != null ? userAppIds.value : this.userAppIds));
   }
 }
 

@@ -66,6 +66,26 @@ Map<String, dynamic> _$CommentPostDtoToJson(CommentPostDto instance) =>
       'parent': instance.parent,
     };
 
+User _$UserFromJson(Map<String, dynamic> json) => User(
+      id: (json['id'] as num).toDouble(),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      userAppId: json['userAppId'] as String,
+      discordId: json['discordId'] as String,
+      avatar: json['avatar'] as String,
+      nickname: json['nickname'] as String,
+    );
+
+Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
+      'id': instance.id,
+      'createdAt': instance.createdAt.toIso8601String(),
+      'updatedAt': instance.updatedAt.toIso8601String(),
+      'userAppId': instance.userAppId,
+      'discordId': instance.discordId,
+      'avatar': instance.avatar,
+      'nickname': instance.nickname,
+    };
+
 UserRegisterDTO _$UserRegisterDTOFromJson(Map<String, dynamic> json) =>
     UserRegisterDTO(
       userAppId: json['userAppId'] as String,
@@ -89,26 +109,6 @@ Map<String, dynamic> _$ListDiscordUserAppIdsResponseDtoToJson(
         ListDiscordUserAppIdsResponseDto instance) =>
     <String, dynamic>{
       'userAppIds': instance.userAppIds,
-    };
-
-User _$UserFromJson(Map<String, dynamic> json) => User(
-      id: (json['id'] as num).toDouble(),
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
-      userAppId: json['userAppId'] as String,
-      discordId: json['discordId'] as String,
-      avatar: json['avatar'] as String,
-      nickname: json['nickname'] as String,
-    );
-
-Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
-      'id': instance.id,
-      'createdAt': instance.createdAt.toIso8601String(),
-      'updatedAt': instance.updatedAt.toIso8601String(),
-      'userAppId': instance.userAppId,
-      'discordId': instance.discordId,
-      'avatar': instance.avatar,
-      'nickname': instance.nickname,
     };
 
 Tokens _$TokensFromJson(Map<String, dynamic> json) => Tokens(
