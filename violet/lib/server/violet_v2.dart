@@ -7,7 +7,7 @@ import 'package:chopper/chopper.dart';
 import 'package:violet/api/api.swagger.dart';
 import 'package:violet/server/wsalt.dart';
 
-abstract class VioletServerV2 extends Api {
+class VioletServerV2 {
   static const protocol = 'https';
   static const host = 'koromo.xyz';
   static const api = '$protocol://$host';
