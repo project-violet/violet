@@ -263,6 +263,30 @@ components:
           description: Where to get
       required:
         - where
+    CommentGetResponseDtoElement:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Comment Id
+        userAppId:
+          type: string
+          description: Body
+        body:
+          type: string
+          description: Body
+        dateTime:
+          format: date-time
+          type: string
+          description: Write DateTime
+        parent:
+          type: number
+          description: Parent Comment
+      required:
+        - id
+        - userAppId
+        - body
+        - dateTime
     CommentGetResponseDto:
       type: object
       properties:
@@ -270,7 +294,7 @@ components:
           description: Comment Elements
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/CommentGetResponseDtoElement'
       required:
         - elements
     CommentPostDto:
@@ -355,14 +379,25 @@ components:
     ResLoginUser:
       type: object
       properties: {}
+    ViewGetResponseDtoElement:
+      type: object
+      properties:
+        articleId:
+          type: number
+          description: Article Id
+        count:
+          type: number
+          description: Count
+      required:
+        - articleId
+        - count
     ViewGetResponseDto:
       type: object
       properties:
-        result:
-          description: View get response
-          example: '[ [1234,55], [1235,44] ]'
+        elements:
+          description: View Get Elements
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ViewGetResponseDtoElement'
       required:
-        - result
+        - elements

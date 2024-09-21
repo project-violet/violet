@@ -65,6 +65,8 @@ export class ViewGetResponseDto {
   @ApiProperty({
     description: 'View Get Elements',
     required: true,
+    type: ViewGetResponseDtoElement,
+    isArray: true,
   })
   elements: ViewGetResponseDtoElement[];
 }

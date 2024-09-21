@@ -16,11 +16,32 @@ Map<String, dynamic> _$CommentGetDtoToJson(CommentGetDto instance) =>
       'where': instance.where,
     };
 
+CommentGetResponseDtoElement _$CommentGetResponseDtoElementFromJson(
+        Map<String, dynamic> json) =>
+    CommentGetResponseDtoElement(
+      id: (json['id'] as num).toDouble(),
+      userAppId: json['userAppId'] as String,
+      body: json['body'] as String,
+      dateTime: DateTime.parse(json['dateTime'] as String),
+      parent: (json['parent'] as num?)?.toDouble(),
+    );
+
+Map<String, dynamic> _$CommentGetResponseDtoElementToJson(
+        CommentGetResponseDtoElement instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'userAppId': instance.userAppId,
+      'body': instance.body,
+      'dateTime': instance.dateTime.toIso8601String(),
+      'parent': instance.parent,
+    };
+
 CommentGetResponseDto _$CommentGetResponseDtoFromJson(
         Map<String, dynamic> json) =>
     CommentGetResponseDto(
       elements: (json['elements'] as List<dynamic>?)
-              ?.map((e) => e as String)
+              ?.map((e) => CommentGetResponseDtoElement.fromJson(
+                  e as Map<String, dynamic>))
               .toList() ??
           [],
     );
@@ -28,7 +49,7 @@ CommentGetResponseDto _$CommentGetResponseDtoFromJson(
 Map<String, dynamic> _$CommentGetResponseDtoToJson(
         CommentGetResponseDto instance) =>
     <String, dynamic>{
-      'elements': instance.elements,
+      'elements': instance.elements.map((e) => e.toJson()).toList(),
     };
 
 CommentPostDto _$CommentPostDtoFromJson(Map<String, dynamic> json) =>
@@ -106,15 +127,30 @@ ResLoginUser _$ResLoginUserFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ResLoginUserToJson(ResLoginUser instance) =>
     <String, dynamic>{};
 
+ViewGetResponseDtoElement _$ViewGetResponseDtoElementFromJson(
+        Map<String, dynamic> json) =>
+    ViewGetResponseDtoElement(
+      articleId: (json['articleId'] as num).toDouble(),
+      count: (json['count'] as num).toDouble(),
+    );
+
+Map<String, dynamic> _$ViewGetResponseDtoElementToJson(
+        ViewGetResponseDtoElement instance) =>
+    <String, dynamic>{
+      'articleId': instance.articleId,
+      'count': instance.count,
+    };
+
 ViewGetResponseDto _$ViewGetResponseDtoFromJson(Map<String, dynamic> json) =>
     ViewGetResponseDto(
-      result: (json['result'] as List<dynamic>?)
-              ?.map((e) => e as String)
+      elements: (json['elements'] as List<dynamic>?)
+              ?.map((e) =>
+                  ViewGetResponseDtoElement.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
     );
 
 Map<String, dynamic> _$ViewGetResponseDtoToJson(ViewGetResponseDto instance) =>
     <String, dynamic>{
-      'result': instance.result,
+      'elements': instance.elements.map((e) => e.toJson()).toList(),
     };

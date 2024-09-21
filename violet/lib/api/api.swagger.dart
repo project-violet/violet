@@ -307,6 +307,96 @@ extension $CommentGetDtoExtension on CommentGetDto {
 }
 
 @JsonSerializable(explicitToJson: true)
+class CommentGetResponseDtoElement {
+  const CommentGetResponseDtoElement({
+    required this.id,
+    required this.userAppId,
+    required this.body,
+    required this.dateTime,
+    this.parent,
+  });
+
+  factory CommentGetResponseDtoElement.fromJson(Map<String, dynamic> json) =>
+      _$CommentGetResponseDtoElementFromJson(json);
+
+  static const toJsonFactory = _$CommentGetResponseDtoElementToJson;
+  Map<String, dynamic> toJson() => _$CommentGetResponseDtoElementToJson(this);
+
+  @JsonKey(name: 'id')
+  final double id;
+  @JsonKey(name: 'userAppId')
+  final String userAppId;
+  @JsonKey(name: 'body')
+  final String body;
+  @JsonKey(name: 'dateTime')
+  final DateTime dateTime;
+  @JsonKey(name: 'parent')
+  final double? parent;
+  static const fromJsonFactory = _$CommentGetResponseDtoElementFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is CommentGetResponseDtoElement &&
+            (identical(other.id, id) ||
+                const DeepCollectionEquality().equals(other.id, id)) &&
+            (identical(other.userAppId, userAppId) ||
+                const DeepCollectionEquality()
+                    .equals(other.userAppId, userAppId)) &&
+            (identical(other.body, body) ||
+                const DeepCollectionEquality().equals(other.body, body)) &&
+            (identical(other.dateTime, dateTime) ||
+                const DeepCollectionEquality()
+                    .equals(other.dateTime, dateTime)) &&
+            (identical(other.parent, parent) ||
+                const DeepCollectionEquality().equals(other.parent, parent)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(id) ^
+      const DeepCollectionEquality().hash(userAppId) ^
+      const DeepCollectionEquality().hash(body) ^
+      const DeepCollectionEquality().hash(dateTime) ^
+      const DeepCollectionEquality().hash(parent) ^
+      runtimeType.hashCode;
+}
+
+extension $CommentGetResponseDtoElementExtension
+    on CommentGetResponseDtoElement {
+  CommentGetResponseDtoElement copyWith(
+      {double? id,
+      String? userAppId,
+      String? body,
+      DateTime? dateTime,
+      double? parent}) {
+    return CommentGetResponseDtoElement(
+        id: id ?? this.id,
+        userAppId: userAppId ?? this.userAppId,
+        body: body ?? this.body,
+        dateTime: dateTime ?? this.dateTime,
+        parent: parent ?? this.parent);
+  }
+
+  CommentGetResponseDtoElement copyWithWrapped(
+      {Wrapped<double>? id,
+      Wrapped<String>? userAppId,
+      Wrapped<String>? body,
+      Wrapped<DateTime>? dateTime,
+      Wrapped<double?>? parent}) {
+    return CommentGetResponseDtoElement(
+        id: (id != null ? id.value : this.id),
+        userAppId: (userAppId != null ? userAppId.value : this.userAppId),
+        body: (body != null ? body.value : this.body),
+        dateTime: (dateTime != null ? dateTime.value : this.dateTime),
+        parent: (parent != null ? parent.value : this.parent));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
 class CommentGetResponseDto {
   const CommentGetResponseDto({
     required this.elements,
@@ -318,8 +408,8 @@ class CommentGetResponseDto {
   static const toJsonFactory = _$CommentGetResponseDtoToJson;
   Map<String, dynamic> toJson() => _$CommentGetResponseDtoToJson(this);
 
-  @JsonKey(name: 'elements', defaultValue: <String>[])
-  final List<String> elements;
+  @JsonKey(name: 'elements', defaultValue: <CommentGetResponseDtoElement>[])
+  final List<CommentGetResponseDtoElement> elements;
   static const fromJsonFactory = _$CommentGetResponseDtoFromJson;
 
   @override
@@ -340,11 +430,13 @@ class CommentGetResponseDto {
 }
 
 extension $CommentGetResponseDtoExtension on CommentGetResponseDto {
-  CommentGetResponseDto copyWith({List<String>? elements}) {
+  CommentGetResponseDto copyWith(
+      {List<CommentGetResponseDtoElement>? elements}) {
     return CommentGetResponseDto(elements: elements ?? this.elements);
   }
 
-  CommentGetResponseDto copyWithWrapped({Wrapped<List<String>>? elements}) {
+  CommentGetResponseDto copyWithWrapped(
+      {Wrapped<List<CommentGetResponseDtoElement>>? elements}) {
     return CommentGetResponseDto(
         elements: (elements != null ? elements.value : this.elements));
   }
@@ -695,9 +787,63 @@ class ResLoginUser {
 }
 
 @JsonSerializable(explicitToJson: true)
+class ViewGetResponseDtoElement {
+  const ViewGetResponseDtoElement({
+    required this.articleId,
+    required this.count,
+  });
+
+  factory ViewGetResponseDtoElement.fromJson(Map<String, dynamic> json) =>
+      _$ViewGetResponseDtoElementFromJson(json);
+
+  static const toJsonFactory = _$ViewGetResponseDtoElementToJson;
+  Map<String, dynamic> toJson() => _$ViewGetResponseDtoElementToJson(this);
+
+  @JsonKey(name: 'articleId')
+  final double articleId;
+  @JsonKey(name: 'count')
+  final double count;
+  static const fromJsonFactory = _$ViewGetResponseDtoElementFromJson;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is ViewGetResponseDtoElement &&
+            (identical(other.articleId, articleId) ||
+                const DeepCollectionEquality()
+                    .equals(other.articleId, articleId)) &&
+            (identical(other.count, count) ||
+                const DeepCollectionEquality().equals(other.count, count)));
+  }
+
+  @override
+  String toString() => jsonEncode(this);
+
+  @override
+  int get hashCode =>
+      const DeepCollectionEquality().hash(articleId) ^
+      const DeepCollectionEquality().hash(count) ^
+      runtimeType.hashCode;
+}
+
+extension $ViewGetResponseDtoElementExtension on ViewGetResponseDtoElement {
+  ViewGetResponseDtoElement copyWith({double? articleId, double? count}) {
+    return ViewGetResponseDtoElement(
+        articleId: articleId ?? this.articleId, count: count ?? this.count);
+  }
+
+  ViewGetResponseDtoElement copyWithWrapped(
+      {Wrapped<double>? articleId, Wrapped<double>? count}) {
+    return ViewGetResponseDtoElement(
+        articleId: (articleId != null ? articleId.value : this.articleId),
+        count: (count != null ? count.value : this.count));
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
 class ViewGetResponseDto {
   const ViewGetResponseDto({
-    required this.result,
+    required this.elements,
   });
 
   factory ViewGetResponseDto.fromJson(Map<String, dynamic> json) =>
@@ -706,16 +852,17 @@ class ViewGetResponseDto {
   static const toJsonFactory = _$ViewGetResponseDtoToJson;
   Map<String, dynamic> toJson() => _$ViewGetResponseDtoToJson(this);
 
-  @JsonKey(name: 'result', defaultValue: <String>[])
-  final List<String> result;
+  @JsonKey(name: 'elements', defaultValue: <ViewGetResponseDtoElement>[])
+  final List<ViewGetResponseDtoElement> elements;
   static const fromJsonFactory = _$ViewGetResponseDtoFromJson;
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other is ViewGetResponseDto &&
-            (identical(other.result, result) ||
-                const DeepCollectionEquality().equals(other.result, result)));
+            (identical(other.elements, elements) ||
+                const DeepCollectionEquality()
+                    .equals(other.elements, elements)));
   }
 
   @override
@@ -723,17 +870,18 @@ class ViewGetResponseDto {
 
   @override
   int get hashCode =>
-      const DeepCollectionEquality().hash(result) ^ runtimeType.hashCode;
+      const DeepCollectionEquality().hash(elements) ^ runtimeType.hashCode;
 }
 
 extension $ViewGetResponseDtoExtension on ViewGetResponseDto {
-  ViewGetResponseDto copyWith({List<String>? result}) {
-    return ViewGetResponseDto(result: result ?? this.result);
+  ViewGetResponseDto copyWith({List<ViewGetResponseDtoElement>? elements}) {
+    return ViewGetResponseDto(elements: elements ?? this.elements);
   }
 
-  ViewGetResponseDto copyWithWrapped({Wrapped<List<String>>? result}) {
+  ViewGetResponseDto copyWithWrapped(
+      {Wrapped<List<ViewGetResponseDtoElement>>? elements}) {
     return ViewGetResponseDto(
-        result: (result != null ? result.value : this.result));
+        elements: (elements != null ? elements.value : this.elements));
   }
 }
 
