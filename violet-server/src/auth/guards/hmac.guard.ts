@@ -49,8 +49,8 @@ export class HmacAuthGuard implements CanActivate {
 
   buildHmac(token: string): string {
     const mac = crypto.createHash('sha512');
-    const salt = this.configService.get<string>('SALT');
-    const hmac = mac.update(token + salt);
+    const salt = this.configService.get<string>('SALT').replace('\\', '');
+    const hmac = mac.update(salt + token);
     return hmac.digest('hex').slice(0, 7);
   }
 }
