@@ -19,7 +19,6 @@ import { AccessTokenGuard } from './guards/access-token.guard';
 import { Tokens } from './jwt/jwt.token';
 import { Request, Response } from 'express';
 import { ResLoginUser } from './dtos/res-login-user.dto';
-import { plainToClass } from 'class-transformer';
 import { HmacAuthGuard } from './guards/hmac.guard';
 import { DiscordAuthGuard } from './guards/discord.guard';
 import { CommonResponseDto } from 'src/common/dtos/common.dto';
@@ -31,14 +30,6 @@ export class AuthController {
     private readonly configService: ConfigService,
     private readonly authService: AuthService,
   ) {}
-
-  @Get()
-  @ApiOperation({ summary: 'Get current user information' })
-  @ApiCreatedResponse({ description: 'User Information', type: User })
-  @UseGuards(AccessTokenGuard)
-  getCurrentUser(@CurrentUser() currentUser: User): User {
-    return plainToClass(User, currentUser);
-  }
 
   @Post()
   @UseGuards(HmacAuthGuard)
