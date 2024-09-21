@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsNumber,
   IsOptional,
   IsString,
@@ -43,11 +44,27 @@ export class ViewGetRequestDto {
   type?: string = 'alltime';
 }
 
-export class ViewGetResponseDto {
+export class ViewGetResponseDtoElement {
+  @IsNumber()
   @ApiProperty({
-    name: 'result',
-    description: 'View get response',
-    example: '[ [1234,55], [1235,44] ]',
+    description: 'Article Id',
+    required: true,
   })
-  result: [number, number][];
+  articleId: number;
+
+  @IsNumber()
+  @ApiProperty({
+    description: 'Count',
+    required: true,
+  })
+  count: number;
+}
+
+export class ViewGetResponseDto {
+  @IsArray()
+  @ApiProperty({
+    description: 'View Get Elements',
+    required: true,
+  })
+  elements: ViewGetResponseDtoElement[];
 }

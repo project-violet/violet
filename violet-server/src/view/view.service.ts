@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ViewGetRequestDto, ViewGetResponseDto } from './dtos/view-get.dto';
+import {
+  ViewGetRequestDto,
+  ViewGetResponseDto,
+  ViewGetResponseDtoElement,
+} from './dtos/view-get.dto';
 import { RedisService } from 'src/redis/redis.service';
 import { ViewPostRequestDto } from './dtos/view-post.dto';
 import { User } from 'src/user/entity/user.entity';
@@ -19,12 +23,16 @@ export class ViewService {
       dto.count,
     );
 
-    let result = [];
-    for (var i = 0; i < query.length; i += 2)
-      result.push([parseInt(query[i]), parseInt(query[i + 1])]);
+    let elements: ViewGetResponseDtoElement[] = [];
+    for (var i = 0; i < query.length; i += 2) {
+      elements.push({
+        articleId: parseInt(query[i]),
+        count: parseInt(query[i + 1]),
+      });
+    }
 
     return {
-      result: result,
+      elements: elements,
     };
   }
 
