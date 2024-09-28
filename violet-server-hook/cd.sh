@@ -5,12 +5,8 @@ set +x
 docker stop violet && docker rm $_
 docker pull violetdev/violet:latest
 
-# download env-file for docker
-aws s3api get-object --bucket violet-config --key .env.docker.prod .env.docker.prod
-
 # setup docker
-docker create --env-file ./.env.docker.prod \
-                  --name violet \
+docker create --name violet \
                   --network host \
                   --add-host host.docker.internal:host-gateway \
                   --restart always \
@@ -24,5 +20,4 @@ docker cp .prod.env violet:/home/node/
 docker start violet
 docker rmi $(docker images -q violetdev/violet)
 
-rm .env.docker.prod
 rm .prod.env

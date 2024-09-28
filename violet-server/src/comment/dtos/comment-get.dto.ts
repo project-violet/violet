@@ -73,6 +73,8 @@ export class CommentGetResponseDto {
   @ApiProperty({
     description: 'Comment Elements',
     required: true,
+    type: CommentGetResponseDtoElement,
+    isArray: true,
   })
   elements: CommentGetResponseDtoElement[];
 }

@@ -1,0 +1,12 @@
+targets:
+  $default:
+    sources:
+      - lib/**
+      - swagger_examples/**
+      - swaggers/**
+    
+    builders:
+      swagger_dart_code_generator:
+        options:
+          input_folder: 'swaggers'
+          output_folder: 'lib/api/'
