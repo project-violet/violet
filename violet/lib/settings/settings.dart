@@ -51,6 +51,7 @@ class Settings {
   static late List<String> routingRule; // image routing rule
   static late List<String> searchRule;
   static late bool searchNetwork;
+  static late bool includeTagNetwork;
   static late bool searchExpunged;
   static late int searchCategory;
 
@@ -198,6 +199,7 @@ class Settings {
         (await _getString('searchrule', 'Hitomi|EHentai|ExHentai|NHentai'))
             .split('|');
     searchNetwork = await _getBool('searchnetwork');
+    includeTagNetwork = await _getBool('includetagnetwork');
     searchExpunged = await _getBool('searchexpunged');
     searchCategory = await _getInt('searchcategory', 993);
 
@@ -685,6 +687,12 @@ class Settings {
     searchNetwork = nn;
 
     await prefs.setBool('searchnetwork', nn);
+  }
+
+  static Future<void> setIncludeTagOnWeb(bool nn) async {
+    includeTagNetwork = nn;
+
+    await prefs.setBool('includetagnetwork', nn);
   }
 
   static Future<void> setSearchExpunged(bool nn) async {
