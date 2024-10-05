@@ -62,9 +62,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _checkCookie() async {
     final controller = await _webViewController.future;
-    final cookieString = jsonDecode(
-            await controller.runJavascriptReturningResult('document.cookie'))
-        as String;
+    var cookieString =
+        await controller.runJavascriptReturningResult('document.cookie');
+    try {
+      cookieString = jsonDecode(cookieString) as String;
+    } catch (e) {}
     final cookies = parseCookies(cookieString);
     developer.log('Get cookies: $cookies');
 
