@@ -872,27 +872,29 @@ class _SettingsPageState extends State<SettingsPage>
                     actions: [okButton, cancelButton],
                     title: const Text('E-Hentai Categories'),
                     contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        const Text('f_cats: '),
-                        ...[
-                          TextField(
-                            controller: catsController,
-                            readOnly: true,
-                          ),
-                          doujinshiButton,
-                          mangaButton,
-                          artistcgButton,
-                          gamecgButton,
-                          westernButton,
-                          nonhButton,
-                          imagesetButton,
-                          cosplayButton,
-                          asianpornButton,
-                          miscButton,
-                        ].map((e) => Row(children: [Expanded(child: e)])),
-                      ],
+                    content: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          const Text('f_cats: '),
+                          ...[
+                            TextField(
+                              controller: catsController,
+                              readOnly: true,
+                            ),
+                            doujinshiButton,
+                            mangaButton,
+                            artistcgButton,
+                            gamecgButton,
+                            westernButton,
+                            nonhButton,
+                            imagesetButton,
+                            cosplayButton,
+                            asianpornButton,
+                            miscButton,
+                          ].map((e) => Row(children: [Expanded(child: e)])),
+                        ],
+                      ),
                     ),
                   ),
                 );
