@@ -192,6 +192,7 @@
   "maindownload": "Donwload",
   "usewebsearch": "Buscar en la Web",
   "usesearchexpunged": "Search for Expunged",
+  "includetagnetwork": "Use Default Tag on Web",
   "usevioletserver": "Usar servidor violet",
   "wouldyouupdate": "¿Actualizarías?",
   "violetservermsg": "¿Le gustaría habilitar la función Violet Server? Esta función es un servicio que recopila información sobre el comportamiento del usuario y muestra información estadística en tiempo real. No recopilamos ninguna información que pueda identificarlo.",

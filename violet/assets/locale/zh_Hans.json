@@ -192,6 +192,7 @@
   "maindownload": "下载",
   "usewebsearch": "在网路上搜寻",
   "usesearchexpunged": "Search for Expunged",
+  "includetagnetwork": "Use Default Tag on Web",
   "usevioletserver": "使用紫罗兰色服务器",
   "wouldyouupdate": "你会更新吗？",
   "violetservermsg": "您要启用Violet服务器功能吗？ 此功能是一项收集用户行为信息并实时显示统计信息的服务。 我们不会收集任何可以识别您身份的信息。",
