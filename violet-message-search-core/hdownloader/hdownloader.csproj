@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Extreme.Numerics" Version="7.0.12" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.24" />
-    <PackageReference Include="MessagePack" Version="2.1.115" />
+    <PackageReference Include="MessagePack" Version="2.5.187" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="SevenZipExtractor" Version="1.0.15" />
     <PackageReference Include="sqlite-net-pcl" Version="1.7.335" />
