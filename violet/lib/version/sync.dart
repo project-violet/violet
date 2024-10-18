@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -217,7 +218,8 @@ class SyncManager {
 
         // Last, append datas
         var db = await DataBaseManager.getInstance();
-        var dbraw = await openDatabase(db.dbPath!);
+        // TODO: transcaction 내부로 숨기기
+        var dbraw = db.db!;
         await dbraw.transaction((txn) async {
           final batch = txn.batch();
           for (var query in quries) {
@@ -245,7 +247,9 @@ class SyncManager {
       // If an error occurs, stops synchronization immediately.
       Logger.error('[Sync-chunk] E: $e\n'
           '$st');
-      FirebaseCrashlytics.instance.recordError(e, st);
+      if (Platform.isAndroid || Platform.isIOS) {
+        FirebaseCrashlytics.instance.recordError(e, st);
+      }
     }
   }
 

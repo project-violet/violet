@@ -314,8 +314,12 @@ class Settings {
       }
     } else if (Platform.isIOS) {
       tDownloadBasePath = await _getString('downloadbasepath', 'not supported');
+    } else {
+      // Desktop
+      tDownloadBasePath =
+          join(dirname(Platform.resolvedExecutable), 'download');
     }
-    downloadBasePath = tDownloadBasePath!;
+    downloadBasePath = tDownloadBasePath;
 
     downloadRule = await _getString(
         'downloadrule', '%(extractor)s/%(id)s/%(file)s.%(ext)s');
@@ -340,7 +344,11 @@ class Settings {
     searchPure = await _getBool('searchPure');
 
     // main에서 셋팅됨
-    userAppId = prefs.getString('fa_userid')!;
+    if (Platform.isAndroid || Platform.isIOS) {
+      userAppId = prefs.getString('fa_userid')!;
+    } else {
+      userAppId = 'null';
+    }
 
     autobackupBookmark = await _getBool('autobackupbookmark', false);
 

@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
@@ -34,12 +35,17 @@ Future<void> main() async {
   runZonedGuarded<Future<void>>(() async {
     await RustLib.init();
     WidgetsFlutterBinding.ensureInitialized();
+    await Logger.init();
 
-    await FlutterDownloader.initialize(); // @dependent: android
+    if (Platform.isAndroid || Platform.isIOS) {
+      await FlutterDownloader.initialize(); // @dependent: android
+    }
     FlareCache.doesPrune = false;
     FlutterError.onError = recordFlutterError;
 
-    await initFirebase();
+    if (Platform.isAndroid || Platform.isIOS) {
+      await initFirebase();
+    }
     await Settings.initFirst();
     await warmupFlare();
 
@@ -47,7 +53,9 @@ Future<void> main() async {
   }, (exception, stack) async {
     Logger.error('[async-error] E: $exception\n$stack');
 
-    await FirebaseCrashlytics.instance.recordError(exception, stack);
+    if (Platform.isAndroid || Platform.isIOS) {
+      await FirebaseCrashlytics.instance.recordError(exception, stack);
+    }
   });
 }
 
@@ -69,7 +77,9 @@ Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) async {
       '[unhandled-error] E: ${flutterErrorDetails.exceptionAsString()}\n'
       '${flutterErrorDetails.stack}');
 
-  await FirebaseCrashlytics.instance.recordFlutterError(flutterErrorDetails);
+  if (Platform.isAndroid || Platform.isIOS) {
+    await FirebaseCrashlytics.instance.recordFlutterError(flutterErrorDetails);
+  }
 }
 
 Future<void> initFirebase() async {
@@ -158,9 +168,11 @@ class MyApp extends StatelessWidget {
     final home =
         Settings.useLockScreen ? const LockScreen() : const SplashPage();
 
-    final navigatorObservers = [
-      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
-    ];
+    final navigatorObservers = Platform.isAndroid || Platform.isIOS
+        ? [
+            FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+          ]
+        : <NavigatorObserver>[];
 
     return GetMaterialApp(
       navigatorObservers: navigatorObservers,
