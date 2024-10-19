@@ -228,7 +228,6 @@ class SyncManager {
           }
           await batch.commit();
         });
-        await dbraw.close();
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setInt('synclatest', row.timestamp);
