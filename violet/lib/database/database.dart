@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:synchronized/synchronized.dart';
 
 class DataBaseManager {
@@ -39,7 +40,9 @@ class DataBaseManager {
         } else {
           dbPath = Platform.isAndroid
               ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
-              : '${await getDatabasesPath()}/data.db';
+              : Platform.isIOS
+                  ? '${await getDatabasesPath()}/data.db'
+                  : join(dirname(Platform.resolvedExecutable), 'data/data.db');
         }
         _instance = create(dbPath);
         await _instance!.open();
@@ -56,16 +59,25 @@ class DataBaseManager {
 
   Future<void> open() async {
     await openLock.synchronized(() async {
-      db ??= await openDatabase(dbPath!);
+      await _openInner();
     });
   }
 
   Future<void> checkOpen() async {
     await openLock.synchronized(() async {
       if (!(db?.isOpen ?? false)) {
-        db = await openDatabase(dbPath!);
+        await _openInner();
       }
     });
+  }
+
+  Future<void> _openInner() async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      db ??= await openDatabase(dbPath!);
+    } else {
+      print(dbPath!);
+      db ??= await databaseFactoryFfi.openDatabase(dbPath!);
+    }
   }
 
   Future<List<Map<String, dynamic>>> query(String str) async {

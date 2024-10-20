@@ -134,7 +134,7 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: "17.x"
-          
+
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
@@ -164,3 +164,63 @@ jobs:
         with:
           name: apk-build
           path: ./violet/build/app/outputs/apk/release/app-release.apk
+
+  app-windows-build:
+    runs-on: windows-latest
+    needs: [app-format, app-changes]
+    if: ${{ needs.app-changes.outputs.src == 'true' }}
+    defaults:
+      run:
+        working-directory: violet
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: "17.x"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: 3.24.2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Preprocess
+        shell: powershell
+        run: |
+          cd lib/server
+          $secretSaltUrl = "${{ secrets.SECRET_SALT }}"
+          $secretWSaltUrl = "${{ secrets.SECRET_WSALT }}"
+
+          # Try downloading SECRET_SALT
+          try {
+            Invoke-WebRequest -Uri $secretSaltUrl -UseBasicParsing -OutFile "salt.dart"
+          } catch {
+            "String getValid(String vToken) { return vToken; }" | Out-File -FilePath "salt.dart"
+          }
+
+          # Try downloading SECRET_WSALT
+          try {
+            Invoke-WebRequest -Uri $secretWSaltUrl -UseBasicParsing -OutFile "wsalt.dart"
+          } catch {
+            "String getValid(String vToken) { return vToken; }" | Out-File -FilePath "wsalt.dart"
+          }
+          cd ../..
+
+      - name: Build
+        run: |
+          flutter clean
+          flutter build windows --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: ./violet/build/windows/x64/runner/Release/

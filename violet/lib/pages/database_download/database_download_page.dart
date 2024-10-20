@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
@@ -49,7 +50,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
   @override
   void initState() {
     super.initState();
-    FToast().init(context);
+    FToast().init(this.context);
     SchedulerBinding.instance
         .addPostFrameCallback((_) async => checkDownload());
   }
@@ -60,11 +61,17 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       if (prefs.getInt('db_exists') == 1) {
         final dbPath = Platform.isAndroid
             ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
-            : '${await getDatabasesPath()}/data.db';
+            : Platform.isIOS
+                ? '${await getDatabasesPath()}/data.db'
+                : join(dirname(Platform.resolvedExecutable), 'data/data.db');
         if (await File(dbPath).exists()) await File(dbPath).delete();
-        final dir = await getApplicationDocumentsDirectory();
-        if (await Directory('${dir.path}/data').exists()) {
-          await Directory('${dir.path}/data').delete(recursive: true);
+        final dir = Platform.isAndroid || Platform.isIOS
+            ? await getApplicationDocumentsDirectory()
+            : Directory(dirname(Platform.resolvedExecutable));
+        if (Platform.isAndroid || Platform.isIOS) {
+          if (await Directory('${dir.path}/data').exists()) {
+            await Directory('${dir.path}/data').delete(recursive: true);
+          }
         }
       }
     } catch (e, st) {
@@ -92,7 +99,9 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     int tnu = 0;
 
     try {
-      var dir = await getApplicationDocumentsDirectory();
+      final dir = Platform.isAndroid || Platform.isIOS
+          ? await getApplicationDocumentsDirectory()
+          : Directory(join(dirname(Platform.resolvedExecutable), 'data'));
       if (await File('${dir.path}/db.sql.7z').exists()) {
         await File('${dir.path}/db.sql.7z').delete();
       }
@@ -149,8 +158,10 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
         downloading = false;
       });
 
-      if (await Directory('${dir.path}/data').exists()) {
-        await Directory('${dir.path}/data').delete(recursive: true);
+      if (Platform.isAndroid || Platform.isIOS) {
+        if (await Directory('${dir.path}/data').exists()) {
+          await Directory('${dir.path}/data').delete(recursive: true);
+        }
       }
       await decompress7Z(
           src: '${dir.path}/db.sql.7z',
@@ -187,7 +198,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       );
 
       if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed('/AfterLoading');
+      Navigator.of(this.context).pushReplacementNamed('/AfterLoading');
 
       return;
     } catch (e, st) {

@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:collection/collection.dart';
@@ -55,7 +56,9 @@ class _CropBookmarkPageState extends State<CropBookmarkPage> {
   @override
   void initState() {
     super.initState();
-    FirebaseAnalytics.instance.logEvent(name: 'open_crop');
+    if (Platform.isAndroid || Platform.isIOS) {
+      FirebaseAnalytics.instance.logEvent(name: 'open_crop');
+    }
   }
 
   @override

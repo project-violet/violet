@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +61,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   void initState() {
     super.initState();
     refresh();
-    FirebaseAnalytics.instance.logEvent(name: 'open_bookmark');
+    if (Platform.isAndroid || Platform.isIOS) {
+      FirebaseAnalytics.instance.logEvent(name: 'open_bookmark');
+    }
   }
 
   @override
@@ -142,6 +146,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
     final scrollView = CustomScrollView(
       physics: const BouncingScrollPhysics(),
+      primary: true,
       slivers: <Widget>[
         SliverPersistentHeader(
           floating: true,

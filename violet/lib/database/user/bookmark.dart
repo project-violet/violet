@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2024. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:collection';
+import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
@@ -264,8 +265,11 @@ class Bookmark {
       'GroupId': group,
     };
     await db.insert('BookmarkArticle', body);
-    FirebaseAnalytics.instance
-        .logEvent(name: 'bookmark_article', parameters: body);
+
+    if (Platform.isAndroid || Platform.isIOS) {
+      FirebaseAnalytics.instance
+          .logEvent(name: 'bookmark_article', parameters: body);
+    }
     bookmarkSet ??= HashSet<int>();
     bookmarkSet!.add(int.parse(article));
   }
@@ -319,8 +323,10 @@ class Bookmark {
     };
     await db.insert('BookmarkCropImage', body);
     if (logging) {
-      FirebaseAnalytics.instance
-          .logEvent(name: 'bookmark_crop', parameters: body);
+      if (Platform.isAndroid || Platform.isIOS) {
+        FirebaseAnalytics.instance
+            .logEvent(name: 'bookmark_crop', parameters: body);
+      }
     }
   }
 

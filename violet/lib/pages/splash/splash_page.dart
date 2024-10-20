@@ -200,8 +200,6 @@ class _SplashPageState extends State<SplashPage> {
     final connectivityResult = await (Connectivity().checkConnectivity());
 
     if (!globalInitialized) {
-      _changeMessage('init logger...');
-      await Logger.init();
       _changeMessage('init act-logger...');
       await ActLogger.init();
       _changeMessage('init settings...');
@@ -271,7 +269,9 @@ class _SplashPageState extends State<SplashPage> {
           }
         } catch (e, st) {
           // If an error occurs, stops synchronization immediately.
-          FirebaseCrashlytics.instance.recordError(e, st);
+          if (Platform.isAndroid || Platform.isIOS) {
+            FirebaseCrashlytics.instance.recordError(e, st);
+          }
           Logger.error('[Splash-Navigation] E: $e\n'
               '$st');
         }
@@ -583,7 +583,11 @@ class _SplashPageState extends State<SplashPage> {
       try {
         await ((await openDatabase('${dir.path}/data/data.db')).close());
         await deleteDatabase('${dir.path}/data/data.db');
-        await Directory('${dir.path}/data').delete(recursive: true);
+        if (Platform.isAndroid || Platform.isIOS) {
+          if (await Directory('${dir.path}/data').exists()) {
+            await Directory('${dir.path}/data').delete(recursive: true);
+          }
+        }
       } catch (_) {}
     }
     if (!mounted) return;

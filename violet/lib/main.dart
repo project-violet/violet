@@ -3,6 +3,8 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:ui';
 
 import 'package:crypto/crypto.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
@@ -12,6 +14,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flare_flutter/flare_cache.dart';
 import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
@@ -34,12 +37,17 @@ Future<void> main() async {
   runZonedGuarded<Future<void>>(() async {
     await RustLib.init();
     WidgetsFlutterBinding.ensureInitialized();
+    await Logger.init();
 
-    await FlutterDownloader.initialize(); // @dependent: android
+    if (Platform.isAndroid || Platform.isIOS) {
+      await FlutterDownloader.initialize(); // @dependent: android
+    }
     FlareCache.doesPrune = false;
     FlutterError.onError = recordFlutterError;
 
-    await initFirebase();
+    if (Platform.isAndroid || Platform.isIOS) {
+      await initFirebase();
+    }
     await Settings.initFirst();
     await warmupFlare();
 
@@ -47,7 +55,9 @@ Future<void> main() async {
   }, (exception, stack) async {
     Logger.error('[async-error] E: $exception\n$stack');
 
-    await FirebaseCrashlytics.instance.recordError(exception, stack);
+    if (Platform.isAndroid || Platform.isIOS) {
+      await FirebaseCrashlytics.instance.recordError(exception, stack);
+    }
   });
 }
 
@@ -69,7 +79,9 @@ Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) async {
       '[unhandled-error] E: ${flutterErrorDetails.exceptionAsString()}\n'
       '${flutterErrorDetails.stack}');
 
-  await FirebaseCrashlytics.instance.recordFlutterError(flutterErrorDetails);
+  if (Platform.isAndroid || Platform.isIOS) {
+    await FirebaseCrashlytics.instance.recordFlutterError(flutterErrorDetails);
+  }
 }
 
 Future<void> initFirebase() async {
@@ -158,11 +170,16 @@ class MyApp extends StatelessWidget {
     final home =
         Settings.useLockScreen ? const LockScreen() : const SplashPage();
 
-    final navigatorObservers = [
-      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
-    ];
+    final navigatorObservers = Platform.isAndroid || Platform.isIOS
+        ? [
+            FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+          ]
+        : <NavigatorObserver>[];
+
+    final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
     return GetMaterialApp(
+      navigatorKey: navigatorKey,
       navigatorObservers: navigatorObservers,
       theme: theme,
       home: home,
@@ -170,6 +187,13 @@ class MyApp extends StatelessWidget {
       routes: routes,
       localizationsDelegates: localizationsDelegates,
       localeResolutionCallback: localeResolution,
+      scrollBehavior: CustomScrollBehavior(),
+      builder: (context, child) {
+        return EscapeKeyListener(
+          navigatorKey: navigatorKey,
+          child: child ?? Container(),
+        );
+      },
     );
   }
 
@@ -211,4 +235,94 @@ class MyApp extends StatelessWidget {
 
     return supportedLocales.first;
   }
+}
+
+// https://docs.flutter.dev/release/breaking-changes/default-scroll-behavior-drag
+// for enable drag scrolling on desktop
+class CustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      };
+}
+
+// A widget to listen for the Escape key, XButton1 and raise the WillPopScope event
+class EscapeKeyListener extends StatelessWidget {
+  final Widget child;
+  final GlobalKey<NavigatorState> navigatorKey;
+
+  const EscapeKeyListener({
+    super.key,
+    required this.navigatorKey,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return KeyboardListener(
+      autofocus: true,
+      focusNode: FocusNode(),
+      onKeyEvent: (KeyEvent event) {
+        if (event is KeyDownEvent &&
+            event.logicalKey == LogicalKeyboardKey.escape) {
+          navigatorPop();
+        }
+      },
+      // https://github.com/flutter/flutter/issues/115641#issuecomment-2267579790
+      child: RawGestureDetector(
+        gestures: <Type, GestureRecognizerFactory>{
+          MouseBackRecognizer:
+              GestureRecognizerFactoryWithHandlers<MouseBackRecognizer>(
+            () => MouseBackRecognizer(),
+            (instance) => instance.onTapDown = (details) => navigatorPop(),
+          ),
+        },
+        child: child,
+      ),
+    );
+  }
+
+  void navigatorPop() {
+    // Raise the WillPopScope event when Escape key is pressed
+    if (Navigator.of(navigatorKey.currentContext!).canPop()) {
+      Navigator.of(navigatorKey.currentContext!).maybePop();
+    }
+  }
+}
+
+class MouseBackRecognizer extends BaseTapGestureRecognizer {
+  GestureTapDownCallback? onTapDown;
+
+  MouseBackRecognizer({
+    super.debugOwner,
+    super.supportedDevices,
+    super.allowedButtonsFilter,
+  });
+
+  @override
+  void handleTapCancel({
+    required PointerDownEvent down,
+    PointerCancelEvent? cancel,
+    required String reason,
+  }) {}
+
+  @override
+  void handleTapDown({required PointerDownEvent down}) {
+    final TapDownDetails details = TapDownDetails(
+      globalPosition: down.position,
+      localPosition: down.localPosition,
+      kind: getKindForPointer(down.pointer),
+    );
+
+    if (down.buttons == kBackMouseButton && onTapDown != null) {
+      invokeCallback<void>('onTapDown', () => onTapDown!(details));
+    }
+  }
+
+  @override
+  void handleTapUp({
+    required PointerDownEvent down,
+    required PointerUpEvent up,
+  }) {}
 }
