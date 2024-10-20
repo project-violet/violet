@@ -4,6 +4,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:crypto/crypto.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
@@ -182,6 +183,7 @@ class MyApp extends StatelessWidget {
       routes: routes,
       localizationsDelegates: localizationsDelegates,
       localeResolutionCallback: localeResolution,
+      scrollBehavior: CustomScrollBehavior(),
     );
   }
 
@@ -223,4 +225,14 @@ class MyApp extends StatelessWidget {
 
     return supportedLocales.first;
   }
+}
+
+// https://docs.flutter.dev/release/breaking-changes/default-scroll-behavior-drag
+// for enable drag scrolling on desktop
+class CustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      };
 }
