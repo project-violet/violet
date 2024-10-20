@@ -14,6 +14,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flare_flutter/flare_cache.dart';
 import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
@@ -175,7 +176,10 @@ class MyApp extends StatelessWidget {
           ]
         : <NavigatorObserver>[];
 
+    final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
     return GetMaterialApp(
+      navigatorKey: navigatorKey,
       navigatorObservers: navigatorObservers,
       theme: theme,
       home: home,
@@ -184,6 +188,12 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: localizationsDelegates,
       localeResolutionCallback: localeResolution,
       scrollBehavior: CustomScrollBehavior(),
+      builder: (context, child) {
+        return EscapeKeyListener(
+          navigatorKey: navigatorKey,
+          child: child ?? Container(),
+        );
+      },
     );
   }
 
@@ -235,4 +245,84 @@ class CustomScrollBehavior extends MaterialScrollBehavior {
         PointerDeviceKind.touch,
         PointerDeviceKind.mouse,
       };
+}
+
+// A widget to listen for the Escape key, XButton1 and raise the WillPopScope event
+class EscapeKeyListener extends StatelessWidget {
+  final Widget child;
+  final GlobalKey<NavigatorState> navigatorKey;
+
+  const EscapeKeyListener({
+    super.key,
+    required this.navigatorKey,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return KeyboardListener(
+      autofocus: true,
+      focusNode: FocusNode(),
+      onKeyEvent: (KeyEvent event) {
+        if (event is KeyDownEvent &&
+            event.logicalKey == LogicalKeyboardKey.escape) {
+          navigatorPop();
+        }
+      },
+      // https://github.com/flutter/flutter/issues/115641#issuecomment-2267579790
+      child: RawGestureDetector(
+        gestures: <Type, GestureRecognizerFactory>{
+          MouseBackRecognizer:
+              GestureRecognizerFactoryWithHandlers<MouseBackRecognizer>(
+            () => MouseBackRecognizer(),
+            (instance) => instance.onTapDown = (details) => navigatorPop(),
+          ),
+        },
+        child: child,
+      ),
+    );
+  }
+
+  void navigatorPop() {
+    // Raise the WillPopScope event when Escape key is pressed
+    if (Navigator.of(navigatorKey.currentContext!).canPop()) {
+      Navigator.of(navigatorKey.currentContext!).maybePop();
+    }
+  }
+}
+
+class MouseBackRecognizer extends BaseTapGestureRecognizer {
+  GestureTapDownCallback? onTapDown;
+
+  MouseBackRecognizer({
+    super.debugOwner,
+    super.supportedDevices,
+    super.allowedButtonsFilter,
+  });
+
+  @override
+  void handleTapCancel({
+    required PointerDownEvent down,
+    PointerCancelEvent? cancel,
+    required String reason,
+  }) {}
+
+  @override
+  void handleTapDown({required PointerDownEvent down}) {
+    final TapDownDetails details = TapDownDetails(
+      globalPosition: down.position,
+      localPosition: down.localPosition,
+      kind: getKindForPointer(down.pointer),
+    );
+
+    if (down.buttons == kBackMouseButton && onTapDown != null) {
+      invokeCallback<void>('onTapDown', () => onTapDown!(details));
+    }
+  }
+
+  @override
+  void handleTapUp({
+    required PointerDownEvent down,
+    required PointerUpEvent up,
+  }) {}
 }
