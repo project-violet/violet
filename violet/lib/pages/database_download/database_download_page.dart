@@ -63,13 +63,15 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
             ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
             : Platform.isIOS
                 ? '${await getDatabasesPath()}/data.db'
-                : join(dirname(Platform.resolvedExecutable), 'data.db');
+                : join(dirname(Platform.resolvedExecutable), 'data/data.db');
         if (await File(dbPath).exists()) await File(dbPath).delete();
         final dir = Platform.isAndroid || Platform.isIOS
             ? await getApplicationDocumentsDirectory()
             : Directory(dirname(Platform.resolvedExecutable));
-        if (await Directory('${dir.path}/data').exists()) {
-          await Directory('${dir.path}/data').delete(recursive: true);
+        if (Platform.isAndroid || Platform.isIOS) {
+          if (await Directory('${dir.path}/data').exists()) {
+            await Directory('${dir.path}/data').delete(recursive: true);
+          }
         }
       }
     } catch (e, st) {
@@ -99,7 +101,7 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     try {
       final dir = Platform.isAndroid || Platform.isIOS
           ? await getApplicationDocumentsDirectory()
-          : Directory(dirname(Platform.resolvedExecutable));
+          : Directory(join(dirname(Platform.resolvedExecutable), 'data'));
       if (await File('${dir.path}/db.sql.7z').exists()) {
         await File('${dir.path}/db.sql.7z').delete();
       }
@@ -156,8 +158,10 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
         downloading = false;
       });
 
-      if (await Directory('${dir.path}/data').exists()) {
-        await Directory('${dir.path}/data').delete(recursive: true);
+      if (Platform.isAndroid || Platform.isIOS) {
+        if (await Directory('${dir.path}/data').exists()) {
+          await Directory('${dir.path}/data').delete(recursive: true);
+        }
       }
       await decompress7Z(
           src: '${dir.path}/db.sql.7z',

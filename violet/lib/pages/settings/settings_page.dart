@@ -1273,7 +1273,11 @@ class _SettingsPageState extends State<SettingsPage>
                 await ((await openDatabase('${dir.path}/data/data.db'))
                     .close());
                 await deleteDatabase('${dir.path}/data/data.db');
-                await Directory('${dir.path}/data').delete(recursive: true);
+                if (Platform.isAndroid || Platform.isIOS) {
+                  if (await Directory('${dir.path}/data').exists()) {
+                    await Directory('${dir.path}/data').delete(recursive: true);
+                  }
+                }
               } catch (_) {}
 
               Navigator.of(context)

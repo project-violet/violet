@@ -42,7 +42,7 @@ class DataBaseManager {
               ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
               : Platform.isIOS
                   ? '${await getDatabasesPath()}/data.db'
-                  : join(dirname(Platform.resolvedExecutable), 'data.db');
+                  : join(dirname(Platform.resolvedExecutable), 'data/data.db');
         }
         _instance = create(dbPath);
         await _instance!.open();
