@@ -49,7 +49,9 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
     WidgetsBinding.instance.addObserver(this);
     FToast().init(context);
 
-    uriLinkStream.listen(handleDeeplink);
+    if (Platform.isAndroid || Platform.isIOS) {
+      uriLinkStream.listen(handleDeeplink);
+    }
 
     Future.delayed(const Duration(milliseconds: 200))
         .then((value) => UpdateManager.updateCheck(context));
