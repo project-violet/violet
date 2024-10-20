@@ -146,6 +146,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
     final scrollView = CustomScrollView(
       physics: const BouncingScrollPhysics(),
+      primary: true,
       slivers: <Widget>[
         SliverPersistentHeader(
           floating: true,
