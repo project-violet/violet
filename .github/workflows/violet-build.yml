@@ -193,10 +193,25 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
 
       - name: Preprocess
+        shell: powershell
         run: |
           cd lib/server
-          wget -q ${{ secrets.SECRET_SALT }} || echo 'String getValid(String vToken) { return vToken; }' > salt.dart
-          wget -q ${{ secrets.SECRET_WSALT }} || echo 'String getValid(String vToken) { return vToken; }' > wsalt.dart
+          $secretSaltUrl = "${{ secrets.SECRET_SALT }}"
+          $secretWSaltUrl = "${{ secrets.SECRET_WSALT }}"
+
+          # Try downloading SECRET_SALT
+          try {
+            Invoke-WebRequest -Uri $secretSaltUrl -UseBasicParsing -OutFile "salt.dart"
+          } catch {
+            "String getValid(String vToken) { return vToken; }" | Out-File -FilePath "salt.dart"
+          }
+
+          # Try downloading SECRET_WSALT
+          try {
+            Invoke-WebRequest -Uri $secretWSaltUrl -UseBasicParsing -OutFile "wsalt.dart"
+          } catch {
+            "String getValid(String vToken) { return vToken; }" | Out-File -FilePath "wsalt.dart"
+          }
           cd ../..
 
       - name: Build
