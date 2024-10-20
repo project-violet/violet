@@ -100,10 +100,30 @@ class _ViewerPageState extends State<ViewerPage> {
       );
     }
 
+    final pageKeyListener = KeyboardListener(
+      focusNode: FocusNode(),
+      onKeyEvent: (KeyEvent event) {
+        if (event is KeyDownEvent) {
+          switch (event.logicalKey) {
+            case LogicalKeyboardKey.arrowDown:
+            case LogicalKeyboardKey.arrowLeft:
+              c.prev();
+              break;
+
+            case LogicalKeyboardKey.arrowUp:
+            case LogicalKeyboardKey.arrowRight:
+              c.next();
+              break;
+          }
+        }
+      },
+      child: body,
+    );
+
     return PopScope(
       canPop: true,
       onPopInvoked: _handlePopInvoked,
-      child: body,
+      child: pageKeyListener,
     );
   }
 
