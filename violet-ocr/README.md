@@ -13,6 +13,8 @@
 - `fast_dl_runner.py`: 레포 루트의 `../fast-dl/fast-dl.exe` 다운로더를 실행합니다.
 - `ocr_common.py`: 이미지 정렬, OCR 결과 저장, 텍스트 박스 그룹핑 헬퍼입니다.
 - `trace_writer.py`: Chrome trace JSONL 파일을 기록합니다.
+- `fix_ocr_with_vllm.py`: `raw/` JSON의 `pages[*].dialogues[*].text`를 로컬 vLLM EXAONE 서버로 교정해 `raw-fixed/`에 저장합니다.
+- `vllm-exaone/`: `fix_ocr_with_vllm.py`에서 사용할 EXAONE 3.5 AWQ vLLM 서버 실행/상태 확인 스크립트입니다.
 - `works/target_ids.json`: 기본 대상 ID 목록입니다.
 
 ## 요구 사항
@@ -20,6 +22,7 @@
 - TurboOCR 서버 실행을 위한 Docker
 - Pillow를 사용할 수 있는 Python 환경
 - 레포의 `fast-dl/`에서 빌드된 `../fast-dl/fast-dl.exe`
+- OCR 교정 도구를 사용할 경우 `http://localhost:8001/v1`에서 응답하는 OpenAI 호환 vLLM 서버
 
 기본 Go 다운로더 경로는 다음과 같습니다.
 
@@ -157,6 +160,41 @@ python.exe .\run-works-turbo.py 5000 `
 - `works/failed_ids.jsonl`: 다운로드/OCR 실패 기록
 
 기본적으로 이미 `raw/{work_id}.json`이 있으면 스킵합니다. 다시 OCR하려면 `--force-ocr`를 사용합니다. 이미 완성된 다운로드도 기본적으로 스킵하며, 다시 다운로드하려면 `--force-download`를 사용합니다.
+
+## vLLM OCR 교정
+
+`fix_ocr_with_vllm.py`는 TurboOCR 결과 JSON을 읽어 텍스트만 교정한 뒤 `raw-fixed/`에 씁니다. 기본 모델명은 `exaone3.5:7.8b-awq`, 기본 API 주소는 `http://localhost:8001/v1`입니다.
+
+먼저 EXAONE vLLM 서버를 시작합니다.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\vllm-exaone\start.ps1
+```
+
+상태 확인과 간단한 채팅 테스트는 다음 명령을 사용합니다.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\vllm-exaone\status.ps1
+powershell -ExecutionPolicy Bypass -File .\vllm-exaone\test_chat.ps1
+```
+
+한 파일만 교정하려면 다음처럼 실행합니다.
+
+```powershell
+python .\fix_ocr_with_vllm.py --file .\raw\1234567.json --output .\raw-fixed
+```
+
+여러 파일을 처리할 때는 `--input`, `--limit`, `--workers`를 사용할 수 있습니다.
+
+```powershell
+python .\fix_ocr_with_vllm.py --input .\raw --output .\raw-fixed --limit 10 --workers 2
+```
+
+저신뢰도 대사만 교정하거나 특정 페이지만 처리할 수도 있습니다.
+
+```powershell
+python .\fix_ocr_with_vllm.py --file .\raw\1234567.json --low-confidence-only 0.85 --pages 1,2,5-10
+```
 
 ## TurboOCR 중지
 
