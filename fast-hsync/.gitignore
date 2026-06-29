@@ -1,0 +1,12 @@
+*.exe
+*.db
+*.db-journal
+*.db-*
+*.db-shm
+*.db-wal
+*.log
+.env
+.gocache/
+.gopath/
+coverage.out
+chunk/
