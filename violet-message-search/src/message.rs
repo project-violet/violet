@@ -1,0 +1,167 @@
+use std::cmp::Ordering;
+use std::collections::HashSet;
+use std::fs::File;
+use std::path::PathBuf;
+use std::sync::{Arc, LazyLock, Mutex};
+
+use itertools::Itertools;
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+use serde::{Deserialize, Serialize};
+
+use crate::binding::{CachedPartialRatio, CachedRatio, SimilarityMethod};
+use crate::cache::with_cache;
+use crate::displant::HangulConverter;
+
+static MESSAGES: LazyLock<Mutex<Vec<Arc<Message>>>> = LazyLock::new(|| Mutex::new(vec![]));
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct Message {
+    #[serde(rename = "ArticleId")]
+    pub article_id: usize,
+
+    #[serde(rename = "Page")]
+    pub page: usize,
+
+    #[serde(rename = "Message")]
+    pub message: String,
+
+    #[serde(rename = "MessageRaw", skip_serializing_if = "Option::is_none", default)]
+    pub raw: Option<String>,
+
+    #[serde(rename = "Score")]
+    pub correct: f64,
+
+    #[serde(rename = "Rectangle")]
+    pub rects: [f64; 4],
+}
+
+#[derive(Serialize, Clone)]
+#[cfg_attr(not(feature = "raw"), derive(Copy))]
+pub struct MessageResult {
+    #[serde(rename(serialize = "Id"))]
+    id: usize,
+
+    #[serde(rename(serialize = "Page"))]
+    page: usize,
+
+    #[serde(rename(serialize = "Correctness"))]
+    correct: f64,
+
+    #[serde(rename(serialize = "MatchScore"))]
+    score: f64,
+
+    #[serde(rename(serialize = "Rect"))]
+    rects: [f64; 4],
+
+    #[cfg(feature = "raw")]
+    #[serde(rename(serialize = "Raw"))]
+    raw: String,
+}
+
+impl From<&Message> for MessageResult {
+    fn from(msg: &Message) -> Self {
+        MessageResult {
+            id: msg.article_id,
+            page: msg.page,
+            correct: msg.correct,
+            rects: msg.rects,
+            #[cfg(feature = "raw")]
+            raw: msg.raw.clone().unwrap_or_default(),
+            score: Default::default(),
+        }
+    }
+}
+
+pub fn load_messages(path: PathBuf) {
+    let file = File::open(path).unwrap();
+    let msgs: Vec<Message> = simd_json::serde::from_reader(file).unwrap();
+    MESSAGES
+        .lock()
+        .unwrap()
+        .extend(msgs.into_iter().map(Arc::new));
+}
+
+pub fn search_similar(id: Option<usize>, query: &str, take: usize) -> Vec<MessageResult> {
+    let converted_query = convert_query(query);
+    with_cache(format!("similar-{id:?}-{converted_query}"), move || {
+        search(
+            CachedRatio::from(&converted_query),
+            |message| id.map(|id| message.article_id == id).unwrap_or(true),
+            take,
+        )
+    })
+}
+
+pub fn search_partial_contains(id: Option<usize>, query: &str, take: usize) -> Vec<MessageResult> {
+    let converted_query = convert_query(query);
+    with_cache(format!("contains-{id:?}-{converted_query}"), move || {
+        search(
+            CachedPartialRatio::from(&converted_query),
+            |message| {
+                id.map(|id| message.article_id == id).unwrap_or(true)
+                    && converted_query.len() <= message.message.len()
+            },
+            take,
+        )
+    })
+}
+
+pub fn convert_query(query: &str) -> String {
+    let mut query = HangulConverter::total_disassembly(query);
+    query.retain(|c| !c.is_whitespace());
+    query
+}
+
+fn search(
+    scorer: impl SimilarityMethod,
+    filter: impl Fn(&&Arc<Message>) -> bool + Sync + Send,
+    take: usize,
+) -> Vec<MessageResult> {
+    let mut results: Vec<_> = MESSAGES
+        .lock()
+        .unwrap()
+        .par_iter()
+        .filter(filter)
+        .map(|message| (message.clone(), scorer.similarity(&message.message)))
+        .collect();
+
+    results.sort_by(|(amsg, ascore), (bmsg, bscore)| {
+        let ord = ascore.partial_cmp(bscore).unwrap();
+        match ord {
+            Ordering::Greater | Ordering::Less => ord.reverse(),
+            Ordering::Equal => amsg.correct.partial_cmp(&bmsg.correct).unwrap().reverse(),
+        }
+    });
+
+    results
+        .into_iter()
+        .take(take)
+        .map(|(msg, score)| {
+            let mut result: MessageResult = msg.as_ref().into();
+            result.score = score;
+            result
+        })
+        .collect()
+}
+
+pub fn search_article(id: usize) -> Vec<MessageResult> {
+    MESSAGES
+        .lock()
+        .unwrap()
+        .iter()
+        .filter(|msg| msg.article_id == id)
+        .map(|msg| msg.as_ref().into())
+        .collect()
+}
+
+pub fn article_lists() -> Vec<usize> {
+    MESSAGES
+        .lock()
+        .unwrap()
+        .iter()
+        .map(|msg| msg.as_ref().article_id)
+        .collect::<HashSet<_>>()
+        .into_iter()
+        .sorted()
+        .collect()
+}
