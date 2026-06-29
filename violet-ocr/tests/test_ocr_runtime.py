@@ -73,6 +73,7 @@ class OcrRuntimeTests(unittest.TestCase):
         self.assertIn("123", cmd)
         self.assertIn("-tmp-dir", cmd)
         self.assertIn("tmp", cmd)
+        self.assertNotIn("-gallery-dl", cmd)
 
 
 if __name__ == "__main__":

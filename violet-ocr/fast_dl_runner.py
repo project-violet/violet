@@ -23,8 +23,6 @@ def build_fast_dl_command(
         work_id,
         "-tmp-dir",
         output_root,
-        "-gallery-dl",
-        gallery_dl,
         "-file-workers",
         str(file_workers),
         "-file-retries",
