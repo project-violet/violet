@@ -1,0 +1,139 @@
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 101;
+}
+
+.headerTitle {
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.headerBtn {
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.headerBtn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.saveBtn {
+  background: var(--color-primary);
+}
+
+.saveBtn:hover {
+  background: var(--color-primary);
+  filter: brightness(1.15);
+}
+
+.saveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Page selection mode */
+.pageSelectContainer {
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 60px var(--spacing-md) var(--spacing-md);
+}
+
+.pageSelectItem {
+  cursor: pointer;
+  border: 3px solid transparent;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+  max-height: 70vh;
+}
+
+.pageSelectItem:hover {
+  border-color: var(--color-primary);
+  transform: scale(1.02);
+}
+
+.pageSelectItem img {
+  display: block;
+  max-height: 70vh;
+  max-width: 40vw;
+  object-fit: contain;
+}
+
+.pageSelectLabel {
+  text-align: center;
+  color: #fff;
+  padding: var(--spacing-xs) 0;
+  font-size: 0.9rem;
+}
+
+/* Crop mode */
+.cropContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 50px 0 0;
+  user-select: none;
+}
+
+.cropImage {
+  max-width: 90vw;
+  max-height: calc(100vh - 60px);
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
+
+.cropOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  cursor: crosshair;
+}
+
+.selectionRect {
+  position: absolute;
+  border: 2px solid var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.2);
+  pointer-events: none;
+}

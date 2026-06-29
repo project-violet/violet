@@ -1,0 +1,129 @@
+:root {
+  /* Colors - Dark theme (default) */
+  --color-bg: #0f0f0f;
+  --color-bg-elevated: #1a1a1a;
+  --color-bg-hover: #252525;
+  --color-surface: #1e1e1e;
+  --color-border: #333;
+  --color-text: #e0e0e0;
+  --color-text-secondary: #999;
+  --color-primary: #7c5cbf;
+  --color-primary-hover: #9370db;
+  --color-danger: #e74c3c;
+
+  /* Component-specific colors */
+  --color-chip-bg: rgba(255, 255, 255, 0.06);
+  --color-chip-border: rgba(255, 255, 255, 0.08);
+  --color-chip-bg-hover: rgba(255, 255, 255, 0.10);
+  --color-chip-border-hover: rgba(255, 255, 255, 0.14);
+  --color-chip-bg-active: rgba(255, 255, 255, 0.14);
+  --color-chip-border-active: rgba(255, 255, 255, 0.20);
+  --color-chip-bg-active-hover: rgba(255, 255, 255, 0.18);
+  --color-tag-female: #c48da0;
+  --color-tag-male: #7da1c4;
+  --color-tag-tag: #8a8f96;
+  --color-tag-artist: #c4a84e;
+  --color-tag-series: #6bb89e;
+  --color-tag-group: #9b8abf;
+  --color-tag-character: #c49070;
+  --color-pagination-text: #fff;
+  --color-pagination-btn-bg: rgba(255, 255, 255, 0.12);
+  --color-pagination-btn-bg-hover: rgba(255, 255, 255, 0.22);
+  --color-pagination-bg: rgba(30, 30, 30, 0.85);
+  --color-toggle-knob: #fff;
+  --color-on-primary: #fff;
+  --color-toast-bg: rgba(0, 0, 0, 0.85);
+  --color-toast-text: white;
+  --color-dialog-bg: rgba(30, 30, 30, 0.75);
+  --color-dialog-header-border: rgba(255, 255, 255, 0.1);
+  --color-dialog-text: #fff;
+  --color-dialog-text-secondary: rgba(255, 255, 255, 0.5);
+  --color-dialog-btn-bg: rgba(255, 255, 255, 0.12);
+  --color-dialog-btn-bg-hover: rgba(255, 255, 255, 0.2);
+  --color-dialog-item-hover: rgba(255, 255, 255, 0.1);
+  --color-dialog-item-active: rgba(255, 255, 255, 0.08);
+  --color-dialog-thumbnail-bg: rgba(255, 255, 255, 0.05);
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Breakpoints (for reference, used in media queries) */
+  /* Mobile: < 768px */
+  /* Tablet: 768px - 1024px */
+  /* Desktop: > 1024px */
+
+  /* Layout */
+  --sidebar-width: 240px;
+  --topbar-height: 56px;
+  --bottomnav-height: 56px;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Light theme overrides */
+:root[data-theme="light"] {
+  --color-bg: #f5f5f5;
+  --color-bg-elevated: #ffffff;
+  --color-bg-hover: #e8e8e8;
+  --color-surface: #f0f0f0;
+  --color-border: #d4d4d4;
+  --color-text: #1a1a1a;
+  --color-text-secondary: #666;
+  --color-primary-hover: #6a4daa;
+  --color-danger: #dc2626;
+
+  --color-chip-bg: rgba(0, 0, 0, 0.025);
+  --color-chip-border: rgba(0, 0, 0, 0.15);
+  --color-chip-bg-hover: rgba(0, 0, 0, 0.03);
+  --color-chip-border-hover: rgba(0, 0, 0, 0.22);
+  --color-chip-bg-active: rgba(0, 0, 0, 0.05);
+  --color-chip-border-active: rgba(0, 0, 0, 0.28);
+  --color-chip-bg-active-hover: rgba(0, 0, 0, 0.07);
+  --color-tag-female: #c4607e;
+  --color-tag-male: #4a82b8;
+  --color-tag-tag: #6b7280;
+  --color-tag-artist: #b8912a;
+  --color-tag-series: #2e9e78;
+  --color-tag-group: #7c5cbf;
+  --color-tag-character: #c07840;
+  --color-pagination-text: #1a1a1a;
+  --color-pagination-btn-bg: rgba(0, 0, 0, 0.08);
+  --color-pagination-btn-bg-hover: rgba(0, 0, 0, 0.15);
+  --color-pagination-bg: rgba(255, 255, 255, 0.85);
+  --color-toggle-knob: #fff;
+  --color-on-primary: #fff;
+  --color-toast-bg: rgba(50, 50, 50, 0.90);
+  --color-toast-text: white;
+  --color-dialog-bg: rgba(255, 255, 255, 0.85);
+  --color-dialog-header-border: rgba(0, 0, 0, 0.1);
+  --color-dialog-text: #1a1a1a;
+  --color-dialog-text-secondary: rgba(0, 0, 0, 0.5);
+  --color-dialog-btn-bg: rgba(0, 0, 0, 0.08);
+  --color-dialog-btn-bg-hover: rgba(0, 0, 0, 0.15);
+  --color-dialog-item-hover: rgba(0, 0, 0, 0.05);
+  --color-dialog-item-active: rgba(0, 0, 0, 0.08);
+  --color-dialog-thumbnail-bg: rgba(0, 0, 0, 0.05);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Theme transition animation */
+:root.theme-transitioning,
+:root.theme-transitioning *,
+:root.theme-transitioning *::before,
+:root.theme-transitioning *::after {
+  transition: background-color 0.3s ease, color 0.3s ease,
+              border-color 0.3s ease, box-shadow 0.3s ease !important;
+}

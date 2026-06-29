@@ -1,0 +1,123 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+}
+
+.dialog {
+  background: var(--color-dialog-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  width: 90vw;
+  max-width: 900px;
+  max-height: 70vh;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--color-dialog-header-border);
+  flex-shrink: 0;
+}
+
+.title {
+  color: var(--color-dialog-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.closeBtn {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-dialog-btn-bg);
+  border-radius: var(--radius-sm);
+  color: var(--color-dialog-text-secondary);
+  font-size: 0.8rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.closeBtn:hover {
+  background: var(--color-dialog-btn-bg-hover);
+}
+
+.grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-sm);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-xs);
+  align-content: start;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  transition: transform 0.15s, background 0.15s;
+}
+
+.item:hover {
+  background: var(--color-dialog-item-hover);
+  transform: scale(1.03);
+}
+
+.active {
+  background: var(--color-dialog-item-active);
+  outline: 2px solid var(--color-primary, #7c3aed);
+  outline-offset: -2px;
+}
+
+.thumbnail {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: var(--radius-xs, 4px);
+  background: var(--color-dialog-thumbnail-bg);
+}
+
+.pageNum {
+  margin-top: 3px;
+  font-size: 0.7rem;
+  color: var(--color-dialog-text-secondary);
+}
+
+.active .pageNum {
+  color: var(--color-primary, #7c3aed);
+  font-weight: 600;
+}
+
+@media (min-width: 580px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-sm);
+  }
+}
+
+@media (min-width: 768px) {
+  .dialog {
+    max-width: 1300px;
+    max-height: 75vh;
+  }
+
+  .grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+  }
+}

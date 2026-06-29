@@ -1,0 +1,291 @@
+{
+  "app": {
+    "name": "Violet"
+  },
+  "nav": {
+    "home": "Hejmo",
+    "bookmarks": "Legosignoj",
+    "cropBookmarks": "Tondaĵoj",
+    "history": "Historio",
+    "downloads": "Elŝutoj",
+    "aiSearch": "AI-Serĉo",
+    "settings": "Agordoj",
+    "hot": "Hot",
+    "messageSearch": "Mesaĝoj",
+    "keywordGraph": "Keyword Graph"
+  },
+  "home": {
+    "heading": "Foliumi",
+    "searchHeading": "Serĉo: {{query}}",
+    "results": "{{count}} rezultoj",
+    "prev": "Antaŭa",
+    "next": "Sekva"
+  },
+  "search": {
+    "placeholder": "Serĉi... (ekz. artist:nomo, tag:nomo)",
+    "searchButton": "Serĉi",
+    "noResults": "Neniuj rezultoj trovitaj.",
+    "allLanguages": "Ĉiuj lingvoj",
+    "suggestions": "Sugestoj",
+    "recentSearches": "Lastaj serĉoj",
+    "clearRecent": "Forigi",
+    "includeQuery": "Inkluzivi \"{{query}}\"",
+    "expandTags": "Montri ĉiujn etikedojn",
+    "collapseTags": "Montri unu vicon"
+  },
+  "article": {
+    "artist": "Artisto",
+    "language": "Lingvo",
+    "type": "Tipo",
+    "pages": "Paĝoj",
+    "series": "Serio",
+    "characters": "Roluloj",
+    "read": "Legi",
+    "bookmarked": "Legosignita",
+    "bookmark": "Legosigno",
+    "noImage": "Neniu bildo"
+  },
+  "bookmarks": {
+    "heading": "Legosignoj",
+    "all": "Ĉiuj",
+    "addBookmark": "Aldoni legosignon",
+    "add": "Aldoni",
+    "cancel": "Nuligi",
+    "uncategorized": "Nekategoriita"
+  },
+  "hot": {
+    "heading": "Hot",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "alltime": "All Time",
+    "setupRequired": "Developer mode and HMAC salt required.",
+    "setupHint": "Enable Developer Mode in Settings and configure HMAC Salt.",
+    "error": "Failed to load. Check developer settings."
+  },
+  "history": {
+    "heading": "Historio"
+  },
+  "downloads": {
+    "heading": "Elŝutoj",
+    "startToast": "Elŝuto komenciĝis",
+    "completeToast": "Elŝuto finiĝis",
+    "failedToast": "Elŝuto malsukcesis",
+    "errorToast": "Malsukcesis komenci elŝuton",
+    "alreadyToast": "Jam elŝutita",
+    "delete": "Forigi",
+    "retry": "Reprovi"
+  },
+  "aiSearch": {
+    "heading": "AI-Serĉo",
+    "placeholder": "Demandu ion ajn...",
+    "answerLabel": "AI-Respondo",
+    "score": "Rilato",
+    "mode": "Reĝimo",
+    "modeSuperFast": "Tuja",
+    "modeFast": "Rapida",
+    "modeDetail": "Detala",
+    "noResults": "Neniuj rezultoj trovitaj.",
+    "error": "Eraro okazis dum AI-serĉo."
+  },
+  "crop": {
+    "selectPage": "Elektu paĝon por tondi",
+    "cancel": "Nuligi",
+    "page": "Paĝo {{page}}",
+    "dragToSelect": "Paĝo {{page}} — Trenu por elekti areon",
+    "reselect": "Reelekti",
+    "save": "Konservi",
+    "savedToast": "Tondaĵo konservita por paĝo {{page}}",
+    "saveErrorToast": "Malsukcesis konservi tondaĵon",
+    "deletedToast": "Tondaĵa legosigno forigita",
+    "deleteErrorToast": "Malsukcesis forigi tondaĵan legosignon",
+    "userBookmarks": "Uzantaj legosignoj"
+  },
+  "bookmark": {
+    "addedToast": "Aldonita al legosignoj",
+    "removedToast": "Forigita el legosignoj",
+    "errorToast": "Malsukcesis procezi legosignon"
+  },
+  "settings": {
+    "heading": "Agordoj",
+    "language": {
+      "heading": "Lingvo",
+      "contentLanguage": "Enhava lingvo (Serĉfiltrilo)",
+      "uiLanguage": "UI-Lingvo",
+      "all": "Ĉiuj lingvoj",
+      "korean": "Korea",
+      "english": "Angla",
+      "japanese": "Japana",
+      "chinese": "Ĉina",
+      "system": "Sistema defaŭlto",
+      "en": "English",
+      "ko": "한국어",
+      "ja": "日本語",
+      "zh": "中文",
+      "eo": "Esperanto",
+      "it": "Italiano",
+      "pt": "Português"
+    },
+    "theme": {
+      "heading": "Tema koloro",
+      "description": "Elektu vian preferatan koloran temon"
+    },
+    "display": {
+      "heading": "Montrado",
+      "scrollMode": "Ruluma reĝimo",
+      "pagination": "Paĝigo",
+      "infinite": "Senfina rulumado"
+    },
+    "viewer": {
+      "heading": "Vidilo",
+      "resumePrompt": "Demandi pri daŭrigo",
+      "resumePromptDesc": "Montri demandon por salti al la laste legita paĝo kiam verko malfermiĝas"
+    },
+    "tagTranslation": {
+      "heading": "Etikeda traduko",
+      "korean": "Korea",
+      "koreanDesc": "Montri etikedojn en la korea sur kartoj kaj serĉsugestoj"
+    },
+    "excludedTags": {
+      "heading": "Ekskluditaj etikedoj",
+      "description": "Etikedoj listigitaj ĉi tie estos aŭtomate ekskluditaj de hejmpaĝaj serĉrezultoj.",
+      "placeholder": "Tajpu etikedon por ekskludi...",
+      "defaultNote": "Defaŭlte: female:snuff, female:gore"
+    },
+    "aiSearch": {
+      "heading": "AI-Serĉo",
+      "enable": "Ebligi AI-Serĉon",
+      "enableDesc": "Montri AI-Serĉan langeton en navigado",
+      "helpText": "AI-Serĉo bezonas la violet-search servilon rulantan aparte. Vi devas agordi kaj ruli la violet-search servon por uzi ĉi tiun funkcion."
+    },
+    "sync": {
+      "heading": "Datumbaza sinkronigo",
+      "database": "Datumbazo:",
+      "ready": "Preta",
+      "notFound": "Ne trovita",
+      "lastSync": "Lasta sinkronigo:",
+      "lastSyncDb": "Lasta sinkronigo (DB):",
+      "never": "Neniam",
+      "status": "Stato:",
+      "idle": "Atendanta",
+      "checking": "Kontrolas ĝisdatigojn...",
+      "downloadingFull": "Elŝutas plenan datumbazon...",
+      "applyingChunks": "Aplikas ĝisdatigojn...",
+      "error": "Eraro",
+      "syncNow": "Sinkronigi nun",
+      "redownloadDB": "Re-elŝuti DB",
+      "starting": "Komencante...",
+      "confirmRedownload": "Ĉi tio re-elŝutos la tutan datumbazon. Ĉu daŭrigi?",
+      "yes": "Jes, re-elŝuti",
+      "cancel": "Nuligi"
+    },
+    "recentSearches": {
+      "heading": "Lastaj serĉoj",
+      "clear": "Forigi serĉhistorion",
+      "empty": "Neniuj lastaj serĉoj"
+    },
+    "developer": {
+      "heading": "Developer",
+      "enable": "Developer Mode",
+      "enableDesc": "Show developer settings for Hot tab",
+      "serverHost": "Server Host URL",
+      "hmacSalt": "HMAC Salt",
+      "hmacSaltPlaceholder": "Enter HMAC salt..."
+    },
+    "suggestions": {
+      "heading": "Etikeda kaŝmemoro",
+      "build": "Konstrui kaŝmemoron",
+      "rebuild": "Rekonstrui kaŝmemoron",
+      "status": "Stato",
+      "notBuilt": "Ne konstruita",
+      "built": "Konstruita",
+      "building": "Konstruante...",
+      "totalTags": "Totalaj etikedoj"
+    },
+    "messageSearch": {
+      "heading": "Mesaĝa Serĉo",
+      "enable": "Ŝalti mesaĝan serĉon",
+      "enableDesc": "Montri mesaĝan serĉon en navigado",
+      "serverUrl": "fscm-servila URL",
+      "serverUrlPlaceholder": "http://127.0.0.1:12332",
+      "resultLimit": "Rezulta limo",
+      "testConnection": "Testi konekton",
+      "testing": "Testante...",
+      "connectionOk": "Konektita",
+      "connectionFailed": "Konekto malsukcesis",
+      "sampleCount": "{{count}} specimenaj rezultoj"
+    },
+    "keywordGraph": {
+      "heading": "Keyword Graph",
+      "serverUrl": "work-keywords-go server URL",
+      "serverUrlPlaceholder": "http://127.0.0.1:8787",
+      "serverUrlDesc": "Keyword Graph tab server URL."
+    }
+  },
+  "viewer": {
+    "noImages": "Neniuj bildoj trovitaj por ĉi tiu galerio.",
+    "back": "Reen",
+    "settings": "Agordoj",
+    "pageInfo": "{{current}} / {{total}}",
+    "loading": "Ŝargante...",
+    "retrying": "Reprovas... ({{current}}/{{max}})",
+    "loadError": "Malsukcesis ŝargi bildon post {{max}} provoj. Klaku por reprovi.",
+    "settingsPanel": {
+      "title": "Vidilo-agordoj",
+      "pageMode": {
+        "title": "Paĝa reĝimo",
+        "scroll": "Rulumado",
+        "paged": "Paĝigita"
+      },
+      "viewMode": {
+        "title": "Vida reĝimo",
+        "vertical": "Vertikala",
+        "horizontal": "Horizontala"
+      },
+      "twoPageMode": {
+        "title": "Du-paĝa reĝimo",
+        "enabled": "Ebligita",
+        "disabled": "Malebligita"
+      },
+      "readDirection": {
+        "title": "Legdirekto",
+        "ltr": "Maldekstre al dekstre",
+        "rtl": "Dekstre al maldekstre"
+      },
+      "coverPageMode": {
+        "title": "Kovrilpaĝo",
+        "cover": "Nur unua paĝo",
+        "normal": "Unua paĝo parigita"
+      },
+      "padding": {
+        "title": "Interspacado"
+      }
+    }
+  },
+  "messageSearch": {
+    "heading": "Mesaĝa Serĉo",
+    "placeholder": "Serĉi mesaĝan tekston...",
+    "mode": {
+      "contains": "Enhavas",
+      "similar": "Simila",
+      "lcs": "LCS"
+    },
+    "search": "Serĉi",
+    "resultCount": "{{count}} rezultoj",
+    "empty": "Neniuj mesaĝaj rezultoj",
+    "loading": "Serĉante...",
+    "error": "Mesaĝa serĉo malsukcesis",
+    "retry": "Reprovi",
+    "score": "Poentaro",
+    "correctness": "Precizeco",
+    "page": "p{{page}}",
+    "disabled": "Mesaĝa serĉo estas malŝaltita en Agordoj.",
+    "imageError": "Bildo ne ŝargiĝis",
+    "invalidPage": "Nevalida paĝo",
+    "resultImageAlt": "Galerio {{id}} paĝo {{page}}",
+    "columnWidth": "Kolumna larĝo",
+    "searchHistory": "Serĉa historio",
+    "historyCount": "{{count}}x",
+    "scrollToTop": "Rulumi supren"
+  }
+}

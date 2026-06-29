@@ -1,0 +1,31 @@
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.icon {
+  color: var(--color-primary);
+}
+
+.label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-primary);
+}
+
+.body {
+  white-space: pre-wrap;
+  line-height: 1.7;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+}

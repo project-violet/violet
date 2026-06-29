@@ -1,0 +1,291 @@
+{
+  "app": {
+    "name": "Violet"
+  },
+  "nav": {
+    "home": "主页",
+    "bookmarks": "书签",
+    "cropBookmarks": "裁剪",
+    "history": "历史",
+    "downloads": "下载",
+    "aiSearch": "AI搜索",
+    "settings": "设置",
+    "hot": "Hot",
+    "messageSearch": "消息",
+    "keywordGraph": "Keyword Graph"
+  },
+  "home": {
+    "heading": "浏览",
+    "searchHeading": "搜索: {{query}}",
+    "results": "{{count}}个结果",
+    "prev": "上一页",
+    "next": "下一页"
+  },
+  "search": {
+    "placeholder": "搜索... (例如: artist:名字, tag:名字)",
+    "searchButton": "搜索",
+    "noResults": "未找到搜索结果。",
+    "allLanguages": "所有语言",
+    "suggestions": "建议",
+    "recentSearches": "最近搜索",
+    "clearRecent": "清除",
+    "includeQuery": "包含 \"{{query}}\"",
+    "expandTags": "显示所有标签",
+    "collapseTags": "仅显示一行"
+  },
+  "article": {
+    "artist": "作者",
+    "language": "语言",
+    "type": "类型",
+    "pages": "页数",
+    "series": "系列",
+    "characters": "角色",
+    "read": "阅读",
+    "bookmarked": "已收藏",
+    "bookmark": "收藏",
+    "noImage": "无图片"
+  },
+  "bookmarks": {
+    "heading": "书签",
+    "all": "全部",
+    "addBookmark": "添加书签",
+    "add": "添加",
+    "cancel": "取消",
+    "uncategorized": "未分类"
+  },
+  "hot": {
+    "heading": "Hot",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "alltime": "All Time",
+    "setupRequired": "Developer mode and HMAC salt required.",
+    "setupHint": "Enable Developer Mode in Settings and configure HMAC Salt.",
+    "error": "Failed to load. Check developer settings."
+  },
+  "history": {
+    "heading": "历史"
+  },
+  "downloads": {
+    "heading": "下载",
+    "startToast": "开始下载",
+    "completeToast": "下载完成",
+    "failedToast": "下载失败",
+    "errorToast": "下载启动失败",
+    "alreadyToast": "已下载的作品",
+    "delete": "删除",
+    "retry": "重试"
+  },
+  "aiSearch": {
+    "heading": "AI搜索",
+    "placeholder": "随便问什么...",
+    "answerLabel": "AI回答",
+    "score": "相关度",
+    "mode": "模式",
+    "modeSuperFast": "即时搜索",
+    "modeFast": "快速搜索",
+    "modeDetail": "详细搜索",
+    "noResults": "未找到搜索结果。",
+    "error": "AI搜索时发生错误。"
+  },
+  "crop": {
+    "selectPage": "选择要裁剪的页面",
+    "cancel": "取消",
+    "page": "第{{page}}页",
+    "dragToSelect": "第{{page}}页 — 拖动选择区域",
+    "reselect": "重新选择",
+    "save": "保存",
+    "savedToast": "第{{page}}页裁剪已保存",
+    "saveErrorToast": "裁剪保存失败",
+    "deletedToast": "裁剪书签已删除",
+    "deleteErrorToast": "裁剪书签删除失败",
+    "userBookmarks": "用户书签"
+  },
+  "bookmark": {
+    "addedToast": "已添加到书签",
+    "removedToast": "已从书签移除",
+    "errorToast": "书签处理失败"
+  },
+  "settings": {
+    "heading": "设置",
+    "language": {
+      "heading": "语言",
+      "contentLanguage": "内容语言（搜索过滤）",
+      "uiLanguage": "UI语言",
+      "all": "所有语言",
+      "korean": "韩语",
+      "english": "英语",
+      "japanese": "日语",
+      "chinese": "中文",
+      "system": "系统默认",
+      "en": "English",
+      "ko": "한국어",
+      "ja": "日本語",
+      "zh": "中文",
+      "eo": "Esperanto",
+      "it": "Italiano",
+      "pt": "Português"
+    },
+    "theme": {
+      "heading": "主题颜色",
+      "description": "选择您喜欢的颜色主题"
+    },
+    "display": {
+      "heading": "显示",
+      "scrollMode": "滚动模式",
+      "pagination": "分页",
+      "infinite": "无限滚动"
+    },
+    "viewer": {
+      "heading": "查看器",
+      "resumePrompt": "询问是否继续阅读",
+      "resumePromptDesc": "打开作品时，询问是否跳转到上次阅读的页面"
+    },
+    "tagTranslation": {
+      "heading": "标签翻译",
+      "korean": "韩语",
+      "koreanDesc": "在卡片和搜索建议中以韩语显示标签"
+    },
+    "excludedTags": {
+      "heading": "排除标签",
+      "description": "此处列出的标签将自动从主页搜索结果中排除。",
+      "placeholder": "输入要排除的标签...",
+      "defaultNote": "默认: female:snuff, female:gore"
+    },
+    "aiSearch": {
+      "heading": "AI搜索",
+      "enable": "启用AI搜索",
+      "enableDesc": "在导航栏中显示AI搜索标签页",
+      "helpText": "AI搜索需要单独运行violet-search服务器。要使用此功能，请先设置并运行violet-search服务。"
+    },
+    "sync": {
+      "heading": "数据库同步",
+      "database": "数据库:",
+      "ready": "就绪",
+      "notFound": "未找到",
+      "lastSync": "最后同步:",
+      "lastSyncDb": "最后同步(DB):",
+      "never": "从未",
+      "status": "状态:",
+      "idle": "空闲",
+      "checking": "检查更新中...",
+      "downloadingFull": "下载完整数据库中...",
+      "applyingChunks": "应用更新中...",
+      "error": "错误",
+      "syncNow": "立即同步",
+      "redownloadDB": "重新下载数据库",
+      "starting": "启动中...",
+      "confirmRedownload": "这将重新下载整个数据库。是否继续？",
+      "yes": "是，重新下载",
+      "cancel": "取消"
+    },
+    "recentSearches": {
+      "heading": "最近搜索",
+      "clear": "清除搜索历史",
+      "empty": "无最近搜索"
+    },
+    "developer": {
+      "heading": "Developer",
+      "enable": "Developer Mode",
+      "enableDesc": "Show developer settings for Hot tab",
+      "serverHost": "Server Host URL",
+      "hmacSalt": "HMAC Salt",
+      "hmacSaltPlaceholder": "Enter HMAC salt..."
+    },
+    "suggestions": {
+      "heading": "标签缓存",
+      "build": "构建缓存",
+      "rebuild": "重建缓存",
+      "status": "状态",
+      "notBuilt": "未构建",
+      "built": "已构建",
+      "building": "构建中...",
+      "totalTags": "总标签数"
+    },
+    "messageSearch": {
+      "heading": "消息搜索",
+      "enable": "启用消息搜索",
+      "enableDesc": "在导航中显示消息搜索标签",
+      "serverUrl": "fscm 服务器 URL",
+      "serverUrlPlaceholder": "http://127.0.0.1:12332",
+      "resultLimit": "结果限制",
+      "testConnection": "测试连接",
+      "testing": "测试中...",
+      "connectionOk": "已连接",
+      "connectionFailed": "连接失败",
+      "sampleCount": "{{count}} 个样本结果"
+    },
+    "keywordGraph": {
+      "heading": "Keyword Graph",
+      "serverUrl": "work-keywords-go server URL",
+      "serverUrlPlaceholder": "http://127.0.0.1:8787",
+      "serverUrlDesc": "Keyword Graph tab server URL."
+    }
+  },
+  "viewer": {
+    "noImages": "未找到该图库的图片。",
+    "back": "返回",
+    "settings": "设置",
+    "pageInfo": "{{current}} / {{total}}",
+    "loading": "加载中...",
+    "retrying": "重试中... ({{current}}/{{max}})",
+    "loadError": "{{max}}次尝试后加载图片失败。点击重试。",
+    "settingsPanel": {
+      "title": "查看器设置",
+      "pageMode": {
+        "title": "页面模式",
+        "scroll": "滚动",
+        "paged": "翻页"
+      },
+      "viewMode": {
+        "title": "查看模式",
+        "vertical": "垂直",
+        "horizontal": "水平"
+      },
+      "twoPageMode": {
+        "title": "双页模式",
+        "enabled": "启用",
+        "disabled": "禁用"
+      },
+      "readDirection": {
+        "title": "阅读方向",
+        "ltr": "从左到右",
+        "rtl": "从右到左"
+      },
+      "coverPageMode": {
+        "title": "封面页",
+        "cover": "仅第一页",
+        "normal": "第一页配对"
+      },
+      "padding": {
+        "title": "边距"
+      }
+    }
+  },
+  "messageSearch": {
+    "heading": "消息搜索",
+    "placeholder": "搜索消息文本...",
+    "mode": {
+      "contains": "包含",
+      "similar": "相似",
+      "lcs": "LCS"
+    },
+    "search": "搜索",
+    "resultCount": "{{count}} 个结果",
+    "empty": "没有匹配的消息",
+    "loading": "搜索中...",
+    "error": "消息搜索失败",
+    "retry": "重试",
+    "score": "分数",
+    "correctness": "准确度",
+    "page": "第 {{page}} 页",
+    "disabled": "消息搜索已在设置中禁用。",
+    "imageError": "图片加载失败",
+    "invalidPage": "无效页面",
+    "resultImageAlt": "图库 {{id}} 第 {{page}} 页",
+    "columnWidth": "列宽",
+    "searchHistory": "搜索记录",
+    "historyCount": "{{count}}次",
+    "scrollToTop": "返回顶部"
+  }
+}

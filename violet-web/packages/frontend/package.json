@@ -1,0 +1,35 @@
+{
+  "name": "@violet-web/frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.64.1",
+    "@violet-web/shared": "workspace:*",
+    "axios": "^1.7.9",
+    "graphology": "^0.26.0",
+    "graphology-communities-louvain": "^2.0.2",
+    "graphology-layout-forceatlas2": "^0.10.1",
+    "i18next": "^25.8.7",
+    "lucide-react": "^0.564.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-i18next": "^16.5.4",
+    "react-markdown": "^10.1.0",
+    "react-router": "^7.1.3",
+    "sigma": "^3.0.3",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0"
+  }
+}

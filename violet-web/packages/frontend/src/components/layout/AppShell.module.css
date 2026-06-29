@@ -1,0 +1,173 @@
+.shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.mainArea {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.searchBar {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: var(--spacing-md) var(--spacing-md) 6px;
+  background: var(--color-bg-elevated);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.searchControls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.searchColumn {
+  flex: 0 1 500px;
+  min-width: 0;
+  width: 500px;
+}
+
+.tagRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  width: 100%;
+  min-width: 0;
+}
+
+.searchTags {
+  flex: 1;
+  min-width: 0;
+}
+
+.searchTagsCollapsed {
+  max-height: 35px;
+  overflow: hidden;
+  padding-bottom: 0;
+  margin-bottom: 8px;
+}
+
+.tagToggleBtn {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.tagToggleBtn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+  border-color: var(--color-primary);
+}
+
+.results {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.query {
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.count {
+  font-size: 0.85rem;
+}
+
+.cardSizeSlider {
+  margin-left: auto;
+  width: 100px;
+  accent-color: var(--color-primary, #7c3aed);
+  cursor: pointer;
+}
+
+.viewSwitch {
+  flex-shrink: 0;
+  margin-left: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.switchLabel {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  line-height: 1;
+}
+
+.switchInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switchTrack {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: var(--color-border);
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+
+.switchInput:checked ~ .switchTrack {
+  background: var(--color-primary, #7c3aed);
+}
+
+.switchThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: var(--color-toggle-knob);
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.switchInput:checked ~ .switchTrack .switchThumb {
+  transform: translateX(16px);
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md);
+}
+
+.content:has(:global(.keywordGraphFill)) {
+  overflow: hidden;
+  padding: 0;
+}
+
+@media (max-width: 767px) {
+  .content {
+    padding: var(--spacing-md);
+    padding-bottom: calc(var(--bottomnav-height) + var(--spacing-md));
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "violet-web",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter @violet-web/backend dev\" \"pnpm --filter @violet-web/frontend dev\"",
+    "build": "pnpm --filter @violet-web/shared build && pnpm --filter @violet-web/backend build && pnpm --filter @violet-web/frontend build",
+    "build:shared": "pnpm --filter @violet-web/shared build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.3"
+  }
+}

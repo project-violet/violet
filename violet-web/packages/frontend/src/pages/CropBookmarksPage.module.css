@@ -1,0 +1,73 @@
+.headerControls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.sizeSlider {
+  margin-left: auto;
+  width: 100px;
+  accent-color: var(--color-primary, #7c3aed);
+  cursor: pointer;
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggleLabel {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleTrack {
+  position: absolute;
+  inset: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 11px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.toggle input:checked + .toggleTrack {
+  background: var(--color-primary, #8b5cf6);
+  border-color: var(--color-primary, #8b5cf6);
+}
+
+.toggleTrack::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: var(--color-toggle-knob);
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.toggle input:checked + .toggleTrack::after {
+  transform: translateX(18px);
+}

@@ -1,0 +1,171 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+}
+
+.dialog {
+  background: var(--color-dialog-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  width: 98vw;
+  max-width: 1800px;
+  height: 90vh;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border, #333);
+  flex-shrink: 0;
+}
+
+.queryLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.andToggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.andLabel {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.toggle {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleTrack {
+  position: absolute;
+  inset: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.toggle input:checked + .toggleTrack {
+  background: var(--color-primary, #8b5cf6);
+  border-color: var(--color-primary, #8b5cf6);
+}
+
+.toggleTrack::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: var(--color-toggle-knob, #fff);
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.toggle input:checked + .toggleTrack::after {
+  transform: translateX(16px);
+}
+
+.countLabel {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.headerSpacer {
+  flex: 1;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+
+.closeBtn:hover {
+  color: var(--color-text);
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-top: 1px solid var(--color-border, #333);
+  flex-shrink: 0;
+}
+
+.pagination button {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border, #333);
+  color: var(--color-text);
+  cursor: pointer;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s;
+  font-size: 0.85rem;
+}
+
+.pagination button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.pagination button:not(:disabled):hover {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.pagination span {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  min-width: 60px;
+  text-align: center;
+}

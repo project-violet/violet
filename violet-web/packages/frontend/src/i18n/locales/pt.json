@@ -1,0 +1,291 @@
+{
+  "app": {
+    "name": "Violet"
+  },
+  "nav": {
+    "home": "Início",
+    "bookmarks": "Favoritos",
+    "cropBookmarks": "Recortes",
+    "history": "Histórico",
+    "downloads": "Downloads",
+    "aiSearch": "Busca IA",
+    "settings": "Configurações",
+    "hot": "Hot",
+    "messageSearch": "Mensagens",
+    "keywordGraph": "Keyword Graph"
+  },
+  "home": {
+    "heading": "Explorar",
+    "searchHeading": "Busca: {{query}}",
+    "results": "{{count}} resultados",
+    "prev": "Anterior",
+    "next": "Próximo"
+  },
+  "search": {
+    "placeholder": "Buscar... (ex. artist:nome, tag:nome)",
+    "searchButton": "Buscar",
+    "noResults": "Nenhum resultado encontrado.",
+    "allLanguages": "Todos os idiomas",
+    "suggestions": "Sugestões",
+    "recentSearches": "Buscas recentes",
+    "clearRecent": "Limpar",
+    "includeQuery": "Incluir \"{{query}}\"",
+    "expandTags": "Mostrar todas as tags",
+    "collapseTags": "Mostrar uma linha"
+  },
+  "article": {
+    "artist": "Artista",
+    "language": "Idioma",
+    "type": "Tipo",
+    "pages": "Páginas",
+    "series": "Série",
+    "characters": "Personagens",
+    "read": "Ler",
+    "bookmarked": "Favoritado",
+    "bookmark": "Favoritar",
+    "noImage": "Sem imagem"
+  },
+  "bookmarks": {
+    "heading": "Favoritos",
+    "all": "Todos",
+    "addBookmark": "Adicionar favorito",
+    "add": "Adicionar",
+    "cancel": "Cancelar",
+    "uncategorized": "Sem categoria"
+  },
+  "hot": {
+    "heading": "Hot",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "alltime": "All Time",
+    "setupRequired": "Developer mode and HMAC salt required.",
+    "setupHint": "Enable Developer Mode in Settings and configure HMAC Salt.",
+    "error": "Failed to load. Check developer settings."
+  },
+  "history": {
+    "heading": "Histórico"
+  },
+  "downloads": {
+    "heading": "Downloads",
+    "startToast": "Download iniciado",
+    "completeToast": "Download concluído",
+    "failedToast": "Download falhou",
+    "errorToast": "Falha ao iniciar download",
+    "alreadyToast": "Já baixado",
+    "delete": "Excluir",
+    "retry": "Tentar novamente"
+  },
+  "aiSearch": {
+    "heading": "Busca IA",
+    "placeholder": "Pergunte qualquer coisa...",
+    "answerLabel": "Resposta IA",
+    "score": "Relevância",
+    "mode": "Modo",
+    "modeSuperFast": "Instantâneo",
+    "modeFast": "Rápido",
+    "modeDetail": "Detalhado",
+    "noResults": "Nenhum resultado encontrado.",
+    "error": "Ocorreu um erro durante a busca IA."
+  },
+  "crop": {
+    "selectPage": "Selecione uma página para recortar",
+    "cancel": "Cancelar",
+    "page": "Página {{page}}",
+    "dragToSelect": "Página {{page}} — Arraste para selecionar a área",
+    "reselect": "Reselecionar",
+    "save": "Salvar",
+    "savedToast": "Recorte salvo para página {{page}}",
+    "saveErrorToast": "Falha ao salvar recorte",
+    "deletedToast": "Favorito de recorte excluído",
+    "deleteErrorToast": "Falha ao excluir favorito de recorte",
+    "userBookmarks": "Favoritos do usuário"
+  },
+  "bookmark": {
+    "addedToast": "Adicionado aos favoritos",
+    "removedToast": "Removido dos favoritos",
+    "errorToast": "Falha ao processar favorito"
+  },
+  "settings": {
+    "heading": "Configurações",
+    "language": {
+      "heading": "Idioma",
+      "contentLanguage": "Idioma do conteúdo (Filtro de busca)",
+      "uiLanguage": "Idioma da UI",
+      "all": "Todos os idiomas",
+      "korean": "Coreano",
+      "english": "Inglês",
+      "japanese": "Japonês",
+      "chinese": "Chinês",
+      "system": "Padrão do sistema",
+      "en": "English",
+      "ko": "한국어",
+      "ja": "日本語",
+      "zh": "中文",
+      "eo": "Esperanto",
+      "it": "Italiano",
+      "pt": "Português"
+    },
+    "theme": {
+      "heading": "Cor do tema",
+      "description": "Escolha seu tema de cor favorito"
+    },
+    "display": {
+      "heading": "Exibição",
+      "scrollMode": "Modo de rolagem",
+      "pagination": "Paginação",
+      "infinite": "Rolagem infinita"
+    },
+    "viewer": {
+      "heading": "Visualizador",
+      "resumePrompt": "Perguntar se deve retomar",
+      "resumePromptDesc": "Mostra uma pergunta para ir à última página lida ao abrir uma obra"
+    },
+    "tagTranslation": {
+      "heading": "Tradução de tags",
+      "korean": "Coreano",
+      "koreanDesc": "Exibir tags em coreano nos cartões e sugestões de busca"
+    },
+    "excludedTags": {
+      "heading": "Tags excluídas",
+      "description": "As tags listadas aqui serão automaticamente excluídas dos resultados de busca da página inicial.",
+      "placeholder": "Digite uma tag para excluir...",
+      "defaultNote": "Padrão: female:snuff, female:gore"
+    },
+    "aiSearch": {
+      "heading": "Busca IA",
+      "enable": "Ativar busca IA",
+      "enableDesc": "Mostrar aba de Busca IA na navegação",
+      "helpText": "A busca IA requer o servidor violet-search rodando separadamente. Você precisa configurar e executar o serviço violet-search para usar esta funcionalidade."
+    },
+    "sync": {
+      "heading": "Sincronização do banco de dados",
+      "database": "Banco de dados:",
+      "ready": "Pronto",
+      "notFound": "Não encontrado",
+      "lastSync": "Última sincronização:",
+      "lastSyncDb": "Última sincronização (DB):",
+      "never": "Nunca",
+      "status": "Status:",
+      "idle": "Inativo",
+      "checking": "Verificando atualizações...",
+      "downloadingFull": "Baixando banco de dados completo...",
+      "applyingChunks": "Aplicando atualizações...",
+      "error": "Erro",
+      "syncNow": "Sincronizar agora",
+      "redownloadDB": "Rebaixar DB",
+      "starting": "Iniciando...",
+      "confirmRedownload": "Isso irá rebaixar todo o banco de dados. Continuar?",
+      "yes": "Sim, rebaixar",
+      "cancel": "Cancelar"
+    },
+    "recentSearches": {
+      "heading": "Buscas recentes",
+      "clear": "Limpar histórico de buscas",
+      "empty": "Nenhuma busca recente"
+    },
+    "developer": {
+      "heading": "Developer",
+      "enable": "Developer Mode",
+      "enableDesc": "Show developer settings for Hot tab",
+      "serverHost": "Server Host URL",
+      "hmacSalt": "HMAC Salt",
+      "hmacSaltPlaceholder": "Enter HMAC salt..."
+    },
+    "suggestions": {
+      "heading": "Cache de tags",
+      "build": "Construir cache",
+      "rebuild": "Reconstruir cache",
+      "status": "Status",
+      "notBuilt": "Não construído",
+      "built": "Construído",
+      "building": "Construindo...",
+      "totalTags": "Total de tags"
+    },
+    "messageSearch": {
+      "heading": "Busca de mensagens",
+      "enable": "Ativar busca de mensagens",
+      "enableDesc": "Mostrar a aba de busca de mensagens na navegação",
+      "serverUrl": "URL do servidor fscm",
+      "serverUrlPlaceholder": "http://127.0.0.1:12332",
+      "resultLimit": "Limite de resultados",
+      "testConnection": "Testar conexão",
+      "testing": "Testando...",
+      "connectionOk": "Conectado",
+      "connectionFailed": "Falha na conexão",
+      "sampleCount": "{{count}} resultados de amostra"
+    },
+    "keywordGraph": {
+      "heading": "Keyword Graph",
+      "serverUrl": "work-keywords-go server URL",
+      "serverUrlPlaceholder": "http://127.0.0.1:8787",
+      "serverUrlDesc": "Keyword Graph tab server URL."
+    }
+  },
+  "viewer": {
+    "noImages": "Nenhuma imagem encontrada para esta galeria.",
+    "back": "Voltar",
+    "settings": "Configurações",
+    "pageInfo": "{{current}} / {{total}}",
+    "loading": "Carregando...",
+    "retrying": "Tentando novamente... ({{current}}/{{max}})",
+    "loadError": "Falha ao carregar imagem após {{max}} tentativas. Clique para tentar novamente.",
+    "settingsPanel": {
+      "title": "Configurações do visualizador",
+      "pageMode": {
+        "title": "Modo de página",
+        "scroll": "Rolagem",
+        "paged": "Paginado"
+      },
+      "viewMode": {
+        "title": "Modo de visualização",
+        "vertical": "Vertical",
+        "horizontal": "Horizontal"
+      },
+      "twoPageMode": {
+        "title": "Modo dupla página",
+        "enabled": "Ativado",
+        "disabled": "Desativado"
+      },
+      "readDirection": {
+        "title": "Direção de leitura",
+        "ltr": "Esquerda para direita",
+        "rtl": "Direita para esquerda"
+      },
+      "coverPageMode": {
+        "title": "Página de capa",
+        "cover": "Apenas primeira página",
+        "normal": "Primeira página em par"
+      },
+      "padding": {
+        "title": "Espaçamento"
+      }
+    }
+  },
+  "messageSearch": {
+    "heading": "Busca de mensagens",
+    "placeholder": "Buscar texto de mensagem...",
+    "mode": {
+      "contains": "Contém",
+      "similar": "Similar",
+      "lcs": "LCS"
+    },
+    "search": "Buscar",
+    "resultCount": "{{count}} resultados",
+    "empty": "Nenhuma mensagem encontrada",
+    "loading": "Buscando...",
+    "error": "Falha na busca de mensagens",
+    "retry": "Tentar novamente",
+    "score": "Pontuação",
+    "correctness": "Precisão",
+    "page": "p{{page}}",
+    "disabled": "A busca de mensagens está desativada nas configurações.",
+    "imageError": "Falha ao carregar imagem",
+    "invalidPage": "Página inválida",
+    "resultImageAlt": "Galeria {{id}} página {{page}}",
+    "columnWidth": "Largura da coluna",
+    "searchHistory": "Histórico de pesquisa",
+    "historyCount": "{{count}}x",
+    "scrollToTop": "Voltar ao topo"
+  }
+}

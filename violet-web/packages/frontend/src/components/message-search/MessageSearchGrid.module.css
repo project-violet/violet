@@ -1,0 +1,13 @@
+.grid {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}

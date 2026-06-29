@@ -1,0 +1,38 @@
+.container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  min-height: 100px;
+}
+
+.image {
+  max-width: 100%;
+  height: auto;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.image.loaded {
+  opacity: 1;
+}
+
+.loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+}
+
+.error {
+  width: 100%;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}

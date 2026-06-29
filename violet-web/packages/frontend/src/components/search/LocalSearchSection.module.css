@@ -1,0 +1,106 @@
+.container {
+  /* Container for search bar and tag chips */
+}
+
+/* Elevated scrollable header: full-width band with bg/border, scrolls with content */
+.elevated {
+  background: var(--color-bg-elevated);
+  border-bottom: 1px solid var(--color-border);
+  margin-left: calc(-1 * var(--spacing-md));
+  margin-right: calc(-1 * var(--spacing-md));
+  margin-top: calc(-1 * var(--spacing-md));
+  margin-bottom: 16px;
+  padding: var(--spacing-md) var(--spacing-md) 6px;
+}
+
+@media (max-width: 767px) {
+  .elevated {
+    margin-left: calc(-1 * var(--spacing-sm));
+    margin-right: calc(-1 * var(--spacing-sm));
+    margin-top: calc(-1 * var(--spacing-sm));
+    margin-bottom: var(--spacing-sm);
+    padding: var(--spacing-sm);
+  }
+}
+
+.searchBar {
+  margin: var(--spacing-md) 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.elevated .searchBar {
+  margin-top: 0;
+}
+
+.resultCount {
+  color: var(--text-secondary, #666);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.cardSizeSlider {
+  margin-left: auto;
+  width: 100px;
+  accent-color: var(--color-primary, #7c3aed);
+  cursor: pointer;
+}
+
+.viewSwitch {
+  flex-shrink: 0;
+  margin-left: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.switchLabel {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  line-height: 1;
+}
+
+.switchInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switchTrack {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: var(--color-border);
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+
+.switchInput:checked ~ .switchTrack {
+  background: var(--color-primary, #7c3aed);
+}
+
+.switchThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: var(--color-toggle-knob);
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.switchInput:checked ~ .switchTrack .switchThumb {
+  transform: translateX(16px);
+}
+
+.extraControls {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}

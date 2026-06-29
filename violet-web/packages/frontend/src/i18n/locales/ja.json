@@ -1,0 +1,291 @@
+{
+  "app": {
+    "name": "Violet"
+  },
+  "nav": {
+    "home": "ホーム",
+    "bookmarks": "ブックマーク",
+    "cropBookmarks": "クロップ",
+    "history": "履歴",
+    "downloads": "ダウンロード",
+    "aiSearch": "AI検索",
+    "settings": "設定",
+    "hot": "Hot",
+    "messageSearch": "メッセージ",
+    "keywordGraph": "Keyword Graph"
+  },
+  "home": {
+    "heading": "閲覧",
+    "searchHeading": "検索: {{query}}",
+    "results": "{{count}}件の結果",
+    "prev": "前へ",
+    "next": "次へ"
+  },
+  "search": {
+    "placeholder": "検索... (例: artist:名前, tag:名前)",
+    "searchButton": "検索",
+    "noResults": "検索結果が見つかりませんでした。",
+    "allLanguages": "すべての言語",
+    "suggestions": "候補",
+    "recentSearches": "最近の検索",
+    "clearRecent": "クリア",
+    "includeQuery": "\"{{query}}\" を含む",
+    "expandTags": "すべてのタグを表示",
+    "collapseTags": "1行だけ表示"
+  },
+  "article": {
+    "artist": "作家",
+    "language": "言語",
+    "type": "タイプ",
+    "pages": "ページ",
+    "series": "シリーズ",
+    "characters": "キャラクター",
+    "read": "読む",
+    "bookmarked": "ブックマーク済み",
+    "bookmark": "ブックマーク",
+    "noImage": "画像なし"
+  },
+  "bookmarks": {
+    "heading": "ブックマーク",
+    "all": "すべて",
+    "addBookmark": "ブックマーク追加",
+    "add": "追加",
+    "cancel": "キャンセル",
+    "uncategorized": "未分類"
+  },
+  "hot": {
+    "heading": "Hot",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "alltime": "All Time",
+    "setupRequired": "Developer mode and HMAC salt required.",
+    "setupHint": "Enable Developer Mode in Settings and configure HMAC Salt.",
+    "error": "Failed to load. Check developer settings."
+  },
+  "history": {
+    "heading": "履歴"
+  },
+  "downloads": {
+    "heading": "ダウンロード",
+    "startToast": "ダウンロードを開始しました",
+    "completeToast": "ダウンロードが完了しました",
+    "failedToast": "ダウンロードに失敗しました",
+    "errorToast": "ダウンロードの開始に失敗しました",
+    "alreadyToast": "すでにダウンロード済みです",
+    "delete": "削除",
+    "retry": "再試行"
+  },
+  "aiSearch": {
+    "heading": "AI検索",
+    "placeholder": "何でも聞いてください...",
+    "answerLabel": "AI回答",
+    "score": "関連度",
+    "mode": "モード",
+    "modeSuperFast": "即時検索",
+    "modeFast": "高速検索",
+    "modeDetail": "詳細検索",
+    "noResults": "検索結果が見つかりませんでした。",
+    "error": "AI検索中にエラーが発生しました。"
+  },
+  "crop": {
+    "selectPage": "クロップするページを選択してください",
+    "cancel": "キャンセル",
+    "page": "{{page}}ページ",
+    "dragToSelect": "{{page}}ページ — ドラッグで範囲を選択",
+    "reselect": "再選択",
+    "save": "保存",
+    "savedToast": "{{page}}ページのクロップを保存しました",
+    "saveErrorToast": "クロップの保存に失敗しました",
+    "deletedToast": "クロップブックマークを削除しました",
+    "deleteErrorToast": "クロップブックマークの削除に失敗しました",
+    "userBookmarks": "ユーザーブックマーク"
+  },
+  "bookmark": {
+    "addedToast": "ブックマークに追加しました",
+    "removedToast": "ブックマークを解除しました",
+    "errorToast": "ブックマーク処理に失敗しました"
+  },
+  "settings": {
+    "heading": "設定",
+    "language": {
+      "heading": "言語",
+      "contentLanguage": "コンテンツ言語（検索フィルター）",
+      "uiLanguage": "UI言語",
+      "all": "すべての言語",
+      "korean": "韓国語",
+      "english": "英語",
+      "japanese": "日本語",
+      "chinese": "中国語",
+      "system": "システムデフォルト",
+      "en": "English",
+      "ko": "한국어",
+      "ja": "日本語",
+      "zh": "中文",
+      "eo": "Esperanto",
+      "it": "Italiano",
+      "pt": "Português"
+    },
+    "theme": {
+      "heading": "テーマカラー",
+      "description": "お好みのカラーテーマを選択"
+    },
+    "display": {
+      "heading": "表示",
+      "scrollMode": "スクロールモード",
+      "pagination": "ページネーション",
+      "infinite": "無限スクロール"
+    },
+    "viewer": {
+      "heading": "ビューア",
+      "resumePrompt": "続きから読むか確認",
+      "resumePromptDesc": "作品を開いたとき、最後に読んだページへ移動するか確認します"
+    },
+    "tagTranslation": {
+      "heading": "タグ翻訳",
+      "korean": "韓国語",
+      "koreanDesc": "カードと検索候補でタグを韓国語で表示します"
+    },
+    "excludedTags": {
+      "heading": "除外タグ",
+      "description": "ここに登録されたタグはホームページの検索結果から自動的に除外されます。",
+      "placeholder": "除外するタグを入力...",
+      "defaultNote": "デフォルト: female:snuff, female:gore"
+    },
+    "aiSearch": {
+      "heading": "AI検索",
+      "enable": "AI検索を有効化",
+      "enableDesc": "ナビゲーションにAI検索タブを表示します",
+      "helpText": "AI検索を使用するには、violet-searchサーバーを別途起動する必要があります。この機能を使用するには、violet-searchサービスをセットアップして実行してください。"
+    },
+    "sync": {
+      "heading": "データベース同期",
+      "database": "データベース:",
+      "ready": "準備完了",
+      "notFound": "見つかりません",
+      "lastSync": "最終同期:",
+      "lastSyncDb": "最終同期(DB):",
+      "never": "なし",
+      "status": "ステータス:",
+      "idle": "待機中",
+      "checking": "更新を確認中...",
+      "downloadingFull": "データベース全体をダウンロード中...",
+      "applyingChunks": "更新を適用中...",
+      "error": "エラー",
+      "syncNow": "今すぐ同期",
+      "redownloadDB": "DBを再ダウンロード",
+      "starting": "開始中...",
+      "confirmRedownload": "データベース全体を再ダウンロードします。続行しますか？",
+      "yes": "はい、再ダウンロード",
+      "cancel": "キャンセル"
+    },
+    "recentSearches": {
+      "heading": "最近の検索",
+      "clear": "検索履歴をクリア",
+      "empty": "最近の検索はありません"
+    },
+    "developer": {
+      "heading": "Developer",
+      "enable": "Developer Mode",
+      "enableDesc": "Show developer settings for Hot tab",
+      "serverHost": "Server Host URL",
+      "hmacSalt": "HMAC Salt",
+      "hmacSaltPlaceholder": "Enter HMAC salt..."
+    },
+    "suggestions": {
+      "heading": "タグキャッシュ",
+      "build": "キャッシュ構築",
+      "rebuild": "キャッシュ再構築",
+      "status": "ステータス",
+      "notBuilt": "未構築",
+      "built": "構築済み",
+      "building": "構築中...",
+      "totalTags": "総タグ数"
+    },
+    "messageSearch": {
+      "heading": "メッセージ検索",
+      "enable": "メッセージ検索を有効化",
+      "enableDesc": "ナビゲーションにメッセージ検索タブを表示します",
+      "serverUrl": "fscmサーバーURL",
+      "serverUrlPlaceholder": "http://127.0.0.1:12332",
+      "resultLimit": "結果数上限",
+      "testConnection": "接続テスト",
+      "testing": "テスト中...",
+      "connectionOk": "接続済み",
+      "connectionFailed": "接続失敗",
+      "sampleCount": "サンプル{{count}}件"
+    },
+    "keywordGraph": {
+      "heading": "Keyword Graph",
+      "serverUrl": "work-keywords-go server URL",
+      "serverUrlPlaceholder": "http://127.0.0.1:8787",
+      "serverUrlDesc": "Keyword Graph tab server URL."
+    }
+  },
+  "viewer": {
+    "noImages": "このギャラリーの画像が見つかりませんでした。",
+    "back": "戻る",
+    "settings": "設定",
+    "pageInfo": "{{current}} / {{total}}",
+    "loading": "読み込み中...",
+    "retrying": "再試行中... ({{current}}/{{max}})",
+    "loadError": "{{max}}回の試行後、画像の読み込みに失敗しました。クリックして再試行。",
+    "settingsPanel": {
+      "title": "ビューア設定",
+      "pageMode": {
+        "title": "ページモード",
+        "scroll": "スクロール",
+        "paged": "ページめくり"
+      },
+      "viewMode": {
+        "title": "表示モード",
+        "vertical": "縦",
+        "horizontal": "横"
+      },
+      "twoPageMode": {
+        "title": "見開き表示",
+        "enabled": "有効",
+        "disabled": "無効"
+      },
+      "readDirection": {
+        "title": "読む方向",
+        "ltr": "左から右",
+        "rtl": "右から左"
+      },
+      "coverPageMode": {
+        "title": "表紙ページ",
+        "cover": "最初のページのみ",
+        "normal": "最初のページをペア"
+      },
+      "padding": {
+        "title": "余白"
+      }
+    }
+  },
+  "messageSearch": {
+    "heading": "メッセージ検索",
+    "placeholder": "メッセージテキストを検索...",
+    "mode": {
+      "contains": "含む",
+      "similar": "類似",
+      "lcs": "LCS"
+    },
+    "search": "検索",
+    "resultCount": "{{count}}件",
+    "empty": "一致するメッセージはありません",
+    "loading": "検索中...",
+    "error": "メッセージ検索に失敗しました",
+    "retry": "再試行",
+    "score": "スコア",
+    "correctness": "精度",
+    "page": "p{{page}}",
+    "disabled": "設定でメッセージ検索が無効です。",
+    "imageError": "画像の読み込みに失敗しました",
+    "invalidPage": "無効なページ",
+    "resultImageAlt": "ギャラリー{{id}} {{page}}ページ",
+    "columnWidth": "列幅",
+    "searchHistory": "検索履歴",
+    "historyCount": "{{count}}回",
+    "scrollToTop": "先頭へ"
+  }
+}

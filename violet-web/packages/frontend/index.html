@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/logos/logo.png" />
+    <title>Violet</title>
+    <script>
+      try {
+        const s = JSON.parse(localStorage.getItem('violet-app-settings'));
+        const m = s?.state?.themeMode;
+        if (m === 'light') document.documentElement.setAttribute('data-theme', 'light');
+        else if (m === 'system' && window.matchMedia('(prefers-color-scheme: light)').matches)
+          document.documentElement.setAttribute('data-theme', 'light');
+      } catch(e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

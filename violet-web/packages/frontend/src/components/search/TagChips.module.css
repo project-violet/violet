@@ -1,0 +1,55 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  padding: 4px 10px;
+  border: 1px solid var(--color-chip-border);
+  border-radius: 999px;
+  background: var(--color-chip-bg);
+  color: var(--color-text, #e0e0e0);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.chip:hover {
+  background: var(--color-chip-bg-hover);
+  border-color: var(--color-chip-border-hover);
+}
+
+/* Active state */
+.chip.active {
+  background: var(--color-chip-bg-active);
+  border-color: var(--color-chip-border-active);
+}
+
+.chip.active:hover {
+  background: var(--color-chip-bg-active-hover);
+}
+
+/* Category prefix colors */
+.prefix { font-weight: 600; margin-right: 2px; }
+.female { color: var(--color-tag-female); }
+.male { color: var(--color-tag-male); }
+.tag { color: var(--color-tag-tag); }
+.artist { color: var(--color-tag-artist); }
+.series { color: var(--color-tag-series); }
+.group { color: var(--color-tag-group); }
+.character { color: var(--color-tag-character); }
+
+.count {
+  opacity: 0.5;
+  font-size: 11px;
+  font-weight: 400;
+  margin-left: 4px;
+}

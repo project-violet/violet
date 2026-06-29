@@ -1,0 +1,333 @@
+{
+  "app": {
+    "name": "Violet"
+  },
+  "nav": {
+    "home": "홈",
+    "bookmarks": "북마크",
+    "cropBookmarks": "크롭",
+    "history": "기록",
+    "downloads": "다운로드",
+    "aiSearch": "AI 검색",
+    "settings": "설정",
+    "hot": "인기",
+    "messageSearch": "메시지",
+    "keywordGraph": "키워드 그래프"
+  },
+  "home": {
+    "heading": "둘러보기",
+    "searchHeading": "검색: {{query}}",
+    "results": "{{count}}개 결과",
+    "prev": "이전",
+    "next": "다음"
+  },
+  "search": {
+    "placeholder": "검색... (예: artist:이름, tag:이름)",
+    "searchButton": "검색",
+    "noResults": "검색 결과가 없습니다.",
+    "allLanguages": "모든 언어",
+    "suggestions": "추천",
+    "recentSearches": "최근 검색",
+    "clearRecent": "삭제",
+    "includeQuery": "\"{{query}}\" 포함",
+    "expandTags": "태그 모두 보기",
+    "collapseTags": "한 줄만 보기"
+  },
+  "article": {
+    "artist": "작가",
+    "language": "언어",
+    "type": "타입",
+    "pages": "페이지",
+    "series": "시리즈",
+    "characters": "캐릭터",
+    "read": "읽기",
+    "bookmarked": "북마크됨",
+    "bookmark": "북마크",
+    "noImage": "이미지 없음"
+  },
+  "bookmarks": {
+    "heading": "북마크",
+    "all": "전체",
+    "addBookmark": "북마크 추가",
+    "add": "추가",
+    "cancel": "취소",
+    "uncategorized": "미분류"
+  },
+  "hot": {
+    "heading": "인기",
+    "daily": "일간",
+    "weekly": "주간",
+    "monthly": "월간",
+    "alltime": "전체",
+    "setupRequired": "개발자 모드와 HMAC salt 설정이 필요합니다.",
+    "setupHint": "설정에서 개발자 모드를 활성화하고 HMAC Salt를 구성하세요.",
+    "error": "로드에 실패했습니다. 개발자 설정을 확인하세요."
+  },
+  "history": {
+    "heading": "기록"
+  },
+  "downloads": {
+    "heading": "다운로드",
+    "startToast": "다운로드를 시작합니다",
+    "completeToast": "다운로드가 완료되었습니다",
+    "failedToast": "다운로드에 실패했습니다",
+    "errorToast": "다운로드 시작 중 오류가 발생했습니다",
+    "alreadyToast": "이미 다운로드한 작품입니다",
+    "delete": "삭제",
+    "retry": "재시도"
+  },
+  "aiSearch": {
+    "heading": "AI 검색",
+    "placeholder": "무엇이든 물어보세요...",
+    "answerLabel": "AI 답변",
+    "score": "관련도",
+    "mode": "모드",
+    "modeSuperFast": "즉시 검색",
+    "modeFast": "빠른 검색",
+    "modeDetail": "상세 검색",
+    "noResults": "검색 결과가 없습니다.",
+    "error": "AI 검색 중 오류가 발생했습니다."
+  },
+  "crop": {
+    "selectPage": "크롭할 페이지를 선택하세요",
+    "cancel": "취소",
+    "page": "{{page}}페이지",
+    "dragToSelect": "{{page}}페이지 — 드래그로 영역을 선택하세요",
+    "reselect": "다시 선택",
+    "save": "저장",
+    "savedToast": "{{page}}페이지 크롭 저장했어요",
+    "saveErrorToast": "크롭 저장 중 오류가 발생했습니다",
+    "deletedToast": "크롭 북마크가 삭제되었습니다",
+    "deleteErrorToast": "크롭 북마크 삭제 중 오류가 발생했습니다",
+    "userBookmarks": "유저 북마크"
+  },
+  "bookmark": {
+    "addedToast": "북마크에 추가되었습니다",
+    "removedToast": "북마크가 해제되었습니다",
+    "errorToast": "북마크 처리 중 오류가 발생했습니다"
+  },
+  "sync": {
+    "downloadOverlay": {
+      "title": "데이터베이스 다운로드 중",
+      "message": "첫 실행을 위해 데이터베이스를 다운로드하고 있습니다. 잠시만 기다려 주세요.",
+      "cacheTitle": "캐시 빌드 중",
+      "cacheMessage": "검색을 위한 태그 캐시를 생성하고 있습니다. 잠시만 기다려 주세요."
+    }
+  },
+  "settings": {
+    "heading": "설정",
+    "language": {
+      "heading": "언어",
+      "contentLanguage": "콘텐츠 언어 (검색 필터)",
+      "uiLanguage": "UI 언어",
+      "all": "모든 언어",
+      "korean": "한국어",
+      "english": "영어",
+      "japanese": "일본어",
+      "chinese": "중국어",
+      "system": "시스템 기본값",
+      "en": "English",
+      "ko": "한국어",
+      "ja": "日本語",
+      "zh": "中文",
+      "eo": "Esperanto",
+      "it": "Italiano",
+      "pt": "Português"
+    },
+    "theme": {
+      "heading": "테마 색상",
+      "description": "원하는 색상 테마를 선택하세요"
+    },
+    "display": {
+      "heading": "디스플레이",
+      "scrollMode": "스크롤 모드",
+      "pagination": "페이지네이션",
+      "infinite": "무한 스크롤",
+      "tagClickAction": "태그 클릭 동작",
+      "tagClickSearch": "검색 페이지로 이동",
+      "tagClickDialog": "다이얼로그로 보기"
+    },
+    "viewer": {
+      "heading": "뷰어",
+      "resumePrompt": "최근 페이지 이동 물어보기",
+      "resumePromptDesc": "작품을 열 때 마지막으로 읽은 페이지로 이동할지 물어봅니다"
+    },
+    "tagTranslation": {
+      "heading": "태그 번역",
+      "korean": "한국어",
+      "koreanDesc": "카드 및 검색 자동완성에서 태그를 한국어로 표시합니다"
+    },
+    "excludedTags": {
+      "heading": "제외 태그",
+      "description": "여기에 등록된 태그는 홈 페이지 검색 결과에서 자동으로 제외됩니다.",
+      "placeholder": "제외할 태그를 입력하세요...",
+      "defaultNote": "기본값: female:snuff, female:gore"
+    },
+    "aiSearch": {
+      "heading": "AI 검색",
+      "enable": "AI 검색 사용",
+      "enableDesc": "내비게이션에 AI 검색 탭을 표시합니다",
+      "helpText": "AI 검색을 사용하려면 violet-search 서버를 별도로 실행해야 합니다. 이 기능을 사용하려면 violet-search 서비스를 설정하고 실행하세요."
+    },
+    "imageCache": {
+      "heading": "이미지 캐시",
+      "enable": "이미지 캐시 사용",
+      "enableDesc": "본 이미지를 로컬에 캐싱하여 즉시 로딩합니다",
+      "helpText": "브라우저의 IndexedDB를 사용하여 본 이미지를 로컬에 저장합니다. 캐시된 이미지는 네트워크 요청 없이 즉시 로딩됩니다. 저장 실패 시에도 서버에서 정상적으로 로드됩니다.",
+      "maxSize": "최대 캐시 크기",
+      "expireDays": "캐시 만료 기간",
+      "expireDaysDesc": "{{days}}일",
+      "cacheSize": "캐시 크기:",
+      "itemCount": "캐시된 이미지:",
+      "items": "{{count}}개",
+      "clearCache": "캐시 지우기",
+      "clearing": "삭제 중..."
+    },
+    "sync": {
+      "heading": "데이터베이스 동기화",
+      "database": "데이터베이스:",
+      "ready": "준비됨",
+      "notFound": "찾을 수 없음",
+      "lastSync": "마지막 동기화:",
+      "lastSyncDb": "마지막 동기화(DB):",
+      "never": "없음",
+      "status": "상태:",
+      "idle": "대기 중",
+      "checking": "업데이트 확인 중...",
+      "downloadingFull": "전체 데이터베이스 다운로드 중...",
+      "applyingChunks": "업데이트 적용 중...",
+      "buildingCache": "캐시 빌드 중...",
+      "error": "오류",
+      "syncNow": "지금 동기화",
+      "redownloadDB": "DB 재다운로드",
+      "starting": "시작 중...",
+      "confirmRedownload": "전체 데이터베이스를 재다운로드합니다. 계속하시겠습니까?",
+      "yes": "예, 재다운로드",
+      "cancel": "취소"
+    },
+    "recentSearches": {
+      "heading": "최근 검색",
+      "clear": "검색 기록 지우기",
+      "empty": "최근 검색 없음"
+    },
+    "developer": {
+      "heading": "개발자",
+      "enable": "개발자 모드",
+      "enableDesc": "Hot 탭 및 외부 API 개발자 설정 표시",
+      "serverHost": "서버 호스트 URL",
+      "hmacSalt": "HMAC Salt",
+      "hmacSaltPlaceholder": "HMAC salt 입력..."
+    },
+    "suggestions": {
+      "heading": "태그 캐시",
+      "build": "캐시 빌드",
+      "rebuild": "캐시 재빌드",
+      "status": "상태",
+      "notBuilt": "빌드 안됨",
+      "built": "빌드됨",
+      "building": "빌드 중...",
+      "totalTags": "총 태그 수"
+    },
+    "messageSearch": {
+      "heading": "메시지 검색",
+      "enable": "메시지 검색 사용",
+      "enableDesc": "내비게이션에 메시지 검색 탭을 표시합니다",
+      "serverUrl": "fscm 서버 URL",
+      "serverUrlPlaceholder": "http://127.0.0.1:12332",
+      "resultLimit": "결과 제한",
+      "testConnection": "연결 테스트",
+      "testing": "테스트 중...",
+      "connectionOk": "연결됨",
+      "connectionFailed": "연결 실패",
+      "sampleCount": "샘플 {{count}}개"
+    },
+    "keywordGraph": {
+      "heading": "키워드 그래프",
+      "serverUrl": "work-keywords-go 서버 URL",
+      "serverUrlPlaceholder": "http://127.0.0.1:8787",
+      "serverUrlDesc": "키워드 그래프 탭에서 사용할 work-keywords-go 서버 주소입니다."
+    }
+  },
+  "viewer": {
+    "noImages": "갤러리에서 이미지를 찾을 수 없습니다.",
+    "back": "뒤로",
+    "settings": "설정",
+    "pageInfo": "{{current}} / {{total}}",
+    "loading": "로딩 중...",
+    "retrying": "재시도 중... ({{current}}/{{max}})",
+    "loadError": "{{max}}번 시도 후 이미지 로드 실패. 클릭하여 재시도.",
+    "settingsPanel": {
+      "title": "뷰어 설정",
+      "pageMode": {
+        "title": "페이지 모드",
+        "scroll": "스크롤",
+        "paged": "페이지 넘김"
+      },
+      "viewMode": {
+        "title": "보기 모드",
+        "vertical": "세로",
+        "horizontal": "가로"
+      },
+      "twoPageMode": {
+        "title": "두 페이지 보기",
+        "enabled": "사용",
+        "disabled": "사용 안 함"
+      },
+      "readDirection": {
+        "title": "읽기 방향",
+        "ltr": "왼쪽에서 오른쪽",
+        "rtl": "오른쪽에서 왼쪽"
+      },
+      "coverPageMode": {
+        "title": "표지 페이지",
+        "cover": "첫 페이지만",
+        "normal": "첫 페이지 쌍으로"
+      },
+      "padding": {
+        "title": "여백"
+      },
+      "shortcuts": {
+        "title": "단축키",
+        "overlay": "오버레이 표시/숨김",
+        "settings": "설정",
+        "bookmark": "북마크 토글",
+        "thumbnails": "썸네일",
+        "crop": "크롭 도구",
+        "twoPage": "한쪽 / 두쪽 보기",
+        "close": "뷰어 닫기"
+      }
+    },
+    "resume": {
+      "title": "이어서 읽기",
+      "message": "{{page}} / {{total}} 페이지까지 읽었습니다. 이어서 읽으시겠습니까?",
+      "resume": "이어서 읽기",
+      "startOver": "처음부터"
+    }
+  },
+  "messageSearch": {
+    "heading": "메시지 검색",
+    "placeholder": "메시지 텍스트 검색...",
+    "mode": {
+      "contains": "포함",
+      "similar": "유사",
+      "lcs": "LCS"
+    },
+    "search": "검색",
+    "resultCount": "{{count}}개 결과",
+    "empty": "메시지 검색 결과가 없습니다",
+    "loading": "검색 중...",
+    "error": "메시지 검색 중 오류가 발생했습니다",
+    "retry": "재시도",
+    "score": "점수",
+    "correctness": "정확도",
+    "page": "{{page}}페이지",
+    "disabled": "설정에서 메시지 검색이 비활성화되어 있습니다.",
+    "imageError": "이미지 로드 실패",
+    "invalidPage": "잘못된 페이지",
+    "resultImageAlt": "갤러리 {{id}} {{page}}페이지",
+    "columnWidth": "열 너비",
+    "searchHistory": "검색 기록",
+    "historyCount": "{{count}}회",
+    "scrollToTop": "맨 위로"
+  }
+}
