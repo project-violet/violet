@@ -7,7 +7,6 @@ import (
 
 func TestParseOptionsRejectsRemovedFlags(t *testing.T) {
 	removedFlags := [][]string{
-		{"-tmp-dir", "custom"},
 		{"-gallery-dl", "gallery-dl"},
 		{"-resolver", "gallery-dl"},
 	}
@@ -22,6 +21,16 @@ func TestParseOptionsRejectsRemovedFlags(t *testing.T) {
 				t.Fatalf("parseOptions(%v) returned empty error", args)
 			}
 		})
+	}
+}
+
+func TestParseOptionsAcceptsCustomTmpDir(t *testing.T) {
+	opts, err := parseOptions([]string{"-tmp-dir", "custom"})
+	if err != nil {
+		t.Fatalf("parseOptions(-tmp-dir custom) error = %v", err)
+	}
+	if opts.tmpDir != "custom" {
+		t.Fatalf("tmpDir = %q, want %q", opts.tmpDir, "custom")
 	}
 }
 

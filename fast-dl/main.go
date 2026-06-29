@@ -79,6 +79,7 @@ func parseOptions(args []string) (options, error) {
 	opts := options{tmpDir: defaultTmpDir}
 	fs.IntVar(&opts.count, "count", 4, "number of works to benchmark")
 	fs.StringVar(&opts.targetIDsPath, "target-ids", filepath.Join("..", "works", "target_ids.json"), "target IDs JSON path")
+	fs.StringVar(&opts.tmpDir, "tmp-dir", defaultTmpDir, "temporary download directory")
 	fs.IntVar(&opts.maxPages, "max-pages", 200, "skip works with more than this many pages")
 	fs.IntVar(&opts.retries, "file-retries", 100, "retries per image")
 	fs.StringVar(&opts.settingsArg, "settings", "2x64,2x32,4x16,4x32,1x32,1x64", "comma-separated workWorkers x fileWorkers settings")
