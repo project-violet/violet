@@ -139,13 +139,13 @@ ID를 직접 지정할 수도 있습니다.
 python .\run-works-turbo.py --ids 1234567 2345678
 ```
 
-자주 쓰는 실행 옵션 예시는 다음과 같습니다.
+기본 배치 실행 예시는 다음과 같습니다.
 
 ```powershell
-python .\run-works-turbo.py 100 `
-  --download-workers 4 `
+python.exe .\run-works-turbo.py 5000 `
+  --download-workers 8 `
   --file-workers 32 `
-  --workers 8 `
+  --workers 64 `
   --ocr-active-works 1
 ```
 
