@@ -1,0 +1,17 @@
+# From .gitignore
+**/node_modules
+**/dist
+.env
+*.db
+*.db-shm
+*.db-wal
+*.tsbuildinfo
+packages/backend/data/*
+packages/backend/suggestion-cache.json
+
+# Docker-specific
+.git
+*.md
+.vscode
+.idea
+.DS_Store

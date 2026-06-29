@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.env
+*.db
+*.db-shm
+*.db-wal
+!.gitkeep
+.DS_Store
+*.tsbuildinfo
+packages/backend/data/*
+packages/backend/suggestion-cache.json
+.claude/*
+data/*

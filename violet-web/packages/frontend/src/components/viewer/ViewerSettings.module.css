@@ -1,0 +1,26 @@
+.panel {
+  padding: var(--spacing-md);
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.heading {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.label select,
+.label input[type="range"] {
+  margin-top: var(--spacing-xs);
+}

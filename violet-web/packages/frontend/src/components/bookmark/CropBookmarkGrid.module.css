@@ -1,0 +1,24 @@
+.grid {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.grid.scrolling {
+  pointer-events: none;
+}
+
+.column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-secondary, #888);
+  padding: 48px 16px;
+  font-size: 0.95rem;
+}

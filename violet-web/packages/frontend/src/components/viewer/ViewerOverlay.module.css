@@ -1,0 +1,185 @@
+.tapZoneLeft {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 33.33%;
+  z-index: 5;
+  cursor: pointer;
+}
+
+.tapZoneCenter {
+  position: absolute;
+  top: 0;
+  left: 33.33%;
+  bottom: 0;
+  width: 33.34%;
+  z-index: 5;
+  cursor: pointer;
+}
+
+.tapZoneRight {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 33.33%;
+  z-index: 5;
+  cursor: pointer;
+}
+
+.top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
+  z-index: 10;
+}
+
+.closeBtn,
+.settingsBtn {
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.closeBtn:hover,
+.settingsBtn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.bookmarkBtn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-size: 1.2rem;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  margin-left: var(--spacing-sm);
+}
+
+.bookmarkBtn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+}
+
+.bookmarkBtn.bookmarked {
+  background: rgba(0, 0, 0, 0.6);
+  color: #ffeb99;
+  text-shadow:
+    0 0 4px rgba(255, 235, 153, 0.4),
+    0 0 2px rgba(255, 235, 153, 0.3);
+  box-shadow: 0 0 0 1px rgba(255, 235, 153, 0.3);
+}
+
+.cropBtn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-size: 1.2rem;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  margin-left: var(--spacing-sm);
+}
+
+.cropBtn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+}
+
+.pageInfo {
+  color: #fff;
+  font-size: 0.9rem;
+  flex: 1;
+  text-align: center;
+}
+
+.bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--spacing-md);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+  z-index: 10;
+}
+
+.slider {
+  width: 100%;
+  accent-color: var(--color-primary);
+}
+
+.pageIndicator {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 16px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 20px;
+  color: #fff;
+  font-size: 0.85rem;
+  z-index: 15;
+  pointer-events: auto;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: bottom 0.2s ease, background 0.2s;
+}
+
+.pageIndicator:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.pageIndicatorAboveSlider {
+  bottom: 70px;
+}
+
+.shortcutHint {
+  position: absolute;
+  bottom: 60px;
+  right: var(--spacing-md, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 10;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.shortcutHint kbd {
+  display: inline-block;
+  min-width: 18px;
+  padding: 1px 5px;
+  margin-right: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 0.7rem;
+  color: #fff;
+  text-align: center;
+}

@@ -1,0 +1,49 @@
+.button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s;
+  backdrop-filter: blur(4px);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+:global(.bookmark-hover-scope:hover) .button {
+  opacity: 1;
+}
+
+.button:hover {
+  background: rgba(0, 0, 0, 0.75);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.button:disabled {
+  cursor: wait;
+}
+
+.button.bookmarked {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.6);
+  color: #ffeb99;
+  text-shadow:
+    0 0 4px rgba(255, 235, 153, 0.4),
+    0 0 2px rgba(255, 235, 153, 0.3);
+  box-shadow: 0 0 0 1px rgba(255, 235, 153, 0.3);
+}

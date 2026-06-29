@@ -1,0 +1,333 @@
+{
+  "app": {
+    "name": "Violet"
+  },
+  "nav": {
+    "home": "Home",
+    "bookmarks": "Bookmarks",
+    "cropBookmarks": "Crops",
+    "history": "History",
+    "downloads": "Downloads",
+    "aiSearch": "AI Search",
+    "settings": "Settings",
+    "hot": "Hot",
+    "messageSearch": "Message",
+    "keywordGraph": "Keyword Graph"
+  },
+  "home": {
+    "heading": "Browse",
+    "searchHeading": "Search: {{query}}",
+    "results": "{{count}} results",
+    "prev": "Prev",
+    "next": "Next"
+  },
+  "search": {
+    "placeholder": "Search... (e.g. artist:name, tag:name)",
+    "searchButton": "Search",
+    "noResults": "No results found.",
+    "allLanguages": "All Languages",
+    "suggestions": "Suggestions",
+    "recentSearches": "Recent Searches",
+    "clearRecent": "Clear",
+    "includeQuery": "Include \"{{query}}\"",
+    "expandTags": "Show all tags",
+    "collapseTags": "Show one row"
+  },
+  "article": {
+    "artist": "Artist",
+    "language": "Language",
+    "type": "Type",
+    "pages": "Pages",
+    "series": "Series",
+    "characters": "Characters",
+    "read": "Read",
+    "bookmarked": "Bookmarked",
+    "bookmark": "Bookmark",
+    "noImage": "No Image"
+  },
+  "bookmarks": {
+    "heading": "Bookmarks",
+    "all": "All",
+    "addBookmark": "Add Bookmark",
+    "add": "Add",
+    "cancel": "Cancel",
+    "uncategorized": "Uncategorized"
+  },
+  "hot": {
+    "heading": "Hot",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "alltime": "All Time",
+    "setupRequired": "Developer mode and HMAC salt required.",
+    "setupHint": "Enable Developer Mode in Settings and configure HMAC Salt.",
+    "error": "Failed to load. Check developer settings."
+  },
+  "history": {
+    "heading": "History"
+  },
+  "downloads": {
+    "heading": "Downloads",
+    "startToast": "Download started",
+    "completeToast": "Download completed",
+    "failedToast": "Download failed",
+    "errorToast": "Failed to start download",
+    "alreadyToast": "Already downloaded",
+    "delete": "Delete",
+    "retry": "Retry"
+  },
+  "aiSearch": {
+    "heading": "AI Search",
+    "placeholder": "Ask anything...",
+    "answerLabel": "AI Answer",
+    "score": "Relevance",
+    "mode": "Mode",
+    "modeSuperFast": "Instant",
+    "modeFast": "Fast",
+    "modeDetail": "Detail",
+    "noResults": "No results found.",
+    "error": "An error occurred during AI search."
+  },
+  "crop": {
+    "selectPage": "Select a page to crop",
+    "cancel": "Cancel",
+    "page": "Page {{page}}",
+    "dragToSelect": "Page {{page}} — Drag to select area",
+    "reselect": "Reselect",
+    "save": "Save",
+    "savedToast": "Crop saved for page {{page}}",
+    "saveErrorToast": "Failed to save crop",
+    "deletedToast": "Crop bookmark deleted",
+    "deleteErrorToast": "Failed to delete crop bookmark",
+    "userBookmarks": "User Bookmarks"
+  },
+  "bookmark": {
+    "addedToast": "Added to bookmarks",
+    "removedToast": "Removed from bookmarks",
+    "errorToast": "Failed to process bookmark"
+  },
+  "sync": {
+    "downloadOverlay": {
+      "title": "Downloading Database",
+      "message": "Downloading the database for first-time setup. Please wait a moment.",
+      "cacheTitle": "Building Cache",
+      "cacheMessage": "Building tag cache for search. Please wait a moment."
+    }
+  },
+  "settings": {
+    "heading": "Settings",
+    "language": {
+      "heading": "Language",
+      "contentLanguage": "Content Language (Search Filter)",
+      "uiLanguage": "UI Language",
+      "all": "All Languages",
+      "korean": "Korean",
+      "english": "English",
+      "japanese": "Japanese",
+      "chinese": "Chinese",
+      "system": "System Default",
+      "en": "English",
+      "ko": "한국어",
+      "ja": "日本語",
+      "zh": "中文",
+      "eo": "Esperanto",
+      "it": "Italiano",
+      "pt": "Português"
+    },
+    "theme": {
+      "heading": "Theme Color",
+      "description": "Choose your favorite color theme"
+    },
+    "display": {
+      "heading": "Display",
+      "scrollMode": "Scroll Mode",
+      "pagination": "Pagination",
+      "infinite": "Infinite Scroll",
+      "tagClickAction": "Tag Click Action",
+      "tagClickSearch": "Navigate to Search",
+      "tagClickDialog": "Show in Dialog"
+    },
+    "viewer": {
+      "heading": "Viewer",
+      "resumePrompt": "Ask to resume reading",
+      "resumePromptDesc": "Show a prompt to jump to the last read page when opening a work"
+    },
+    "tagTranslation": {
+      "heading": "Tag Translation",
+      "korean": "Korean",
+      "koreanDesc": "Display tags in Korean on cards and search suggestions"
+    },
+    "excludedTags": {
+      "heading": "Excluded Tags",
+      "description": "Tags listed here will be automatically excluded from home page search results.",
+      "placeholder": "Type a tag to exclude...",
+      "defaultNote": "Default: female:snuff, female:gore"
+    },
+    "aiSearch": {
+      "heading": "AI Search",
+      "enable": "Enable AI Search",
+      "enableDesc": "Show AI Search tab in navigation",
+      "helpText": "AI Search requires the violet-search server to be running separately. You need to set up and run the violet-search service for this feature to work."
+    },
+    "imageCache": {
+      "heading": "Image Cache",
+      "enable": "Enable Image Cache",
+      "enableDesc": "Cache viewed images locally for instant loading",
+      "helpText": "Uses the browser's IndexedDB to store viewed images locally. Cached images load instantly without network requests. Cache is best-effort — if storage fails, images are loaded normally from the server.",
+      "maxSize": "Maximum Cache Size",
+      "expireDays": "Cache Expiry",
+      "expireDaysDesc": "{{days}} days",
+      "cacheSize": "Cache Size:",
+      "itemCount": "Cached Images:",
+      "items": "{{count}} images",
+      "clearCache": "Clear Cache",
+      "clearing": "Clearing..."
+    },
+    "sync": {
+      "heading": "Database Sync",
+      "database": "Database:",
+      "ready": "Ready",
+      "notFound": "Not Found",
+      "lastSync": "Last Sync:",
+      "lastSyncDb": "Last Sync (DB):",
+      "never": "Never",
+      "status": "Status:",
+      "idle": "Idle",
+      "checking": "Checking for updates...",
+      "downloadingFull": "Downloading full database...",
+      "applyingChunks": "Applying updates...",
+      "buildingCache": "Building cache...",
+      "error": "Error",
+      "syncNow": "Sync Now",
+      "redownloadDB": "Re-download DB",
+      "starting": "Starting...",
+      "confirmRedownload": "This will re-download the entire database. Continue?",
+      "yes": "Yes, Re-download",
+      "cancel": "Cancel"
+    },
+    "recentSearches": {
+      "heading": "Recent Searches",
+      "clear": "Clear Search History",
+      "empty": "No recent searches"
+    },
+    "developer": {
+      "heading": "Developer",
+      "enable": "Developer Mode",
+      "enableDesc": "Show developer settings for Hot tab",
+      "serverHost": "Server Host URL",
+      "hmacSalt": "HMAC Salt",
+      "hmacSaltPlaceholder": "Enter HMAC salt..."
+    },
+    "suggestions": {
+      "heading": "Tag Cache",
+      "build": "Build Cache",
+      "rebuild": "Rebuild Cache",
+      "status": "Status",
+      "notBuilt": "Not built",
+      "built": "Built",
+      "building": "Building...",
+      "totalTags": "Total Tags"
+    },
+    "messageSearch": {
+      "heading": "Message Search",
+      "enable": "Enable Message Search",
+      "enableDesc": "Show Message Search tab in navigation",
+      "serverUrl": "fscm server URL",
+      "serverUrlPlaceholder": "http://127.0.0.1:12332",
+      "resultLimit": "Result Limit",
+      "testConnection": "Test Connection",
+      "testing": "Testing...",
+      "connectionOk": "Connected",
+      "connectionFailed": "Connection failed",
+      "sampleCount": "{{count}} sample results"
+    },
+    "keywordGraph": {
+      "heading": "Keyword Graph",
+      "serverUrl": "work-keywords-go server URL",
+      "serverUrlPlaceholder": "http://127.0.0.1:8787",
+      "serverUrlDesc": "Used by the keyword graph tab. Start work-keywords-go serve and set its base URL here."
+    }
+  },
+  "viewer": {
+    "noImages": "No images found for this gallery.",
+    "back": "Back",
+    "settings": "Settings",
+    "pageInfo": "{{current}} / {{total}}",
+    "loading": "Loading...",
+    "retrying": "Retrying... ({{current}}/{{max}})",
+    "loadError": "Failed to load image after {{max}} attempts. Click to retry.",
+    "settingsPanel": {
+      "title": "Viewer Settings",
+      "pageMode": {
+        "title": "Page Mode",
+        "scroll": "Scroll",
+        "paged": "Paged"
+      },
+      "viewMode": {
+        "title": "View Mode",
+        "vertical": "Vertical",
+        "horizontal": "Horizontal"
+      },
+      "twoPageMode": {
+        "title": "Two-Page Mode",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      },
+      "readDirection": {
+        "title": "Reading Direction",
+        "ltr": "Left to Right",
+        "rtl": "Right to Left"
+      },
+      "coverPageMode": {
+        "title": "Cover Page",
+        "cover": "First page alone",
+        "normal": "First page paired"
+      },
+      "padding": {
+        "title": "Padding"
+      },
+      "shortcuts": {
+        "title": "Keyboard Shortcuts",
+        "overlay": "Toggle overlay",
+        "settings": "Settings",
+        "bookmark": "Toggle bookmark",
+        "thumbnails": "Thumbnails",
+        "crop": "Crop tool",
+        "twoPage": "Single / Two-page",
+        "close": "Close viewer"
+      }
+    },
+    "resume": {
+      "title": "Resume Reading",
+      "message": "You were on page {{page}} / {{total}}. Resume where you left off?",
+      "resume": "Resume",
+      "startOver": "Start Over"
+    }
+  },
+  "messageSearch": {
+    "heading": "Message Search",
+    "placeholder": "Search message text...",
+    "mode": {
+      "contains": "Contains",
+      "similar": "Similar",
+      "lcs": "LCS"
+    },
+    "search": "Search",
+    "resultCount": "{{count}} results",
+    "empty": "No message matches",
+    "loading": "Searching...",
+    "error": "Failed to search messages",
+    "retry": "Retry",
+    "score": "Score",
+    "correctness": "Correctness",
+    "page": "p{{page}}",
+    "disabled": "Message search is disabled in Settings.",
+    "imageError": "Failed to load image",
+    "invalidPage": "Invalid page",
+    "resultImageAlt": "Gallery {{id}} page {{page}}",
+    "columnWidth": "Column width",
+    "searchHistory": "Search history",
+    "historyCount": "{{count}}x",
+    "scrollToTop": "Scroll to top"
+  }
+}
