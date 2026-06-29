@@ -57,6 +57,58 @@ python .\run-works-turbo.py --ensure-server-only
 - TensorRT 최적화 레벨: `3`
 - 준비 대기 시간: `3600`초
 
+## Docker 설정
+
+`run-works-turbo.py`가 TurboOCR 서버를 자동으로 띄울 때 생성하는 Docker 명령은 다음 구조입니다.
+
+```powershell
+docker run -d `
+  --gpus all `
+  --name violet-turboocr `
+  -p 8000:8000 `
+  -p 50051:50051 `
+  -v trt-cache:/home/ocr/.cache/turbo-ocr `
+  -e OCR_LANG=korean `
+  -e PIPELINE_POOL_SIZE=4 `
+  -e DET_MAX_SIDE=960 `
+  -e DISABLE_LAYOUT=1 `
+  -e TRT_OPT_LEVEL=3 `
+  ghcr.io/aiptimizer/turboocr:v2.3.0
+```
+
+각 설정은 `run-works-turbo.py` 옵션으로 바꿀 수 있습니다.
+
+| 설정 | 기본값 | 옵션 |
+| --- | --- | --- |
+| Docker 이미지 | `ghcr.io/aiptimizer/turboocr:v2.3.0` | `--turboocr-image` |
+| 컨테이너 이름 | `violet-turboocr` | `--turboocr-container` |
+| HTTP 포트 | `8000:8000` | `--turboocr-url` |
+| gRPC 포트 | `50051:50051` | `--turboocr-grpc-port` |
+| TensorRT 캐시 볼륨 | `trt-cache:/home/ocr/.cache/turbo-ocr` | `--turboocr-cache-volume` |
+| OCR 언어 | `OCR_LANG=korean` | `--turboocr-lang` |
+| 파이프라인 풀 크기 | `PIPELINE_POOL_SIZE=4` | `--turboocr-pipeline-pool-size` |
+| 감지 최대 변 길이 | `DET_MAX_SIDE=960` | `--turboocr-det-max-side` |
+| 레이아웃 비활성화 | `DISABLE_LAYOUT=1` | `--turboocr-disable-layout` / `--no-turboocr-disable-layout` |
+| 각도 분류 비활성화 | 기본 미설정 | `--turboocr-disable-angle-cls` |
+| TensorRT 최적화 레벨 | `TRT_OPT_LEVEL=3` | `--turboocr-trt-opt-level` |
+
+GPU는 항상 `--gpus all`로 연결합니다. 따라서 Docker Desktop, NVIDIA 드라이버, NVIDIA Container Toolkit 계열 GPU 연동이 동작해야 합니다.
+
+`8000` 포트가 이미 사용 중이고 `--turboocr-url`을 직접 지정하지 않았다면, 실행 스크립트는 `18000`부터 사용 가능한 포트를 찾아 `violet-turboocr-{port}` 형식의 컨테이너 이름을 사용합니다. 이미 준비된 TurboOCR 서버가 `18000`번대에서 발견되면 새 컨테이너를 만들지 않고 그 서버를 사용합니다.
+
+`--turboocr-docker never`를 지정하면 Docker 컨테이너를 만들거나 시작하지 않습니다. 이 경우 `--turboocr-url`의 서버가 이미 준비되어 있어야 합니다.
+
+예시:
+
+```powershell
+python .\run-works-turbo.py --ensure-server-only `
+  --turboocr-url http://localhost:18000 `
+  --turboocr-container violet-turboocr-18000 `
+  --turboocr-cache-volume trt-cache-18000 `
+  --turboocr-pipeline-pool-size 4 `
+  --turboocr-det-max-side 960
+```
+
 첫 실행은 Docker 이미지 다운로드와 TensorRT 엔진 빌드 때문에 오래 걸릴 수 있습니다.
 
 준비 상태는 다음 명령으로 확인할 수 있습니다.
