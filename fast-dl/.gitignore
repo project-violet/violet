@@ -1,0 +1,22 @@
+# Go build outputs
+/fast-dl
+/fast-dl.exe
+/fast-hsync.exe
+/*.test
+/*.out
+/.gocache/
+/.gopath/
+
+# Runtime/download outputs
+/tmp/
+/tmp2-go/
+/downloads/
+*.part
+*.db
+*.db-shm
+*.db-wal
+
+# Local logs and profiles
+*.log
+*.prof
+*.pprof
