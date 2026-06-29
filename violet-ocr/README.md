@@ -1,65 +1,65 @@
 # violet-ocr
 
-TurboOCR server runner for downloading Hitomi works with `fast-dl` and writing OCR JSON files to `raw/`.
+`fast-dl`로 Hitomi 작품 이미지를 내려받고, TurboOCR 서버로 OCR을 수행해 `raw/`에 JSON 결과를 저장하는 실행 도구입니다.
 
-This package intentionally contains only the TurboOCR path. The older PaddleOCR worker code, `download-exp/`, summary/search/vector-store pipeline, generated `raw/`, `tmp/`, and trace artifacts are not included.
+이 폴더는 TurboOCR 실행 경로만 포함합니다. 기존 PaddleOCR 워커 코드, `download-exp/`, 요약/검색/벡터 저장소 파이프라인, 생성된 `raw/`, `tmp/`, trace 산출물은 포함하지 않았습니다.
 
-## Files
+## 파일 구성
 
-- `run-works-turbo.py`: downloads selected works and OCRs their pages through TurboOCR.
-- `start-turboocr.cmd`: starts or creates the local TurboOCR Docker container and waits until it is ready.
-- `stop-turboocr.cmd`: stops running `violet-turboocr` containers without deleting the container or TensorRT cache.
-- `work_plan.py`: selects target IDs, skips completed work, tracks failed downloads, and reports progress.
-- `fast_dl_runner.py`: invokes the repository-level `../fast-dl/fast-dl.exe` downloader.
-- `ocr_common.py`: image ordering, OCR result saving, and text-box grouping helpers.
-- `trace_writer.py`: Chrome trace JSONL writer used by the runner.
-- `works/target_ids.json`: default target ID list.
+- `run-works-turbo.py`: 선택한 작품을 다운로드하고 TurboOCR로 페이지 OCR을 수행합니다.
+- `start-turboocr.cmd`: 로컬 TurboOCR Docker 컨테이너를 시작하거나 생성한 뒤 준비 상태가 될 때까지 기다립니다.
+- `stop-turboocr.cmd`: 실행 중인 `violet-turboocr` 컨테이너를 중지합니다. 컨테이너와 TensorRT 캐시는 삭제하지 않습니다.
+- `work_plan.py`: 대상 ID 선택, 완료된 작업 스킵, 실패 다운로드 기록, 진행률 출력을 담당합니다.
+- `fast_dl_runner.py`: 레포 루트의 `../fast-dl/fast-dl.exe` 다운로더를 실행합니다.
+- `ocr_common.py`: 이미지 정렬, OCR 결과 저장, 텍스트 박스 그룹핑 헬퍼입니다.
+- `trace_writer.py`: Chrome trace JSONL 파일을 기록합니다.
+- `works/target_ids.json`: 기본 대상 ID 목록입니다.
 
-## Requirements
+## 요구 사항
 
-- Docker, for the TurboOCR server.
-- Python with Pillow available.
-- `../fast-dl/fast-dl.exe`, built from the repository's `fast-dl/` directory.
+- TurboOCR 서버 실행을 위한 Docker
+- Pillow를 사용할 수 있는 Python 환경
+- 레포의 `fast-dl/`에서 빌드된 `../fast-dl/fast-dl.exe`
 
-The default Go downloader path is:
+기본 Go 다운로더 경로는 다음과 같습니다.
 
 ```powershell
 ..\fast-dl\fast-dl.exe
 ```
 
-Override it with `--go-downloader` if needed.
+다른 경로를 쓰려면 `--go-downloader`로 지정하면 됩니다.
 
-## Start TurboOCR
+## TurboOCR 시작
 
-Start the TurboOCR server and wait until `/health/ready` responds:
+TurboOCR 서버를 시작하고 `/health/ready`가 응답할 때까지 기다립니다.
 
 ```powershell
 .\start-turboocr.cmd
 ```
 
-Equivalent Python command:
+같은 동작을 Python으로 직접 실행할 수도 있습니다.
 
 ```powershell
 python .\run-works-turbo.py --ensure-server-only
 ```
 
-Defaults:
+기본값은 다음과 같습니다.
 
-- Docker image: `ghcr.io/aiptimizer/turboocr:v2.3.0`
-- Container name: `violet-turboocr`
-- Default URL: `http://localhost:8000`
-- Fallback URL: `http://localhost:18000` when port `8000` is already in use
-- TensorRT cache volume: `trt-cache`
-- OCR language: `korean`
-- Pipeline pool size: `4`
-- Detection max side: `960`
-- Layout disabled by default
-- TensorRT optimization level: `3`
-- Readiness timeout: `3600` seconds
+- Docker 이미지: `ghcr.io/aiptimizer/turboocr:v2.3.0`
+- 컨테이너 이름: `violet-turboocr`
+- 기본 URL: `http://localhost:8000`
+- 대체 URL: `8000` 포트가 이미 사용 중이면 `http://localhost:18000`
+- TensorRT 캐시 볼륨: `trt-cache`
+- OCR 언어: `korean`
+- 파이프라인 풀 크기: `4`
+- 감지 최대 변 길이: `960`
+- 레이아웃 분석은 기본 비활성화
+- TensorRT 최적화 레벨: `3`
+- 준비 대기 시간: `3600`초
 
-The first run can take a long time because Docker may need to pull the image and build TensorRT engines.
+첫 실행은 Docker 이미지 다운로드와 TensorRT 엔진 빌드 때문에 오래 걸릴 수 있습니다.
 
-Check readiness manually:
+준비 상태는 다음 명령으로 확인할 수 있습니다.
 
 ```powershell
 curl http://localhost:8000/health/ready
@@ -67,27 +67,27 @@ curl http://localhost:18000/health/ready
 docker ps --filter "name=violet-turboocr"
 ```
 
-Pass TurboOCR options through the start script:
+시작 스크립트에 TurboOCR 옵션을 그대로 넘길 수 있습니다.
 
 ```powershell
 .\start-turboocr.cmd --turboocr-url http://localhost:18000 --turboocr-pipeline-pool-size 4
 ```
 
-## Run OCR
+## OCR 실행
 
-Process the last `N` IDs from `works/target_ids.json`:
+`works/target_ids.json`의 마지막 `N`개 ID를 처리합니다.
 
 ```powershell
 python .\run-works-turbo.py 100
 ```
 
-Process explicit IDs:
+ID를 직접 지정할 수도 있습니다.
 
 ```powershell
 python .\run-works-turbo.py --ids 1234567 2345678
 ```
 
-Useful options:
+자주 쓰는 실행 옵션 예시는 다음과 같습니다.
 
 ```powershell
 python .\run-works-turbo.py 100 `
@@ -97,28 +97,28 @@ python .\run-works-turbo.py 100 `
   --ocr-active-works 1
 ```
 
-Outputs:
+출력 경로는 다음과 같습니다.
 
-- `tmp/{work_id}/`: downloaded page images
-- `raw/{work_id}.json`: OCR result
-- `traces/run-works-turbo-*.jsonl`: Chrome trace output unless `--no-trace` is used
-- `works/failed_ids.jsonl`: download/OCR failures
+- `tmp/{work_id}/`: 다운로드된 페이지 이미지
+- `raw/{work_id}.json`: OCR 결과
+- `traces/run-works-turbo-*.jsonl`: Chrome trace 출력. `--no-trace`를 쓰면 생성하지 않습니다.
+- `works/failed_ids.jsonl`: 다운로드/OCR 실패 기록
 
-The runner skips existing `raw/{work_id}.json` unless `--force-ocr` is passed. It skips already complete downloads unless `--force-download` is passed.
+기본적으로 이미 `raw/{work_id}.json`이 있으면 스킵합니다. 다시 OCR하려면 `--force-ocr`를 사용합니다. 이미 완성된 다운로드도 기본적으로 스킵하며, 다시 다운로드하려면 `--force-download`를 사용합니다.
 
-## Stop TurboOCR
+## TurboOCR 중지
 
-Stop running TurboOCR containers:
+실행 중인 TurboOCR 컨테이너를 중지합니다.
 
 ```powershell
 .\stop-turboocr.cmd
 ```
 
-This does not delete the container or TensorRT cache, so later starts are usually faster.
+이 명령은 컨테이너나 TensorRT 캐시를 삭제하지 않습니다. 그래서 다음 시작은 보통 더 빠릅니다.
 
-## Validation
+## 검증
 
-Run the lightweight checks:
+가벼운 검증 명령은 다음과 같습니다.
 
 ```powershell
 python -m unittest discover -s .\tests
