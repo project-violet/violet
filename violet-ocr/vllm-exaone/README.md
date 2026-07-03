@@ -35,7 +35,7 @@ FlashAttention, and CUDA graph capture still initialize.
 From Windows PowerShell:
 
 ```powershell
-wsl -d Ubuntu-24.04 -- bash /mnt/c/Users/rollrat/Desktop/workspace/violet/violet-ocr/vllm-exaone/start_vllm_exaone_wsl.sh start
+powershell -ExecutionPolicy Bypass -File .\violet-ocr\vllm-exaone\start.ps1
 ```
 
 Or:
@@ -68,7 +68,7 @@ It opens a console menu for:
 ## Stop
 
 ```powershell
-wsl -d Ubuntu-24.04 -- bash /mnt/c/Users/rollrat/Desktop/workspace/violet/violet-ocr/vllm-exaone/start_vllm_exaone_wsl.sh stop
+powershell -ExecutionPolicy Bypass -File .\violet-ocr\vllm-exaone\stop.ps1
 ```
 
 Or:
