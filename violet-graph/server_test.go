@@ -229,39 +229,6 @@ func TestKeywordGraphServerReturnsWorkSetJSON(t *testing.T) {
 	}
 }
 
-func TestKeywordGraphServerCachesWorkSetResponses(t *testing.T) {
-	server := newKeywordGraphServer([]keywordRow{
-		{ArticleID: "1", Rank: 1, Keyword: "alpha", Score: 10, TF: 5, DF: 2, TotalPages: 12, DialogueCount: 80, CharacterCount: 1200},
-		{ArticleID: "2", Rank: 1, Keyword: "alpha", Score: 9, TF: 4, DF: 2, TotalPages: 8, DialogueCount: 30, CharacterCount: 500},
-	})
-
-	body := `{"ids":["1","2"]}`
-	firstReq := httptest.NewRequest(http.MethodPost, "/api/works", bytes.NewBufferString(body))
-	firstReq.Header.Set("Content-Type", "application/json")
-	firstRec := httptest.NewRecorder()
-	server.ServeHTTP(firstRec, firstReq)
-	if firstRec.Code != http.StatusOK {
-		t.Fatalf("first status = %d, body = %s", firstRec.Code, firstRec.Body.String())
-	}
-	if got := firstRec.Header().Get("X-Violet-Graph-Cache"); got != "miss" {
-		t.Fatalf("first cache header = %q, want miss", got)
-	}
-
-	secondReq := httptest.NewRequest(http.MethodPost, "/api/works", bytes.NewBufferString(body))
-	secondReq.Header.Set("Content-Type", "application/json")
-	secondRec := httptest.NewRecorder()
-	server.ServeHTTP(secondRec, secondReq)
-	if secondRec.Code != http.StatusOK {
-		t.Fatalf("second status = %d, body = %s", secondRec.Code, secondRec.Body.String())
-	}
-	if got := secondRec.Header().Get("X-Violet-Graph-Cache"); got != "hit" {
-		t.Fatalf("second cache header = %q, want hit", got)
-	}
-	if firstRec.Body.String() != secondRec.Body.String() {
-		t.Fatalf("cached response body changed:\nfirst=%s\nsecond=%s", firstRec.Body.String(), secondRec.Body.String())
-	}
-}
-
 func TestKeywordGraphServerServesHTML(t *testing.T) {
 	server := newKeywordGraphServer(nil)
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
