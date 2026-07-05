@@ -32,63 +32,114 @@ struct Opt {
 struct WorkSearchRequest {
     ids: Vec<usize>,
     query: String,
+    limit: Option<usize>,
 }
 
 lazy_static! {
     static ref OPT: Opt = Opt::from_args();
 }
 
+const DEFAULT_TAKE: usize = 1000;
+const MAX_TAKE: usize = 1000;
+
 fn current_date_time() -> String {
     Local::now().format("%Y-%m-%d.%H:%M:%S").to_string()
 }
 
-#[get("/<query>")]
-fn similar(query: &str) -> Json<Vec<MessageResult>> {
-    println!("({}) similar: {}", current_date_time(), query);
-    Json(search_similar(None, query, 1000))
+fn normalize_take(limit: Option<usize>) -> usize {
+    limit.unwrap_or(DEFAULT_TAKE).clamp(1, MAX_TAKE)
 }
 
-#[get("/<query>")]
-fn contains(query: &str) -> Json<Vec<MessageResult>> {
-    println!("({}) contains: {}", current_date_time(), query);
-    Json(search_partial_contains(None, query, 1000))
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn normalize_take_defaults_and_clamps_requested_limit() {
+        assert_eq!(normalize_take(None), 1000);
+        assert_eq!(normalize_take(Some(0)), 1);
+        assert_eq!(normalize_take(Some(25)), 25);
+        assert_eq!(normalize_take(Some(5000)), 1000);
+    }
 }
 
-#[get("/<id>/<query>")]
-fn wsimilar(id: usize, query: &str) -> Json<Vec<MessageResult>> {
-    println!("({}) wsimilar: {} - {}", current_date_time(), id, query);
-    Json(search_similar(Some(id), query, 1000))
+#[get("/<query>?<limit>")]
+fn similar(query: &str, limit: Option<usize>) -> Json<Vec<MessageResult>> {
+    let take = normalize_take(limit);
+    println!(
+        "({}) similar: {} (take={})",
+        current_date_time(),
+        query,
+        take
+    );
+    Json(search_similar(None, query, take))
+}
+
+#[get("/<query>?<limit>")]
+fn contains(query: &str, limit: Option<usize>) -> Json<Vec<MessageResult>> {
+    let take = normalize_take(limit);
+    println!(
+        "({}) contains: {} (take={})",
+        current_date_time(),
+        query,
+        take
+    );
+    Json(search_partial_contains(None, query, take))
+}
+
+#[get("/<id>/<query>?<limit>")]
+fn wsimilar(id: usize, query: &str, limit: Option<usize>) -> Json<Vec<MessageResult>> {
+    let take = normalize_take(limit);
+    println!(
+        "({}) wsimilar: {} - {} (take={})",
+        current_date_time(),
+        id,
+        query,
+        take
+    );
+    Json(search_similar(Some(id), query, take))
 }
 
 #[post("/", format = "json", data = "<request>")]
 fn wsimilar_many(request: Json<WorkSearchRequest>) -> Json<Vec<MessageResult>> {
+    let take = normalize_take(request.limit);
     println!(
-        "({}) wsimilar-many: {} works - {}",
+        "({}) wsimilar-many: {} works - {} (take={})",
         current_date_time(),
         request.ids.len(),
-        request.query
+        request.query,
+        take
     );
-    Json(search_similar_many(&request.ids, &request.query, 1000))
+    Json(search_similar_many(&request.ids, &request.query, take))
 }
 
-#[get("/<id>/<query>")]
-fn wcontains(id: usize, query: &str) -> Json<Vec<MessageResult>> {
-    println!("({}) wcontains: {} - {}", current_date_time(), id, query);
-    Json(search_partial_contains(Some(id), query, 1000))
+#[get("/<id>/<query>?<limit>")]
+fn wcontains(id: usize, query: &str, limit: Option<usize>) -> Json<Vec<MessageResult>> {
+    let take = normalize_take(limit);
+    println!(
+        "({}) wcontains: {} - {} (take={})",
+        current_date_time(),
+        id,
+        query,
+        take
+    );
+    Json(search_partial_contains(Some(id), query, take))
 }
 
 #[post("/", format = "json", data = "<request>")]
 fn wcontains_many(request: Json<WorkSearchRequest>) -> Json<Vec<MessageResult>> {
+    let take = normalize_take(request.limit);
     println!(
-        "({}) wcontains-many: {} works - {}",
+        "({}) wcontains-many: {} works - {} (take={})",
         current_date_time(),
         request.ids.len(),
-        request.query
+        request.query,
+        take
     );
     Json(search_partial_contains_many(
         &request.ids,
         &request.query,
-        1000,
+        take,
     ))
 }
 

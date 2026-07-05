@@ -133,27 +133,43 @@ function sortMessageResults(results: MessageSearchResult[]): MessageSearchResult
   });
 }
 
+export function buildFscmWorkMessageRequest(
+  baseUrl: string,
+  query: string,
+  articleIds: string[],
+  mode: MessageSearchMode,
+  limit: number,
+): { url: string; body: string; ids: number[] } {
+  const route = mode === 'similar' ? 'wsimilar' : 'wcontains';
+  const ids = articleIds
+    .map((articleId) => Number(articleId))
+    .filter((articleId) => Number.isInteger(articleId) && articleId > 0);
+
+  return {
+    url: `${baseUrl}/${route}`,
+    body: JSON.stringify({ ids, query, limit }),
+    ids,
+  };
+}
+
 async function fetchFscmWorkMessages(
   baseUrl: string,
   query: string,
   articleIds: string[],
   mode: MessageSearchMode,
+  limit: number,
 ): Promise<MessageSearchResult[]> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), getTimeoutMs());
-  const route = mode === 'similar' ? 'wsimilar' : 'wcontains';
-  const ids = articleIds
-    .map((articleId) => Number(articleId))
-    .filter((articleId) => Number.isInteger(articleId) && articleId > 0);
-  const upstreamUrl = `${baseUrl}/${route}`;
+  const upstreamRequest = buildFscmWorkMessageRequest(baseUrl, query, articleIds, mode, limit);
   const totalStart = performance.now();
   const fetchStart = performance.now();
 
   try {
-    const response = await fetch(upstreamUrl, {
+    const response = await fetch(upstreamRequest.url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ids, query }),
+      body: upstreamRequest.body,
       signal: controller.signal,
     });
     const fetchEnd = performance.now();
@@ -173,9 +189,10 @@ async function fetchFscmWorkMessages(
     const normalizeEnd = performance.now();
 
     logWorkExperimentProfile('fscm', {
-      route,
-      ids: ids.length,
+      route: mode === 'similar' ? 'wsimilar' : 'wcontains',
+      ids: upstreamRequest.ids.length,
       query,
+      limit,
       status: response.status,
       raw: raw.length,
       normalized: results.length,
@@ -293,7 +310,7 @@ async function searchAuthorMessages(
     throw new Error('Author-scoped message search supports contains or similar mode.');
   }
 
-  const results = await fetchFscmWorkMessages(baseUrl, trimmedQuery, articleIds, mode);
+  const results = await fetchFscmWorkMessages(baseUrl, trimmedQuery, articleIds, mode, limit);
 
   const sortStart = performance.now();
   sortMessageResults(results);
