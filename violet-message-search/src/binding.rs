@@ -9,7 +9,7 @@ include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 extern "C" {}
 
 pub trait SimilarityMethod: Sync {
-    fn similarity(&self, message: &str) -> f64;
+    fn similarity(&self, message: &str, score_cutoff: f64) -> f64;
 }
 
 static EMPTY_MESSAGE: [u8; 1] = [0];
@@ -39,9 +39,9 @@ impl CachedRatio {
 }
 
 impl SimilarityMethod for CachedRatio {
-    fn similarity(&self, message: &str) -> f64 {
+    fn similarity(&self, message: &str, score_cutoff: f64) -> f64 {
         let (message, message_len) = message_parts(message);
-        unsafe { binding_similarity(self.scorer, message, message_len) }
+        unsafe { binding_similarity(self.scorer, message, message_len, score_cutoff) }
     }
 }
 
@@ -60,9 +60,9 @@ impl CachedPartialRatio {
 }
 
 impl SimilarityMethod for CachedPartialRatio {
-    fn similarity(&self, message: &str) -> f64 {
+    fn similarity(&self, message: &str, score_cutoff: f64) -> f64 {
         let (message, message_len) = message_parts(message);
-        unsafe { binding_similarity_partial(self.scorer, message, message_len) }
+        unsafe { binding_similarity_partial(self.scorer, message, message_len, score_cutoff) }
     }
 }
 
@@ -72,11 +72,11 @@ mod tests {
     use crate::binding::CachedRatio;
 
     fn test(src: &str, tar: &str) -> usize {
-        CachedRatio::from(src).similarity(tar) as usize
+        CachedRatio::from(src).similarity(tar, 0.0) as usize
     }
 
     fn test_partial(src: &str, tar: &str) -> usize {
-        CachedPartialRatio::from(src).similarity(tar) as usize
+        CachedPartialRatio::from(src).similarity(tar, 0.0) as usize
     }
 
     #[test]
@@ -94,6 +94,13 @@ mod tests {
     }
 
     #[test]
+    fn unittest_cached_ratio_respects_score_cutoff() {
+        let scorer = CachedRatio::from("abcd");
+        assert_eq!(scorer.similarity("abcde", 88.0) as usize, 88);
+        assert_eq!(scorer.similarity("abcde", 89.0) as usize, 0);
+    }
+
+    #[test]
     fn unittest_cached_partial_ratio_simple() {
         assert_eq!(test_partial("abcd", "abcd"), 100);
         assert_eq!(test_partial("abcd", "abcde"), 100);
@@ -106,5 +113,12 @@ mod tests {
     #[test]
     fn unittest_cached_partial_ratio_handles_message_nul_byte() {
         assert_eq!(test_partial("abcd", "xxabcd\0yy"), 100);
+    }
+
+    #[test]
+    fn unittest_cached_partial_ratio_respects_score_cutoff() {
+        let scorer = CachedPartialRatio::from("abcd");
+        assert_eq!(scorer.similarity("acbd", 75.0) as usize, 75);
+        assert_eq!(scorer.similarity("acbd", 76.0) as usize, 0);
     }
 }

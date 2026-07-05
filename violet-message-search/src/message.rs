@@ -109,6 +109,22 @@ impl TopScoredMessages {
         }
     }
 
+    fn score_cutoff(&self) -> f64 {
+        if self.heap.len() < self.take {
+            return 0.0;
+        }
+        // This cutoff is local to one Rayon worker. It is still safe: anything
+        // below this worker's current worst result cannot enter that worker's
+        // top-k, and therefore cannot enter the final merged top-k.
+        self.heap
+            .peek()
+            .map(|message| {
+                let (_, score) = &message.0;
+                *score
+            })
+            .unwrap_or(0.0)
+    }
+
     fn merge(mut self, other: Self) -> Self {
         self.scored += other.scored;
         for message in other.heap {
@@ -459,13 +475,17 @@ fn search(
 ) -> (Vec<MessageResult>, SearchStats) {
     let candidates_len = candidates.len();
     let score_start = Instant::now();
+    // Rayon splits the slice into worker-local chunks. Each fold builds a
+    // local top-k heap, then reduce merges those local heaps into the final
+    // top-k. The cutoff passed to RapidFuzz is therefore local to each worker.
     let top_results = candidates
         .par_iter()
         .fold(
             || TopScoredMessages::new(take),
             |mut top_results, message| {
                 if filter(message.as_ref()) {
-                    top_results.push(message, scorer.similarity(&message.message));
+                    let score = scorer.similarity(&message.message, top_results.score_cutoff());
+                    top_results.push(message, score);
                 }
                 top_results
             },
