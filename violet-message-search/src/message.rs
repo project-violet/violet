@@ -3,6 +3,7 @@ use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::env;
 use std::fs::File;
 use std::path::PathBuf;
+use std::sync::atomic::{AtomicU64, Ordering as AtomicOrdering};
 use std::sync::{Arc, LazyLock, RwLock};
 use std::time::{Duration, Instant};
 
@@ -37,6 +38,36 @@ struct SearchStats {
 type ScoredMessage = (Arc<Message>, f64);
 
 struct TopScoredMessage(ScoredMessage);
+
+#[derive(Default)]
+struct GlobalScoreCutoff {
+    score_bits: AtomicU64,
+}
+
+impl GlobalScoreCutoff {
+    fn get(&self) -> f64 {
+        f64::from_bits(self.score_bits.load(AtomicOrdering::Relaxed))
+    }
+
+    fn publish(&self, score: f64) {
+        if !score.is_finite() || score <= 0.0 {
+            return;
+        }
+
+        let mut current = self.score_bits.load(AtomicOrdering::Relaxed);
+        while score > f64::from_bits(current) {
+            match self.score_bits.compare_exchange_weak(
+                current,
+                score.to_bits(),
+                AtomicOrdering::Relaxed,
+                AtomicOrdering::Relaxed,
+            ) {
+                Ok(_) => return,
+                Err(next) => current = next,
+            }
+        }
+    }
+}
 
 impl PartialEq for TopScoredMessage {
     fn eq(&self, other: &Self) -> bool {
@@ -146,6 +177,14 @@ impl TopScoredMessages {
                 *score
             })
             .unwrap_or(0.0)
+    }
+
+    fn score_cutoff_with_global(&self, global_cutoff: &GlobalScoreCutoff) -> f64 {
+        self.score_cutoff().max(global_cutoff.get())
+    }
+
+    fn publish_score_cutoff(&self, global_cutoff: &GlobalScoreCutoff) {
+        global_cutoff.publish(self.score_cutoff());
     }
 
     fn len(&self) -> usize {
@@ -593,9 +632,13 @@ where
     S: SimilarityMethod,
     F: Fn(&Message) -> bool + Sync + Send,
 {
+    let global_cutoff = GlobalScoreCutoff::default();
+
     // Rayon splits the slice into worker-local chunks. Each fold builds a
     // local top-k heap, then reduce merges those local heaps into the final
-    // top-k. The cutoff passed to RapidFuzz is therefore local to each worker.
+    // top-k. Once any worker fills a local top-k, its worst score becomes a
+    // safe global cutoff because at least `take` results already score that
+    // high or higher.
     candidates
         .par_iter()
         .fold(
@@ -609,9 +652,14 @@ where
 
                     if let Some(score) = exact_score {
                         top_results.push_exact(message, score);
+                        top_results.publish_score_cutoff(&global_cutoff);
                     } else {
-                        let score = scorer.similarity(&message.message, top_results.score_cutoff());
+                        let score = scorer.similarity(
+                            &message.message,
+                            top_results.score_cutoff_with_global(&global_cutoff),
+                        );
                         top_results.push_fuzzy(message, score);
+                        top_results.publish_score_cutoff(&global_cutoff);
                     }
                 }
                 top_results
@@ -855,6 +903,30 @@ mod tests {
 
         assert_eq!(stats.exact_scored, 2);
         assert_eq!(stats.fuzzy_scored, 0);
+    }
+
+    #[test]
+    fn global_score_cutoff_keeps_highest_published_score() {
+        let cutoff = GlobalScoreCutoff::default();
+
+        assert_eq!(cutoff.get(), 0.0);
+
+        cutoff.publish(75.0);
+        cutoff.publish(50.0);
+        assert_eq!(cutoff.get(), 75.0);
+
+        cutoff.publish(88.5);
+        assert_eq!(cutoff.get(), 88.5);
+    }
+
+    #[test]
+    fn top_results_uses_higher_global_score_cutoff() {
+        let cutoff = GlobalScoreCutoff::default();
+        let top_results = TopScoredMessages::new(2);
+
+        cutoff.publish(90.0);
+
+        assert_eq!(top_results.score_cutoff_with_global(&cutoff), 90.0);
     }
 
     #[test]
