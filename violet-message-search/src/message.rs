@@ -1,5 +1,5 @@
 use std::cmp::Ordering;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::fs::File;
 use std::path::PathBuf;
 use std::sync::{Arc, LazyLock, Mutex};
@@ -13,8 +13,6 @@ use crate::cache::with_cache;
 use crate::displant::HangulConverter;
 
 static MESSAGES: LazyLock<Mutex<Vec<Arc<Message>>>> = LazyLock::new(|| Mutex::new(vec![]));
-static ARTICLE_MESSAGES: LazyLock<Mutex<HashMap<usize, Vec<Arc<Message>>>>> =
-    LazyLock::new(|| Mutex::new(HashMap::new()));
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Message {
@@ -77,21 +75,18 @@ impl From<&Message> for MessageResult {
 pub fn load_messages(path: PathBuf) {
     let file = File::open(path).unwrap();
     let msgs: Vec<Message> = simd_json::serde::from_reader(file).unwrap();
-    let msgs: Vec<_> = msgs.into_iter().map(Arc::new).collect();
     MESSAGES
         .lock()
         .unwrap()
-        .extend(msgs.iter().cloned());
-    index_messages(&msgs);
+        .extend(msgs.into_iter().map(Arc::new));
 }
 
 pub fn search_similar(id: Option<usize>, query: &str, take: usize) -> Vec<MessageResult> {
     let converted_query = convert_query(query);
     with_cache(format!("similar-{id:?}-{converted_query}"), move || {
         search(
-            search_candidates(id),
             CachedRatio::from(&converted_query),
-            |_| true,
+            |message| id.map(|id| message.article_id == id).unwrap_or(true),
             take,
         )
     })
@@ -101,9 +96,11 @@ pub fn search_partial_contains(id: Option<usize>, query: &str, take: usize) -> V
     let converted_query = convert_query(query);
     with_cache(format!("contains-{id:?}-{converted_query}"), move || {
         search(
-            search_candidates(id),
             CachedPartialRatio::from(&converted_query),
-            |message| converted_query.len() <= message.message.len(),
+            |message| {
+                id.map(|id| message.article_id == id).unwrap_or(true)
+                    && converted_query.len() <= message.message.len()
+            },
             take,
         )
     })
@@ -116,12 +113,13 @@ pub fn convert_query(query: &str) -> String {
 }
 
 fn search(
-    candidates: Vec<Arc<Message>>,
     scorer: impl SimilarityMethod,
     filter: impl Fn(&&Arc<Message>) -> bool + Sync + Send,
     take: usize,
 ) -> Vec<MessageResult> {
-    let mut results: Vec<_> = candidates
+    let mut results: Vec<_> = MESSAGES
+        .lock()
+        .unwrap()
         .par_iter()
         .filter(filter)
         .map(|message| (message.clone(), scorer.similarity(&message.message)))
@@ -146,43 +144,12 @@ fn search(
         .collect()
 }
 
-fn search_candidates(id: Option<usize>) -> Vec<Arc<Message>> {
-    match id {
-        Some(id) => ARTICLE_MESSAGES
-            .lock()
-            .unwrap()
-            .get(&id)
-            .cloned()
-            .unwrap_or_default(),
-        None => MESSAGES.lock().unwrap().clone(),
-    }
-}
-
-fn index_messages(messages: &[Arc<Message>]) {
-    let mut article_messages = ARTICLE_MESSAGES.lock().unwrap();
-    for message in messages {
-        article_messages
-            .entry(message.article_id)
-            .or_default()
-            .push(message.clone());
-    }
-}
-
-#[cfg(test)]
-fn rebuild_article_index(messages: &[Arc<Message>]) {
-    let mut article_messages = ARTICLE_MESSAGES.lock().unwrap();
-    article_messages.clear();
-    for message in messages {
-        article_messages
-            .entry(message.article_id)
-            .or_default()
-            .push(message.clone());
-    }
-}
-
 pub fn search_article(id: usize) -> Vec<MessageResult> {
-    search_candidates(Some(id))
+    MESSAGES
+        .lock()
+        .unwrap()
         .iter()
+        .filter(|msg| msg.article_id == id)
         .map(|msg| msg.as_ref().into())
         .collect()
 }
@@ -197,50 +164,4 @@ pub fn article_lists() -> Vec<usize> {
         .into_iter()
         .sorted()
         .collect()
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn test_message(article_id: usize, message: &str) -> Message {
-        Message {
-            article_id,
-            page: 1,
-            message: message.to_string(),
-            raw: None,
-            correct: 1.0,
-            rects: [0.0, 0.0, 1.0, 1.0],
-        }
-    }
-
-    fn reset_messages(messages: Vec<Message>) {
-        let messages: Vec<_> = messages.into_iter().map(Arc::new).collect();
-        *MESSAGES.lock().unwrap() = messages.clone();
-        rebuild_article_index(&messages);
-    }
-
-    #[test]
-    fn work_search_candidates_are_limited_to_matching_article() {
-        reset_messages(vec![
-            test_message(10, "first"),
-            test_message(20, "second"),
-            test_message(10, "third"),
-        ]);
-
-        let candidates = search_candidates(Some(10));
-        let ids: Vec<_> = candidates.iter().map(|message| message.article_id).collect();
-
-        assert_eq!(ids, vec![10, 10]);
-    }
-
-    #[test]
-    fn global_search_candidates_include_all_messages() {
-        reset_messages(vec![test_message(10, "first"), test_message(20, "second")]);
-
-        let candidates = search_candidates(None);
-        let ids: Vec<_> = candidates.iter().map(|message| message.article_id).collect();
-
-        assert_eq!(ids, vec![10, 20]);
-    }
 }
