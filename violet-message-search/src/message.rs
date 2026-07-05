@@ -32,6 +32,8 @@ struct SearchStats {
     take_elapsed: Duration,
 }
 
+type ScoredMessage = (Arc<Message>, f64);
+
 impl MessageStore {
     #[cfg(test)]
     fn from_messages(messages: Vec<Message>) -> Self {
@@ -293,7 +295,7 @@ fn search(
 ) -> (Vec<MessageResult>, SearchStats) {
     let candidates_len = candidates.len();
     let score_start = Instant::now();
-    let mut results: Vec<_> = candidates
+    let mut results: Vec<ScoredMessage> = candidates
         .par_iter()
         .filter(|message| filter(message.as_ref()))
         .map(|message| (message.clone(), scorer.similarity(&message.message)))
@@ -302,13 +304,7 @@ fn search(
     let scored_len = results.len();
 
     let sort_start = Instant::now();
-    results.sort_by(|(amsg, ascore), (bmsg, bscore)| {
-        let ord = ascore.partial_cmp(bscore).unwrap();
-        match ord {
-            Ordering::Greater | Ordering::Less => ord.reverse(),
-            Ordering::Equal => amsg.correct.partial_cmp(&bmsg.correct).unwrap().reverse(),
-        }
-    });
+    retain_top_results(&mut results, take);
     let sort_elapsed = sort_start.elapsed();
 
     let take_start = Instant::now();
@@ -333,6 +329,29 @@ fn search(
             take_elapsed,
         },
     )
+}
+
+fn retain_top_results(results: &mut Vec<ScoredMessage>, take: usize) {
+    if take == 0 {
+        results.clear();
+        return;
+    }
+    if results.len() > take {
+        results.select_nth_unstable_by(take, scored_message_order);
+        results.truncate(take);
+    }
+    results.sort_by(scored_message_order);
+}
+
+fn scored_message_order(
+    (amsg, ascore): &ScoredMessage,
+    (bmsg, bscore): &ScoredMessage,
+) -> Ordering {
+    let ord = ascore.partial_cmp(bscore).unwrap();
+    match ord {
+        Ordering::Greater | Ordering::Less => ord.reverse(),
+        Ordering::Equal => amsg.correct.partial_cmp(&bmsg.correct).unwrap().reverse(),
+    }
 }
 
 fn search_profile_enabled() -> bool {
@@ -415,6 +434,17 @@ mod tests {
         }
     }
 
+    fn test_message_with_correct(article_id: usize, correct: f64) -> Arc<Message> {
+        Arc::new(Message {
+            article_id,
+            page: 1,
+            message: "message".to_string(),
+            raw: None,
+            correct,
+            rects: [0.0, 0.0, 1.0, 1.0],
+        })
+    }
+
     fn reset_messages(messages: Vec<Message>) {
         *MESSAGES.lock().unwrap() = MessageStore::from_messages(messages);
     }
@@ -446,5 +476,20 @@ mod tests {
         let article_ids: Vec<_> = results.iter().map(|result| result.id).sorted().collect();
 
         assert_eq!(article_ids, vec![10, 20]);
+    }
+
+    #[test]
+    fn retain_top_results_limits_and_preserves_sort_order() {
+        let mut results = vec![
+            (test_message_with_correct(1, 0.1), 10.0),
+            (test_message_with_correct(2, 0.2), 20.0),
+            (test_message_with_correct(3, 0.9), 20.0),
+            (test_message_with_correct(4, 0.9), 5.0),
+        ];
+
+        retain_top_results(&mut results, 2);
+
+        let article_ids: Vec<_> = results.iter().map(|(message, _)| message.article_id).collect();
+        assert_eq!(article_ids, vec![3, 2]);
     }
 }
