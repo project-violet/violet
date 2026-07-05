@@ -27,6 +27,8 @@ struct MessageStore {
 struct SearchStats {
     candidates: usize,
     scored: usize,
+    exact_scored: usize,
+    fuzzy_scored: usize,
     score_elapsed: Duration,
     sort_elapsed: Duration,
     take_elapsed: Duration,
@@ -59,6 +61,8 @@ impl Ord for TopScoredMessage {
 struct TopScoredMessages {
     heap: BinaryHeap<TopScoredMessage>,
     scored: usize,
+    exact_scored: usize,
+    fuzzy_scored: usize,
     take: usize,
 }
 
@@ -67,12 +71,31 @@ impl TopScoredMessages {
         Self {
             heap: BinaryHeap::with_capacity(take),
             scored: 0,
+            exact_scored: 0,
+            fuzzy_scored: 0,
             take,
         }
     }
 
+    #[cfg(test)]
     fn push(&mut self, message: &Arc<Message>, score: f64) {
         self.scored += 1;
+        self.push_top(message, score);
+    }
+
+    fn push_exact(&mut self, message: &Arc<Message>, score: f64) {
+        self.scored += 1;
+        self.exact_scored += 1;
+        self.push_top(message, score);
+    }
+
+    fn push_fuzzy(&mut self, message: &Arc<Message>, score: f64) {
+        self.scored += 1;
+        self.fuzzy_scored += 1;
+        self.push_top(message, score);
+    }
+
+    fn push_top(&mut self, message: &Arc<Message>, score: f64) {
         if self.take == 0 {
             return;
         }
@@ -127,6 +150,8 @@ impl TopScoredMessages {
 
     fn merge(mut self, other: Self) -> Self {
         self.scored += other.scored;
+        self.exact_scored += other.exact_scored;
+        self.fuzzy_scored += other.fuzzy_scored;
         for message in other.heap {
             self.push_scored(message.0);
         }
@@ -484,8 +509,12 @@ fn search(
             || TopScoredMessages::new(take),
             |mut top_results, message| {
                 if filter(message.as_ref()) {
-                    let score = scorer.similarity(&message.message, top_results.score_cutoff());
-                    top_results.push(message, score);
+                    if let Some(score) = scorer.exact_similarity(&message.message) {
+                        top_results.push_exact(message, score);
+                    } else {
+                        let score = scorer.similarity(&message.message, top_results.score_cutoff());
+                        top_results.push_fuzzy(message, score);
+                    }
                 }
                 top_results
             },
@@ -496,6 +525,8 @@ fn search(
         );
     let score_elapsed = score_start.elapsed();
     let scored_len = top_results.scored;
+    let exact_scored = top_results.exact_scored;
+    let fuzzy_scored = top_results.fuzzy_scored;
 
     let sort_start = Instant::now();
     let results = top_results.into_sorted_vec();
@@ -518,6 +549,8 @@ fn search(
         SearchStats {
             candidates: candidates_len,
             scored: scored_len,
+            exact_scored,
+            fuzzy_scored,
             score_elapsed,
             sort_elapsed,
             take_elapsed,
@@ -587,9 +620,11 @@ fn log_search_profile(
     let converted_len = converted_query.len();
     match stats {
         Some(stats) => println!(
-            "[fscm-profile] op={label} cache={cache} {scope} query={raw_query:?} converted_len={converted_len} take={take} candidates={} scored={} candidate_ms={:.3} score_ms={:.3} sort_ms={:.3} take_ms={:.3} total_ms={:.3}",
+            "[fscm-profile] op={label} cache={cache} {scope} query={raw_query:?} converted_len={converted_len} take={take} candidates={} scored={} exact={} fuzzy={} candidate_ms={:.3} score_ms={:.3} sort_ms={:.3} take_ms={:.3} total_ms={:.3}",
             stats.candidates,
             stats.scored,
+            stats.exact_scored,
+            stats.fuzzy_scored,
             millis(candidate_elapsed),
             millis(stats.score_elapsed),
             millis(stats.sort_elapsed),

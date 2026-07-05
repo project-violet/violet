@@ -9,6 +9,10 @@ include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 extern "C" {}
 
 pub trait SimilarityMethod: Sync {
+    fn exact_similarity(&self, _message: &str) -> Option<f64> {
+        None
+    }
+
     fn similarity(&self, message: &str, score_cutoff: f64) -> f64;
 }
 
@@ -47,6 +51,7 @@ impl SimilarityMethod for CachedRatio {
 
 pub struct CachedPartialRatio {
     scorer: *mut binding_CachedPartialRatioBinding,
+    query: String,
 }
 
 unsafe impl Sync for CachedPartialRatio {}
@@ -55,11 +60,22 @@ impl CachedPartialRatio {
     pub fn from(query: &str) -> Self {
         let c_query = CString::new(query).unwrap();
         let scorer = unsafe { binding_create_partial(c_query.as_ptr()) };
-        Self { scorer }
+        Self {
+            scorer,
+            query: query.to_string(),
+        }
     }
 }
 
 impl SimilarityMethod for CachedPartialRatio {
+    fn exact_similarity(&self, message: &str) -> Option<f64> {
+        if !self.query.is_empty() && message.contains(&self.query) {
+            Some(100.0)
+        } else {
+            None
+        }
+    }
+
     fn similarity(&self, message: &str, score_cutoff: f64) -> f64 {
         let (message, message_len) = message_parts(message);
         unsafe { binding_similarity_partial(self.scorer, message, message_len, score_cutoff) }
@@ -120,5 +136,13 @@ mod tests {
         let scorer = CachedPartialRatio::from("abcd");
         assert_eq!(scorer.similarity("acbd", 75.0) as usize, 75);
         assert_eq!(scorer.similarity("acbd", 76.0) as usize, 0);
+    }
+
+    #[test]
+    fn unittest_cached_partial_ratio_reports_exact_substring_score() {
+        let scorer = CachedPartialRatio::from("abcd");
+        assert_eq!(scorer.exact_similarity("xxabcdyy"), Some(100.0));
+        assert_eq!(scorer.exact_similarity("acbd"), None);
+        assert_eq!(CachedRatio::from("abcd").exact_similarity("abcd"), None);
     }
 }
