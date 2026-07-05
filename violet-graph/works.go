@@ -46,6 +46,8 @@ type relatedWorkKeyword struct {
 	Score   float64 `json:"score"`
 	Rank    int     `json:"rank"`
 	TF      int     `json:"tf"`
+	DF      int     `json:"df"`
+	Cooccur int     `json:"cooccur,omitempty"`
 }
 
 type relatedWorkAccumulator struct {
@@ -127,7 +129,12 @@ func findWorkFromIndex(index keywordIndex, articleID string) (relatedWork, bool)
 	return relatedWork{
 		ArticleID:       articleID,
 		MatchedKeywords: []relatedWorkKeyword{},
-		TopKeywords:     topRelatedWorkKeywords(workRows, 0),
+		TopKeywords: topRelatedWorkKeywordsFromIndex(index, workRows, relatedWorkKeywordOptions{
+			topN:           100,
+			minCooccur:     1,
+			autoMinCooccur: true,
+			minKeywordDF:   5,
+		}),
 		TotalPages:      pages,
 		DialogueCount:   dialogues,
 		CharacterCount:  chars,
@@ -241,6 +248,7 @@ func relatedWorkKeywordFromRow(row keywordRow) relatedWorkKeyword {
 		Score:   row.Score,
 		Rank:    row.Rank,
 		TF:      row.TF,
+		DF:      row.DF,
 	}
 }
 
@@ -254,6 +262,125 @@ func topRelatedWorkKeywords(workRows map[string]keywordRow, limit int) []related
 		keywords = keywords[:limit]
 	}
 	return keywords
+}
+
+type relatedWorkKeywordOptions struct {
+	topN           int
+	minCooccur     int
+	autoMinCooccur bool
+	minKeywordDF   int
+}
+
+func topRelatedWorkKeywordsFromIndex(index keywordIndex, workRows map[string]keywordRow, opts relatedWorkKeywordOptions) []relatedWorkKeyword {
+	if opts.topN < 1 {
+		opts.topN = 100
+	}
+	if opts.minCooccur < 1 {
+		opts.minCooccur = 1
+	}
+	if opts.minKeywordDF < 1 {
+		opts.minKeywordDF = 1
+	}
+
+	keywords := make([]relatedWorkKeyword, 0, len(workRows))
+	for keyword, row := range workRows {
+		keywordDF := index.actualDF[keyword]
+		if keywordDF < opts.minKeywordDF {
+			continue
+		}
+		item := relatedWorkKeywordFromRow(row)
+		item.DF = keywordDF
+		item.Cooccur = maxWorkKeywordCooccur(index, workRows, keyword)
+		keywords = append(keywords, item)
+	}
+	effectiveMinCooccur := relatedWorkKeywordMinCooccur(opts, keywords)
+	filtered := keywords[:0]
+	for _, keyword := range keywords {
+		if keyword.Cooccur >= effectiveMinCooccur {
+			filtered = append(filtered, keyword)
+		}
+	}
+	sortRelatedWorkRepresentativeKeywords(filtered)
+	if len(filtered) > opts.topN {
+		filtered = filtered[:opts.topN]
+	}
+	return filtered
+}
+
+func maxWorkKeywordCooccur(index keywordIndex, workRows map[string]keywordRow, keyword string) int {
+	maxCooccur := 0
+	for peerKeyword := range workRows {
+		if peerKeyword == keyword {
+			continue
+		}
+		cooccur := keywordPairCooccur(index, keyword, peerKeyword)
+		if cooccur > maxCooccur {
+			maxCooccur = cooccur
+		}
+	}
+	return maxCooccur
+}
+
+func keywordPairCooccur(index keywordIndex, left string, right string) int {
+	leftWorks := index.keywordWorks[left]
+	rightWorks := index.keywordWorks[right]
+	if len(leftWorks) == 0 || len(rightWorks) == 0 {
+		return 0
+	}
+	if len(leftWorks) > len(rightWorks) {
+		leftWorks, rightWorks = rightWorks, leftWorks
+	}
+	cooccur := 0
+	for articleID := range leftWorks {
+		if _, ok := rightWorks[articleID]; ok {
+			cooccur++
+		}
+	}
+	return cooccur
+}
+
+func relatedWorkKeywordMinCooccur(opts relatedWorkKeywordOptions, keywords []relatedWorkKeyword) int {
+	threshold := opts.minCooccur
+	if threshold < 1 {
+		threshold = 1
+	}
+	if !opts.autoMinCooccur || len(keywords) == 0 {
+		return threshold
+	}
+	cooccurs := make([]int, 0, len(keywords))
+	for _, keyword := range keywords {
+		cooccurs = append(cooccurs, keyword.Cooccur)
+	}
+	sort.Sort(sort.Reverse(sort.IntSlice(cooccurs)))
+	rank := opts.topN - 1
+	if rank < 0 {
+		rank = 0
+	}
+	if rank >= len(cooccurs) {
+		rank = len(cooccurs) - 1
+	}
+	if cooccurs[rank] > threshold {
+		threshold = cooccurs[rank]
+	}
+	return threshold
+}
+
+func sortRelatedWorkRepresentativeKeywords(keywords []relatedWorkKeyword) {
+	sort.Slice(keywords, func(i, j int) bool {
+		if keywords[i].Cooccur != keywords[j].Cooccur {
+			return keywords[i].Cooccur > keywords[j].Cooccur
+		}
+		if keywords[i].DF != keywords[j].DF {
+			return keywords[i].DF > keywords[j].DF
+		}
+		if keywords[i].Score != keywords[j].Score {
+			return keywords[i].Score > keywords[j].Score
+		}
+		if keywords[i].Rank != keywords[j].Rank {
+			return keywords[i].Rank < keywords[j].Rank
+		}
+		return keywords[i].Keyword < keywords[j].Keyword
+	})
 }
 
 func sortRelatedWorkKeywords(keywords []relatedWorkKeyword) {

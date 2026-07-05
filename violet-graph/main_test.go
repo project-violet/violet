@@ -89,6 +89,16 @@ func TestExtractFromRawAndWriteCSV(t *testing.T) {
 	if got := string(data); !containsAll(got, []string{"article_id,rank,keyword,score,tf,df,total_pages,dialogue_count,char_count", "123,1,"}) {
 		t.Fatalf("unexpected csv:\n%s", got)
 	}
+	readRows, err := readKeywordCSV(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(readRows) == 0 {
+		t.Fatal("read rows is empty")
+	}
+	if readRows[0].TotalPages != 2 || readRows[0].DialogueCount != 3 || readRows[0].CharacterCount == 0 {
+		t.Fatalf("read stats = pages %d dialogues %d chars %d", readRows[0].TotalPages, readRows[0].DialogueCount, readRows[0].CharacterCount)
+	}
 }
 
 func containsAll(text string, needles []string) bool {

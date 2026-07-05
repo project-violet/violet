@@ -69,6 +69,8 @@ export interface RelatedWorkKeyword {
   score: number;
   rank: number;
   tf: number;
+  df: number;
+  cooccur?: number;
 }
 
 export interface RelatedWork {

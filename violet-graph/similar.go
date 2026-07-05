@@ -128,12 +128,15 @@ func readKeywordCSV(inputPath string) ([]keywordRow, error) {
 			return nil, err
 		}
 		row := keywordRow{
-			ArticleID: getCSVField(record, index, "article_id"),
-			Keyword:   getCSVField(record, index, "keyword"),
-			Rank:      parseCSVInt(record, index, "rank"),
-			TF:        parseCSVInt(record, index, "tf"),
-			DF:        parseCSVInt(record, index, "df"),
-			Score:     parseCSVFloat(record, index, "score"),
+			ArticleID:      getCSVField(record, index, "article_id"),
+			Keyword:        getCSVField(record, index, "keyword"),
+			Rank:           parseCSVInt(record, index, "rank"),
+			TF:             parseCSVInt(record, index, "tf"),
+			DF:             parseCSVInt(record, index, "df"),
+			Score:          parseCSVFloat(record, index, "score"),
+			TotalPages:     parseCSVInt(record, index, "total_pages"),
+			DialogueCount:  parseCSVInt(record, index, "dialogue_count"),
+			CharacterCount: parseCSVInt(record, index, "char_count"),
 		}
 		if row.ArticleID == "" || row.Keyword == "" {
 			continue

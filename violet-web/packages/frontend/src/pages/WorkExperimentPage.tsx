@@ -159,7 +159,7 @@ export function WorkExperimentPage() {
                     <span className={styles.keywordRank}>#{keyword.rank}</span>
                     <span className={styles.keywordName}>{keyword.keyword}</span>
                     <span className={styles.keywordMeta}>
-                      score {keyword.score.toFixed(1)} / tf {keyword.tf}
+                      co {keyword.cooccur ?? 0} / df {keyword.df} / score {keyword.score.toFixed(1)} / tf {keyword.tf}
                     </span>
                   </button>
                 ))

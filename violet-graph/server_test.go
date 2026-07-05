@@ -149,14 +149,15 @@ func TestKeywordGraphServerReturnsWorkJSON(t *testing.T) {
 	server := newKeywordGraphServer([]keywordRow{
 		{ArticleID: "1", Rank: 1, Keyword: "alpha", Score: 10, TF: 5, DF: 2, TotalPages: 12, DialogueCount: 80, CharacterCount: 1200},
 		{ArticleID: "1", Rank: 2, Keyword: "beta", Score: 8, TF: 4, DF: 2, TotalPages: 12, DialogueCount: 80, CharacterCount: 1200},
-		{ArticleID: "1", Rank: 3, Keyword: "delta", Score: 7, TF: 3, DF: 2, TotalPages: 12, DialogueCount: 80, CharacterCount: 1200},
-		{ArticleID: "1", Rank: 4, Keyword: "epsilon", Score: 6, TF: 3, DF: 2, TotalPages: 12, DialogueCount: 80, CharacterCount: 1200},
-		{ArticleID: "1", Rank: 5, Keyword: "zeta", Score: 5, TF: 2, DF: 2, TotalPages: 12, DialogueCount: 80, CharacterCount: 1200},
-		{ArticleID: "1", Rank: 6, Keyword: "eta", Score: 4, TF: 2, DF: 2, TotalPages: 12, DialogueCount: 80, CharacterCount: 1200},
-		{ArticleID: "1", Rank: 7, Keyword: "theta", Score: 3, TF: 1, DF: 2, TotalPages: 12, DialogueCount: 80, CharacterCount: 1200},
-		{ArticleID: "1", Rank: 8, Keyword: "iota", Score: 2, TF: 1, DF: 2, TotalPages: 12, DialogueCount: 80, CharacterCount: 1200},
-		{ArticleID: "1", Rank: 9, Keyword: "kappa", Score: 1, TF: 1, DF: 2, TotalPages: 12, DialogueCount: 80, CharacterCount: 1200},
-		{ArticleID: "2", Rank: 1, Keyword: "gamma", Score: 9, TF: 4, DF: 2, TotalPages: 8, DialogueCount: 30, CharacterCount: 500},
+		{ArticleID: "1", Rank: 3, Keyword: "one-off", Score: 7, TF: 3, DF: 1, TotalPages: 12, DialogueCount: 80, CharacterCount: 1200},
+		{ArticleID: "2", Rank: 1, Keyword: "alpha", Score: 9, TF: 4, DF: 2, TotalPages: 8, DialogueCount: 30, CharacterCount: 500},
+		{ArticleID: "2", Rank: 2, Keyword: "beta", Score: 7, TF: 3, DF: 2, TotalPages: 8, DialogueCount: 30, CharacterCount: 500},
+		{ArticleID: "3", Rank: 1, Keyword: "alpha", Score: 9, TF: 4, DF: 2},
+		{ArticleID: "3", Rank: 2, Keyword: "beta", Score: 7, TF: 3, DF: 2},
+		{ArticleID: "4", Rank: 1, Keyword: "alpha", Score: 9, TF: 4, DF: 2},
+		{ArticleID: "4", Rank: 2, Keyword: "beta", Score: 7, TF: 3, DF: 2},
+		{ArticleID: "5", Rank: 1, Keyword: "alpha", Score: 9, TF: 4, DF: 2},
+		{ArticleID: "5", Rank: 2, Keyword: "beta", Score: 7, TF: 3, DF: 2},
 	})
 
 	req := httptest.NewRequest(http.MethodGet, "/api/work?id=1", nil)
@@ -176,8 +177,11 @@ func TestKeywordGraphServerReturnsWorkJSON(t *testing.T) {
 	if response.TotalPages != 12 || response.DialogueCount != 80 || response.CharacterCount != 1200 {
 		t.Fatalf("stats = pages %d dialogues %d chars %d", response.TotalPages, response.DialogueCount, response.CharacterCount)
 	}
-	if len(response.TopKeywords) != 9 || response.TopKeywords[0].Keyword != "alpha" || response.TopKeywords[8].Keyword != "kappa" {
+	if len(response.TopKeywords) != 2 || response.TopKeywords[0].Keyword != "alpha" || response.TopKeywords[1].Keyword != "beta" {
 		t.Fatalf("top keywords = %+v", response.TopKeywords)
+	}
+	if response.TopKeywords[0].Cooccur < 5 || response.TopKeywords[0].DF < 5 {
+		t.Fatalf("representative keyword metrics = %+v", response.TopKeywords[0])
 	}
 }
 
