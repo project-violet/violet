@@ -51,6 +51,47 @@ func TestBuildAuthorSimilarityRanksSharedSignatureAuthors(t *testing.T) {
 	}
 }
 
+func TestBuildAuthorSimilarityWorkScoreModeUsesAggregateWorkKeywordScores(t *testing.T) {
+	rows := []keywordRow{
+		{ArticleID: "1", Rank: 1, Keyword: "anchor-a", Score: 30, TF: 30, DF: 1},
+		{ArticleID: "1", Rank: 10, Keyword: "signature", Score: 100, TF: 100, DF: 2},
+		{ArticleID: "2", Rank: 1, Keyword: "anchor-b", Score: 30, TF: 30, DF: 1},
+		{ArticleID: "2", Rank: 10, Keyword: "signature", Score: 90, TF: 90, DF: 2},
+	}
+	authorWorks := []authorWorkRow{
+		{AuthorKey: "artist-a", AuthorName: "Artist A", ArticleID: "1", ContributionWeight: 1},
+		{AuthorKey: "artist-b", AuthorName: "Artist B", ArticleID: "2", ContributionWeight: 1},
+	}
+
+	result := buildAuthorSimilarity(rows, authorWorks, authorSimilarityOptions{
+		profileMode:         "work-score",
+		profileMinKeywordDF: 1,
+		topN:                1,
+		topKeywords:         1,
+		sharedKeywords:      1,
+		minSharedKeywords:   1,
+		workers:             1,
+	})
+
+	if result.Params.ProfileMode != "work-score" {
+		t.Fatalf("profile mode = %q, want work-score", result.Params.ProfileMode)
+	}
+	author := findAuthorSimilarityResult(result.Authors, "artist-a")
+	if author == nil {
+		t.Fatalf("missing artist-a result")
+	}
+	if len(author.SimilarAuthors) != 1 {
+		t.Fatalf("artist-a neighbors = %d, want 1", len(author.SimilarAuthors))
+	}
+	neighbor := author.SimilarAuthors[0]
+	if neighbor.AuthorKey != "artist-b" {
+		t.Fatalf("artist-a top neighbor = %q, want artist-b", neighbor.AuthorKey)
+	}
+	if len(neighbor.SharedKeywords) != 1 || neighbor.SharedKeywords[0].Keyword != "signature" {
+		t.Fatalf("shared keywords = %#v, want signature", neighbor.SharedKeywords)
+	}
+}
+
 func TestReadAuthorWorkCSVParsesExportRows(t *testing.T) {
 	tmp := t.TempDir()
 	path := filepath.Join(tmp, "author_work.csv")

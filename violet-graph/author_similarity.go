@@ -27,28 +27,37 @@ type authorWorkRow struct {
 }
 
 type authorSimilarityOptions struct {
-	inputPath         string
-	authorWorkPath    string
-	outputPath        string
-	topN              int
-	topKeywords       int
-	maxKeywordAuthors int
-	minSharedKeywords int
-	sharedKeywords    int
-	minAuthorWorks    int
-	workers           int
-	progressInterval  int
+	inputPath           string
+	authorWorkPath      string
+	outputPath          string
+	profileMode         string
+	profileMinKeywordDF int
+	topN                int
+	topKeywords         int
+	maxKeywordAuthors   int
+	minSharedKeywords   int
+	sharedKeywords      int
+	minAuthorWorks      int
+	workers             int
+	progressInterval    int
 }
 
 type authorSimilarityParams struct {
-	TopN              int `json:"top_n"`
-	TopKeywords       int `json:"top_keywords"`
-	MaxKeywordAuthors int `json:"max_keyword_authors"`
-	MinSharedKeywords int `json:"min_shared_keywords"`
-	SharedKeywords    int `json:"shared_keywords"`
-	MinAuthorWorks    int `json:"min_author_works"`
-	Workers           int `json:"workers"`
+	ProfileMode         string `json:"profile_mode"`
+	ProfileMinKeywordDF int    `json:"profile_min_keyword_df"`
+	TopN                int    `json:"top_n"`
+	TopKeywords         int    `json:"top_keywords"`
+	MaxKeywordAuthors   int    `json:"max_keyword_authors"`
+	MinSharedKeywords   int    `json:"min_shared_keywords"`
+	SharedKeywords      int    `json:"shared_keywords"`
+	MinAuthorWorks      int    `json:"min_author_works"`
+	Workers             int    `json:"workers"`
 }
+
+const (
+	authorProfileModeCurrent   = "current"
+	authorProfileModeWorkScore = "work-score"
+)
 
 type authorSimilarityResult struct {
 	GeneratedAt  string                   `json:"generated_at,omitempty"`
@@ -96,6 +105,7 @@ type authorProfile struct {
 type authorTermAccumulator struct {
 	rawScore float64
 	workHits int
+	tf       int
 }
 
 type authorTerm struct {
@@ -103,6 +113,7 @@ type authorTerm struct {
 	weight   float64
 	rawScore float64
 	workHits int
+	tf       int
 }
 
 type authorPosting struct {
@@ -159,6 +170,8 @@ func parseAuthorSimilarityFlags(args []string) authorSimilarityOptions {
 	flags.StringVar(&opts.inputPath, "input", "graph.csv", "Keyword CSV from extract.")
 	flags.StringVar(&opts.authorWorkPath, "author-work", "author_work.csv", "Author-to-work CSV from scripts/export_author_work_map.py.")
 	flags.StringVar(&opts.outputPath, "output", "author_similarity.json", "JSON output path.")
+	flags.StringVar(&opts.profileMode, "profile-mode", authorProfileModeCurrent, "Author profile mode: current or work-score.")
+	flags.IntVar(&opts.profileMinKeywordDF, "profile-min-keyword-df", 5, "Minimum global keyword DF for work-score profile keywords.")
 	flags.IntVar(&opts.topN, "top-n", 20, "Similar authors to keep per author.")
 	flags.IntVar(&opts.topKeywords, "top-keywords", 100, "Profile keywords to keep per author.")
 	flags.IntVar(&opts.maxKeywordAuthors, "max-keyword-authors", 500, "Drop profile keywords that appear for more than this many authors. Use 0 to disable.")
@@ -172,6 +185,10 @@ func parseAuthorSimilarityFlags(args []string) authorSimilarityOptions {
 }
 
 func normalizeAuthorSimilarityOptions(opts authorSimilarityOptions) authorSimilarityOptions {
+	opts.profileMode = normalizeAuthorProfileMode(opts.profileMode)
+	if opts.profileMinKeywordDF < 1 {
+		opts.profileMinKeywordDF = 5
+	}
 	if opts.topN < 1 {
 		opts.topN = 20
 	}
@@ -194,6 +211,15 @@ func normalizeAuthorSimilarityOptions(opts authorSimilarityOptions) authorSimila
 		opts.workers = 1
 	}
 	return opts
+}
+
+func normalizeAuthorProfileMode(value string) string {
+	switch strings.TrimSpace(strings.ToLower(value)) {
+	case authorProfileModeWorkScore, "work_score", "workscore":
+		return authorProfileModeWorkScore
+	default:
+		return authorProfileModeCurrent
+	}
 }
 
 func readAuthorWorkCSV(inputPath string) ([]authorWorkRow, error) {
@@ -243,8 +269,13 @@ func readAuthorWorkCSV(inputPath string) ([]authorWorkRow, error) {
 
 func buildAuthorSimilarity(rows []keywordRow, authorWorks []authorWorkRow, opts authorSimilarityOptions) authorSimilarityResult {
 	opts = normalizeAuthorSimilarityOptions(opts)
-	articleRows := keywordRowsByArticle(rows)
-	profiles := buildAuthorProfiles(articleRows, authorWorks, opts)
+	var profiles []*authorProfile
+	if opts.profileMode == authorProfileModeWorkScore {
+		profiles = buildAuthorProfilesFromWorkScores(newKeywordIndex(rows), authorWorks, opts)
+	} else {
+		articleRows := keywordRowsByArticle(rows)
+		profiles = buildAuthorProfiles(articleRows, authorWorks, opts)
+	}
 	keywordCount := finalizeAuthorProfiles(profiles, opts)
 	postings := buildAuthorPostings(profiles)
 	authors := computeAuthorSimilarities(profiles, postings, opts)
@@ -258,13 +289,15 @@ func buildAuthorSimilarity(rows []keywordRow, authorWorks []authorWorkRow, opts 
 
 func authorSimilarityParamsFromOptions(opts authorSimilarityOptions) authorSimilarityParams {
 	return authorSimilarityParams{
-		TopN:              opts.topN,
-		TopKeywords:       opts.topKeywords,
-		MaxKeywordAuthors: opts.maxKeywordAuthors,
-		MinSharedKeywords: opts.minSharedKeywords,
-		SharedKeywords:    opts.sharedKeywords,
-		MinAuthorWorks:    opts.minAuthorWorks,
-		Workers:           opts.workers,
+		ProfileMode:         opts.profileMode,
+		ProfileMinKeywordDF: opts.profileMinKeywordDF,
+		TopN:                opts.topN,
+		TopKeywords:         opts.topKeywords,
+		MaxKeywordAuthors:   opts.maxKeywordAuthors,
+		MinSharedKeywords:   opts.minSharedKeywords,
+		SharedKeywords:      opts.sharedKeywords,
+		MinAuthorWorks:      opts.minAuthorWorks,
+		Workers:             opts.workers,
 	}
 }
 
@@ -321,6 +354,66 @@ func buildAuthorProfiles(articleRows map[string][]keywordRow, authorWorks []auth
 			}
 			term.rawScore += keywordWeight(row) * weight
 			term.workHits++
+			term.tf += row.TF
+		}
+	}
+
+	profiles := make([]*authorProfile, 0, len(profileByKey))
+	for _, profile := range profileByKey {
+		if profile.workCount < opts.minAuthorWorks || len(profile.rawTerms) == 0 {
+			continue
+		}
+		profiles = append(profiles, profile)
+	}
+	sort.Slice(profiles, func(i, j int) bool {
+		return profiles[i].key < profiles[j].key
+	})
+	return profiles
+}
+
+func buildAuthorProfilesFromWorkScores(index keywordIndex, authorWorks []authorWorkRow, opts authorSimilarityOptions) []*authorProfile {
+	profileByKey := make(map[string]*authorProfile)
+	for _, authorWork := range authorWorks {
+		if authorWork.AuthorKey == "" || authorWork.ArticleID == "" {
+			continue
+		}
+		profile := profileByKey[authorWork.AuthorKey]
+		if profile == nil {
+			profile = &authorProfile{
+				key:       authorWork.AuthorKey,
+				name:      authorWork.AuthorName,
+				seenWorks: make(map[string]struct{}),
+				rawTerms:  make(map[string]*authorTermAccumulator),
+			}
+			profileByKey[authorWork.AuthorKey] = profile
+		}
+		if profile.name == "" && authorWork.AuthorName != "" {
+			profile.name = authorWork.AuthorName
+		}
+		if _, exists := profile.seenWorks[authorWork.ArticleID]; exists {
+			continue
+		}
+		profile.seenWorks[authorWork.ArticleID] = struct{}{}
+		profile.workCount++
+
+		workRows := index.works[authorWork.ArticleID]
+		if len(workRows) == 0 {
+			continue
+		}
+		profile.matchedWorkCount++
+		for _, row := range workRows {
+			keywordDF := index.actualDF[row.Keyword]
+			if keywordDF < opts.profileMinKeywordDF {
+				continue
+			}
+			term := profile.rawTerms[row.Keyword]
+			if term == nil {
+				term = &authorTermAccumulator{}
+				profile.rawTerms[row.Keyword] = term
+			}
+			term.rawScore += row.Score
+			term.workHits++
+			term.tf += row.TF
 		}
 	}
 
@@ -367,9 +460,14 @@ func finalizeAuthorProfiles(profiles []*authorProfile, opts authorSimilarityOpti
 				weight:   weight,
 				rawScore: acc.rawScore,
 				workHits: acc.workHits,
+				tf:       acc.tf,
 			})
 		}
-		sortAuthorTerms(profile.terms)
+		if opts.profileMode == authorProfileModeWorkScore {
+			sortAuthorTermsByWorkScore(profile.terms)
+		} else {
+			sortAuthorTerms(profile.terms)
+		}
 		if len(profile.terms) > opts.topKeywords {
 			profile.terms = profile.terms[:opts.topKeywords]
 		}
@@ -415,6 +513,21 @@ func sortAuthorTerms(terms []authorTerm) {
 		}
 		if terms[i].rawScore != terms[j].rawScore {
 			return terms[i].rawScore > terms[j].rawScore
+		}
+		if terms[i].workHits != terms[j].workHits {
+			return terms[i].workHits > terms[j].workHits
+		}
+		return terms[i].keyword < terms[j].keyword
+	})
+}
+
+func sortAuthorTermsByWorkScore(terms []authorTerm) {
+	sort.Slice(terms, func(i, j int) bool {
+		if terms[i].rawScore != terms[j].rawScore {
+			return terms[i].rawScore > terms[j].rawScore
+		}
+		if terms[i].tf != terms[j].tf {
+			return terms[i].tf > terms[j].tf
 		}
 		if terms[i].workHits != terms[j].workHits {
 			return terms[i].workHits > terms[j].workHits

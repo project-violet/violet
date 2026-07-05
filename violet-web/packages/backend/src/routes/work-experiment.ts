@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { performance } from 'node:perf_hooks';
 import type { MessageSearchMode, MessageSearchResponse, MessageSearchResult } from '@violet-web/shared';
 import { getContentDb, isContentDbReady } from '../services/content-db.js';
 
@@ -7,6 +8,28 @@ export const workExperimentRouter = Router();
 const DEFAULT_FSCM_BASE_URL = 'http://127.0.0.1:12332';
 const DEFAULT_TIMEOUT_MS = 30_000;
 const AUTHOR_WORK_LIMIT = 5_000;
+const authorArticleIdsCache = new Map<string, string[]>();
+const graphWorkSetCache = new Map<string, GraphWorkResponse>();
+const graphWorkSetInflight = new Map<string, Promise<GraphWorkResponse>>();
+
+function elapsedMs(start: number, end = performance.now()): string {
+  return (end - start).toFixed(3);
+}
+
+function profileValue(value: unknown): string {
+  if (typeof value === 'string') return JSON.stringify(value);
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (value === null) return 'null';
+  if (value === undefined) return 'undefined';
+  return JSON.stringify(value);
+}
+
+function logWorkExperimentProfile(event: string, fields: Record<string, unknown>): void {
+  const body = Object.entries(fields)
+    .map(([key, value]) => `${key}=${profileValue(value)}`)
+    .join(' ');
+  console.log(`[work-experiment-profile] event=${event} ${body}`);
+}
 
 interface FscmRawResult {
   Id?: unknown;
@@ -27,6 +50,13 @@ interface GraphWorkResponse {
   total_pages: number;
   dialogue_count: number;
   char_count: number;
+}
+
+type CacheStatus = 'hit' | 'miss' | 'inflight';
+
+interface CachedGraphWorkSetResult {
+  work: GraphWorkResponse;
+  cacheStatus: CacheStatus;
 }
 
 function normalizeBaseUrl(raw: unknown, fallback: string): string | null {
@@ -116,6 +146,8 @@ async function fetchFscmWorkMessages(
     .map((articleId) => Number(articleId))
     .filter((articleId) => Number.isInteger(articleId) && articleId > 0);
   const upstreamUrl = `${baseUrl}/${route}`;
+  const totalStart = performance.now();
+  const fetchStart = performance.now();
 
   try {
     const response = await fetch(upstreamUrl, {
@@ -124,16 +156,36 @@ async function fetchFscmWorkMessages(
       body: JSON.stringify({ ids, query }),
       signal: controller.signal,
     });
+    const fetchEnd = performance.now();
     if (!response.ok) {
       throw new Error(`fscm returned ${response.status}`);
     }
+    const jsonStart = performance.now();
     const raw = await response.json();
+    const jsonEnd = performance.now();
     if (!Array.isArray(raw)) {
       throw new Error('fscm returned an invalid response');
     }
-    return raw
+    const normalizeStart = performance.now();
+    const results = raw
       .map((item) => normalizeResult(item as FscmRawResult))
       .filter((item): item is MessageSearchResult => item !== null);
+    const normalizeEnd = performance.now();
+
+    logWorkExperimentProfile('fscm', {
+      route,
+      ids: ids.length,
+      query,
+      status: response.status,
+      raw: raw.length,
+      normalized: results.length,
+      fetch_ms: elapsedMs(fetchStart, fetchEnd),
+      json_ms: elapsedMs(jsonStart, jsonEnd),
+      normalize_ms: elapsedMs(normalizeStart, normalizeEnd),
+      total_ms: elapsedMs(totalStart, normalizeEnd),
+    });
+
+    return results;
   } finally {
     clearTimeout(timeout);
   }
@@ -143,22 +195,76 @@ async function fetchGraphWorkSet(
   baseUrl: string,
   articleIds: string[],
 ): Promise<GraphWorkResponse> {
+  const totalStart = performance.now();
+  const fetchStart = performance.now();
   const response = await fetch(`${baseUrl}/api/works`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ ids: articleIds }),
   });
+  const fetchEnd = performance.now();
+  const jsonStart = performance.now();
   const payload = await response.json().catch(() => null);
+  const jsonEnd = performance.now();
   if (!response.ok) {
     const message = typeof (payload as { error?: unknown } | null)?.error === 'string'
       ? (payload as { error: string }).error
       : `violet-graph returned ${response.status}`;
     throw new Error(message);
   }
+  logWorkExperimentProfile('graph', {
+    ids: articleIds.length,
+    status: response.status,
+    work_count: (payload as GraphWorkResponse | null)?.work_count,
+    matched_count: (payload as GraphWorkResponse | null)?.matched_count,
+    fetch_ms: elapsedMs(fetchStart, fetchEnd),
+    json_ms: elapsedMs(jsonStart, jsonEnd),
+    total_ms: elapsedMs(totalStart, jsonEnd),
+  });
   return payload as GraphWorkResponse;
 }
 
-function findAuthorArticleIds(author: string): string[] {
+function graphWorkSetCacheKey(baseUrl: string, articleIds: string[]): string {
+  return `${baseUrl}\0${articleIds.join('\0')}`;
+}
+
+async function getCachedGraphWorkSet(
+  baseUrl: string,
+  articleIds: string[],
+): Promise<CachedGraphWorkSetResult> {
+  const cacheKey = graphWorkSetCacheKey(baseUrl, articleIds);
+  const cached = graphWorkSetCache.get(cacheKey);
+  if (cached) {
+    return { work: cached, cacheStatus: 'hit' };
+  }
+
+  const inflight = graphWorkSetInflight.get(cacheKey);
+  if (inflight) {
+    return { work: await inflight, cacheStatus: 'inflight' };
+  }
+
+  const promise = fetchGraphWorkSet(baseUrl, articleIds);
+  graphWorkSetInflight.set(cacheKey, promise);
+  try {
+    const work = await promise;
+    graphWorkSetCache.set(cacheKey, work);
+    return { work, cacheStatus: 'miss' };
+  } finally {
+    graphWorkSetInflight.delete(cacheKey);
+  }
+}
+
+interface AuthorArticleIdsResult {
+  articleIds: string[];
+  cacheHit: boolean;
+}
+
+function findAuthorArticleIds(author: string): AuthorArticleIdsResult {
+  const cached = authorArticleIdsCache.get(author);
+  if (cached) {
+    return { articleIds: cached, cacheHit: true };
+  }
+
   const db = getContentDb();
   const rows = db
     .prepare(
@@ -169,7 +275,9 @@ function findAuthorArticleIds(author: string): string[] {
     )
     .all(`%|${escapeLike(author)}|%`, AUTHOR_WORK_LIMIT) as Array<{ Id: number }>;
 
-  return rows.map((row) => String(row.Id));
+  const articleIds = rows.map((row) => String(row.Id));
+  authorArticleIdsCache.set(author, articleIds);
+  return { articleIds, cacheHit: false };
 }
 
 async function searchAuthorMessages(
@@ -187,12 +295,29 @@ async function searchAuthorMessages(
 
   const results = await fetchFscmWorkMessages(baseUrl, trimmedQuery, articleIds, mode);
 
+  const sortStart = performance.now();
   sortMessageResults(results);
+  const sortEnd = performance.now();
+  const takeStart = performance.now();
+  const sliced = results.slice(0, limit);
+  const takeEnd = performance.now();
+
+  logWorkExperimentProfile('messages', {
+    mode,
+    ids: articleIds.length,
+    query: trimmedQuery,
+    total: results.length,
+    limit,
+    returned: sliced.length,
+    sort_ms: elapsedMs(sortStart, sortEnd),
+    take_ms: elapsedMs(takeStart, takeEnd),
+  });
+
   return {
     query: trimmedQuery,
     mode,
     total: results.length,
-    results: results.slice(0, limit),
+    results: sliced,
   };
 }
 
@@ -224,15 +349,34 @@ workExperimentRouter.get('/author', async (req, res) => {
     return;
   }
 
+  const routeStart = performance.now();
   try {
-    const articleIds = findAuthorArticleIds(author);
+    const idsStart = performance.now();
+    const { articleIds, cacheHit: authorIdsCacheHit } = findAuthorArticleIds(author);
+    const idsEnd = performance.now();
     if (articleIds.length === 0) {
       res.status(404).json({ error: 'Author works not found.' });
       return;
     }
 
-    const work = await fetchGraphWorkSet(graphBaseUrl, articleIds);
+    const graphStart = performance.now();
+    const { work, cacheStatus: graphCacheStatus } = await getCachedGraphWorkSet(graphBaseUrl, articleIds);
+    const graphEnd = performance.now();
+    const messageStart = performance.now();
     const messages = await searchAuthorMessages(messageBaseUrl, messageQuery, articleIds, 'contains', limit);
+    const messageEnd = performance.now();
+
+    logWorkExperimentProfile('author-route', {
+      author,
+      query: messageQuery,
+      ids: articleIds.length,
+      id_lookup_cache: authorIdsCacheHit ? 'hit' : 'miss',
+      id_lookup_ms: elapsedMs(idsStart, idsEnd),
+      graph_cache: graphCacheStatus,
+      graph_ms: elapsedMs(graphStart, graphEnd),
+      message_ms: elapsedMs(messageStart, messageEnd),
+      total_ms: elapsedMs(routeStart),
+    });
 
     res.json({
       scope: 'author',
