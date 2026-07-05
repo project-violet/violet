@@ -4,11 +4,11 @@ use std::env;
 use std::fs::File;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU64, Ordering as AtomicOrdering};
-use std::sync::{Arc, LazyLock, RwLock};
+use std::sync::{LazyLock, RwLock};
 use std::time::{Duration, Instant};
 
 use itertools::Itertools;
-use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
 
 use crate::binding::{CachedPartialRatio, CachedRatio, SimilarityMethod};
@@ -20,8 +20,8 @@ static MESSAGES: LazyLock<RwLock<MessageStore>> =
 
 #[derive(Default)]
 struct MessageStore {
-    messages: Vec<Arc<Message>>,
-    by_article: HashMap<usize, Vec<Arc<Message>>>,
+    messages: Vec<Message>,
+    by_article: HashMap<u32, Vec<MessageIndex>>,
 }
 
 #[derive(Default)]
@@ -35,7 +35,14 @@ struct SearchStats {
     take_elapsed: Duration,
 }
 
-type ScoredMessage = (Arc<Message>, f64);
+type MessageIndex = u32;
+
+#[derive(Clone, Copy)]
+struct ScoredMessage {
+    index: usize,
+    score: f64,
+    correct: f32,
+}
 
 struct TopScoredMessage(ScoredMessage);
 
@@ -108,40 +115,38 @@ impl TopScoredMessages {
         }
     }
 
-    #[cfg(test)]
-    fn push(&mut self, message: &Arc<Message>, score: f64) {
-        self.scored += 1;
-        self.push_top(message, score);
-    }
-
-    fn push_exact(&mut self, message: &Arc<Message>, score: f64) {
+    fn push_exact(&mut self, index: usize, message: &Message, score: f64) {
         self.scored += 1;
         self.exact_scored += 1;
-        self.push_top(message, score);
+        self.push_top(index, message.correct, score);
     }
 
-    fn push_fuzzy(&mut self, message: &Arc<Message>, score: f64) {
+    fn push_fuzzy(&mut self, index: usize, message: &Message, score: f64) {
         self.scored += 1;
         self.fuzzy_scored += 1;
-        self.push_top(message, score);
+        self.push_top(index, message.correct, score);
     }
 
-    fn push_top(&mut self, message: &Arc<Message>, score: f64) {
+    fn push_top(&mut self, index: usize, correct: f32, score: f64) {
         if self.take == 0 {
             return;
         }
 
+        let message = ScoredMessage {
+            index,
+            score,
+            correct,
+        };
+
         if self.heap.len() < self.take {
-            self.heap.push(TopScoredMessage((message.clone(), score)));
+            self.heap.push(TopScoredMessage(message));
             return;
         }
 
         if let Some(worst) = self.heap.peek() {
-            let (worst_message, worst_score) = &worst.0;
-            let order =
-                score_correct_order(score, message.correct, *worst_score, worst_message.correct);
+            let order = scored_message_order(&message, &worst.0);
             if order == Ordering::Less {
-                *self.heap.peek_mut().unwrap() = TopScoredMessage((message.clone(), score));
+                *self.heap.peek_mut().unwrap() = TopScoredMessage(message);
             }
         }
     }
@@ -172,10 +177,7 @@ impl TopScoredMessages {
         // top-k, and therefore cannot enter the final merged top-k.
         self.heap
             .peek()
-            .map(|message| {
-                let (_, score) = &message.0;
-                *score
-            })
+            .map(|message| message.0.score)
             .unwrap_or(0.0)
     }
 
@@ -217,12 +219,13 @@ impl MessageStore {
     }
 
     fn extend(&mut self, messages: Vec<Message>) {
+        self.messages.reserve(messages.len());
         for message in messages {
-            let message = Arc::new(message);
+            let index = MessageIndex::try_from(self.messages.len()).expect("too many messages");
             self.by_article
                 .entry(message.article_id)
                 .or_default()
-                .push(message.clone());
+                .push(index);
             self.messages.push(message);
         }
     }
@@ -231,41 +234,46 @@ impl MessageStore {
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Message {
     #[serde(rename = "ArticleId")]
-    pub article_id: usize,
+    pub article_id: u32,
 
     #[serde(rename = "Page")]
-    pub page: usize,
+    pub page: u32,
 
     #[serde(rename = "Message")]
     pub message: String,
 
-    #[serde(rename = "MessageRaw", skip_serializing_if = "Option::is_none", default)]
+    #[cfg(feature = "raw")]
+    #[serde(
+        rename = "MessageRaw",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub raw: Option<String>,
 
     #[serde(rename = "Score")]
-    pub correct: f64,
+    pub correct: f32,
 
     #[serde(rename = "Rectangle")]
-    pub rects: [f64; 4],
+    pub rects: [f32; 4],
 }
 
 #[derive(Serialize, Clone)]
 #[cfg_attr(not(feature = "raw"), derive(Copy))]
 pub struct MessageResult {
     #[serde(rename(serialize = "Id"))]
-    id: usize,
+    id: u32,
 
     #[serde(rename(serialize = "Page"))]
-    page: usize,
+    page: u32,
 
     #[serde(rename(serialize = "Correctness"))]
-    correct: f64,
+    correct: f32,
 
     #[serde(rename(serialize = "MatchScore"))]
     score: f64,
 
     #[serde(rename(serialize = "Rect"))]
-    rects: [f64; 4],
+    rects: [f32; 4],
 
     #[cfg(feature = "raw")]
     #[serde(rename(serialize = "Raw"))]
@@ -292,7 +300,7 @@ pub fn load_messages(path: PathBuf) {
     MESSAGES.write().unwrap().extend(msgs);
 }
 
-pub fn search_similar(id: Option<usize>, query: &str, take: usize) -> Vec<MessageResult> {
+pub fn search_similar(id: Option<u32>, query: &str, take: usize) -> Vec<MessageResult> {
     let converted_query = convert_query(query);
     match id {
         Some(id) => search_with_profile(
@@ -301,7 +309,7 @@ pub fn search_similar(id: Option<usize>, query: &str, take: usize) -> Vec<Messag
             query,
             &converted_query,
             format!("id={id:?}"),
-            move || candidate_messages(Some(id)),
+            move |store| candidate_indices(id, store),
             CachedRatio::from(&converted_query),
             |_| true,
             take,
@@ -319,7 +327,7 @@ pub fn search_similar(id: Option<usize>, query: &str, take: usize) -> Vec<Messag
     }
 }
 
-pub fn search_similar_many(ids: &[usize], query: &str, take: usize) -> Vec<MessageResult> {
+pub fn search_similar_many(ids: &[u32], query: &str, take: usize) -> Vec<MessageResult> {
     let ids = normalize_article_ids(ids);
     if ids.is_empty() {
         return vec![];
@@ -334,14 +342,14 @@ pub fn search_similar_many(ids: &[usize], query: &str, take: usize) -> Vec<Messa
         query,
         &converted_query,
         scope,
-        move || candidate_messages_many(&ids),
+        move |store| candidate_indices_many(&ids, store),
         CachedRatio::from(&converted_query),
         move |message| id_set.contains(&message.article_id),
         take,
     )
 }
 
-pub fn search_partial_contains(id: Option<usize>, query: &str, take: usize) -> Vec<MessageResult> {
+pub fn search_partial_contains(id: Option<u32>, query: &str, take: usize) -> Vec<MessageResult> {
     let converted_query = convert_query(query);
     let converted_query_len = converted_query.len();
     match id {
@@ -351,7 +359,7 @@ pub fn search_partial_contains(id: Option<usize>, query: &str, take: usize) -> V
             query,
             &converted_query,
             format!("id={id:?}"),
-            move || candidate_messages(Some(id)),
+            move |store| candidate_indices(id, store),
             CachedPartialRatio::from(&converted_query),
             move |message| converted_query_len <= message.message.len(),
             take,
@@ -369,11 +377,7 @@ pub fn search_partial_contains(id: Option<usize>, query: &str, take: usize) -> V
     }
 }
 
-pub fn search_partial_contains_many(
-    ids: &[usize],
-    query: &str,
-    take: usize,
-) -> Vec<MessageResult> {
+pub fn search_partial_contains_many(ids: &[u32], query: &str, take: usize) -> Vec<MessageResult> {
     let ids = normalize_article_ids(ids);
     if ids.is_empty() {
         return vec![];
@@ -389,7 +393,7 @@ pub fn search_partial_contains_many(
         query,
         &converted_query,
         scope,
-        move || candidate_messages_many(&ids),
+        move |store| candidate_indices_many(&ids, store),
         CachedPartialRatio::from(&converted_query),
         move |message| {
             id_set.contains(&message.article_id) && converted_query_len <= message.message.len()
@@ -404,11 +408,11 @@ pub fn convert_query(query: &str) -> String {
     query
 }
 
-fn normalize_article_ids(ids: &[usize]) -> Vec<usize> {
+fn normalize_article_ids(ids: &[u32]) -> Vec<u32> {
     ids.iter().copied().unique().sorted().collect()
 }
 
-fn article_ids_cache_key(ids: &[usize]) -> String {
+fn article_ids_cache_key(ids: &[u32]) -> String {
     ids.iter().join(",")
 }
 
@@ -416,19 +420,14 @@ fn search_cache_key(operation: &str, scope: &str, converted_query: &str, take: u
     format!("{operation}-{scope}-{converted_query}-take={take}")
 }
 
-fn candidate_messages(id: Option<usize>) -> Vec<Arc<Message>> {
-    let store = MESSAGES.read().unwrap();
-    match id {
-        Some(id) => store.by_article.get(&id).cloned().unwrap_or_default(),
-        None => store.messages.clone(),
-    }
+fn candidate_indices(id: u32, store: &MessageStore) -> Vec<MessageIndex> {
+    store.by_article.get(&id).cloned().unwrap_or_default()
 }
 
-fn candidate_messages_many(ids: &[usize]) -> Vec<Arc<Message>> {
-    let store = MESSAGES.read().unwrap();
+fn candidate_indices_many(ids: &[u32], store: &MessageStore) -> Vec<MessageIndex> {
     ids.iter()
         .filter_map(|id| store.by_article.get(id))
-        .flat_map(|messages| messages.iter().cloned())
+        .flat_map(|messages| messages.iter().copied())
         .collect()
 }
 
@@ -438,7 +437,7 @@ fn search_with_profile(
     raw_query: &str,
     converted_query: &str,
     scope: String,
-    candidates: impl FnOnce() -> Vec<Arc<Message>>,
+    candidates: impl FnOnce(&MessageStore) -> Vec<MessageIndex>,
     scorer: impl SimilarityMethod,
     filter: impl Fn(&Message) -> bool + Sync + Send,
     take: usize,
@@ -452,9 +451,11 @@ fn search_with_profile(
         take,
         move || {
             let candidate_start = Instant::now();
-            let candidates = candidates();
+            let store = MESSAGES.read().unwrap();
+            let candidates = candidates(&store);
             let candidate_elapsed = candidate_start.elapsed();
-            let (results, stats) = search(&candidates, scorer, filter, take);
+            let (results, stats) =
+                search_indices(&store.messages, &candidates, scorer, filter, take);
             (results, stats, candidate_elapsed)
         },
     )
@@ -481,7 +482,7 @@ fn search_all_with_profile(
             let candidate_start = Instant::now();
             let store = MESSAGES.read().unwrap();
             let candidate_elapsed = candidate_start.elapsed();
-            let (results, stats) = search(&store.messages, scorer, filter, take);
+            let (results, stats) = search_all(&store.messages, scorer, filter, take);
             (results, stats, candidate_elapsed)
         },
     )
@@ -539,23 +540,74 @@ fn search_with_profile_inner(
     results
 }
 
-fn search(
-    candidates: &[Arc<Message>],
+fn search_all(
+    messages: &[Message],
     scorer: impl SimilarityMethod,
     filter: impl Fn(&Message) -> bool + Sync + Send,
     take: usize,
 ) -> (Vec<MessageResult>, SearchStats) {
-    let candidates_len = candidates.len();
+    search(
+        messages.len(),
+        || messages.par_iter().enumerate(),
+        messages,
+        scorer,
+        filter,
+        take,
+    )
+}
+
+fn search_indices(
+    messages: &[Message],
+    candidates: &[MessageIndex],
+    scorer: impl SimilarityMethod,
+    filter: impl Fn(&Message) -> bool + Sync + Send,
+    take: usize,
+) -> (Vec<MessageResult>, SearchStats) {
+    search(
+        candidates.len(),
+        || {
+            candidates.par_iter().map(|&index| {
+                let index = index as usize;
+                (index, &messages[index])
+            })
+        },
+        messages,
+        scorer,
+        filter,
+        take,
+    )
+}
+
+fn search<'a, S, F, I, MakeIter>(
+    candidates_len: usize,
+    make_iter: MakeIter,
+    messages: &'a [Message],
+    scorer: S,
+    filter: F,
+    take: usize,
+) -> (Vec<MessageResult>, SearchStats)
+where
+    S: SimilarityMethod,
+    F: Fn(&Message) -> bool + Sync + Send,
+    I: ParallelIterator<Item = (usize, &'a Message)>,
+    MakeIter: Fn() -> I,
+{
     let score_start = Instant::now();
     let top_results = if scorer.exact_matches_dominate_fuzzy() {
-        let exact_results = collect_exact_results(candidates, &scorer, &filter, take);
+        let exact_results = collect_exact_results(make_iter(), &scorer, &filter, take);
         if exact_results.len() >= take {
             exact_results
         } else {
-            exact_results.merge(collect_fuzzy_results(candidates, &scorer, &filter, take, true))
+            exact_results.merge(collect_fuzzy_results(
+                make_iter(),
+                &scorer,
+                &filter,
+                take,
+                true,
+            ))
         }
     } else {
-        collect_fuzzy_results(candidates, &scorer, &filter, take, false)
+        collect_fuzzy_results(make_iter(), &scorer, &filter, take, false)
     };
     let score_elapsed = score_start.elapsed();
     let scored_len = top_results.scored;
@@ -570,9 +622,9 @@ fn search(
     let results = results
         .into_iter()
         .take(take)
-        .map(|(msg, score)| {
-            let mut result: MessageResult = msg.as_ref().into();
-            result.score = score;
+        .map(|scored| {
+            let mut result: MessageResult = (&messages[scored.index]).into();
+            result.score = scored.score;
             result
         })
         .collect();
@@ -592,8 +644,8 @@ fn search(
     )
 }
 
-fn collect_exact_results<S, F>(
-    candidates: &[Arc<Message>],
+fn collect_exact_results<'a, S, F, I>(
+    candidates: I,
     scorer: &S,
     filter: &F,
     take: usize,
@@ -601,15 +653,15 @@ fn collect_exact_results<S, F>(
 where
     S: SimilarityMethod,
     F: Fn(&Message) -> bool + Sync + Send,
+    I: ParallelIterator<Item = (usize, &'a Message)>,
 {
     candidates
-        .par_iter()
         .fold(
             || TopScoredMessages::new(take),
-            |mut top_results, message| {
-                if filter(message.as_ref()) {
+            |mut top_results, (index, message)| {
+                if filter(message) {
                     if let Some(score) = scorer.exact_similarity(&message.message) {
-                        top_results.push_exact(message, score);
+                        top_results.push_exact(index, message, score);
                     }
                 }
                 top_results
@@ -621,8 +673,8 @@ where
         )
 }
 
-fn collect_fuzzy_results<S, F>(
-    candidates: &[Arc<Message>],
+fn collect_fuzzy_results<'a, S, F, I>(
+    candidates: I,
     scorer: &S,
     filter: &F,
     take: usize,
@@ -631,6 +683,7 @@ fn collect_fuzzy_results<S, F>(
 where
     S: SimilarityMethod,
     F: Fn(&Message) -> bool + Sync + Send,
+    I: ParallelIterator<Item = (usize, &'a Message)>,
 {
     let global_cutoff = GlobalScoreCutoff::default();
 
@@ -640,25 +693,24 @@ where
     // safe global cutoff because at least `take` results already score that
     // high or higher.
     candidates
-        .par_iter()
         .fold(
             || TopScoredMessages::new(take),
-            |mut top_results, message| {
-                if filter(message.as_ref()) {
+            |mut top_results, (index, message)| {
+                if filter(message) {
                     let exact_score = scorer.exact_similarity(&message.message);
                     if skip_exact && exact_score.is_some() {
                         return top_results;
                     }
 
                     if let Some(score) = exact_score {
-                        top_results.push_exact(message, score);
+                        top_results.push_exact(index, message, score);
                         top_results.publish_score_cutoff(&global_cutoff);
                     } else {
                         let score = scorer.similarity(
                             &message.message,
                             top_results.score_cutoff_with_global(&global_cutoff),
                         );
-                        top_results.push_fuzzy(message, score);
+                        top_results.push_fuzzy(index, message, score);
                         top_results.publish_score_cutoff(&global_cutoff);
                     }
                 }
@@ -684,19 +736,11 @@ fn retain_top_results(results: &mut Vec<ScoredMessage>, take: usize) {
     results.sort_by(scored_message_order);
 }
 
-fn scored_message_order(
-    (amsg, ascore): &ScoredMessage,
-    (bmsg, bscore): &ScoredMessage,
-) -> Ordering {
-    score_correct_order(*ascore, amsg.correct, *bscore, bmsg.correct)
+fn scored_message_order(amsg: &ScoredMessage, bmsg: &ScoredMessage) -> Ordering {
+    score_correct_order(amsg.score, amsg.correct, bmsg.score, bmsg.correct)
 }
 
-fn score_correct_order(
-    ascore: f64,
-    acorrect: f64,
-    bscore: f64,
-    bcorrect: f64,
-) -> Ordering {
+fn score_correct_order(ascore: f64, acorrect: f32, bscore: f64, bcorrect: f32) -> Ordering {
     let ord = ascore.partial_cmp(&bscore).unwrap();
     match ord {
         Ordering::Greater | Ordering::Less => ord.reverse(),
@@ -755,14 +799,18 @@ fn millis(duration: Duration) -> f64 {
     duration.as_secs_f64() * 1000.0
 }
 
-pub fn search_article(id: usize) -> Vec<MessageResult> {
-    candidate_messages(Some(id))
-        .iter()
-        .map(|msg| msg.as_ref().into())
+pub fn search_article(id: u32) -> Vec<MessageResult> {
+    let store = MESSAGES.read().unwrap();
+    store
+        .by_article
+        .get(&id)
+        .into_iter()
+        .flatten()
+        .map(|&index| (&store.messages[index as usize]).into())
         .collect()
 }
 
-pub fn article_lists() -> Vec<usize> {
+pub fn article_lists() -> Vec<u32> {
     MESSAGES
         .read()
         .unwrap()
@@ -774,8 +822,13 @@ pub fn article_lists() -> Vec<usize> {
 }
 
 #[cfg(test)]
-fn article_candidate_count(id: usize) -> usize {
-    candidate_messages(Some(id)).len()
+fn article_candidate_count(id: u32) -> usize {
+    MESSAGES
+        .read()
+        .unwrap()
+        .by_article
+        .get(&id)
+        .map_or(0, Vec::len)
 }
 
 #[cfg(test)]
@@ -786,26 +839,24 @@ mod tests {
 
     static TEST_LOCK: LazyLock<Mutex<()>> = LazyLock::new(|| Mutex::new(()));
 
-    fn test_message(article_id: usize, message: &str) -> Message {
+    fn test_message(article_id: u32, message: &str) -> Message {
         Message {
             article_id,
             page: 1,
             message: message.to_string(),
+            #[cfg(feature = "raw")]
             raw: None,
             correct: 1.0,
             rects: [0.0, 0.0, 1.0, 1.0],
         }
     }
 
-    fn test_message_with_correct(article_id: usize, correct: f64) -> Arc<Message> {
-        Arc::new(Message {
-            article_id,
-            page: 1,
-            message: "message".to_string(),
-            raw: None,
+    fn test_scored_message(index: usize, correct: f32, score: f64) -> ScoredMessage {
+        ScoredMessage {
+            index,
             correct,
-            rects: [0.0, 0.0, 1.0, 1.0],
-        })
+            score,
+        }
     }
 
     fn reset_messages(messages: Vec<Message>) {
@@ -889,17 +940,13 @@ mod tests {
     #[test]
     fn skips_fuzzy_scoring_when_exact_matches_fill_take() {
         let candidates = vec![
-            Arc::new(test_message(1, "prefixneedle")),
-            Arc::new(test_message(2, "suffixneedle")),
-            Arc::new(test_message(3, "othercandidate")),
+            test_message(1, "prefixneedle"),
+            test_message(2, "suffixneedle"),
+            test_message(3, "othercandidate"),
         ];
 
-        let (_results, stats) = search(
-            &candidates,
-            CachedPartialRatio::from("needle"),
-            |_| true,
-            2,
-        );
+        let (_results, stats) =
+            search_all(&candidates, CachedPartialRatio::from("needle"), |_| true, 2);
 
         assert_eq!(stats.exact_scored, 2);
         assert_eq!(stats.fuzzy_scored, 0);
@@ -932,40 +979,34 @@ mod tests {
     #[test]
     fn retain_top_results_limits_and_preserves_sort_order() {
         let mut results = vec![
-            (test_message_with_correct(1, 0.1), 10.0),
-            (test_message_with_correct(2, 0.2), 20.0),
-            (test_message_with_correct(3, 0.9), 20.0),
-            (test_message_with_correct(4, 0.9), 5.0),
+            test_scored_message(1, 0.1, 10.0),
+            test_scored_message(2, 0.2, 20.0),
+            test_scored_message(3, 0.9, 20.0),
+            test_scored_message(4, 0.9, 5.0),
         ];
 
         retain_top_results(&mut results, 2);
 
-        let article_ids: Vec<_> = results.iter().map(|(message, _)| message.article_id).collect();
-        assert_eq!(article_ids, vec![3, 2]);
+        let indices: Vec<_> = results.iter().map(|message| message.index).collect();
+        assert_eq!(indices, vec![3, 2]);
     }
 
     #[test]
     fn collect_top_results_matches_full_top_k_order() {
         let results = vec![
-            (test_message_with_correct(1, 0.1), 10.0),
-            (test_message_with_correct(2, 0.2), 20.0),
-            (test_message_with_correct(3, 0.9), 20.0),
-            (test_message_with_correct(4, 0.9), 5.0),
-            (test_message_with_correct(5, 0.8), 30.0),
+            test_scored_message(1, 0.1, 10.0),
+            test_scored_message(2, 0.2, 20.0),
+            test_scored_message(3, 0.9, 20.0),
+            test_scored_message(4, 0.9, 5.0),
+            test_scored_message(5, 0.8, 30.0),
         ];
         let mut full_results = results.clone();
         retain_top_results(&mut full_results, 3);
 
         let top_results = collect_top_results(results, 3);
 
-        let full_article_ids: Vec<_> = full_results
-            .iter()
-            .map(|(message, _)| message.article_id)
-            .collect();
-        let top_article_ids: Vec<_> = top_results
-            .iter()
-            .map(|(message, _)| message.article_id)
-            .collect();
+        let full_article_ids: Vec<_> = full_results.iter().map(|message| message.index).collect();
+        let top_article_ids: Vec<_> = top_results.iter().map(|message| message.index).collect();
 
         assert_eq!(top_article_ids, full_article_ids);
     }
@@ -973,34 +1014,28 @@ mod tests {
     #[test]
     fn merged_top_results_match_full_top_k_order() {
         let results = vec![
-            (test_message_with_correct(1, 0.1), 10.0),
-            (test_message_with_correct(2, 0.2), 20.0),
-            (test_message_with_correct(3, 0.9), 20.0),
-            (test_message_with_correct(4, 0.9), 5.0),
-            (test_message_with_correct(5, 0.8), 30.0),
-            (test_message_with_correct(6, 0.7), 25.0),
+            test_scored_message(1, 0.1, 10.0),
+            test_scored_message(2, 0.2, 20.0),
+            test_scored_message(3, 0.9, 20.0),
+            test_scored_message(4, 0.9, 5.0),
+            test_scored_message(5, 0.8, 30.0),
+            test_scored_message(6, 0.7, 25.0),
         ];
         let mut full_results = results.clone();
         retain_top_results(&mut full_results, 3);
 
         let mut left = TopScoredMessages::new(3);
         let mut right = TopScoredMessages::new(3);
-        for (message, score) in results.iter().take(3) {
-            left.push(message, *score);
+        for message in results.iter().take(3) {
+            left.push_scored(*message);
         }
-        for (message, score) in results.iter().skip(3) {
-            right.push(message, *score);
+        for message in results.iter().skip(3) {
+            right.push_scored(*message);
         }
         let top_results = left.merge(right).into_sorted_vec();
 
-        let full_article_ids: Vec<_> = full_results
-            .iter()
-            .map(|(message, _)| message.article_id)
-            .collect();
-        let top_article_ids: Vec<_> = top_results
-            .iter()
-            .map(|(message, _)| message.article_id)
-            .collect();
+        let full_article_ids: Vec<_> = full_results.iter().map(|message| message.index).collect();
+        let top_article_ids: Vec<_> = top_results.iter().map(|message| message.index).collect();
 
         assert_eq!(top_article_ids, full_article_ids);
     }

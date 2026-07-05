@@ -110,6 +110,30 @@ higher `score_cutoff` earlier, allowing internal early exits. The improvement wa
 small but measurable and should be lossless because candidates below an already
 filled top-k cutoff cannot enter the final top-k.
 
+### Compact in-memory message store
+
+The initial in-memory layout kept every message behind an `Arc<Message>` and
+stored cloned `Arc`s in both the global message list and the per-article map.
+That layout avoided string duplication, but it still created one heap allocation
+per message plus atomic reference-count traffic whenever a result entered the
+top-k heap.
+
+The store was changed to keep messages in one contiguous `Vec<Message>` and to
+store per-article candidates as compact message indexes. The top-k heap now
+keeps only the message index, score, and correctness value, then resolves the
+index back to a `Message` only when producing final API results.
+
+The `Message` payload was also compacted for the default build:
+
+- `MessageRaw` is present only with the `raw` feature.
+- article id and page are stored as `u32`.
+- OCR correctness and rectangle coordinates are stored as `f32`.
+
+This targets both startup memory and full-scan search speed. Startup avoids
+millions of per-message `Arc` allocations, while search avoids pointer chasing,
+atomic `Arc` clones in the top-k heap, and some memory bandwidth from oversized
+metadata. API JSON field names and route shapes are unchanged.
+
 ### Prefix/suffix edge upper bound
 
 RapidFuzz `partial_ratio` checks full-length windows and then shorter prefix /
@@ -167,6 +191,32 @@ and branch shape outweighed the tiny saved object creation. Reverted.
 
 Tried as a build-level experiment, but the observed search profile did not
 improve enough to keep it.
+
+### Thread-local scratch reuse for partial_ratio
+
+Tried reusing the temporary `scores`, `windows`, and `new_windows` vectors used
+by the RapidFuzz `partial_ratio_impl` window pass. The goal was to remove
+per-candidate vector allocation from the C++ FFI hot path while keeping the
+same scoring semantics.
+
+Because `RapidFuzz-cpp` is a submodule, keeping the experiment local to this
+repository required a binding-local helper that mirrored the RapidFuzz
+`partial_ratio_impl` logic and swapped only the temporary storage for
+thread-local scratch buffers. This avoided shared mutable state across Rayon
+workers, but it duplicated too much RapidFuzz internals in `cxx/main.cpp`.
+
+Representative server runs with the scratch path enabled:
+
+```text
+case A fuzzy=19858227 score_ms=1622.514
+case B fuzzy=14070567 score_ms=1965.427
+```
+
+The result was not clearly better than the existing implementation. This
+suggests that allocator churn is not a major part of the remaining hot path;
+the dominant cost is still the actual Indel/LCS distance work in RapidFuzz.
+The experiment was reverted because the complexity and duplicated internals did
+not justify the unclear gain.
 
 ### Upper-bound dry run over candidates
 
@@ -249,10 +299,17 @@ Most promising options:
   implementation risk.
 - length-sorted candidate storage: lower risk, may reduce full-scan overhead but
   probably not the main `score_ms` cost.
+- more compact message storage: already yielded a lower-allocation layout by
+  using contiguous messages and per-article indexes. Further reductions would
+  require a larger packed-string arena or on-disk format change.
 - byte/char multiset upper-bound prefilter: lossless in principle, but the
   naive on-the-fly byte-overlap version was too loose and too expensive. It
   should only be revisited with compact precomputed message metadata and better
   selectivity.
+- thread-local scratch reuse: low semantic risk, but the measured impact was
+  unclear and a local implementation duplicated RapidFuzz internals, so it is
+  not worth keeping unless future allocator profiling shows a real allocation
+  bottleneck.
 - segment filter-and-verify: lossless in principle, but the measured low-cutoff
   case produced 1-byte segments and a 99% candidate ratio. It should not be
   pursued for broad `contains` unless future profiling shows much higher

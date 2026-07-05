@@ -17,20 +17,25 @@ pub struct RawArticle {
 
 #[derive(Deserialize)]
 pub struct RawPage {
-    pub page: usize,
+    pub page: u32,
     pub dialogues: Vec<RawDialogue>,
 }
 
 #[derive(Deserialize)]
 pub struct RawDialogue {
     pub text: String,
-    pub confidence: f64,
-    pub bbox: [f64; 4],
+    pub confidence: f32,
+    pub bbox: [f32; 4],
 }
 
 pub fn convert_article(article: RawArticle) -> Result<Vec<Message>, Box<dyn Error + Send + Sync>> {
-    let article_id = article.article_id.parse::<usize>()?;
-    let min_page = article.pages.iter().map(|page| page.page).min().unwrap_or(0);
+    let article_id = article.article_id.parse::<u32>()?;
+    let min_page = article
+        .pages
+        .iter()
+        .map(|page| page.page)
+        .min()
+        .unwrap_or(0);
     let mut messages = Vec::new();
 
     for page in article.pages {
@@ -44,6 +49,7 @@ pub fn convert_article(article: RawArticle) -> Result<Vec<Message>, Box<dyn Erro
                 article_id,
                 page: page.page - min_page,
                 message,
+                #[cfg(feature = "raw")]
                 raw: raw_message(dialogue.text),
                 correct: dialogue.confidence,
                 rects: dialogue.bbox,
@@ -57,11 +63,6 @@ pub fn convert_article(article: RawArticle) -> Result<Vec<Message>, Box<dyn Erro
 #[cfg(feature = "raw")]
 fn raw_message(text: String) -> Option<String> {
     Some(text)
-}
-
-#[cfg(not(feature = "raw"))]
-fn raw_message(_text: String) -> Option<String> {
-    None
 }
 
 pub struct CompressOptions {
@@ -130,10 +131,7 @@ struct SplitWriter {
 }
 
 impl SplitWriter {
-    fn write_message(
-        &mut self,
-        message: &Message,
-    ) -> Result<(), Box<dyn Error + Send + Sync>> {
+    fn write_message(&mut self, message: &Message) -> Result<(), Box<dyn Error + Send + Sync>> {
         if self.has_items {
             self.writer.write_all(b",")?;
         }
@@ -174,9 +172,7 @@ mod tests {
         assert_eq!(messages[0].message, "dhkFOduf");
         #[cfg(feature = "raw")]
         assert_eq!(messages[0].raw.as_deref(), Some("와 FO 열"));
-        #[cfg(not(feature = "raw"))]
-        assert_eq!(messages[0].raw.as_deref(), None);
-        assert_eq!(messages[0].correct, 0.8329);
+        assert_eq!(messages[0].correct, 0.8329_f32);
         assert_eq!(messages[0].rects, [1741.0, 551.0, 1924.0, 947.0]);
     }
 
