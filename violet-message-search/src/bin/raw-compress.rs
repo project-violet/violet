@@ -1,12 +1,12 @@
 use std::path::PathBuf;
 
-use fast_search_rs::raw_compress::{compress_raw_dir, CompressOptions, OutputFormat};
+use fast_search_rs::raw_compress::{compress_raw_dir, CompressOptions};
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 #[structopt(
     name = "raw-compress",
-    about = "Convert violet-search raw OCR JSON files to fast-search-rs merged JSON files"
+    about = "Convert violet-search raw OCR JSON files to fast-search-rs flat message files"
 )]
 struct Opt {
     #[structopt(long, parse(from_os_str))]
@@ -15,11 +15,8 @@ struct Opt {
     #[structopt(long, parse(from_os_str), default_value = ".")]
     output_dir: PathBuf,
 
-    #[structopt(long, default_value = "3")]
+    #[structopt(long, default_value = "1")]
     splits: usize,
-
-    #[structopt(long, default_value = "json")]
-    format: OutputFormat,
 }
 
 fn main() {
@@ -28,9 +25,20 @@ fn main() {
         raw_dir: opt.raw_dir,
         output_dir: opt.output_dir,
         splits: opt.splits,
-        output_format: opt.format,
     }) {
         eprintln!("raw-compress failed: {err}");
         std::process::exit(1);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn defaults_to_single_output_split() {
+        let opt = Opt::from_iter(["raw-compress", "--raw-dir", "raw"]);
+
+        assert_eq!(opt.splits, 1);
     }
 }

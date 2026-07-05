@@ -2,7 +2,6 @@ use std::error::Error;
 use std::fs::{self, File};
 use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
-use std::str::FromStr;
 
 use rayon::prelude::*;
 use serde::Deserialize;
@@ -71,36 +70,6 @@ pub struct CompressOptions {
     pub raw_dir: PathBuf,
     pub output_dir: PathBuf,
     pub splits: usize,
-    pub output_format: OutputFormat,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum OutputFormat {
-    Json,
-    Fscm,
-}
-
-impl OutputFormat {
-    fn extension(self) -> &'static str {
-        match self {
-            Self::Json => "json",
-            Self::Fscm => "fscm",
-        }
-    }
-}
-
-impl FromStr for OutputFormat {
-    type Err = String;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "json" => Ok(Self::Json),
-            "fscm" => Ok(Self::Fscm),
-            _ => Err(format!(
-                "unsupported output format {value:?}; use json or fscm"
-            )),
-        }
-    }
 }
 
 pub fn compress_raw_dir(options: CompressOptions) -> Result<(), Box<dyn Error + Send + Sync>> {
@@ -113,42 +82,7 @@ pub fn compress_raw_dir(options: CompressOptions) -> Result<(), Box<dyn Error + 
     let mut raw_paths = collect_raw_json_paths(&options.raw_dir)?;
     raw_paths.sort();
 
-    if options.output_format == OutputFormat::Fscm {
-        return compress_raw_dir_fscm(&options, raw_paths);
-    }
-
-    compress_raw_dir_json(&options, raw_paths)
-}
-
-fn compress_raw_dir_json(
-    options: &CompressOptions,
-    raw_paths: Vec<PathBuf>,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let mut writers = Vec::with_capacity(options.splits);
-    for split in 0..options.splits {
-        let path = options.output_dir.join(format!(
-            "merged-{split}.{}",
-            options.output_format.extension()
-        ));
-        writers.push(JsonSplitWriter::create(path)?);
-    }
-
-    for (index, raw_path) in raw_paths.into_iter().enumerate() {
-        let article = read_raw_article(&raw_path)?;
-        let messages = convert_article(article)
-            .map_err(|err| format!("failed to convert {}: {err}", raw_path.display()))?;
-
-        let split = index % options.splits;
-        for message in messages {
-            writers[split].write_message(&message)?;
-        }
-    }
-
-    for split_writer in &mut writers {
-        split_writer.finish()?;
-    }
-
-    Ok(())
+    compress_raw_dir_fscm(&options, raw_paths)
 }
 
 fn compress_raw_dir_fscm(
@@ -235,37 +169,6 @@ fn collect_raw_json_paths(raw_dir: &Path) -> Result<Vec<PathBuf>, Box<dyn Error 
         }
     }
     Ok(paths)
-}
-
-struct JsonSplitWriter {
-    writer: BufWriter<File>,
-    has_items: bool,
-}
-
-impl JsonSplitWriter {
-    fn create(path: PathBuf) -> Result<Self, Box<dyn Error + Send + Sync>> {
-        let mut writer = BufWriter::new(File::create(path)?);
-        writer.write_all(b"[")?;
-        Ok(Self {
-            writer,
-            has_items: false,
-        })
-    }
-
-    fn write_message(&mut self, message: &Message) -> Result<(), Box<dyn Error + Send + Sync>> {
-        if self.has_items {
-            self.writer.write_all(b",")?;
-        }
-        simd_json::to_writer(&mut self.writer, message)?;
-        self.has_items = true;
-        Ok(())
-    }
-
-    fn finish(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
-        self.writer.write_all(b"]")?;
-        self.writer.flush()?;
-        Ok(())
-    }
 }
 
 #[cfg(test)]
@@ -358,7 +261,6 @@ mod tests {
             raw_dir,
             output_dir: output_dir.clone(),
             splits: 2,
-            output_format: OutputFormat::Fscm,
         })
         .unwrap();
 

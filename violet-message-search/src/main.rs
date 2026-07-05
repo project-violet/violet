@@ -24,7 +24,7 @@ struct Opt {
     host: String,
     port: usize,
 
-    #[structopt(long, parse(from_os_str), default_value = "./merged.json")]
+    #[structopt(long, parse(from_os_str), default_value = "./merged-0.fscm")]
     data_paths: Vec<PathBuf>,
 }
 

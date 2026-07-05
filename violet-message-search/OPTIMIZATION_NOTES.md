@@ -163,10 +163,10 @@ fixed-size MessageMeta records
 contiguous normalized message bytes
 ```
 
-`raw-compress --format fscm` writes `merged-N.fscm` files, and the server
-loader detects `.fscm` paths. Loading the flat file appends records directly to
-`MessageStore` and reads the byte block directly into `message_bytes`, avoiding
-the intermediate `Vec<Message>` and per-message `String` allocations.
+`raw-compress` writes `merged-N.fscm` files, and the server loader accepts only
+`.fscm` paths. Loading the flat file appends records directly to `MessageStore`
+and reads the byte block directly into `message_bytes`, avoiding the
+intermediate `Vec<Message>` and per-message `String` allocations.
 
 The fscm compression path is intentionally optimized for throughput rather than
 low memory use. Raw files are parsed and normalized in parallel, each worker

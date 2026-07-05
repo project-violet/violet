@@ -10,7 +10,7 @@ use std::time::{Duration, Instant};
 
 use itertools::Itertools;
 use rayon::iter::{IntoParallelIterator, IntoParallelRefIterator, ParallelIterator};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::binding::{CachedPartialRatio, CachedRatio, SimilarityMethod};
 use crate::cache::{with_cache_status, CacheStatus};
@@ -459,6 +459,7 @@ impl MessageStore {
         store
     }
 
+    #[cfg(test)]
     fn extend(&mut self, messages: Vec<Message>) {
         self.messages.reserve(messages.len());
         self.message_bytes
@@ -556,6 +557,7 @@ impl MessageStore {
         Ok(())
     }
 
+    #[cfg(test)]
     fn push_text(&mut self, text: &str) -> TextRange {
         let offset = u64::try_from(self.message_bytes.len()).expect("message arena too large");
         let len = u32::try_from(text.len()).expect("message text too large");
@@ -586,7 +588,7 @@ impl MessageStore {
     }
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Serialize, Debug, Clone)]
 pub struct Message {
     #[serde(rename = "ArticleId")]
     pub article_id: u32,
@@ -613,6 +615,7 @@ pub struct Message {
 }
 
 impl Message {
+    #[cfg(test)]
     fn text_len(&self) -> usize {
         let len = self.message.len();
         #[cfg(feature = "raw")]
@@ -664,20 +667,22 @@ impl From<&StoredMessage<'_>> for MessageResult {
 }
 
 pub fn load_messages(path: PathBuf) {
-    let file = File::open(&path).unwrap();
-    if path
+    if !path
         .extension()
         .is_some_and(|extension| extension == "fscm")
     {
-        MESSAGES
-            .write()
-            .unwrap()
-            .extend_from_flat_reader(file)
-            .unwrap();
-    } else {
-        let msgs: Vec<Message> = simd_json::serde::from_reader(file).unwrap();
-        MESSAGES.write().unwrap().extend(msgs);
+        panic!(
+            "unsupported message data path {}; only .fscm files are supported",
+            path.display()
+        );
     }
+
+    let file = File::open(&path).unwrap();
+    MESSAGES
+        .write()
+        .unwrap()
+        .extend_from_flat_reader(file)
+        .unwrap();
 }
 
 pub fn search_similar(id: Option<u32>, query: &str, take: usize) -> Vec<MessageResult> {
