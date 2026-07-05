@@ -44,7 +44,7 @@ pub fn convert_article(article: RawArticle) -> Result<Vec<Message>, Box<dyn Erro
                 article_id,
                 page: page.page - min_page,
                 message,
-                raw: Some(dialogue.text),
+                raw: raw_message(dialogue.text),
                 correct: dialogue.confidence,
                 rects: dialogue.bbox,
             });
@@ -52,6 +52,16 @@ pub fn convert_article(article: RawArticle) -> Result<Vec<Message>, Box<dyn Erro
     }
 
     Ok(messages)
+}
+
+#[cfg(feature = "raw")]
+fn raw_message(text: String) -> Option<String> {
+    Some(text)
+}
+
+#[cfg(not(feature = "raw"))]
+fn raw_message(_text: String) -> Option<String> {
+    None
 }
 
 pub struct CompressOptions {
@@ -162,7 +172,10 @@ mod tests {
         assert_eq!(messages[0].article_id, 1113152);
         assert_eq!(messages[0].page, 0);
         assert_eq!(messages[0].message, "dhkFOduf");
+        #[cfg(feature = "raw")]
         assert_eq!(messages[0].raw.as_deref(), Some("와 FO 열"));
+        #[cfg(not(feature = "raw"))]
+        assert_eq!(messages[0].raw.as_deref(), None);
         assert_eq!(messages[0].correct, 0.8329);
         assert_eq!(messages[0].rects, [1741.0, 551.0, 1924.0, 947.0]);
     }

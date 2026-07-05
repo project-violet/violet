@@ -11,24 +11,24 @@
 ## 요구 사항
 
 - Go 1.25 이상
-- 입력 데이터: `violet-search/raw/*.json`
-- 기본 출력 위치: `artifacts/dialogue-explore/work-keywords-go.csv`
+- 입력 데이터: `violet-ocr/raw/*.json`
+- 기본 출력 위치: `violet-graph/graph.csv`
 
 이 모듈은 외부 Go 의존성 없이 표준 라이브러리만 사용합니다.
 
 ## 빠른 시작
 
 ```powershell
-cd C:\Users\rollrat\Desktop\workspace\violet\violet-graph
+cd .\violet-graph
 go test ./...
-go run . --top-k 30 --load-workers 16
+go run . --top-k 100 --load-workers 16
 ```
 
 인자를 주지 않으면 기본 서브커맨드는 `extract`입니다. 아래 두 명령은 같은 의미입니다.
 
 ```powershell
-go run . --top-k 30
-go run . extract --top-k 30
+go run . --top-k 100
+go run . extract --top-k 100
 ```
 
 빌드하려면:
@@ -43,17 +43,17 @@ go build -o violet-graph.exe .
 
 ```powershell
 .\violet-graph.exe extract `
-  --raw ..\violet-search\raw `
-  --top-k 30 `
+  --raw ..\violet-ocr\raw `
+  --top-k 100 `
   --load-workers 16 `
-  --output ..\artifacts\dialogue-explore\work-keywords-go.csv
+  --output .\graph.csv
 ```
 
 빠르게 샘플만 확인하려면 `--limit`을 사용합니다.
 
 ```powershell
 .\violet-graph.exe extract `
-  --raw ..\violet-search\raw `
+  --raw ..\violet-ocr\raw `
   --limit 500 `
   --top-k 20 `
   --output ..\artifacts\dialogue-explore\work-keywords-go.sample.csv `
@@ -99,7 +99,7 @@ article_id,rank,keyword,score,tf,df,total_pages,dialogue_count,char_count
 
 ```powershell
 .\violet-graph.exe similar `
-  --input ..\artifacts\dialogue-explore\work-keywords-go.csv `
+  --input .\graph.csv `
   --query 키워드A `
   --top-n 30
 ```
@@ -108,7 +108,7 @@ article_id,rank,keyword,score,tf,df,total_pages,dialogue_count,char_count
 
 ```powershell
 .\violet-graph.exe similar `
-  --input ..\artifacts\dialogue-explore\work-keywords-go.csv `
+  --input .\graph.csv `
   --query 키워드 `
   --expand contains `
   --show-query-terms `
@@ -119,7 +119,7 @@ article_id,rank,keyword,score,tf,df,total_pages,dialogue_count,char_count
 
 ```powershell
 .\violet-graph.exe similar `
-  --input ..\artifacts\dialogue-explore\work-keywords-go.csv `
+  --input .\graph.csv `
   --query 키워드A `
   --output ..\artifacts\dialogue-explore\similar-키워드A.csv
 ```
@@ -142,7 +142,7 @@ article_id,rank,keyword,score,tf,df,total_pages,dialogue_count,char_count
 
 ```powershell
 .\violet-graph.exe serve `
-  --input ..\artifacts\dialogue-explore\work-keywords-go.csv `
+  --input .\graph.csv `
   --host 127.0.0.1 `
   --port 8787
 ```
@@ -199,7 +199,6 @@ GET /api/works?mode=selected&keywords=키워드A,키워드B&match=soft&limit=100
 
 `similar`와 `serve`는 추출된 CSV에 남아 있는 대표 키워드만 보고 계산합니다. 그래서 `extract --top-k` 값이 너무 작으면 희귀한 키워드가 CSV에 남지 않아 검색 결과가 빈약할 수 있습니다.
 
-- `--top-k 30`: 파일이 작고 노이즈가 적습니다. 대표 키워드 위주 탐색에 적합합니다.
 - `--top-k 100`: 탐색 범위가 넓어지고 희귀 query 대응이 좋아집니다. 일반적인 실험용으로 무난합니다.
 - `--top-k 200`: 넓게 훑기 좋지만 노이즈도 늘어납니다. 후처리 필터가 더 중요합니다.
 
@@ -208,7 +207,7 @@ GET /api/works?mode=selected&keywords=키워드A,키워드B&match=soft&limit=100
 ## 테스트
 
 ```powershell
-cd C:\Users\rollrat\Desktop\workspace\violet\violet-graph
+cd .\violet-graph
 go test ./...
 ```
 

@@ -22,6 +22,10 @@ type keywordGraphServer struct {
 	index keywordIndex
 }
 
+type workSetRequest struct {
+	IDs []string `json:"ids"`
+}
+
 func runServe(args []string) error {
 	opts := parseServeFlags(args)
 	rows, err := readKeywordCSV(opts.inputPath)
@@ -65,7 +69,13 @@ func (server *keywordGraphServer) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	case r.URL.Path == "/api/links":
 		server.serveLinks(w, r)
 	case r.URL.Path == "/api/works":
-		server.serveWorks(w, r)
+		if r.Method == http.MethodPost {
+			server.serveWorkSet(w, r)
+		} else {
+			server.serveWorks(w, r)
+		}
+	case r.URL.Path == "/api/work":
+		server.serveWork(w, r)
 	default:
 		http.NotFound(w, r)
 	}
@@ -73,7 +83,7 @@ func (server *keywordGraphServer) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
 func writeCORSHeaders(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 }
 
@@ -110,6 +120,54 @@ func (server *keywordGraphServer) serveWorks(w http.ResponseWriter, r *http.Requ
 	encoder := json.NewEncoder(w)
 	encoder.SetIndent("", "  ")
 	if err := encoder.Encode(works); err != nil {
+		writeJSONError(w, http.StatusInternalServerError, err)
+	}
+}
+
+func (server *keywordGraphServer) serveWork(w http.ResponseWriter, r *http.Request) {
+	articleID := strings.TrimSpace(r.URL.Query().Get("id"))
+	if articleID == "" {
+		writeJSONError(w, http.StatusBadRequest, fmt.Errorf("id is required"))
+		return
+	}
+	work, ok := findWorkFromIndex(server.index, articleID)
+	if !ok {
+		writeJSONError(w, http.StatusNotFound, fmt.Errorf("work not found"))
+		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
+	encoder := json.NewEncoder(w)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(work); err != nil {
+		writeJSONError(w, http.StatusInternalServerError, err)
+	}
+}
+
+func (server *keywordGraphServer) serveWorkSet(w http.ResponseWriter, r *http.Request) {
+	var request workSetRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		writeJSONError(w, http.StatusBadRequest, fmt.Errorf("invalid JSON body"))
+		return
+	}
+	ids := normalizeWorkSetIDs(request.IDs)
+	if len(ids) == 0 {
+		writeJSONError(w, http.StatusBadRequest, fmt.Errorf("ids are required"))
+		return
+	}
+	if len(ids) > 5000 {
+		ids = ids[:5000]
+	}
+	work, ok := findWorkSetFromIndex(server.index, ids)
+	if !ok {
+		writeJSONError(w, http.StatusNotFound, fmt.Errorf("works not found"))
+		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
+	encoder := json.NewEncoder(w)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(work); err != nil {
 		writeJSONError(w, http.StatusInternalServerError, err)
 	}
 }
@@ -366,6 +424,23 @@ func splitGraphQueryValues(values url.Values) []string {
 		return queries
 	}
 	return splitQueryKeywords(values["query"])
+}
+
+func normalizeWorkSetIDs(rawIDs []string) []string {
+	seen := make(map[string]struct{})
+	ids := make([]string, 0, len(rawIDs))
+	for _, rawID := range rawIDs {
+		id := strings.TrimSpace(rawID)
+		if id == "" {
+			continue
+		}
+		if _, exists := seen[id]; exists {
+			continue
+		}
+		seen[id] = struct{}{}
+		ids = append(ids, id)
+	}
+	return ids
 }
 
 var keywordGraphHTML = template.Must(template.New("keyword-graph").Parse(`<!doctype html>

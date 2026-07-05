@@ -32,6 +32,8 @@ type relatedWorksResponse struct {
 
 type relatedWork struct {
 	ArticleID       string               `json:"article_id"`
+	ArticleIDs      []string             `json:"article_ids,omitempty"`
+	WorkCount       int                  `json:"work_count,omitempty"`
 	Score           float64              `json:"score"`
 	MatchedCount    int                  `json:"matched_count"`
 	MatchedKeywords []relatedWorkKeyword `json:"matched_keywords"`
@@ -46,6 +48,8 @@ type relatedWorkKeyword struct {
 	Score   float64 `json:"score"`
 	Rank    int     `json:"rank"`
 	TF      int     `json:"tf"`
+	DF      int     `json:"df"`
+	Cooccur int     `json:"cooccur,omitempty"`
 }
 
 type relatedWorkAccumulator struct {
@@ -116,6 +120,100 @@ func findRelatedWorksFromIndex(index keywordIndex, opts relatedWorksOptions) rel
 	}
 	response.Works = works
 	return response
+}
+
+func findWorkFromIndex(index keywordIndex, articleID string) (relatedWork, bool) {
+	workRows := index.works[articleID]
+	if len(workRows) == 0 {
+		return relatedWork{}, false
+	}
+	pages, dialogues, chars := relatedWorkStats(workRows)
+	return relatedWork{
+		ArticleID:       articleID,
+		MatchedKeywords: []relatedWorkKeyword{},
+		TopKeywords: topRelatedWorkKeywordsFromIndex(index, workRows, relatedWorkKeywordOptions{
+			topN:           100,
+			minCooccur:     1,
+			autoMinCooccur: true,
+			minKeywordDF:   5,
+		}),
+		TotalPages:     pages,
+		DialogueCount:  dialogues,
+		CharacterCount: chars,
+	}, true
+}
+
+func findWorkSetFromIndex(index keywordIndex, articleIDs []string) (relatedWork, bool) {
+	seen := make(map[string]struct{})
+	foundArticleIDs := make([]string, 0, len(articleIDs))
+	mergedRows := make(map[string]keywordRow)
+	totalPages := 0
+	dialogueCount := 0
+	characterCount := 0
+
+	for _, articleID := range articleIDs {
+		articleID = strings.TrimSpace(articleID)
+		if articleID == "" {
+			continue
+		}
+		if _, exists := seen[articleID]; exists {
+			continue
+		}
+		seen[articleID] = struct{}{}
+
+		workRows := index.works[articleID]
+		if len(workRows) == 0 {
+			continue
+		}
+
+		foundArticleIDs = append(foundArticleIDs, articleID)
+		pages, dialogues, chars := relatedWorkStats(workRows)
+		totalPages += pages
+		dialogueCount += dialogues
+		characterCount += chars
+
+		for keyword, row := range workRows {
+			merged, exists := mergedRows[keyword]
+			if !exists {
+				merged = row
+				merged.ArticleID = ""
+				merged.Rank = 0
+				merged.Score = 0
+				merged.TF = 0
+			}
+			merged.Score += row.Score
+			merged.TF += row.TF
+			merged.DF = index.actualDF[keyword]
+			merged.TotalPages = totalPages
+			merged.DialogueCount = dialogueCount
+			merged.CharacterCount = characterCount
+			mergedRows[keyword] = merged
+		}
+	}
+
+	if len(foundArticleIDs) == 0 {
+		return relatedWork{}, false
+	}
+
+	topKeywords := topAggregateWorkKeywordsFromIndex(index, mergedRows, relatedWorkKeywordOptions{
+		topN:         100,
+		minKeywordDF: 5,
+	})
+	sortRelatedWorkAggregateKeywords(topKeywords)
+	for i := range topKeywords {
+		topKeywords[i].Rank = i + 1
+	}
+
+	return relatedWork{
+		ArticleID:       strings.Join(foundArticleIDs, ","),
+		ArticleIDs:      foundArticleIDs,
+		WorkCount:       len(foundArticleIDs),
+		MatchedKeywords: []relatedWorkKeyword{},
+		TopKeywords:     topKeywords,
+		TotalPages:      totalPages,
+		DialogueCount:   dialogueCount,
+		CharacterCount:  characterCount,
+	}, true
 }
 
 func relatedWorkScore(rawScore float64, matchedCount int, queryCount int, mode string) float64 {
@@ -225,6 +323,7 @@ func relatedWorkKeywordFromRow(row keywordRow) relatedWorkKeyword {
 		Score:   row.Score,
 		Rank:    row.Rank,
 		TF:      row.TF,
+		DF:      row.DF,
 	}
 }
 
@@ -234,10 +333,176 @@ func topRelatedWorkKeywords(workRows map[string]keywordRow, limit int) []related
 		keywords = append(keywords, relatedWorkKeywordFromRow(row))
 	}
 	sortRelatedWorkKeywords(keywords)
-	if len(keywords) > limit {
+	if limit > 0 && len(keywords) > limit {
 		keywords = keywords[:limit]
 	}
 	return keywords
+}
+
+type relatedWorkKeywordOptions struct {
+	topN           int
+	minCooccur     int
+	autoMinCooccur bool
+	minKeywordDF   int
+}
+
+func topRelatedWorkKeywordsFromIndex(index keywordIndex, workRows map[string]keywordRow, opts relatedWorkKeywordOptions) []relatedWorkKeyword {
+	if opts.topN < 1 {
+		opts.topN = 100
+	}
+	if opts.minCooccur < 1 {
+		opts.minCooccur = 1
+	}
+	if opts.minKeywordDF < 1 {
+		opts.minKeywordDF = 1
+	}
+
+	keywords := make([]relatedWorkKeyword, 0, len(workRows))
+	for keyword, row := range workRows {
+		keywordDF := index.actualDF[keyword]
+		if keywordDF < opts.minKeywordDF {
+			continue
+		}
+		item := relatedWorkKeywordFromRow(row)
+		item.DF = keywordDF
+		item.Cooccur = maxWorkKeywordCooccur(index, workRows, keyword)
+		keywords = append(keywords, item)
+	}
+	effectiveMinCooccur := relatedWorkKeywordMinCooccur(opts, keywords)
+	filtered := keywords[:0]
+	for _, keyword := range keywords {
+		if keyword.Cooccur >= effectiveMinCooccur {
+			filtered = append(filtered, keyword)
+		}
+	}
+	sortRelatedWorkRepresentativeKeywords(filtered)
+	if len(filtered) > opts.topN {
+		filtered = filtered[:opts.topN]
+	}
+	return filtered
+}
+
+func topAggregateWorkKeywordsFromIndex(index keywordIndex, workRows map[string]keywordRow, opts relatedWorkKeywordOptions) []relatedWorkKeyword {
+	if opts.topN < 1 {
+		opts.topN = 100
+	}
+	if opts.minKeywordDF < 1 {
+		opts.minKeywordDF = 1
+	}
+
+	keywords := make([]relatedWorkKeyword, 0, len(workRows))
+	for keyword, row := range workRows {
+		keywordDF := index.actualDF[keyword]
+		if keywordDF < opts.minKeywordDF {
+			continue
+		}
+		item := relatedWorkKeywordFromRow(row)
+		item.DF = keywordDF
+		keywords = append(keywords, item)
+	}
+	sortRelatedWorkAggregateKeywords(keywords)
+	if len(keywords) > opts.topN {
+		keywords = keywords[:opts.topN]
+	}
+	for i := range keywords {
+		keywords[i].Cooccur = maxWorkKeywordCooccur(index, workRows, keywords[i].Keyword)
+	}
+	sortRelatedWorkAggregateKeywords(keywords)
+	return keywords
+}
+
+func maxWorkKeywordCooccur(index keywordIndex, workRows map[string]keywordRow, keyword string) int {
+	maxCooccur := 0
+	for peerKeyword := range workRows {
+		if peerKeyword == keyword {
+			continue
+		}
+		cooccur := keywordPairCooccur(index, keyword, peerKeyword)
+		if cooccur > maxCooccur {
+			maxCooccur = cooccur
+		}
+	}
+	return maxCooccur
+}
+
+func keywordPairCooccur(index keywordIndex, left string, right string) int {
+	leftWorks := index.keywordWorks[left]
+	rightWorks := index.keywordWorks[right]
+	if len(leftWorks) == 0 || len(rightWorks) == 0 {
+		return 0
+	}
+	if len(leftWorks) > len(rightWorks) {
+		leftWorks, rightWorks = rightWorks, leftWorks
+	}
+	cooccur := 0
+	for articleID := range leftWorks {
+		if _, ok := rightWorks[articleID]; ok {
+			cooccur++
+		}
+	}
+	return cooccur
+}
+
+func relatedWorkKeywordMinCooccur(opts relatedWorkKeywordOptions, keywords []relatedWorkKeyword) int {
+	threshold := opts.minCooccur
+	if threshold < 1 {
+		threshold = 1
+	}
+	if !opts.autoMinCooccur || len(keywords) == 0 {
+		return threshold
+	}
+	cooccurs := make([]int, 0, len(keywords))
+	for _, keyword := range keywords {
+		cooccurs = append(cooccurs, keyword.Cooccur)
+	}
+	sort.Sort(sort.Reverse(sort.IntSlice(cooccurs)))
+	rank := opts.topN - 1
+	if rank < 0 {
+		rank = 0
+	}
+	if rank >= len(cooccurs) {
+		rank = len(cooccurs) - 1
+	}
+	if cooccurs[rank] > threshold {
+		threshold = cooccurs[rank]
+	}
+	return threshold
+}
+
+func sortRelatedWorkRepresentativeKeywords(keywords []relatedWorkKeyword) {
+	sort.Slice(keywords, func(i, j int) bool {
+		if keywords[i].Cooccur != keywords[j].Cooccur {
+			return keywords[i].Cooccur > keywords[j].Cooccur
+		}
+		if keywords[i].DF != keywords[j].DF {
+			return keywords[i].DF > keywords[j].DF
+		}
+		if keywords[i].Score != keywords[j].Score {
+			return keywords[i].Score > keywords[j].Score
+		}
+		if keywords[i].Rank != keywords[j].Rank {
+			return keywords[i].Rank < keywords[j].Rank
+		}
+		return keywords[i].Keyword < keywords[j].Keyword
+	})
+}
+
+func sortRelatedWorkAggregateKeywords(keywords []relatedWorkKeyword) {
+	sort.Slice(keywords, func(i, j int) bool {
+		if keywords[i].Score != keywords[j].Score {
+			return keywords[i].Score > keywords[j].Score
+		}
+		if keywords[i].TF != keywords[j].TF {
+			return keywords[i].TF > keywords[j].TF
+		}
+		if keywords[i].Cooccur != keywords[j].Cooccur {
+			return keywords[i].Cooccur > keywords[j].Cooccur
+		}
+		if keywords[i].DF != keywords[j].DF {
+			return keywords[i].DF > keywords[j].DF
+		}
+		return keywords[i].Keyword < keywords[j].Keyword
+	})
 }
 
 func sortRelatedWorkKeywords(keywords []relatedWorkKeyword) {

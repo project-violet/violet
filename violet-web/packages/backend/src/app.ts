@@ -9,6 +9,8 @@ import { syncRouter } from './routes/sync.js';
 import { downloadsRouter } from './routes/downloads.js';
 import { aiSearchRouter } from './routes/ai-search.js';
 import { messageSearchRouter } from './routes/message-search.js';
+import { workExperimentRouter } from './routes/work-experiment.js';
+import { authorSimilarityRouter } from './routes/author-similarity.js';
 import { summaryRouter } from './routes/summary.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { requestLogger } from './middleware/request-logger.js';
@@ -32,6 +34,8 @@ export function createApp() {
   app.use('/api/downloads', downloadsRouter);
   app.use('/api/ai-search', aiSearchRouter);
   app.use('/api/message-search', messageSearchRouter);
+  app.use('/api/work-experiment', workExperimentRouter);
+  app.use('/api/author-similarity', authorSimilarityRouter);
   app.use('/api/summary', summaryRouter);
 
   app.use(errorHandler);

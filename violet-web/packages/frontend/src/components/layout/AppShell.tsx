@@ -95,14 +95,18 @@ export function AppShell() {
     };
   }, [location.key]);
 
+  const showSearchBar = location.pathname === '/';
+  const enableShellSearch = isDesktop && showSearchBar;
   const baseQuery = contentLanguage !== 'all' ? `${query} lang:${contentLanguage}` : query;
   const excludeSuffix = excludedTags
     .filter((tag) => !query.includes(`-${tag}`))
     .map((tag) => `-${tag}`)
     .join(' ');
   const fullQuery = excludeSuffix ? `${baseQuery} ${excludeSuffix}` : baseQuery;
-  const { data } = useSearch(fullQuery || ' ', 0);
-  const { data: tagSummary = [] } = useSearchTagSummary(fullQuery || ' ');
+  const { data } = useSearch(fullQuery || ' ', 0, 30, { enabled: enableShellSearch });
+  const { data: tagSummary = [] } = useSearchTagSummary(fullQuery || ' ', 30, {
+    enabled: enableShellSearch,
+  });
   const selectedTags = useMemo(() => new Set(query.trim().split(/\s+/).filter(Boolean)), [query]);
 
   const handleTagToggle = useCallback(
@@ -123,8 +127,6 @@ export function AppShell() {
     },
     [query, searchParams, setSearchParams],
   );
-
-  const showSearchBar = location.pathname === '/';
 
   // Handle "/" key to focus search bar on home page
   // Note: bookmarks and history pages will handle "/" key themselves

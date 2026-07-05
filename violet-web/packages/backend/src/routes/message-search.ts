@@ -47,11 +47,15 @@ async function fetchFscm(
   baseUrl: string,
   mode: MessageSearchMode,
   query: string,
+  articleId: string | null = null,
   statusCheck = false,
 ): Promise<unknown> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), getTimeoutMs(statusCheck));
-  const upstreamUrl = `${baseUrl}/${mode}/${encodeURIComponent(query)}`;
+  const route = articleId
+    ? `${mode === 'similar' ? 'wsimilar' : 'wcontains'}/${encodeURIComponent(articleId)}`
+    : mode;
+  const upstreamUrl = `${baseUrl}/${route}/${encodeURIComponent(query)}`;
 
   try {
     const response = await fetch(upstreamUrl, { signal: controller.signal });
@@ -62,6 +66,12 @@ async function fetchFscm(
   } finally {
     clearTimeout(timeout);
   }
+}
+
+function normalizeArticleId(raw: unknown): string | null {
+  const value = typeof raw === 'string' ? raw.trim() : '';
+  if (!value) return null;
+  return /^\d+$/.test(value) ? value : '';
 }
 
 function toFiniteNumber(value: unknown): number | null {
@@ -149,6 +159,7 @@ messageSearchRouter.get('/', async (req, res) => {
   const mode = ((req.query.mode as string) || 'contains') as MessageSearchMode;
   const limit = Math.max(1, Math.min(500, parseInt(req.query.limit as string) || 100));
   const baseUrl = normalizeBaseUrl(req.query.baseUrl);
+  const articleId = normalizeArticleId(req.query.articleId);
 
   if (!q) {
     res.status(400).json({ error: 'Query parameter "q" is required.' });
@@ -160,13 +171,23 @@ messageSearchRouter.get('/', async (req, res) => {
     return;
   }
 
+  if (articleId === '') {
+    res.status(400).json({ error: 'Invalid articleId.' });
+    return;
+  }
+
+  if (articleId && mode === 'lcs') {
+    res.status(400).json({ error: 'Work-scoped search supports contains or similar mode.' });
+    return;
+  }
+
   if (!baseUrl) {
     res.status(400).json({ error: 'Invalid fscm baseUrl.' });
     return;
   }
 
   try {
-    const raw = await fetchFscm(baseUrl, mode, q);
+    const raw = await fetchFscm(baseUrl, mode, q, articleId);
 
     if (!Array.isArray(raw)) {
       res.status(502).json({ error: 'fscm returned an invalid response.' });
@@ -200,7 +221,7 @@ messageSearchRouter.get('/status', async (req, res) => {
   }
 
   try {
-    const raw = await fetchFscm(baseUrl, 'contains', 'test', true);
+    const raw = await fetchFscm(baseUrl, 'contains', 'test', null, true);
     if (!Array.isArray(raw)) {
       const response: MessageSearchStatusResponse = {
         ok: false,

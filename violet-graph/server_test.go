@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -114,7 +115,7 @@ func TestKeywordGraphServerAllowsBrowserCORS(t *testing.T) {
 	if got := rec.Header().Get("Access-Control-Allow-Origin"); got != "*" {
 		t.Fatalf("Access-Control-Allow-Origin = %q, want *", got)
 	}
-	if got := rec.Header().Get("Access-Control-Allow-Methods"); got != "GET, OPTIONS" {
+	if got := rec.Header().Get("Access-Control-Allow-Methods"); got != "GET, POST, OPTIONS" {
 		t.Fatalf("Access-Control-Allow-Methods = %q", got)
 	}
 }
@@ -142,6 +143,89 @@ func TestKeywordGraphServerReturnsRelatedWorksJSON(t *testing.T) {
 	}
 	if len(response.Works[0].MatchedKeywords) != 2 {
 		t.Fatalf("matched keywords = %+v", response.Works[0].MatchedKeywords)
+	}
+}
+
+func TestKeywordGraphServerReturnsWorkJSON(t *testing.T) {
+	server := newKeywordGraphServer([]keywordRow{
+		{ArticleID: "1", Rank: 1, Keyword: "alpha", Score: 10, TF: 5, DF: 2, TotalPages: 12, DialogueCount: 80, CharacterCount: 1200},
+		{ArticleID: "1", Rank: 2, Keyword: "beta", Score: 8, TF: 4, DF: 2, TotalPages: 12, DialogueCount: 80, CharacterCount: 1200},
+		{ArticleID: "1", Rank: 3, Keyword: "one-off", Score: 7, TF: 3, DF: 1, TotalPages: 12, DialogueCount: 80, CharacterCount: 1200},
+		{ArticleID: "2", Rank: 1, Keyword: "alpha", Score: 9, TF: 4, DF: 2, TotalPages: 8, DialogueCount: 30, CharacterCount: 500},
+		{ArticleID: "2", Rank: 2, Keyword: "beta", Score: 7, TF: 3, DF: 2, TotalPages: 8, DialogueCount: 30, CharacterCount: 500},
+		{ArticleID: "3", Rank: 1, Keyword: "alpha", Score: 9, TF: 4, DF: 2},
+		{ArticleID: "3", Rank: 2, Keyword: "beta", Score: 7, TF: 3, DF: 2},
+		{ArticleID: "4", Rank: 1, Keyword: "alpha", Score: 9, TF: 4, DF: 2},
+		{ArticleID: "4", Rank: 2, Keyword: "beta", Score: 7, TF: 3, DF: 2},
+		{ArticleID: "5", Rank: 1, Keyword: "alpha", Score: 9, TF: 4, DF: 2},
+		{ArticleID: "5", Rank: 2, Keyword: "beta", Score: 7, TF: 3, DF: 2},
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/api/work?id=1", nil)
+	rec := httptest.NewRecorder()
+	server.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, body = %s", rec.Code, rec.Body.String())
+	}
+	var response relatedWork
+	if err := json.Unmarshal(rec.Body.Bytes(), &response); err != nil {
+		t.Fatal(err)
+	}
+	if response.ArticleID != "1" {
+		t.Fatalf("article id = %q", response.ArticleID)
+	}
+	if response.TotalPages != 12 || response.DialogueCount != 80 || response.CharacterCount != 1200 {
+		t.Fatalf("stats = pages %d dialogues %d chars %d", response.TotalPages, response.DialogueCount, response.CharacterCount)
+	}
+	if len(response.TopKeywords) != 2 || response.TopKeywords[0].Keyword != "alpha" || response.TopKeywords[1].Keyword != "beta" {
+		t.Fatalf("top keywords = %+v", response.TopKeywords)
+	}
+	if response.TopKeywords[0].Cooccur < 5 || response.TopKeywords[0].DF < 5 {
+		t.Fatalf("representative keyword metrics = %+v", response.TopKeywords[0])
+	}
+}
+
+func TestKeywordGraphServerReturnsWorkSetJSON(t *testing.T) {
+	server := newKeywordGraphServer([]keywordRow{
+		{ArticleID: "1", Rank: 1, Keyword: "alpha", Score: 10, TF: 5, DF: 2, TotalPages: 12, DialogueCount: 80, CharacterCount: 1200},
+		{ArticleID: "1", Rank: 2, Keyword: "beta", Score: 8, TF: 4, DF: 1, TotalPages: 12, DialogueCount: 80, CharacterCount: 1200},
+		{ArticleID: "2", Rank: 1, Keyword: "alpha", Score: 9, TF: 4, DF: 2, TotalPages: 8, DialogueCount: 30, CharacterCount: 500},
+		{ArticleID: "2", Rank: 2, Keyword: "gamma", Score: 7, TF: 3, DF: 1, TotalPages: 8, DialogueCount: 30, CharacterCount: 500},
+		{ArticleID: "3", Rank: 1, Keyword: "alpha", Score: 6, TF: 2, DF: 2},
+		{ArticleID: "4", Rank: 1, Keyword: "alpha", Score: 5, TF: 2, DF: 2},
+		{ArticleID: "5", Rank: 1, Keyword: "alpha", Score: 4, TF: 2, DF: 2},
+	})
+
+	req := httptest.NewRequest(http.MethodPost, "/api/works", bytes.NewBufferString(`{"ids":["1","2","999"]}`))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	server.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, body = %s", rec.Code, rec.Body.String())
+	}
+	var response relatedWork
+	if err := json.Unmarshal(rec.Body.Bytes(), &response); err != nil {
+		t.Fatal(err)
+	}
+	if response.WorkCount != 2 {
+		t.Fatalf("work count = %d, want 2", response.WorkCount)
+	}
+	if len(response.ArticleIDs) != 2 || response.ArticleIDs[0] != "1" || response.ArticleIDs[1] != "2" {
+		t.Fatalf("article ids = %+v, want [1 2]", response.ArticleIDs)
+	}
+	if response.TotalPages != 20 || response.DialogueCount != 110 || response.CharacterCount != 1700 {
+		t.Fatalf("stats = pages %d dialogues %d chars %d", response.TotalPages, response.DialogueCount, response.CharacterCount)
+	}
+	if len(response.TopKeywords) == 0 || response.TopKeywords[0].Keyword != "alpha" {
+		t.Fatalf("top keywords = %+v, want alpha first", response.TopKeywords)
+	}
+	if response.TopKeywords[0].TF != 9 {
+		t.Fatalf("alpha tf = %d, want summed tf 9", response.TopKeywords[0].TF)
+	}
+	if response.TopKeywords[0].Rank != 1 {
+		t.Fatalf("alpha rank = %d, want aggregate rank 1", response.TopKeywords[0].Rank)
 	}
 }
 

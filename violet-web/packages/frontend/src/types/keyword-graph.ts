@@ -69,10 +69,14 @@ export interface RelatedWorkKeyword {
   score: number;
   rank: number;
   tf: number;
+  df: number;
+  cooccur?: number;
 }
 
 export interface RelatedWork {
   article_id: string;
+  article_ids?: string[];
+  work_count?: number;
   score: number;
   matched_count: number;
   matched_keywords: RelatedWorkKeyword[];

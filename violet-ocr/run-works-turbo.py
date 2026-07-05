@@ -565,6 +565,16 @@ def maybe_rewrite_default_turboocr_port(args: argparse.Namespace) -> None:
                 flush=True,
             )
             return
+        existing_container_port = find_existing_alternate_container_port(18000)
+        if existing_container_port is not None:
+            args.turboocr_url = f"{parsed.scheme or 'http'}://localhost:{existing_container_port}"
+            if args.turboocr_container == DEFAULT_TURBOOCR_CONTAINER:
+                args.turboocr_container = f"{DEFAULT_TURBOOCR_CONTAINER}-{existing_container_port}"
+            print(
+                f"TurboOCR default port {port} is busy; using existing container {args.turboocr_container} at {args.turboocr_url}",
+                flush=True,
+            )
+            return
         new_port = find_available_port(18000)
         args.turboocr_url = f"{parsed.scheme or 'http'}://localhost:{new_port}"
         if args.turboocr_container == DEFAULT_TURBOOCR_CONTAINER:
@@ -607,6 +617,17 @@ def find_ready_alternate_server(scheme: str, start: int) -> str | None:
         url = f"{scheme}://localhost:{port}"
         if server_ready(url, timeout=0.5):
             return url
+    return None
+
+
+def find_existing_alternate_container_port(start: int) -> int | None:
+    docker = shutil.which("docker")
+    if docker is None:
+        return None
+    for port in range(start, start + 100):
+        name = f"{DEFAULT_TURBOOCR_CONTAINER}-{port}"
+        if _docker_container_exists(docker, name):
+            return port
     return None
 
 

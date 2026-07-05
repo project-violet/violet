@@ -12,7 +12,9 @@
     "settings": "Settings",
     "hot": "Hot",
     "messageSearch": "Message",
-    "keywordGraph": "Keyword Graph"
+    "keywordGraph": "Keyword Graph",
+    "workExperiment": "Experiment",
+    "authorSimilarity": "Similar Authors"
   },
   "home": {
     "heading": "Browse",

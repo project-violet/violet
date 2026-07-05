@@ -12,7 +12,9 @@
     "settings": "设置",
     "hot": "Hot",
     "messageSearch": "消息",
-    "keywordGraph": "Keyword Graph"
+    "keywordGraph": "Keyword Graph",
+    "workExperiment": "Experiment",
+    "authorSimilarity": "Similar Authors"
   },
   "home": {
     "heading": "浏览",
