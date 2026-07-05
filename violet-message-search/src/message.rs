@@ -3,7 +3,7 @@ use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::env;
 use std::fs::File;
 use std::path::PathBuf;
-use std::sync::{Arc, LazyLock, Mutex};
+use std::sync::{Arc, LazyLock, RwLock};
 use std::time::{Duration, Instant};
 
 use itertools::Itertools;
@@ -14,8 +14,8 @@ use crate::binding::{CachedPartialRatio, CachedRatio, SimilarityMethod};
 use crate::cache::{with_cache_status, CacheStatus};
 use crate::displant::HangulConverter;
 
-static MESSAGES: LazyLock<Mutex<MessageStore>> =
-    LazyLock::new(|| Mutex::new(MessageStore::default()));
+static MESSAGES: LazyLock<RwLock<MessageStore>> =
+    LazyLock::new(|| RwLock::new(MessageStore::default()));
 
 #[derive(Default)]
 struct MessageStore {
@@ -205,22 +205,34 @@ impl From<&Message> for MessageResult {
 pub fn load_messages(path: PathBuf) {
     let file = File::open(path).unwrap();
     let msgs: Vec<Message> = simd_json::serde::from_reader(file).unwrap();
-    MESSAGES.lock().unwrap().extend(msgs);
+    MESSAGES.write().unwrap().extend(msgs);
 }
 
 pub fn search_similar(id: Option<usize>, query: &str, take: usize) -> Vec<MessageResult> {
     let converted_query = convert_query(query);
-    search_with_profile(
-        "similar",
-        format!("similar-{id:?}-{converted_query}"),
-        query,
-        &converted_query,
-        format!("id={id:?}"),
-        move || candidate_messages(id),
-        CachedRatio::from(&converted_query),
-        |_| true,
-        take,
-    )
+    match id {
+        Some(id) => search_with_profile(
+            "similar",
+            format!("similar-{id:?}-{converted_query}"),
+            query,
+            &converted_query,
+            format!("id={id:?}"),
+            move || candidate_messages(Some(id)),
+            CachedRatio::from(&converted_query),
+            |_| true,
+            take,
+        ),
+        None => search_all_with_profile(
+            "similar",
+            format!("similar-{id:?}-{converted_query}"),
+            query,
+            &converted_query,
+            format!("id={id:?}"),
+            CachedRatio::from(&converted_query),
+            |_| true,
+            take,
+        ),
+    }
 }
 
 pub fn search_similar_many(ids: &[usize], query: &str, take: usize) -> Vec<MessageResult> {
@@ -248,17 +260,29 @@ pub fn search_similar_many(ids: &[usize], query: &str, take: usize) -> Vec<Messa
 pub fn search_partial_contains(id: Option<usize>, query: &str, take: usize) -> Vec<MessageResult> {
     let converted_query = convert_query(query);
     let converted_query_len = converted_query.len();
-    search_with_profile(
-        "contains",
-        format!("contains-{id:?}-{converted_query}"),
-        query,
-        &converted_query,
-        format!("id={id:?}"),
-        move || candidate_messages(id),
-        CachedPartialRatio::from(&converted_query),
-        move |message| converted_query_len <= message.message.len(),
-        take,
-    )
+    match id {
+        Some(id) => search_with_profile(
+            "contains",
+            format!("contains-{id:?}-{converted_query}"),
+            query,
+            &converted_query,
+            format!("id={id:?}"),
+            move || candidate_messages(Some(id)),
+            CachedPartialRatio::from(&converted_query),
+            move |message| converted_query_len <= message.message.len(),
+            take,
+        ),
+        None => search_all_with_profile(
+            "contains",
+            format!("contains-{id:?}-{converted_query}"),
+            query,
+            &converted_query,
+            format!("id={id:?}"),
+            CachedPartialRatio::from(&converted_query),
+            move |message| converted_query_len <= message.message.len(),
+            take,
+        ),
+    }
 }
 
 pub fn search_partial_contains_many(
@@ -305,7 +329,7 @@ fn article_ids_cache_key(ids: &[usize]) -> String {
 }
 
 fn candidate_messages(id: Option<usize>) -> Vec<Arc<Message>> {
-    let store = MESSAGES.lock().unwrap();
+    let store = MESSAGES.read().unwrap();
     match id {
         Some(id) => store.by_article.get(&id).cloned().unwrap_or_default(),
         None => store.messages.clone(),
@@ -313,7 +337,7 @@ fn candidate_messages(id: Option<usize>) -> Vec<Arc<Message>> {
 }
 
 fn candidate_messages_many(ids: &[usize]) -> Vec<Arc<Message>> {
-    let store = MESSAGES.lock().unwrap();
+    let store = MESSAGES.read().unwrap();
     ids.iter()
         .filter_map(|id| store.by_article.get(id))
         .flat_map(|messages| messages.iter().cloned())
@@ -331,6 +355,59 @@ fn search_with_profile(
     filter: impl Fn(&Message) -> bool + Sync + Send,
     take: usize,
 ) -> Vec<MessageResult> {
+    search_with_profile_inner(
+        label,
+        cache_key,
+        raw_query,
+        converted_query,
+        scope,
+        take,
+        move || {
+            let candidate_start = Instant::now();
+            let candidates = candidates();
+            let candidate_elapsed = candidate_start.elapsed();
+            let (results, stats) = search(&candidates, scorer, filter, take);
+            (results, stats, candidate_elapsed)
+        },
+    )
+}
+
+fn search_all_with_profile(
+    label: &'static str,
+    cache_key: String,
+    raw_query: &str,
+    converted_query: &str,
+    scope: String,
+    scorer: impl SimilarityMethod,
+    filter: impl Fn(&Message) -> bool + Sync + Send,
+    take: usize,
+) -> Vec<MessageResult> {
+    search_with_profile_inner(
+        label,
+        cache_key,
+        raw_query,
+        converted_query,
+        scope,
+        take,
+        move || {
+            let candidate_start = Instant::now();
+            let store = MESSAGES.read().unwrap();
+            let candidate_elapsed = candidate_start.elapsed();
+            let (results, stats) = search(&store.messages, scorer, filter, take);
+            (results, stats, candidate_elapsed)
+        },
+    )
+}
+
+fn search_with_profile_inner(
+    label: &'static str,
+    cache_key: String,
+    raw_query: &str,
+    converted_query: &str,
+    scope: String,
+    take: usize,
+    search_miss: impl FnOnce() -> (Vec<MessageResult>, SearchStats, Duration),
+) -> Vec<MessageResult> {
     let profile_enabled = search_profile_enabled();
     let raw_query = raw_query.to_string();
     let converted_query = converted_query.to_string();
@@ -340,10 +417,7 @@ fn search_with_profile(
     let miss_converted_query = converted_query.clone();
 
     let (results, cache_status) = with_cache_status(cache_key, move || {
-        let candidate_start = Instant::now();
-        let candidates = candidates();
-        let candidate_elapsed = candidate_start.elapsed();
-        let (results, stats) = search(candidates, scorer, filter, take);
+        let (results, stats, candidate_elapsed) = search_miss();
         if profile_enabled {
             log_search_profile(
                 label,
@@ -378,7 +452,7 @@ fn search_with_profile(
 }
 
 fn search(
-    candidates: Vec<Arc<Message>>,
+    candidates: &[Arc<Message>],
     scorer: impl SimilarityMethod,
     filter: impl Fn(&Message) -> bool + Sync + Send,
     take: usize,
@@ -522,7 +596,7 @@ pub fn search_article(id: usize) -> Vec<MessageResult> {
 
 pub fn article_lists() -> Vec<usize> {
     MESSAGES
-        .lock()
+        .read()
         .unwrap()
         .by_article
         .keys()
@@ -538,6 +612,8 @@ fn article_candidate_count(id: usize) -> usize {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Mutex;
+
     use super::*;
 
     static TEST_LOCK: LazyLock<Mutex<()>> = LazyLock::new(|| Mutex::new(()));
@@ -565,7 +641,7 @@ mod tests {
     }
 
     fn reset_messages(messages: Vec<Message>) {
-        *MESSAGES.lock().unwrap() = MessageStore::from_messages(messages);
+        *MESSAGES.write().unwrap() = MessageStore::from_messages(messages);
     }
 
     #[test]
