@@ -135,7 +135,7 @@ export function WorkExperimentPage() {
 
       {result && (
         <div className={styles.content}>
-          <section className={styles.panel}>
+          <section className={`${styles.panel} ${styles.keywordPanel}`}>
             <div className={styles.panelHeader}>
               <h2>대표 키워드</h2>
               <span>{result.work.article_id} / {result.work.top_keywords.length.toLocaleString()}개</span>

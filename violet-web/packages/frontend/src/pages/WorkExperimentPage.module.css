@@ -81,6 +81,10 @@
   background: var(--color-bg-elevated);
 }
 
+.keywordPanel {
+  align-self: start;
+}
+
 .panelHeader {
   display: flex;
   align-items: center;
