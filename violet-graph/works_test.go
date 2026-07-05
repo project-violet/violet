@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestFindRelatedWorksSelectedSoftAndAll(t *testing.T) {
 	index := newKeywordIndex([]keywordRow{
@@ -93,5 +96,84 @@ func TestFindRelatedWorksGraphUsesExpandedGraphTerms(t *testing.T) {
 	}
 	if result.Works[0].ArticleID != "1" || result.Works[0].MatchedCount < 2 {
 		t.Fatalf("top graph work = %+v, want article 1 with expanded matches", result.Works[0])
+	}
+}
+
+func TestFindWorkSetPrioritizesAggregateScoreOverCooccur(t *testing.T) {
+	rows := []keywordRow{}
+	for i := 1; i <= 10; i++ {
+		articleID := string(rune('0' + i))
+		if i == 10 {
+			articleID = "10"
+		}
+		rows = append(rows,
+			keywordRow{ArticleID: articleID, Rank: 1, Keyword: "common", Score: 1, TF: 1, DF: 10},
+			keywordRow{ArticleID: articleID, Rank: 2, Keyword: "peer", Score: 1, TF: 1, DF: 10},
+		)
+		if i <= 5 {
+			rows = append(rows, keywordRow{ArticleID: articleID, Rank: 3, Keyword: "signature", Score: 20, TF: 20, DF: 5})
+		}
+	}
+	index := newKeywordIndex(rows)
+
+	result, ok := findWorkSetFromIndex(index, []string{"1", "2", "3", "4", "5"})
+	if !ok {
+		t.Fatal("work set not found")
+	}
+	if len(result.TopKeywords) == 0 {
+		t.Fatalf("top keywords = %+v", result.TopKeywords)
+	}
+	if result.TopKeywords[0].Keyword != "signature" {
+		t.Fatalf("top keyword = %+v, want aggregate score leader first", result.TopKeywords[0])
+	}
+	if result.TopKeywords[0].Rank != 1 {
+		t.Fatalf("top rank = %d, want 1", result.TopKeywords[0].Rank)
+	}
+}
+
+func TestFindWorkSetKeepsAggregateScoreLeaderBeforeCooccurCutoff(t *testing.T) {
+	rows := []keywordRow{}
+	articleIDs := []string{"1", "2", "3", "4", "5"}
+	for _, articleID := range articleIDs {
+		rows = append(rows,
+			keywordRow{ArticleID: articleID, Rank: 1, Keyword: "anchor", Score: 1, TF: 1, DF: 125},
+			keywordRow{ArticleID: articleID, Rank: 2, Keyword: "signature", Score: 100, TF: 100, DF: 5},
+		)
+		for i := 0; i < 120; i++ {
+			rows = append(rows, keywordRow{
+				ArticleID: articleID,
+				Rank:      i + 3,
+				Keyword:   "cooccur-heavy-" + string(rune('a'+i%26)) + string(rune('a'+i/26)),
+				Score:     1,
+				TF:        1,
+				DF:        125,
+			})
+		}
+	}
+	for i := 6; i <= 125; i++ {
+		articleID := fmt.Sprintf("extra-%d", i)
+		rows = append(rows, keywordRow{ArticleID: articleID, Rank: 1, Keyword: "anchor", Score: 1, TF: 1, DF: 125})
+		for j := 0; j < 120; j++ {
+			rows = append(rows, keywordRow{
+				ArticleID: articleID,
+				Rank:      j + 2,
+				Keyword:   "cooccur-heavy-" + string(rune('a'+j%26)) + string(rune('a'+j/26)),
+				Score:     1,
+				TF:        1,
+				DF:        125,
+			})
+		}
+	}
+	index := newKeywordIndex(rows)
+
+	result, ok := findWorkSetFromIndex(index, articleIDs)
+	if !ok {
+		t.Fatal("work set not found")
+	}
+	if len(result.TopKeywords) == 0 {
+		t.Fatalf("top keywords = %+v", result.TopKeywords)
+	}
+	if result.TopKeywords[0].Keyword != "signature" {
+		t.Fatalf("top keyword = %+v, want aggregate score leader first", result.TopKeywords[0])
 	}
 }

@@ -2,7 +2,12 @@ import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { Loader2, Search } from 'lucide-react';
 import { useAppStore } from '../stores/app-store';
-import { fetchWorkExperiment, type WorkExperimentResponse } from '../api/work-experiment';
+import {
+  fetchAuthorExperiment,
+  fetchWorkExperiment,
+  type WorkExperimentMode,
+  type WorkExperimentResponse,
+} from '../api/work-experiment';
 import { MessageSearchCard } from '../components/message-search/MessageSearchCard';
 import styles from './WorkExperimentPage.module.css';
 
@@ -25,19 +30,33 @@ export function WorkExperimentPage() {
     messageSearchServerUrl,
     messageSearchResultLimit,
   } = useAppStore();
+  const modeFromUrl: WorkExperimentMode = searchParams.get('mode') === 'author' ? 'author' : 'work';
   const workIdFromUrl = searchParams.get('work') || '';
+  const authorFromUrl = searchParams.get('author') || '';
   const messageQueryFromUrl = searchParams.get('q') || '';
+  const [mode, setMode] = useState<WorkExperimentMode>(modeFromUrl);
   const [workId, setWorkId] = useState(workIdFromUrl);
+  const [author, setAuthor] = useState(authorFromUrl);
   const [messageQuery, setMessageQuery] = useState(messageQueryFromUrl);
   const [result, setResult] = useState<WorkExperimentResponse | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const requestSeq = useRef(0);
 
-  const runExperiment = async (workIdValue: string, queryValue: string) => {
+  const runExperiment = async (
+    modeValue: WorkExperimentMode,
+    workIdValue: string,
+    authorValue: string,
+    queryValue: string,
+  ) => {
     const trimmedWorkId = workIdValue.trim();
-    if (!trimmedWorkId) {
+    const trimmedAuthor = authorValue.trim();
+    if (modeValue === 'work' && !trimmedWorkId) {
       setError('작품 번호를 입력해 주세요.');
+      return;
+    }
+    if (modeValue === 'author' && !trimmedAuthor) {
+      setError('작가를 입력해 주세요.');
       return;
     }
 
@@ -46,13 +65,21 @@ export function WorkExperimentPage() {
     const seq = requestSeq.current + 1;
     requestSeq.current = seq;
     try {
-      const response = await fetchWorkExperiment({
-        workId: trimmedWorkId,
-        messageQuery: queryValue,
-        keywordGraphServerUrl,
-        messageSearchServerUrl,
-        limit: messageSearchResultLimit,
-      });
+      const response = modeValue === 'author'
+        ? await fetchAuthorExperiment({
+            author: trimmedAuthor,
+            messageQuery: queryValue,
+            keywordGraphServerUrl,
+            messageSearchServerUrl,
+            limit: messageSearchResultLimit,
+          })
+        : await fetchWorkExperiment({
+            workId: trimmedWorkId,
+            messageQuery: queryValue,
+            keywordGraphServerUrl,
+            messageSearchServerUrl,
+            limit: messageSearchResultLimit,
+          });
       if (requestSeq.current !== seq) return;
       setResult(response);
     } catch (err) {
@@ -67,55 +94,120 @@ export function WorkExperimentPage() {
   };
 
   useEffect(() => {
+    setMode(modeFromUrl);
     setWorkId(workIdFromUrl);
+    setAuthor(authorFromUrl);
     setMessageQuery(messageQueryFromUrl);
-    if (workIdFromUrl.trim()) {
-      void runExperiment(workIdFromUrl, messageQueryFromUrl);
+    if (modeFromUrl === 'author' && authorFromUrl.trim()) {
+      void runExperiment('author', workIdFromUrl, authorFromUrl, messageQueryFromUrl);
+    } else if (modeFromUrl === 'work' && workIdFromUrl.trim()) {
+      void runExperiment('work', workIdFromUrl, authorFromUrl, messageQueryFromUrl);
     }
-  }, [workIdFromUrl, messageQueryFromUrl]);
+  }, [modeFromUrl, workIdFromUrl, authorFromUrl, messageQueryFromUrl]);
 
-  const setExperimentParams = (workIdValue: string, queryValue: string) => {
+  const setExperimentParams = (
+    modeValue: WorkExperimentMode,
+    workIdValue: string,
+    authorValue: string,
+    queryValue: string,
+  ) => {
     const trimmedWorkId = workIdValue.trim();
+    const trimmedAuthor = authorValue.trim();
     const trimmedQuery = queryValue.trim();
     const params: Record<string, string> = {};
-    if (trimmedWorkId) params.work = trimmedWorkId;
+    params.mode = modeValue;
+    if (modeValue === 'author') {
+      if (trimmedAuthor) params.author = trimmedAuthor;
+    } else if (trimmedWorkId) {
+      params.work = trimmedWorkId;
+    }
     if (trimmedQuery) params.q = trimmedQuery;
     setSearchParams(params);
   };
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    if (!workId.trim()) {
+    if (mode === 'work' && !workId.trim()) {
       setError('작품 번호를 입력해 주세요.');
       return;
     }
-    setExperimentParams(workId, messageQuery);
+    if (mode === 'author' && !author.trim()) {
+      setError('작가를 입력해 주세요.');
+      return;
+    }
+    setExperimentParams(mode, workId, author, messageQuery);
   };
 
   const handleKeywordSearch = (keyword: string) => {
+    setMessageQuery(keyword);
+    if (result?.scope === 'author') {
+      const currentAuthor = result.author || author;
+      setAuthor(currentAuthor);
+      setExperimentParams('author', workId, currentAuthor, keyword);
+      return;
+    }
     const currentWorkId = result?.work.article_id || workId;
     setWorkId(currentWorkId);
-    setMessageQuery(keyword);
-    setExperimentParams(currentWorkId, keyword);
+    setExperimentParams('work', currentWorkId, author, keyword);
   };
+
+  const handleModeChange = (nextMode: WorkExperimentMode) => {
+    setMode(nextMode);
+    setResult(null);
+    setError('');
+  };
+
+  const identifierValue = mode === 'author' ? author : workId;
+  const canSubmit = Boolean(identifierValue.trim()) && !loading;
+  const resultScopeText = result?.scope === 'author'
+    ? `${result.author || author} / ${(result.work.work_count ?? result.articleIds.length).toLocaleString()}작품 / ${result.work.top_keywords.length.toLocaleString()}개`
+    : `${result?.work.article_id ?? ''} / ${result?.work.top_keywords.length.toLocaleString() ?? '0'}개`;
+  const messageEmptyText = result?.scope === 'author'
+    ? '검색어를 넣으면 해당 작가 작품 안에서만 message를 찾습니다.'
+    : '검색어를 넣으면 해당 작품 안에서만 message를 찾습니다.';
 
   return (
     <div className={styles.page}>
       <form className={styles.toolbar} onSubmit={handleSubmit}>
+        <div className={styles.modeControl} role="group" aria-label="실험 범위">
+          <button
+            type="button"
+            className={mode === 'work' ? styles.modeActive : ''}
+            onClick={() => handleModeChange('work')}
+          >
+            작품
+          </button>
+          <button
+            type="button"
+            className={mode === 'author' ? styles.modeActive : ''}
+            onClick={() => handleModeChange('author')}
+          >
+            작가
+          </button>
+        </div>
+
         <div className={styles.inputGroup}>
-          <label htmlFor="work-experiment-id">작품 번호</label>
+          <label htmlFor="work-experiment-id">{mode === 'author' ? '작가' : '작품 번호'}</label>
           <input
             id="work-experiment-id"
             type="text"
-            inputMode="numeric"
-            value={workId}
-            onChange={(event) => setWorkId(event.target.value)}
-            placeholder="123456"
+            inputMode={mode === 'work' ? 'numeric' : 'text'}
+            value={mode === 'author' ? author : workId}
+            onChange={(event) => {
+              if (mode === 'author') {
+                setAuthor(event.target.value);
+              } else {
+                setWorkId(event.target.value);
+              }
+            }}
+            placeholder={mode === 'author' ? '작가명' : '123456'}
           />
         </div>
 
         <div className={styles.inputGroup}>
-          <label htmlFor="work-experiment-query">작품 내 message 검색어</label>
+          <label htmlFor="work-experiment-query">
+            {mode === 'author' ? '작가 내 message 검색어' : '작품 내 message 검색어'}
+          </label>
           <input
             id="work-experiment-query"
             type="text"
@@ -125,7 +217,7 @@ export function WorkExperimentPage() {
           />
         </div>
 
-        <button type="submit" className={styles.searchButton} disabled={loading || !workId.trim()}>
+        <button type="submit" className={styles.searchButton} disabled={!canSubmit}>
           {loading ? <Loader2 size={18} className={styles.spinIcon} /> : <Search size={18} />}
           {loading ? '불러오는 중' : '조회'}
         </button>
@@ -138,7 +230,7 @@ export function WorkExperimentPage() {
           <section className={`${styles.panel} ${styles.keywordPanel}`}>
             <div className={styles.panelHeader}>
               <h2>대표 키워드</h2>
-              <span>{result.work.article_id} / {result.work.top_keywords.length.toLocaleString()}개</span>
+              <span>{resultScopeText}</span>
             </div>
             <div className={styles.stats}>
               <span>페이지 {formatStat(result.work.total_pages)}</span>
@@ -192,7 +284,7 @@ export function WorkExperimentPage() {
                 )}
               </div>
             ) : (
-              <div className={styles.empty}>검색어를 넣으면 해당 작품 안에서만 message를 찾습니다.</div>
+              <div className={styles.empty}>{messageEmptyText}</div>
             )}
           </section>
         </div>

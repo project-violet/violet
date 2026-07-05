@@ -3,10 +3,11 @@ use std::path::PathBuf;
 use chrono::Local;
 use lazy_static::lazy_static;
 use message::{
-    article_lists, load_messages, search_article, search_partial_contains, search_similar,
-    MessageResult,
+    article_lists, load_messages, search_article, search_partial_contains,
+    search_partial_contains_many, search_similar, search_similar_many, MessageResult,
 };
 use rocket::serde::json::Json;
+use serde::Deserialize;
 use structopt::StructOpt;
 
 mod binding;
@@ -25,6 +26,12 @@ struct Opt {
 
     #[structopt(long, parse(from_os_str), default_value = "./merged.json")]
     data_paths: Vec<PathBuf>,
+}
+
+#[derive(Debug, Deserialize)]
+struct WorkSearchRequest {
+    ids: Vec<usize>,
+    query: String,
 }
 
 lazy_static! {
@@ -53,10 +60,36 @@ fn wsimilar(id: usize, query: &str) -> Json<Vec<MessageResult>> {
     Json(search_similar(Some(id), query, 1000))
 }
 
+#[post("/", format = "json", data = "<request>")]
+fn wsimilar_many(request: Json<WorkSearchRequest>) -> Json<Vec<MessageResult>> {
+    println!(
+        "({}) wsimilar-many: {} works - {}",
+        current_date_time(),
+        request.ids.len(),
+        request.query
+    );
+    Json(search_similar_many(&request.ids, &request.query, 1000))
+}
+
 #[get("/<id>/<query>")]
 fn wcontains(id: usize, query: &str) -> Json<Vec<MessageResult>> {
     println!("({}) wcontains: {} - {}", current_date_time(), id, query);
     Json(search_partial_contains(Some(id), query, 1000))
+}
+
+#[post("/", format = "json", data = "<request>")]
+fn wcontains_many(request: Json<WorkSearchRequest>) -> Json<Vec<MessageResult>> {
+    println!(
+        "({}) wcontains-many: {} works - {}",
+        current_date_time(),
+        request.ids.len(),
+        request.query
+    );
+    Json(search_partial_contains_many(
+        &request.ids,
+        &request.query,
+        1000,
+    ))
 }
 
 #[get("/<id>")]
@@ -89,8 +122,8 @@ fn rocket() -> _ {
         )
         .mount("/similar", routes![similar])
         .mount("/contains", routes![contains])
-        .mount("/wsimilar", routes![wsimilar])
-        .mount("/wcontains", routes![wcontains])
+        .mount("/wsimilar", routes![wsimilar, wsimilar_many])
+        .mount("/wcontains", routes![wcontains, wcontains_many])
         .mount("/article", routes![article])
         .mount("/lists", routes![lists])
 }

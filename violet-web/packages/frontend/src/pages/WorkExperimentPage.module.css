@@ -7,13 +7,50 @@
 
 .toolbar {
   display: grid;
-  grid-template-columns: minmax(180px, 0.6fr) minmax(260px, 1fr) auto;
+  grid-template-columns: auto minmax(180px, 0.6fr) minmax(260px, 1fr) auto;
   gap: var(--spacing-sm);
   align-items: end;
   margin: calc(-1 * var(--spacing-md)) calc(-1 * var(--spacing-md)) 0;
   padding: var(--spacing-md);
   background: var(--color-bg-elevated);
   border-bottom: 1px solid var(--color-border);
+}
+
+.modeControl {
+  height: 40px;
+  display: inline-grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: stretch;
+  align-self: end;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.modeControl button {
+  min-width: 56px;
+  padding: 0 var(--spacing-sm);
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.modeControl button + button {
+  border-left: 1px solid var(--color-border);
+}
+
+.modeControl button:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+.modeControl .modeActive {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
 .inputGroup {

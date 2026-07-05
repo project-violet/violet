@@ -75,6 +75,8 @@ export interface RelatedWorkKeyword {
 
 export interface RelatedWork {
   article_id: string;
+  article_ids?: string[];
+  work_count?: number;
   score: number;
   matched_count: number;
   matched_keywords: RelatedWorkKeyword[];

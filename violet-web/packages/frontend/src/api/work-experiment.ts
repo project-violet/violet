@@ -1,6 +1,9 @@
 import type { MessageSearchResponse } from '@violet-web/shared';
 import type { RelatedWork } from '../types/keyword-graph';
+import { api } from './client';
 import { messageSearch } from './message-search';
+
+export type WorkExperimentMode = 'work' | 'author';
 
 export interface WorkExperimentRequest {
   workId: string;
@@ -11,8 +14,19 @@ export interface WorkExperimentRequest {
 }
 
 export interface WorkExperimentResponse {
+  scope: WorkExperimentMode;
+  author?: string;
+  articleIds: string[];
   work: RelatedWork;
   messages: MessageSearchResponse | null;
+}
+
+export interface AuthorExperimentRequest {
+  author: string;
+  messageQuery: string;
+  keywordGraphServerUrl: string;
+  messageSearchServerUrl: string;
+  limit: number;
 }
 
 export async function fetchWorkExperiment(
@@ -31,7 +45,30 @@ export async function fetchWorkExperiment(
       )
     : null;
 
-  return { work, messages };
+  return { scope: 'work', articleIds: [workId], work, messages };
+}
+
+export async function fetchAuthorExperiment(
+  request: AuthorExperimentRequest,
+): Promise<WorkExperimentResponse> {
+  const { data } = await api.get<WorkExperimentResponse>('/work-experiment/author', {
+    params: {
+      author: request.author,
+      q: request.messageQuery,
+      keywordGraphServerUrl: request.keywordGraphServerUrl,
+      messageSearchServerUrl: request.messageSearchServerUrl,
+      limit: request.limit,
+    },
+    timeout: 120000,
+  });
+
+  return {
+    ...data,
+    scope: 'author',
+    articleIds: Array.isArray(data.articleIds) ? data.articleIds : [],
+    work: normalizeWork(data.work),
+    messages: data.messages,
+  };
 }
 
 async function fetchWorkKeywords(serverUrl: string, workId: string): Promise<RelatedWork> {
@@ -46,7 +83,10 @@ async function fetchWorkKeywords(serverUrl: string, workId: string): Promise<Rel
       : `HTTP ${response.status}`;
     throw new Error(message);
   }
-  const work = payload as RelatedWork;
+  return normalizeWork(payload as RelatedWork);
+}
+
+function normalizeWork(work: RelatedWork): RelatedWork {
   return {
     ...work,
     matched_keywords: Array.isArray(work?.matched_keywords) ? work.matched_keywords : [],
