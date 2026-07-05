@@ -1,7 +1,7 @@
 #![allow(warnings)]
 
-use std::ffi::{CStr, CString};
-use std::ptr::NonNull;
+use std::ffi::CString;
+use std::os::raw::c_char;
 
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
@@ -10,6 +10,18 @@ extern "C" {}
 
 pub trait SimilarityMethod: Sync {
     fn similarity(&self, message: &str) -> f64;
+}
+
+static EMPTY_MESSAGE: [u8; 1] = [0];
+
+fn message_parts(message: &str) -> (*const c_char, usize) {
+    let bytes = message.as_bytes();
+    let ptr = if bytes.is_empty() {
+        EMPTY_MESSAGE.as_ptr()
+    } else {
+        bytes.as_ptr()
+    };
+    (ptr.cast(), bytes.len())
 }
 
 pub struct CachedRatio {
@@ -28,8 +40,8 @@ impl CachedRatio {
 
 impl SimilarityMethod for CachedRatio {
     fn similarity(&self, message: &str) -> f64 {
-        let c_query = CString::new(message).unwrap();
-        unsafe { binding_similarity(self.scorer, c_query.as_ptr()) }
+        let (message, message_len) = message_parts(message);
+        unsafe { binding_similarity(self.scorer, message, message_len) }
     }
 }
 
@@ -49,8 +61,8 @@ impl CachedPartialRatio {
 
 impl SimilarityMethod for CachedPartialRatio {
     fn similarity(&self, message: &str) -> f64 {
-        let c_query = CString::new(message).unwrap();
-        unsafe { binding_similarity_partial(self.scorer, c_query.as_ptr()) }
+        let (message, message_len) = message_parts(message);
+        unsafe { binding_similarity_partial(self.scorer, message, message_len) }
     }
 }
 
@@ -77,6 +89,11 @@ mod tests {
     }
 
     #[test]
+    fn unittest_cached_ratio_handles_message_nul_byte() {
+        assert_eq!(test("abcd", "abcd\0"), 88);
+    }
+
+    #[test]
     fn unittest_cached_partial_ratio_simple() {
         assert_eq!(test_partial("abcd", "abcd"), 100);
         assert_eq!(test_partial("abcd", "abcde"), 100);
@@ -84,5 +101,10 @@ mod tests {
         assert_eq!(test_partial("abcd", "acbd"), 75);
         assert_eq!(test_partial("abcdefg", "cbedgf"), 54);
         assert_eq!(test_partial("abcd", "efgh"), 0);
+    }
+
+    #[test]
+    fn unittest_cached_partial_ratio_handles_message_nul_byte() {
+        assert_eq!(test_partial("abcd", "xxabcd\0yy"), 100);
     }
 }
