@@ -1,5 +1,5 @@
 use std::cmp::Ordering;
-use std::collections::{HashMap, HashSet};
+use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::env;
 use std::fs::File;
 use std::path::PathBuf;
@@ -34,8 +34,30 @@ struct SearchStats {
 
 type ScoredMessage = (Arc<Message>, f64);
 
+struct TopScoredMessage(ScoredMessage);
+
+impl PartialEq for TopScoredMessage {
+    fn eq(&self, other: &Self) -> bool {
+        self.cmp(other) == Ordering::Equal
+    }
+}
+
+impl Eq for TopScoredMessage {}
+
+impl PartialOrd for TopScoredMessage {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for TopScoredMessage {
+    fn cmp(&self, other: &Self) -> Ordering {
+        scored_message_order(&self.0, &other.0)
+    }
+}
+
 struct TopScoredMessages {
-    results: Vec<ScoredMessage>,
+    heap: BinaryHeap<TopScoredMessage>,
     scored: usize,
     take: usize,
 }
@@ -43,7 +65,7 @@ struct TopScoredMessages {
 impl TopScoredMessages {
     fn new(take: usize) -> Self {
         Self {
-            results: Vec::with_capacity(take),
+            heap: BinaryHeap::with_capacity(take),
             scored: 0,
             take,
         }
@@ -54,49 +76,51 @@ impl TopScoredMessages {
         if self.take == 0 {
             return;
         }
-        if !self.is_top_result(score, message.correct) {
+
+        if self.heap.len() < self.take {
+            self.heap.push(TopScoredMessage((message.clone(), score)));
             return;
         }
 
-        self.push_scored((message.clone(), score));
+        if let Some(worst) = self.heap.peek() {
+            let (worst_message, worst_score) = &worst.0;
+            let order =
+                score_correct_order(score, message.correct, *worst_score, worst_message.correct);
+            if order == Ordering::Less {
+                *self.heap.peek_mut().unwrap() = TopScoredMessage((message.clone(), score));
+            }
+        }
     }
 
     fn push_scored(&mut self, message: ScoredMessage) {
         if self.take == 0 {
             return;
         }
-        if !self.is_top_result(message.1, message.0.correct) {
+
+        if self.heap.len() < self.take {
+            self.heap.push(TopScoredMessage(message));
             return;
         }
 
-        let index = self
-            .results
-            .binary_search_by(|existing| scored_message_order(existing, &message))
-            .unwrap_or_else(|index| index);
-        self.results.insert(index, message);
-        if self.results.len() > self.take {
-            self.results.pop();
+        if let Some(worst) = self.heap.peek() {
+            if scored_message_order(&message, &worst.0) == Ordering::Less {
+                *self.heap.peek_mut().unwrap() = TopScoredMessage(message);
+            }
         }
-    }
-
-    fn is_top_result(&self, score: f64, correct: f64) -> bool {
-        if self.results.len() < self.take {
-            return true;
-        }
-        let (worst_message, worst_score) = self.results.last().unwrap();
-        score_correct_order(score, correct, *worst_score, worst_message.correct) == Ordering::Less
     }
 
     fn merge(mut self, other: Self) -> Self {
         self.scored += other.scored;
-        for message in other.results {
-            self.push_scored(message);
+        for message in other.heap {
+            self.push_scored(message.0);
         }
         self
     }
 
     fn into_sorted_vec(self) -> Vec<ScoredMessage> {
-        self.results
+        let mut results: Vec<_> = self.heap.into_iter().map(|message| message.0).collect();
+        results.sort_by(scored_message_order);
+        results
     }
 }
 
