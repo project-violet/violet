@@ -8,7 +8,7 @@ use std::sync::{LazyLock, RwLock};
 use std::time::{Duration, Instant};
 
 use itertools::Itertools;
-use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
+use rayon::iter::{IntoParallelIterator, IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
 
 use crate::binding::{CachedPartialRatio, CachedRatio, SimilarityMethod};
@@ -20,7 +20,8 @@ static MESSAGES: LazyLock<RwLock<MessageStore>> =
 
 #[derive(Default)]
 struct MessageStore {
-    messages: Vec<Message>,
+    messages: Vec<MessageMeta>,
+    message_bytes: Vec<u8>,
     by_article: HashMap<u32, Vec<MessageIndex>>,
 }
 
@@ -36,6 +37,37 @@ struct SearchStats {
 }
 
 type MessageIndex = u32;
+
+#[derive(Clone, Copy)]
+struct TextRange {
+    offset: u64,
+    len: u32,
+}
+
+#[derive(Clone, Copy)]
+struct MessageMeta {
+    article_id: u32,
+    page: u32,
+    message: TextRange,
+
+    #[cfg(feature = "raw")]
+    raw: Option<TextRange>,
+
+    correct: f32,
+    rects: [f32; 4],
+}
+
+struct StoredMessage<'a> {
+    article_id: u32,
+    page: u32,
+    message: &'a str,
+
+    #[cfg(feature = "raw")]
+    raw: Option<&'a str>,
+
+    correct: f32,
+    rects: [f32; 4],
+}
 
 #[derive(Clone, Copy)]
 struct ScoredMessage {
@@ -115,16 +147,16 @@ impl TopScoredMessages {
         }
     }
 
-    fn push_exact(&mut self, index: usize, message: &Message, score: f64) {
+    fn push_exact(&mut self, index: usize, correct: f32, score: f64) {
         self.scored += 1;
         self.exact_scored += 1;
-        self.push_top(index, message.correct, score);
+        self.push_top(index, correct, score);
     }
 
-    fn push_fuzzy(&mut self, index: usize, message: &Message, score: f64) {
+    fn push_fuzzy(&mut self, index: usize, correct: f32, score: f64) {
         self.scored += 1;
         self.fuzzy_scored += 1;
-        self.push_top(index, message.correct, score);
+        self.push_top(index, correct, score);
     }
 
     fn push_top(&mut self, index: usize, correct: f32, score: f64) {
@@ -220,14 +252,56 @@ impl MessageStore {
 
     fn extend(&mut self, messages: Vec<Message>) {
         self.messages.reserve(messages.len());
+        self.message_bytes
+            .reserve(messages.iter().map(Message::text_len).sum());
         for message in messages {
             let index = MessageIndex::try_from(self.messages.len()).expect("too many messages");
             self.by_article
                 .entry(message.article_id)
                 .or_default()
                 .push(index);
-            self.messages.push(message);
+            let message_range = self.push_text(&message.message);
+            #[cfg(feature = "raw")]
+            let raw_range = message.raw.as_deref().map(|raw| self.push_text(raw));
+            self.messages.push(MessageMeta {
+                article_id: message.article_id,
+                page: message.page,
+                message: message_range,
+                #[cfg(feature = "raw")]
+                raw: raw_range,
+                correct: message.correct,
+                rects: message.rects,
+            });
         }
+    }
+
+    fn push_text(&mut self, text: &str) -> TextRange {
+        let offset = u64::try_from(self.message_bytes.len()).expect("message arena too large");
+        let len = u32::try_from(text.len()).expect("message text too large");
+        self.message_bytes.extend_from_slice(text.as_bytes());
+        TextRange { offset, len }
+    }
+
+    fn message_at(&self, index: usize) -> StoredMessage<'_> {
+        let meta = self.messages[index];
+        StoredMessage {
+            article_id: meta.article_id,
+            page: meta.page,
+            message: self.text(meta.message),
+            #[cfg(feature = "raw")]
+            raw: meta.raw.map(|raw| self.text(raw)),
+            correct: meta.correct,
+            rects: meta.rects,
+        }
+    }
+
+    fn text(&self, range: TextRange) -> &str {
+        let offset = usize::try_from(range.offset).expect("message offset too large");
+        let len = usize::try_from(range.len).expect("message length too large");
+        let bytes = &self.message_bytes[offset..offset + len];
+        // Text ranges are copied from Rust strings during load, so they remain
+        // valid UTF-8 while avoiding validation on every scanned candidate.
+        unsafe { std::str::from_utf8_unchecked(bytes) }
     }
 }
 
@@ -257,6 +331,20 @@ pub struct Message {
     pub rects: [f32; 4],
 }
 
+impl Message {
+    fn text_len(&self) -> usize {
+        let len = self.message.len();
+        #[cfg(feature = "raw")]
+        {
+            len + self.raw.as_ref().map_or(0, String::len)
+        }
+        #[cfg(not(feature = "raw"))]
+        {
+            len
+        }
+    }
+}
+
 #[derive(Serialize, Clone)]
 #[cfg_attr(not(feature = "raw"), derive(Copy))]
 pub struct MessageResult {
@@ -280,15 +368,15 @@ pub struct MessageResult {
     raw: String,
 }
 
-impl From<&Message> for MessageResult {
-    fn from(msg: &Message) -> Self {
+impl From<&StoredMessage<'_>> for MessageResult {
+    fn from(msg: &StoredMessage<'_>) -> Self {
         MessageResult {
             id: msg.article_id,
             page: msg.page,
             correct: msg.correct,
             rects: msg.rects,
             #[cfg(feature = "raw")]
-            raw: msg.raw.clone().unwrap_or_default(),
+            raw: msg.raw.unwrap_or_default().to_string(),
             score: Default::default(),
         }
     }
@@ -439,7 +527,7 @@ fn search_with_profile(
     scope: String,
     candidates: impl FnOnce(&MessageStore) -> Vec<MessageIndex>,
     scorer: impl SimilarityMethod,
-    filter: impl Fn(&Message) -> bool + Sync + Send,
+    filter: impl for<'m> Fn(&StoredMessage<'m>) -> bool + Sync + Send,
     take: usize,
 ) -> Vec<MessageResult> {
     search_with_profile_inner(
@@ -454,8 +542,7 @@ fn search_with_profile(
             let store = MESSAGES.read().unwrap();
             let candidates = candidates(&store);
             let candidate_elapsed = candidate_start.elapsed();
-            let (results, stats) =
-                search_indices(&store.messages, &candidates, scorer, filter, take);
+            let (results, stats) = search_indices(&store, &candidates, scorer, filter, take);
             (results, stats, candidate_elapsed)
         },
     )
@@ -468,7 +555,7 @@ fn search_all_with_profile(
     converted_query: &str,
     scope: String,
     scorer: impl SimilarityMethod,
-    filter: impl Fn(&Message) -> bool + Sync + Send,
+    filter: impl for<'m> Fn(&StoredMessage<'m>) -> bool + Sync + Send,
     take: usize,
 ) -> Vec<MessageResult> {
     search_with_profile_inner(
@@ -482,7 +569,7 @@ fn search_all_with_profile(
             let candidate_start = Instant::now();
             let store = MESSAGES.read().unwrap();
             let candidate_elapsed = candidate_start.elapsed();
-            let (results, stats) = search_all(&store.messages, scorer, filter, take);
+            let (results, stats) = search_all(&store, scorer, filter, take);
             (results, stats, candidate_elapsed)
         },
     )
@@ -541,15 +628,19 @@ fn search_with_profile_inner(
 }
 
 fn search_all(
-    messages: &[Message],
+    store: &MessageStore,
     scorer: impl SimilarityMethod,
-    filter: impl Fn(&Message) -> bool + Sync + Send,
+    filter: impl for<'m> Fn(&StoredMessage<'m>) -> bool + Sync + Send,
     take: usize,
 ) -> (Vec<MessageResult>, SearchStats) {
     search(
-        messages.len(),
-        || messages.par_iter().enumerate(),
-        messages,
+        store.messages.len(),
+        || {
+            (0..store.messages.len())
+                .into_par_iter()
+                .map(|index| index as MessageIndex)
+        },
+        store,
         scorer,
         filter,
         take,
@@ -557,21 +648,16 @@ fn search_all(
 }
 
 fn search_indices(
-    messages: &[Message],
+    store: &MessageStore,
     candidates: &[MessageIndex],
     scorer: impl SimilarityMethod,
-    filter: impl Fn(&Message) -> bool + Sync + Send,
+    filter: impl for<'m> Fn(&StoredMessage<'m>) -> bool + Sync + Send,
     take: usize,
 ) -> (Vec<MessageResult>, SearchStats) {
     search(
         candidates.len(),
-        || {
-            candidates.par_iter().map(|&index| {
-                let index = index as usize;
-                (index, &messages[index])
-            })
-        },
-        messages,
+        || candidates.par_iter().copied(),
+        store,
         scorer,
         filter,
         take,
@@ -581,24 +667,25 @@ fn search_indices(
 fn search<'a, S, F, I, MakeIter>(
     candidates_len: usize,
     make_iter: MakeIter,
-    messages: &'a [Message],
+    store: &'a MessageStore,
     scorer: S,
     filter: F,
     take: usize,
 ) -> (Vec<MessageResult>, SearchStats)
 where
     S: SimilarityMethod,
-    F: Fn(&Message) -> bool + Sync + Send,
-    I: ParallelIterator<Item = (usize, &'a Message)>,
+    F: for<'m> Fn(&StoredMessage<'m>) -> bool + Sync + Send,
+    I: ParallelIterator<Item = MessageIndex>,
     MakeIter: Fn() -> I,
 {
     let score_start = Instant::now();
     let top_results = if scorer.exact_matches_dominate_fuzzy() {
-        let exact_results = collect_exact_results(make_iter(), &scorer, &filter, take);
+        let exact_results = collect_exact_results(store, make_iter(), &scorer, &filter, take);
         if exact_results.len() >= take {
             exact_results
         } else {
             exact_results.merge(collect_fuzzy_results(
+                store,
                 make_iter(),
                 &scorer,
                 &filter,
@@ -607,7 +694,7 @@ where
             ))
         }
     } else {
-        collect_fuzzy_results(make_iter(), &scorer, &filter, take, false)
+        collect_fuzzy_results(store, make_iter(), &scorer, &filter, take, false)
     };
     let score_elapsed = score_start.elapsed();
     let scored_len = top_results.scored;
@@ -623,7 +710,8 @@ where
         .into_iter()
         .take(take)
         .map(|scored| {
-            let mut result: MessageResult = (&messages[scored.index]).into();
+            let message = store.message_at(scored.index);
+            let mut result: MessageResult = (&message).into();
             result.score = scored.score;
             result
         })
@@ -644,7 +732,8 @@ where
     )
 }
 
-fn collect_exact_results<'a, S, F, I>(
+fn collect_exact_results<S, F, I>(
+    store: &MessageStore,
     candidates: I,
     scorer: &S,
     filter: &F,
@@ -652,16 +741,18 @@ fn collect_exact_results<'a, S, F, I>(
 ) -> TopScoredMessages
 where
     S: SimilarityMethod,
-    F: Fn(&Message) -> bool + Sync + Send,
-    I: ParallelIterator<Item = (usize, &'a Message)>,
+    F: for<'m> Fn(&StoredMessage<'m>) -> bool + Sync + Send,
+    I: ParallelIterator<Item = MessageIndex>,
 {
     candidates
         .fold(
             || TopScoredMessages::new(take),
-            |mut top_results, (index, message)| {
-                if filter(message) {
-                    if let Some(score) = scorer.exact_similarity(&message.message) {
-                        top_results.push_exact(index, message, score);
+            |mut top_results, index| {
+                let index = index as usize;
+                let message = store.message_at(index);
+                if filter(&message) {
+                    if let Some(score) = scorer.exact_similarity(message.message) {
+                        top_results.push_exact(index, message.correct, score);
                     }
                 }
                 top_results
@@ -673,7 +764,8 @@ where
         )
 }
 
-fn collect_fuzzy_results<'a, S, F, I>(
+fn collect_fuzzy_results<S, F, I>(
+    store: &MessageStore,
     candidates: I,
     scorer: &S,
     filter: &F,
@@ -682,8 +774,8 @@ fn collect_fuzzy_results<'a, S, F, I>(
 ) -> TopScoredMessages
 where
     S: SimilarityMethod,
-    F: Fn(&Message) -> bool + Sync + Send,
-    I: ParallelIterator<Item = (usize, &'a Message)>,
+    F: for<'m> Fn(&StoredMessage<'m>) -> bool + Sync + Send,
+    I: ParallelIterator<Item = MessageIndex>,
 {
     let global_cutoff = GlobalScoreCutoff::default();
 
@@ -695,22 +787,24 @@ where
     candidates
         .fold(
             || TopScoredMessages::new(take),
-            |mut top_results, (index, message)| {
-                if filter(message) {
-                    let exact_score = scorer.exact_similarity(&message.message);
+            |mut top_results, index| {
+                let index = index as usize;
+                let message = store.message_at(index);
+                if filter(&message) {
+                    let exact_score = scorer.exact_similarity(message.message);
                     if skip_exact && exact_score.is_some() {
                         return top_results;
                     }
 
                     if let Some(score) = exact_score {
-                        top_results.push_exact(index, message, score);
+                        top_results.push_exact(index, message.correct, score);
                         top_results.publish_score_cutoff(&global_cutoff);
                     } else {
                         let score = scorer.similarity(
-                            &message.message,
+                            message.message,
                             top_results.score_cutoff_with_global(&global_cutoff),
                         );
-                        top_results.push_fuzzy(index, message, score);
+                        top_results.push_fuzzy(index, message.correct, score);
                         top_results.publish_score_cutoff(&global_cutoff);
                     }
                 }
@@ -806,7 +900,10 @@ pub fn search_article(id: u32) -> Vec<MessageResult> {
         .get(&id)
         .into_iter()
         .flatten()
-        .map(|&index| (&store.messages[index as usize]).into())
+        .map(|&index| {
+            let message = store.message_at(index as usize);
+            (&message).into()
+        })
         .collect()
 }
 
@@ -861,6 +958,18 @@ mod tests {
 
     fn reset_messages(messages: Vec<Message>) {
         *MESSAGES.write().unwrap() = MessageStore::from_messages(messages);
+    }
+
+    #[test]
+    fn message_store_packs_messages_into_contiguous_bytes() {
+        let store = MessageStore::from_messages(vec![
+            test_message(10, "first"),
+            test_message(20, "second"),
+        ]);
+
+        assert_eq!(store.message_bytes, b"firstsecond");
+        assert_eq!(store.message_at(0).message, "first");
+        assert_eq!(store.message_at(1).message, "second");
     }
 
     #[test]
@@ -939,14 +1048,13 @@ mod tests {
 
     #[test]
     fn skips_fuzzy_scoring_when_exact_matches_fill_take() {
-        let candidates = vec![
+        let store = MessageStore::from_messages(vec![
             test_message(1, "prefixneedle"),
             test_message(2, "suffixneedle"),
             test_message(3, "othercandidate"),
-        ];
+        ]);
 
-        let (_results, stats) =
-            search_all(&candidates, CachedPartialRatio::from("needle"), |_| true, 2);
+        let (_results, stats) = search_all(&store, CachedPartialRatio::from("needle"), |_| true, 2);
 
         assert_eq!(stats.exact_scored, 2);
         assert_eq!(stats.fuzzy_scored, 0);

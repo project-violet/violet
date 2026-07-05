@@ -118,21 +118,33 @@ That layout avoided string duplication, but it still created one heap allocation
 per message plus atomic reference-count traffic whenever a result entered the
 top-k heap.
 
-The store was changed to keep messages in one contiguous `Vec<Message>` and to
-store per-article candidates as compact message indexes. The top-k heap now
-keeps only the message index, score, and correctness value, then resolves the
-index back to a `Message` only when producing final API results.
+The store was first changed to keep messages in one contiguous `Vec<Message>`
+and to store per-article candidates as compact message indexes. The top-k heap
+now keeps only the message index, score, and correctness value, then resolves
+the index only when producing final API results.
 
-The `Message` payload was also compacted for the default build:
+That still left one heap allocation per `Message.message` string. The next
+step packs message text into a single byte arena:
+
+```text
+Vec<MessageMeta>      // article id, page, text range, score metadata
+Vec<u8> message_bytes // all normalized message text
+```
+
+The hot search loop now carries compact message indexes, builds a temporary
+`StoredMessage` view from `MessageMeta + message_bytes`, and passes the borrowed
+`&str` to RapidFuzz. API JSON field names and route shapes are unchanged.
+
+The stored payload was also compacted for the default build:
 
 - `MessageRaw` is present only with the `raw` feature.
 - article id and page are stored as `u32`.
 - OCR correctness and rectangle coordinates are stored as `f32`.
 
 This targets both startup memory and full-scan search speed. Startup avoids
-millions of per-message `Arc` allocations, while search avoids pointer chasing,
-atomic `Arc` clones in the top-k heap, and some memory bandwidth from oversized
-metadata. API JSON field names and route shapes are unchanged.
+millions of per-message `Arc` allocations and steady-state message `String`
+headers/allocations. Search avoids pointer chasing, atomic `Arc` clones in the
+top-k heap, and some memory bandwidth from oversized metadata.
 
 ### Prefix/suffix edge upper bound
 
