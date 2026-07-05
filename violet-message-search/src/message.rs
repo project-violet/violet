@@ -34,6 +34,72 @@ struct SearchStats {
 
 type ScoredMessage = (Arc<Message>, f64);
 
+struct TopScoredMessages {
+    results: Vec<ScoredMessage>,
+    scored: usize,
+    take: usize,
+}
+
+impl TopScoredMessages {
+    fn new(take: usize) -> Self {
+        Self {
+            results: Vec::with_capacity(take),
+            scored: 0,
+            take,
+        }
+    }
+
+    fn push(&mut self, message: &Arc<Message>, score: f64) {
+        self.scored += 1;
+        if self.take == 0 {
+            return;
+        }
+        if !self.is_top_result(score, message.correct) {
+            return;
+        }
+
+        self.push_scored((message.clone(), score));
+    }
+
+    fn push_scored(&mut self, message: ScoredMessage) {
+        if self.take == 0 {
+            return;
+        }
+        if !self.is_top_result(message.1, message.0.correct) {
+            return;
+        }
+
+        let index = self
+            .results
+            .binary_search_by(|existing| scored_message_order(existing, &message))
+            .unwrap_or_else(|index| index);
+        self.results.insert(index, message);
+        if self.results.len() > self.take {
+            self.results.pop();
+        }
+    }
+
+    fn is_top_result(&self, score: f64, correct: f64) -> bool {
+        if self.results.len() < self.take {
+            return true;
+        }
+        let (worst_message, worst_score) = self.results.last().unwrap();
+        score_correct_order(score, correct, *worst_score, worst_message.correct) == Ordering::Less
+    }
+
+    fn merge(mut self, other: Self) -> Self {
+        self.scored += other.scored;
+        for message in other.results {
+            self.push_scored(message);
+        }
+        self
+    }
+
+    fn into_sorted_vec(self) -> Vec<ScoredMessage> {
+        self.results
+    }
+}
+
 impl MessageStore {
     #[cfg(test)]
     fn from_messages(messages: Vec<Message>) -> Self {
@@ -295,16 +361,26 @@ fn search(
 ) -> (Vec<MessageResult>, SearchStats) {
     let candidates_len = candidates.len();
     let score_start = Instant::now();
-    let mut results: Vec<ScoredMessage> = candidates
+    let top_results = candidates
         .par_iter()
-        .filter(|message| filter(message.as_ref()))
-        .map(|message| (message.clone(), scorer.similarity(&message.message)))
-        .collect();
+        .fold(
+            || TopScoredMessages::new(take),
+            |mut top_results, message| {
+                if filter(message.as_ref()) {
+                    top_results.push(message, scorer.similarity(&message.message));
+                }
+                top_results
+            },
+        )
+        .reduce(
+            || TopScoredMessages::new(take),
+            |left, right| left.merge(right),
+        );
     let score_elapsed = score_start.elapsed();
-    let scored_len = results.len();
+    let scored_len = top_results.scored;
 
     let sort_start = Instant::now();
-    retain_top_results(&mut results, take);
+    let results = top_results.into_sorted_vec();
     let sort_elapsed = sort_start.elapsed();
 
     let take_start = Instant::now();
@@ -331,6 +407,7 @@ fn search(
     )
 }
 
+#[cfg(test)]
 fn retain_top_results(results: &mut Vec<ScoredMessage>, take: usize) {
     if take == 0 {
         results.clear();
@@ -347,11 +424,29 @@ fn scored_message_order(
     (amsg, ascore): &ScoredMessage,
     (bmsg, bscore): &ScoredMessage,
 ) -> Ordering {
-    let ord = ascore.partial_cmp(bscore).unwrap();
+    score_correct_order(*ascore, amsg.correct, *bscore, bmsg.correct)
+}
+
+fn score_correct_order(
+    ascore: f64,
+    acorrect: f64,
+    bscore: f64,
+    bcorrect: f64,
+) -> Ordering {
+    let ord = ascore.partial_cmp(&bscore).unwrap();
     match ord {
         Ordering::Greater | Ordering::Less => ord.reverse(),
-        Ordering::Equal => amsg.correct.partial_cmp(&bmsg.correct).unwrap().reverse(),
+        Ordering::Equal => acorrect.partial_cmp(&bcorrect).unwrap().reverse(),
     }
+}
+
+#[cfg(test)]
+fn collect_top_results(results: Vec<ScoredMessage>, take: usize) -> Vec<ScoredMessage> {
+    let mut top_results = TopScoredMessages::new(take);
+    for result in results {
+        top_results.push_scored(result);
+    }
+    top_results.into_sorted_vec()
 }
 
 fn search_profile_enabled() -> bool {
@@ -491,5 +586,66 @@ mod tests {
 
         let article_ids: Vec<_> = results.iter().map(|(message, _)| message.article_id).collect();
         assert_eq!(article_ids, vec![3, 2]);
+    }
+
+    #[test]
+    fn collect_top_results_matches_full_top_k_order() {
+        let results = vec![
+            (test_message_with_correct(1, 0.1), 10.0),
+            (test_message_with_correct(2, 0.2), 20.0),
+            (test_message_with_correct(3, 0.9), 20.0),
+            (test_message_with_correct(4, 0.9), 5.0),
+            (test_message_with_correct(5, 0.8), 30.0),
+        ];
+        let mut full_results = results.clone();
+        retain_top_results(&mut full_results, 3);
+
+        let top_results = collect_top_results(results, 3);
+
+        let full_article_ids: Vec<_> = full_results
+            .iter()
+            .map(|(message, _)| message.article_id)
+            .collect();
+        let top_article_ids: Vec<_> = top_results
+            .iter()
+            .map(|(message, _)| message.article_id)
+            .collect();
+
+        assert_eq!(top_article_ids, full_article_ids);
+    }
+
+    #[test]
+    fn merged_top_results_match_full_top_k_order() {
+        let results = vec![
+            (test_message_with_correct(1, 0.1), 10.0),
+            (test_message_with_correct(2, 0.2), 20.0),
+            (test_message_with_correct(3, 0.9), 20.0),
+            (test_message_with_correct(4, 0.9), 5.0),
+            (test_message_with_correct(5, 0.8), 30.0),
+            (test_message_with_correct(6, 0.7), 25.0),
+        ];
+        let mut full_results = results.clone();
+        retain_top_results(&mut full_results, 3);
+
+        let mut left = TopScoredMessages::new(3);
+        let mut right = TopScoredMessages::new(3);
+        for (message, score) in results.iter().take(3) {
+            left.push(message, *score);
+        }
+        for (message, score) in results.iter().skip(3) {
+            right.push(message, *score);
+        }
+        let top_results = left.merge(right).into_sorted_vec();
+
+        let full_article_ids: Vec<_> = full_results
+            .iter()
+            .map(|(message, _)| message.article_id)
+            .collect();
+        let top_article_ids: Vec<_> = top_results
+            .iter()
+            .map(|(message, _)| message.article_id)
+            .collect();
+
+        assert_eq!(top_article_ids, full_article_ids);
     }
 }
