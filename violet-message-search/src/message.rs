@@ -254,7 +254,7 @@ pub fn search_similar(id: Option<usize>, query: &str, take: usize) -> Vec<Messag
     match id {
         Some(id) => search_with_profile(
             "similar",
-            format!("similar-{id:?}-{converted_query}"),
+            search_cache_key("similar", &format!("{id:?}"), &converted_query, take),
             query,
             &converted_query,
             format!("id={id:?}"),
@@ -265,7 +265,7 @@ pub fn search_similar(id: Option<usize>, query: &str, take: usize) -> Vec<Messag
         ),
         None => search_all_with_profile(
             "similar",
-            format!("similar-{id:?}-{converted_query}"),
+            search_cache_key("similar", &format!("{id:?}"), &converted_query, take),
             query,
             &converted_query,
             format!("id={id:?}"),
@@ -287,7 +287,7 @@ pub fn search_similar_many(ids: &[usize], query: &str, take: usize) -> Vec<Messa
     let scope = format!("ids={}", ids.len());
     search_with_profile(
         "similar-many",
-        format!("similar-many-{id_key}-{converted_query}"),
+        search_cache_key("similar-many", &id_key, &converted_query, take),
         query,
         &converted_query,
         scope,
@@ -304,7 +304,7 @@ pub fn search_partial_contains(id: Option<usize>, query: &str, take: usize) -> V
     match id {
         Some(id) => search_with_profile(
             "contains",
-            format!("contains-{id:?}-{converted_query}"),
+            search_cache_key("contains", &format!("{id:?}"), &converted_query, take),
             query,
             &converted_query,
             format!("id={id:?}"),
@@ -315,7 +315,7 @@ pub fn search_partial_contains(id: Option<usize>, query: &str, take: usize) -> V
         ),
         None => search_all_with_profile(
             "contains",
-            format!("contains-{id:?}-{converted_query}"),
+            search_cache_key("contains", &format!("{id:?}"), &converted_query, take),
             query,
             &converted_query,
             format!("id={id:?}"),
@@ -342,7 +342,7 @@ pub fn search_partial_contains_many(
     let scope = format!("ids={}", ids.len());
     search_with_profile(
         "contains-many",
-        format!("contains-many-{id_key}-{converted_query}"),
+        search_cache_key("contains-many", &id_key, &converted_query, take),
         query,
         &converted_query,
         scope,
@@ -367,6 +367,10 @@ fn normalize_article_ids(ids: &[usize]) -> Vec<usize> {
 
 fn article_ids_cache_key(ids: &[usize]) -> String {
     ids.iter().join(",")
+}
+
+fn search_cache_key(operation: &str, scope: &str, converted_query: &str, take: usize) -> String {
+    format!("{operation}-{scope}-{converted_query}-take={take}")
 }
 
 fn candidate_messages(id: Option<usize>) -> Vec<Arc<Message>> {
@@ -728,6 +732,50 @@ mod tests {
         assert_eq!(article_ids, vec![10, 20]);
     }
 
+    #[test]
+    fn search_cache_distinguishes_take_for_all_search_variants() {
+        let _guard = TEST_LOCK.lock().unwrap();
+        reset_messages(vec![
+            test_message(10, "similarcachetakealpha"),
+            test_message(20, "similarcachetakebeta"),
+            test_message(10, "containscachetakealpha"),
+            test_message(20, "containscachetakebeta"),
+            test_message(10, "similarcachetakemanyalpha"),
+            test_message(20, "similarcachetakemanybeta"),
+            test_message(10, "containscachetakemanyalpha"),
+            test_message(20, "containscachetakemanybeta"),
+        ]);
+
+        assert_eq!(search_similar(None, "similarcachetake", 1).len(), 1);
+        assert_eq!(search_similar(None, "similarcachetake", 2).len(), 2);
+
+        assert_eq!(
+            search_partial_contains(None, "containscachetake", 1).len(),
+            1
+        );
+        assert_eq!(
+            search_partial_contains(None, "containscachetake", 2).len(),
+            2
+        );
+
+        assert_eq!(
+            search_similar_many(&[10, 20], "similarcachetakemany", 1).len(),
+            1
+        );
+        assert_eq!(
+            search_similar_many(&[10, 20], "similarcachetakemany", 2).len(),
+            2
+        );
+
+        assert_eq!(
+            search_partial_contains_many(&[10, 20], "containscachetakemany", 1).len(),
+            1
+        );
+        assert_eq!(
+            search_partial_contains_many(&[10, 20], "containscachetakemany", 2).len(),
+            2
+        );
+    }
     #[test]
     fn retain_top_results_limits_and_preserves_sort_order() {
         let mut results = vec![
