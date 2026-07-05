@@ -150,6 +150,44 @@ def load_target_ids(path: str, args: argparse.Namespace) -> list[str]:
     return normalized
 
 
+def collect_target_ids_from_db(db_path: str, language: str = "korean") -> list[int]:
+    if not os.path.exists(db_path):
+        raise FileNotFoundError(f"DB not found: {db_path}")
+
+    con = sqlite3.connect(db_path)
+    try:
+        rows = con.execute(
+            """
+            select Id
+            from HitomiColumnModel
+            where Language = ?
+              and ExistOnHitomi = 1
+              and Files > 0
+            order by Id
+            """,
+            (language,),
+        )
+        return [int(row[0]) for row in rows]
+    finally:
+        con.close()
+
+
+def refresh_target_ids(
+    path: str = TARGET_IDS_PATH,
+    db_path: str = DEFAULT_DB_PATH,
+    language: str = "korean",
+) -> list[int]:
+    ids = collect_target_ids_from_db(db_path, language)
+    directory = os.path.dirname(os.path.abspath(path))
+    os.makedirs(directory, exist_ok=True)
+    tmp_path = f"{path}.tmp"
+    with open(tmp_path, "w", encoding="utf-8", newline="\n") as output:
+        json.dump(ids, output, ensure_ascii=False)
+        output.write("\n")
+    os.replace(tmp_path, path)
+    return ids
+
+
 def load_expected_file_counts(db_path: str, ids: list[str]) -> dict[str, int]:
     if not os.path.exists(db_path) or not ids:
         return {}
@@ -316,3 +354,40 @@ def print_summary(
     print(f"OCR pipeline time sum: {ocr_sum:.2f}s")
     if pages and ocr_sum:
         print(f"OCR pipeline throughput: {pages / ocr_sum:.2f} pages/s")
+
+
+def parse_work_plan_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Manage violet-ocr work plan files.")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    refresh = subparsers.add_parser(
+        "refresh-target-ids",
+        help="Regenerate works/target_ids.json from the Hitomi metadata DB.",
+    )
+    refresh.add_argument("--target-ids", default=TARGET_IDS_PATH)
+    refresh.add_argument("--db-path", default=DEFAULT_DB_PATH)
+    refresh.add_argument("--language", default="korean")
+
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_work_plan_args()
+    if args.command == "refresh-target-ids":
+        old_count = 0
+        if os.path.exists(args.target_ids):
+            with open(args.target_ids, encoding="utf-8") as input_file:
+                old_count = len(json.load(input_file))
+        ids = refresh_target_ids(args.target_ids, args.db_path, args.language)
+        print(f"target_ids refreshed: {old_count} -> {len(ids)}")
+        if ids:
+            print(f"range: {ids[0]}..{ids[-1]}")
+        print(f"path: {args.target_ids}")
+        print(f"db: {args.db_path}")
+        return 0
+
+    raise ValueError(f"unknown command: {args.command}")
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

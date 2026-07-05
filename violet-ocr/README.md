@@ -9,13 +9,27 @@
 - `run-works-turbo.py`: 선택한 작품을 다운로드하고 TurboOCR로 페이지 OCR을 수행합니다.
 - `start-turboocr.cmd`: 로컬 TurboOCR Docker 컨테이너를 시작하거나 생성한 뒤 준비 상태가 될 때까지 기다립니다.
 - `stop-turboocr.cmd`: 실행 중인 `violet-turboocr` 컨테이너를 중지합니다. 컨테이너와 TensorRT 캐시는 삭제하지 않습니다.
-- `work_plan.py`: 대상 ID 선택, 완료된 작업 스킵, 실패 다운로드 기록, 진행률 출력을 담당합니다.
+- `work_plan.py`: 대상 ID 갱신/선택, 완료된 작업 스킵, 실패 다운로드 기록, 진행률 출력을 담당합니다.
 - `fast_dl_runner.py`: 레포 루트의 `../fast-dl/fast-dl.exe` 다운로더를 실행합니다.
 - `ocr_common.py`: 이미지 정렬, OCR 결과 저장, 텍스트 박스 그룹핑 헬퍼입니다.
 - `trace_writer.py`: Chrome trace JSONL 파일을 기록합니다.
 - `fix_ocr_with_vllm.py`: `raw/` JSON의 `pages[*].dialogues[*].text`를 로컬 vLLM EXAONE 서버로 교정해 `raw-fixed/`에 저장합니다.
 - `vllm-exaone/`: `fix_ocr_with_vllm.py`에서 사용할 EXAONE 3.5 AWQ vLLM 서버 실행/상태 확인 스크립트입니다.
 - `works/target_ids.json`: 기본 대상 ID 목록입니다.
+
+## 대상 ID 갱신
+
+`works/target_ids.json`은 `violet-web/packages/backend/data/data.db`의 `HitomiColumnModel`에서 한국어 작품만 다시 뽑아 갱신할 수 있습니다.
+
+```powershell
+python .\work_plan.py refresh-target-ids
+```
+
+기본 조건은 `Language = 'korean'`, `ExistOnHitomi = 1`, `Files > 0`이며, `Id` 오름차순으로 저장합니다. 다른 DB를 쓰려면 `--db-path`를 지정합니다.
+
+```powershell
+python .\work_plan.py refresh-target-ids --db-path ..\violet-web\packages\backend\data\data.db
+```
 
 ## 요구 사항
 

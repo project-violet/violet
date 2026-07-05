@@ -3,6 +3,8 @@ import sys
 import tempfile
 import unittest
 import importlib.util
+import json
+import sqlite3
 from pathlib import Path
 
 
@@ -66,6 +68,47 @@ class OcrRuntimeTests(unittest.TestCase):
         self.assertEqual(plan.download_ids, [])
         self.assertEqual(len(plan.existing_downloads), 1)
         self.assertEqual(plan.existing_downloads[0].work_id, "123")
+
+    def test_refresh_target_ids_uses_korean_existing_hitomi_rows_with_files(self):
+        from work_plan import refresh_target_ids
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            db_path = tmp_path / "data.db"
+            target_path = tmp_path / "target_ids.json"
+            con = sqlite3.connect(db_path)
+            try:
+                con.execute(
+                    """
+                    create table HitomiColumnModel (
+                        Id integer primary key,
+                        Language text,
+                        ExistOnHitomi integer,
+                        Files integer
+                    )
+                    """
+                )
+                con.executemany(
+                    """
+                    insert into HitomiColumnModel (Id, Language, ExistOnHitomi, Files)
+                    values (?, ?, ?, ?)
+                    """,
+                    [
+                        (30, "korean", 1, 5),
+                        (10, "korean", 1, 1),
+                        (20, "english", 1, 3),
+                        (40, "korean", 0, 4),
+                        (50, "korean", 1, 0),
+                    ],
+                )
+                con.commit()
+            finally:
+                con.close()
+
+            ids = refresh_target_ids(str(target_path), str(db_path))
+
+            self.assertEqual(ids, [10, 30])
+            self.assertEqual(json.loads(target_path.read_text(encoding="utf-8")), [10, 30])
 
     def test_fast_dl_runner_builds_go_command(self):
         from fast_dl_runner import build_fast_dl_command
