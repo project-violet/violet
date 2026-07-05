@@ -1,4 +1,5 @@
 violet-graph/*.csv
 violet-graph/*.exe
+violet-graph/*.zip
 violet-graph/author_similarity.json
 violet-graph/.gocache/

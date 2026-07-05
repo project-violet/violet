@@ -130,10 +130,7 @@ mod tests {
         ];
 
         for (src, tar) in cases {
-            assert_eq!(
-                HangulConverter::disassembly(src as u32).as_deref(),
-                tar
-            );
+            assert_eq!(HangulConverter::disassembly(src as u32).as_deref(), tar);
         }
     }
 
@@ -147,10 +144,7 @@ mod tests {
         ];
 
         for (src, tar) in cases {
-            assert_eq!(
-                HangulConverter::disassembly(src as u32).as_deref(),
-                tar
-            );
+            assert_eq!(HangulConverter::disassembly(src as u32).as_deref(), tar);
         }
     }
 
@@ -164,10 +158,7 @@ mod tests {
         ];
 
         for (src, tar) in cases {
-            assert_eq!(
-                HangulConverter::disassembly(src as u32).as_deref(),
-                tar
-            );
+            assert_eq!(HangulConverter::disassembly(src as u32).as_deref(), tar);
         }
     }
 
@@ -181,10 +172,7 @@ mod tests {
         ];
 
         for (src, tar) in cases {
-            assert_eq!(
-                HangulConverter::disassembly(src as u32).as_deref(),
-                tar
-            );
+            assert_eq!(HangulConverter::disassembly(src as u32).as_deref(), tar);
         }
     }
 
@@ -199,16 +187,16 @@ mod tests {
         ];
 
         for (src, tar) in cases {
-            assert_eq!(
-                HangulConverter::disassembly(src as u32).as_deref(),
-                tar
-            );
+            assert_eq!(HangulConverter::disassembly(src as u32).as_deref(), tar);
         }
     }
 
     #[test]
     fn keeps_unknown_characters_in_total_disassembly() {
         assert_eq!(HangulConverter::disassembly('A' as u32), None);
-        assert_eq!(HangulConverter::total_disassembly("내\u{11AB}은 A"), "sosdms A");
+        assert_eq!(
+            HangulConverter::total_disassembly("내\u{11AB}은 A"),
+            "sosdms A"
+        );
     }
 }

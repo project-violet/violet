@@ -43,19 +43,38 @@ function getTimeoutMs(statusCheck = false): number {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_TIMEOUT_MS;
 }
 
+export function buildFscmSearchUrl(
+  baseUrl: string,
+  mode: MessageSearchMode,
+  query: string,
+  articleId: string | null = null,
+  limit?: number,
+): string {
+  const route = articleId
+    ? `${mode === 'similar' ? 'wsimilar' : 'wcontains'}/${encodeURIComponent(articleId)}`
+    : mode;
+  const url = new URL(`${baseUrl}/${route}/${encodeURIComponent(query)}`);
+  if (limit !== undefined) {
+    url.searchParams.set('limit', String(limit));
+  }
+  return url.toString();
+}
+
+interface FetchFscmOptions {
+  statusCheck?: boolean;
+  limit?: number;
+}
+
 async function fetchFscm(
   baseUrl: string,
   mode: MessageSearchMode,
   query: string,
   articleId: string | null = null,
-  statusCheck = false,
+  options: FetchFscmOptions = {},
 ): Promise<unknown> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), getTimeoutMs(statusCheck));
-  const route = articleId
-    ? `${mode === 'similar' ? 'wsimilar' : 'wcontains'}/${encodeURIComponent(articleId)}`
-    : mode;
-  const upstreamUrl = `${baseUrl}/${route}/${encodeURIComponent(query)}`;
+  const timeout = setTimeout(() => controller.abort(), getTimeoutMs(options.statusCheck ?? false));
+  const upstreamUrl = buildFscmSearchUrl(baseUrl, mode, query, articleId, options.limit);
 
   try {
     const response = await fetch(upstreamUrl, { signal: controller.signal });
@@ -187,7 +206,7 @@ messageSearchRouter.get('/', async (req, res) => {
   }
 
   try {
-    const raw = await fetchFscm(baseUrl, mode, q, articleId);
+    const raw = await fetchFscm(baseUrl, mode, q, articleId, { limit });
 
     if (!Array.isArray(raw)) {
       res.status(502).json({ error: 'fscm returned an invalid response.' });
@@ -221,7 +240,7 @@ messageSearchRouter.get('/status', async (req, res) => {
   }
 
   try {
-    const raw = await fetchFscm(baseUrl, 'contains', 'test', null, true);
+    const raw = await fetchFscm(baseUrl, 'contains', 'test', null, { statusCheck: true });
     if (!Array.isArray(raw)) {
       const response: MessageSearchStatusResponse = {
         ok: false,
