@@ -13,6 +13,10 @@ pub trait SimilarityMethod: Sync {
         None
     }
 
+    fn exact_matches_dominate_fuzzy(&self) -> bool {
+        false
+    }
+
     fn similarity(&self, message: &str, score_cutoff: f64) -> f64;
 }
 
@@ -68,6 +72,10 @@ impl CachedPartialRatio {
 }
 
 impl SimilarityMethod for CachedPartialRatio {
+    fn exact_matches_dominate_fuzzy(&self) -> bool {
+        true
+    }
+
     fn exact_similarity(&self, message: &str) -> Option<f64> {
         if !self.query.is_empty() && message.contains(&self.query) {
             Some(100.0)

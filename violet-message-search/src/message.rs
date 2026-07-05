@@ -148,6 +148,10 @@ impl TopScoredMessages {
             .unwrap_or(0.0)
     }
 
+    fn len(&self) -> usize {
+        self.heap.len()
+    }
+
     fn merge(mut self, other: Self) -> Self {
         self.scored += other.scored;
         self.exact_scored += other.exact_scored;
@@ -504,29 +508,16 @@ fn search(
 ) -> (Vec<MessageResult>, SearchStats) {
     let candidates_len = candidates.len();
     let score_start = Instant::now();
-    // Rayon splits the slice into worker-local chunks. Each fold builds a
-    // local top-k heap, then reduce merges those local heaps into the final
-    // top-k. The cutoff passed to RapidFuzz is therefore local to each worker.
-    let top_results = candidates
-        .par_iter()
-        .fold(
-            || TopScoredMessages::new(take),
-            |mut top_results, message| {
-                if filter(message.as_ref()) {
-                    if let Some(score) = scorer.exact_similarity(&message.message) {
-                        top_results.push_exact(message, score);
-                    } else {
-                        let score = scorer.similarity(&message.message, top_results.score_cutoff());
-                        top_results.push_fuzzy(message, score);
-                    }
-                }
-                top_results
-            },
-        )
-        .reduce(
-            || TopScoredMessages::new(take),
-            |left, right| left.merge(right),
-        );
+    let top_results = if scorer.exact_matches_dominate_fuzzy() {
+        let exact_results = collect_exact_results(candidates, &scorer, &filter, take);
+        if exact_results.len() >= take {
+            exact_results
+        } else {
+            exact_results.merge(collect_fuzzy_results(candidates, &scorer, &filter, take, true))
+        }
+    } else {
+        collect_fuzzy_results(candidates, &scorer, &filter, take, false)
+    };
     let score_elapsed = score_start.elapsed();
     let scored_len = top_results.scored;
     let exact_scored = top_results.exact_scored;
@@ -560,6 +551,76 @@ fn search(
             take_elapsed,
         },
     )
+}
+
+fn collect_exact_results<S, F>(
+    candidates: &[Arc<Message>],
+    scorer: &S,
+    filter: &F,
+    take: usize,
+) -> TopScoredMessages
+where
+    S: SimilarityMethod,
+    F: Fn(&Message) -> bool + Sync + Send,
+{
+    candidates
+        .par_iter()
+        .fold(
+            || TopScoredMessages::new(take),
+            |mut top_results, message| {
+                if filter(message.as_ref()) {
+                    if let Some(score) = scorer.exact_similarity(&message.message) {
+                        top_results.push_exact(message, score);
+                    }
+                }
+                top_results
+            },
+        )
+        .reduce(
+            || TopScoredMessages::new(take),
+            |left, right| left.merge(right),
+        )
+}
+
+fn collect_fuzzy_results<S, F>(
+    candidates: &[Arc<Message>],
+    scorer: &S,
+    filter: &F,
+    take: usize,
+    skip_exact: bool,
+) -> TopScoredMessages
+where
+    S: SimilarityMethod,
+    F: Fn(&Message) -> bool + Sync + Send,
+{
+    // Rayon splits the slice into worker-local chunks. Each fold builds a
+    // local top-k heap, then reduce merges those local heaps into the final
+    // top-k. The cutoff passed to RapidFuzz is therefore local to each worker.
+    candidates
+        .par_iter()
+        .fold(
+            || TopScoredMessages::new(take),
+            |mut top_results, message| {
+                if filter(message.as_ref()) {
+                    let exact_score = scorer.exact_similarity(&message.message);
+                    if skip_exact && exact_score.is_some() {
+                        return top_results;
+                    }
+
+                    if let Some(score) = exact_score {
+                        top_results.push_exact(message, score);
+                    } else {
+                        let score = scorer.similarity(&message.message, top_results.score_cutoff());
+                        top_results.push_fuzzy(message, score);
+                    }
+                }
+                top_results
+            },
+        )
+        .reduce(
+            || TopScoredMessages::new(take),
+            |left, right| left.merge(right),
+        )
 }
 
 #[cfg(test)]
@@ -776,6 +837,26 @@ mod tests {
             2
         );
     }
+
+    #[test]
+    fn skips_fuzzy_scoring_when_exact_matches_fill_take() {
+        let candidates = vec![
+            Arc::new(test_message(1, "prefixneedle")),
+            Arc::new(test_message(2, "suffixneedle")),
+            Arc::new(test_message(3, "othercandidate")),
+        ];
+
+        let (_results, stats) = search(
+            &candidates,
+            CachedPartialRatio::from("needle"),
+            |_| true,
+            2,
+        );
+
+        assert_eq!(stats.exact_scored, 2);
+        assert_eq!(stats.fuzzy_scored, 0);
+    }
+
     #[test]
     fn retain_top_results_limits_and_preserves_sort_order() {
         let mut results = vec![
