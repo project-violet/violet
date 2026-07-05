@@ -10,8 +10,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"sync"
-	"time"
 )
 
 type serveOptions struct {
@@ -21,29 +19,12 @@ type serveOptions struct {
 }
 
 type keywordGraphServer struct {
-	index        keywordIndex
-	workSetCache *workSetCache
+	index keywordIndex
 }
 
 type workSetRequest struct {
 	IDs []string `json:"ids"`
 }
-
-type workSetCache struct {
-	mu      sync.Mutex
-	ttl     time.Duration
-	entries map[string]workSetCacheEntry
-}
-
-type workSetCacheEntry struct {
-	work      relatedWork
-	createdAt time.Time
-}
-
-const (
-	workSetCacheTTL        = 10 * time.Minute
-	workSetCacheMaxEntries = 128
-)
 
 func runServe(args []string) error {
 	opts := parseServeFlags(args)
@@ -71,13 +52,7 @@ func parseServeFlags(args []string) serveOptions {
 }
 
 func newKeywordGraphServer(rows []keywordRow) http.Handler {
-	return &keywordGraphServer{
-		index: newKeywordIndex(rows),
-		workSetCache: &workSetCache{
-			ttl:     workSetCacheTTL,
-			entries: make(map[string]workSetCacheEntry),
-		},
-	}
+	return &keywordGraphServer{index: newKeywordIndex(rows)}
 }
 
 func (server *keywordGraphServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -183,29 +158,13 @@ func (server *keywordGraphServer) serveWorkSet(w http.ResponseWriter, r *http.Re
 	if len(ids) > 5000 {
 		ids = ids[:5000]
 	}
-
-	cacheKey := workSetCacheKey(ids)
-	if work, ok := server.workSetCache.get(cacheKey); ok {
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.Header().Set("Cache-Control", "no-store")
-		w.Header().Set("X-Violet-Graph-Cache", "hit")
-		encoder := json.NewEncoder(w)
-		encoder.SetIndent("", "  ")
-		if err := encoder.Encode(work); err != nil {
-			writeJSONError(w, http.StatusInternalServerError, err)
-		}
-		return
-	}
-
 	work, ok := findWorkSetFromIndex(server.index, ids)
 	if !ok {
 		writeJSONError(w, http.StatusNotFound, fmt.Errorf("works not found"))
 		return
 	}
-	server.workSetCache.set(cacheKey, work)
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-store")
-	w.Header().Set("X-Violet-Graph-Cache", "miss")
 	encoder := json.NewEncoder(w)
 	encoder.SetIndent("", "  ")
 	if err := encoder.Encode(work); err != nil {
@@ -482,47 +441,6 @@ func normalizeWorkSetIDs(rawIDs []string) []string {
 		ids = append(ids, id)
 	}
 	return ids
-}
-
-func workSetCacheKey(ids []string) string {
-	return strings.Join(ids, "\x00")
-}
-
-func (cache *workSetCache) get(key string) (relatedWork, bool) {
-	if cache == nil {
-		return relatedWork{}, false
-	}
-	cache.mu.Lock()
-	defer cache.mu.Unlock()
-
-	entry, ok := cache.entries[key]
-	if !ok {
-		return relatedWork{}, false
-	}
-	if time.Since(entry.createdAt) > cache.ttl {
-		delete(cache.entries, key)
-		return relatedWork{}, false
-	}
-	return entry.work, true
-}
-
-func (cache *workSetCache) set(key string, work relatedWork) {
-	if cache == nil {
-		return
-	}
-	cache.mu.Lock()
-	defer cache.mu.Unlock()
-
-	if len(cache.entries) >= workSetCacheMaxEntries {
-		for existingKey := range cache.entries {
-			delete(cache.entries, existingKey)
-			break
-		}
-	}
-	cache.entries[key] = workSetCacheEntry{
-		work:      work,
-		createdAt: time.Now(),
-	}
 }
 
 var keywordGraphHTML = template.Must(template.New("keyword-graph").Parse(`<!doctype html>
