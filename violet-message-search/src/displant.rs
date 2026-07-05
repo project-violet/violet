@@ -59,6 +59,7 @@ impl HangulConverter {
             || (0x11A8..=0x11C2).contains(&ch)
     }
 
+    #[allow(dead_code)]
     pub fn disassembly(ch: u32) -> Option<String> {
         if HangulConverter::check_letter(ch) {
             let jamo = HangulConverter::distortion(ch);
@@ -89,12 +90,50 @@ impl HangulConverter {
         }
     }
 
-    pub fn total_disassembly(what: &str) -> String {
-        let mut buffer = String::new();
-        for ch in what.chars() {
-            if let Some(ptr) = HangulConverter::disassembly(ch as u32) {
-                buffer.push_str(&ptr);
+    fn push_disassembly(ch: u32, buffer: &mut String) -> bool {
+        if HangulConverter::check_letter(ch) {
+            let jamo = HangulConverter::distortion(ch);
+            buffer.push_str(INDEX_INITIAL_2[jamo.initial as usize]);
+            buffer.push_str(INDEX_MEDIAL_2[jamo.medial as usize]);
+            buffer.push_str(INDEX_FINAL_2[jamo.final_ as usize]);
+            true
+        } else if HangulConverter::check_jamo31(ch) {
+            if let Some(letter) = INDEX_LETTER_2.get((ch - 0x3131) as usize) {
+                buffer.push_str(letter);
+                true
             } else {
+                false
+            }
+        } else if (0x1100..=0x1112).contains(&ch) {
+            if let Some(letter) = INDEX_INITIAL_2.get((ch - 0x1100) as usize) {
+                buffer.push_str(letter);
+                true
+            } else {
+                false
+            }
+        } else if (0x1161..=0x1175).contains(&ch) {
+            if let Some(letter) = INDEX_MEDIAL_2.get((ch - 0x1161) as usize) {
+                buffer.push_str(letter);
+                true
+            } else {
+                false
+            }
+        } else if (0x11A8..=0x11C2).contains(&ch) {
+            if let Some(letter) = INDEX_FINAL_2.get((ch - 0x11A7) as usize) {
+                buffer.push_str(letter);
+                true
+            } else {
+                false
+            }
+        } else {
+            false
+        }
+    }
+
+    pub fn total_disassembly(what: &str) -> String {
+        let mut buffer = String::with_capacity(what.len());
+        for ch in what.chars() {
+            if !HangulConverter::push_disassembly(ch as u32, &mut buffer) {
                 buffer.push(ch);
             }
         }

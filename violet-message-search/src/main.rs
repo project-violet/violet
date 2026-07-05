@@ -24,13 +24,13 @@ struct Opt {
     host: String,
     port: usize,
 
-    #[structopt(long, parse(from_os_str), default_value = "./merged.json")]
+    #[structopt(long, parse(from_os_str), default_value = "./merged-0.fscm")]
     data_paths: Vec<PathBuf>,
 }
 
 #[derive(Debug, Deserialize)]
 struct WorkSearchRequest {
-    ids: Vec<usize>,
+    ids: Vec<u32>,
     query: String,
     limit: Option<usize>,
 }
@@ -88,7 +88,7 @@ fn contains(query: &str, limit: Option<usize>) -> Json<Vec<MessageResult>> {
 }
 
 #[get("/<id>/<query>?<limit>")]
-fn wsimilar(id: usize, query: &str, limit: Option<usize>) -> Json<Vec<MessageResult>> {
+fn wsimilar(id: u32, query: &str, limit: Option<usize>) -> Json<Vec<MessageResult>> {
     let take = normalize_take(limit);
     println!(
         "({}) wsimilar: {} - {} (take={})",
@@ -114,7 +114,7 @@ fn wsimilar_many(request: Json<WorkSearchRequest>) -> Json<Vec<MessageResult>> {
 }
 
 #[get("/<id>/<query>?<limit>")]
-fn wcontains(id: usize, query: &str, limit: Option<usize>) -> Json<Vec<MessageResult>> {
+fn wcontains(id: u32, query: &str, limit: Option<usize>) -> Json<Vec<MessageResult>> {
     let take = normalize_take(limit);
     println!(
         "({}) wcontains: {} - {} (take={})",
@@ -144,13 +144,13 @@ fn wcontains_many(request: Json<WorkSearchRequest>) -> Json<Vec<MessageResult>> 
 }
 
 #[get("/<id>")]
-fn article(id: usize) -> Json<Vec<MessageResult>> {
+fn article(id: u32) -> Json<Vec<MessageResult>> {
     println!("({}) article: {}", current_date_time(), id);
     Json(search_article(id))
 }
 
 #[get("/")]
-fn lists() -> Json<Vec<usize>> {
+fn lists() -> Json<Vec<u32>> {
     println!("({}) lists", current_date_time());
     Json(article_lists())
 }

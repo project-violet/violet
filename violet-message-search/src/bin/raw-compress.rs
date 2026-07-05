@@ -6,7 +6,7 @@ use structopt::StructOpt;
 #[derive(Debug, StructOpt)]
 #[structopt(
     name = "raw-compress",
-    about = "Convert violet-search raw OCR JSON files to fast-search-rs merged JSON files"
+    about = "Convert violet-search raw OCR JSON files to fast-search-rs flat message files"
 )]
 struct Opt {
     #[structopt(long, parse(from_os_str))]
@@ -15,7 +15,7 @@ struct Opt {
     #[structopt(long, parse(from_os_str), default_value = ".")]
     output_dir: PathBuf,
 
-    #[structopt(long, default_value = "3")]
+    #[structopt(long, default_value = "1")]
     splits: usize,
 }
 
@@ -28,5 +28,17 @@ fn main() {
     }) {
         eprintln!("raw-compress failed: {err}");
         std::process::exit(1);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn defaults_to_single_output_split() {
+        let opt = Opt::from_iter(["raw-compress", "--raw-dir", "raw"]);
+
+        assert_eq!(opt.splits, 1);
     }
 }
