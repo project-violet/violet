@@ -13,6 +13,7 @@ import { MessageSearchPage } from '../pages/MessageSearchPage';
 import { HotPage } from '../pages/HotPage';
 import { KeywordGraphPage } from '../pages/KeywordGraphPage';
 import { WorkExperimentPage } from '../pages/WorkExperimentPage';
+import { AuthorSimilarityPage } from '../pages/AuthorSimilarityPage';
 
 export function AppRoutes() {
   return (
@@ -29,6 +30,7 @@ export function AppRoutes() {
         <Route path="message-search" element={<MessageSearchPage />} />
         <Route path="keyword-graph" element={<KeywordGraphPage />} />
         <Route path="work-experiment" element={<WorkExperimentPage />} />
+        <Route path="author-similarity" element={<AuthorSimilarityPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="viewer/:id" element={<ViewerPage />} />

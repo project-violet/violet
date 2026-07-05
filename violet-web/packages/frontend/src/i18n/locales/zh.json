@@ -13,7 +13,8 @@
     "hot": "Hot",
     "messageSearch": "消息",
     "keywordGraph": "Keyword Graph",
-    "workExperiment": "Experiment"
+    "workExperiment": "Experiment",
+    "authorSimilarity": "Similar Authors"
   },
   "home": {
     "heading": "浏览",

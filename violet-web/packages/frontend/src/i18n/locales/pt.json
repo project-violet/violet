@@ -13,7 +13,8 @@
     "hot": "Hot",
     "messageSearch": "Mensagens",
     "keywordGraph": "Keyword Graph",
-    "workExperiment": "Experiment"
+    "workExperiment": "Experiment",
+    "authorSimilarity": "Similar Authors"
   },
   "home": {
     "heading": "Explorar",

@@ -99,9 +99,14 @@ func main() {
 				fatal(err)
 			}
 			return
+		case "author-similarity":
+			if err := runAuthorSimilarity(os.Args[2:]); err != nil {
+				fatal(err)
+			}
+			return
 		default:
 			if !strings.HasPrefix(os.Args[1], "-") {
-				fatal(fmt.Errorf("unknown command %q; use extract, similar, or serve", os.Args[1]))
+				fatal(fmt.Errorf("unknown command %q; use extract, similar, serve, or author-similarity", os.Args[1]))
 			}
 		}
 	}

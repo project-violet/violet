@@ -1,0 +1,246 @@
+.page {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin: calc(-1 * var(--spacing-md)) calc(-1 * var(--spacing-md)) 0;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+}
+
+.inputWrapper {
+  position: relative;
+  flex: 1;
+  min-width: 180px;
+}
+
+.searchIcon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 0 var(--spacing-md) 0 38px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary);
+}
+
+.searchButton {
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: 0 var(--spacing-md);
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.searchButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.similarSection,
+.groupList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.sectionHeader,
+.groupHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.sectionHeader h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.sectionHeader span,
+.groupMeta,
+.groupLabel {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
+.targetGroup,
+.authorGroup {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.targetGroup {
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-elevated);
+}
+
+.groupTitle {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-sm);
+}
+
+.authorButton {
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 650;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.authorButton:hover {
+  color: var(--color-primary);
+}
+
+.groupMeta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  white-space: nowrap;
+}
+
+.keywordRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.keywordChip {
+  max-width: 220px;
+  padding: 3px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--spacing-sm);
+  align-items: start;
+}
+
+.empty,
+.error,
+.emptyInline {
+  padding: var(--spacing-xl);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-elevated);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.error {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.emptyInline {
+  grid-column: 1 / -1;
+  padding: var(--spacing-md);
+}
+
+.spinIcon {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1180px) {
+  .workGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    margin: calc(-1 * var(--spacing-sm)) calc(-1 * var(--spacing-sm)) 0;
+    padding: var(--spacing-sm);
+  }
+
+  .groupHeader,
+  .sectionHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .groupMeta {
+    justify-content: flex-start;
+  }
+
+  .workGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 430px) {
+  .workGrid {
+    grid-template-columns: 1fr;
+  }
+}

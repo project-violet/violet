@@ -13,7 +13,8 @@
     "hot": "인기",
     "messageSearch": "메시지",
     "keywordGraph": "키워드 그래프",
-    "workExperiment": "실험"
+    "workExperiment": "실험",
+    "authorSimilarity": "유사 작가"
   },
   "home": {
     "heading": "둘러보기",

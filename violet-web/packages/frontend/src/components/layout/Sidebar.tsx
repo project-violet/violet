@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Home, Bookmark, Crop, History, Download, Settings, ChevronLeft, ChevronRight, Sparkles, Flame, Sun, Moon, Monitor, MessageSquareText, Network, FlaskConical } from 'lucide-react';
+import { Home, Bookmark, Crop, History, Download, Settings, ChevronLeft, ChevronRight, Sparkles, Flame, Sun, Moon, Monitor, MessageSquareText, Network, FlaskConical, UsersRound } from 'lucide-react';
 import { DiscordIcon } from '../icons/DiscordIcon';
 import { GithubIcon } from '../icons/GithubIcon';
 import { useAppStore } from '../../stores/app-store';
@@ -17,6 +17,7 @@ const navItems = [
   { to: '/message-search', labelKey: 'nav.messageSearch', icon: MessageSquareText },
   { to: '/keyword-graph', labelKey: 'nav.keywordGraph', icon: Network },
   { to: '/work-experiment', labelKey: 'nav.workExperiment', icon: FlaskConical },
+  { to: '/author-similarity', labelKey: 'nav.authorSimilarity', icon: UsersRound },
   { to: '/settings', labelKey: 'nav.settings', icon: Settings },
 ];
 

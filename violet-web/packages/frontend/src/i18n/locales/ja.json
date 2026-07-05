@@ -13,7 +13,8 @@
     "hot": "Hot",
     "messageSearch": "メッセージ",
     "keywordGraph": "Keyword Graph",
-    "workExperiment": "Experiment"
+    "workExperiment": "Experiment",
+    "authorSimilarity": "Similar Authors"
   },
   "home": {
     "heading": "閲覧",
