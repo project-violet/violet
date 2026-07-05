@@ -11,9 +11,10 @@ export async function messageSearch(
   mode: MessageSearchMode,
   limit = 100,
   baseUrl?: string,
+  articleId?: string,
 ): Promise<MessageSearchResponse> {
   const { data } = await api.get<MessageSearchResponse>('/message-search', {
-    params: { q: query, mode, limit, baseUrl },
+    params: { q: query, mode, limit, baseUrl, articleId },
   });
   return data;
 }

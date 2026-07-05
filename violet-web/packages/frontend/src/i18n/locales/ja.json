@@ -12,7 +12,8 @@
     "settings": "設定",
     "hot": "Hot",
     "messageSearch": "メッセージ",
-    "keywordGraph": "Keyword Graph"
+    "keywordGraph": "Keyword Graph",
+    "workExperiment": "Experiment"
   },
   "home": {
     "heading": "閲覧",

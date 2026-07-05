@@ -13,6 +13,7 @@ const navItems = [
   { to: '/ai-search', labelKey: 'nav.aiSearch' },
   { to: '/message-search', labelKey: 'nav.messageSearch' },
   { to: '/keyword-graph', labelKey: 'nav.keywordGraph' },
+  { to: '/work-experiment', labelKey: 'nav.workExperiment' },
   { to: '/settings', labelKey: 'nav.settings' },
 ];
 

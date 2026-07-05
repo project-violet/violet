@@ -12,7 +12,8 @@
     "settings": "설정",
     "hot": "인기",
     "messageSearch": "메시지",
-    "keywordGraph": "키워드 그래프"
+    "keywordGraph": "키워드 그래프",
+    "workExperiment": "실험"
   },
   "home": {
     "heading": "둘러보기",

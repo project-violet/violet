@@ -66,6 +66,8 @@ func (server *keywordGraphServer) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		server.serveLinks(w, r)
 	case r.URL.Path == "/api/works":
 		server.serveWorks(w, r)
+	case r.URL.Path == "/api/work":
+		server.serveWork(w, r)
 	default:
 		http.NotFound(w, r)
 	}
@@ -110,6 +112,26 @@ func (server *keywordGraphServer) serveWorks(w http.ResponseWriter, r *http.Requ
 	encoder := json.NewEncoder(w)
 	encoder.SetIndent("", "  ")
 	if err := encoder.Encode(works); err != nil {
+		writeJSONError(w, http.StatusInternalServerError, err)
+	}
+}
+
+func (server *keywordGraphServer) serveWork(w http.ResponseWriter, r *http.Request) {
+	articleID := strings.TrimSpace(r.URL.Query().Get("id"))
+	if articleID == "" {
+		writeJSONError(w, http.StatusBadRequest, fmt.Errorf("id is required"))
+		return
+	}
+	work, ok := findWorkFromIndex(server.index, articleID)
+	if !ok {
+		writeJSONError(w, http.StatusNotFound, fmt.Errorf("work not found"))
+		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
+	encoder := json.NewEncoder(w)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(work); err != nil {
 		writeJSONError(w, http.StatusInternalServerError, err)
 	}
 }

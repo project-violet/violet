@@ -118,6 +118,22 @@ func findRelatedWorksFromIndex(index keywordIndex, opts relatedWorksOptions) rel
 	return response
 }
 
+func findWorkFromIndex(index keywordIndex, articleID string) (relatedWork, bool) {
+	workRows := index.works[articleID]
+	if len(workRows) == 0 {
+		return relatedWork{}, false
+	}
+	pages, dialogues, chars := relatedWorkStats(workRows)
+	return relatedWork{
+		ArticleID:       articleID,
+		MatchedKeywords: []relatedWorkKeyword{},
+		TopKeywords:     topRelatedWorkKeywords(workRows, 0),
+		TotalPages:      pages,
+		DialogueCount:   dialogues,
+		CharacterCount:  chars,
+	}, true
+}
+
 func relatedWorkScore(rawScore float64, matchedCount int, queryCount int, mode string) float64 {
 	score := rawScore * (1 + math.Log1p(float64(matchedCount))*0.25)
 	if mode != "selected" || queryCount <= 1 {
@@ -234,7 +250,7 @@ func topRelatedWorkKeywords(workRows map[string]keywordRow, limit int) []related
 		keywords = append(keywords, relatedWorkKeywordFromRow(row))
 	}
 	sortRelatedWorkKeywords(keywords)
-	if len(keywords) > limit {
+	if limit > 0 && len(keywords) > limit {
 		keywords = keywords[:limit]
 	}
 	return keywords
