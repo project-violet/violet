@@ -2,6 +2,7 @@ use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::env;
 use std::fs::File;
+use std::io::{self, BufReader, Read, Write};
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU64, Ordering as AtomicOrdering};
 use std::sync::{LazyLock, RwLock};
@@ -38,6 +39,11 @@ struct SearchStats {
 
 type MessageIndex = u32;
 
+const FLAT_MAGIC: &[u8; 8] = b"FSCMMSG1";
+const FLAT_VERSION: u32 = 1;
+const FLAT_FLAG_RAW: u32 = 1;
+const FLAT_RECORD_LEN: usize = 52;
+
 #[derive(Clone, Copy)]
 struct TextRange {
     offset: u64,
@@ -67,6 +73,209 @@ struct StoredMessage<'a> {
 
     correct: f32,
     rects: [f32; 4],
+}
+
+#[derive(Clone, Copy)]
+struct FlatRecord {
+    article_id: u32,
+    page: u32,
+    message_offset: u64,
+    message_len: u32,
+    raw_offset: u64,
+    raw_len: u32,
+    correct: f32,
+    rects: [f32; 4],
+}
+
+#[allow(dead_code)]
+#[derive(Default)]
+pub struct FlatMessageWriter {
+    messages: Vec<MessageMeta>,
+    message_bytes: Vec<u8>,
+}
+
+impl FlatRecord {
+    #[allow(dead_code)]
+    fn from_meta(meta: MessageMeta) -> Self {
+        Self {
+            article_id: meta.article_id,
+            page: meta.page,
+            message_offset: meta.message.offset,
+            message_len: meta.message.len,
+            #[cfg(feature = "raw")]
+            raw_offset: meta.raw.map_or(0, |raw| raw.offset),
+            #[cfg(not(feature = "raw"))]
+            raw_offset: 0,
+            #[cfg(feature = "raw")]
+            raw_len: meta.raw.map_or(0, |raw| raw.len),
+            #[cfg(not(feature = "raw"))]
+            raw_len: 0,
+            correct: meta.correct,
+            rects: meta.rects,
+        }
+    }
+
+    fn read_from<R: Read>(reader: &mut R) -> io::Result<Self> {
+        let mut bytes = [0; FLAT_RECORD_LEN];
+        reader.read_exact(&mut bytes)?;
+        let mut cursor = 0;
+        let article_id = read_u32_from(&bytes, &mut cursor);
+        let page = read_u32_from(&bytes, &mut cursor);
+        let message_offset = read_u64_from(&bytes, &mut cursor);
+        let message_len = read_u32_from(&bytes, &mut cursor);
+        let raw_offset = read_u64_from(&bytes, &mut cursor);
+        let raw_len = read_u32_from(&bytes, &mut cursor);
+        let correct = f32::from_bits(read_u32_from(&bytes, &mut cursor));
+        let rects = [
+            f32::from_bits(read_u32_from(&bytes, &mut cursor)),
+            f32::from_bits(read_u32_from(&bytes, &mut cursor)),
+            f32::from_bits(read_u32_from(&bytes, &mut cursor)),
+            f32::from_bits(read_u32_from(&bytes, &mut cursor)),
+        ];
+        Ok(Self {
+            article_id,
+            page,
+            message_offset,
+            message_len,
+            raw_offset,
+            raw_len,
+            correct,
+            rects,
+        })
+    }
+
+    #[allow(dead_code)]
+    fn write_to<W: Write>(&self, writer: &mut W) -> io::Result<()> {
+        write_u32(writer, self.article_id)?;
+        write_u32(writer, self.page)?;
+        write_u64(writer, self.message_offset)?;
+        write_u32(writer, self.message_len)?;
+        write_u64(writer, self.raw_offset)?;
+        write_u32(writer, self.raw_len)?;
+        write_u32(writer, self.correct.to_bits())?;
+        for rect in self.rects {
+            write_u32(writer, rect.to_bits())?;
+        }
+        Ok(())
+    }
+
+    fn validate(&self, bytes_len: u64) -> io::Result<()> {
+        validate_range(self.message_offset, self.message_len, bytes_len)?;
+        if self.raw_len > 0 {
+            validate_range(self.raw_offset, self.raw_len, bytes_len)?;
+        }
+        Ok(())
+    }
+}
+
+#[allow(dead_code)]
+impl FlatMessageWriter {
+    pub fn push(&mut self, message: &Message) {
+        let message_range = self.push_text(&message.message);
+        #[cfg(feature = "raw")]
+        let raw_range = message.raw.as_deref().map(|raw| self.push_text(raw));
+        self.messages.push(MessageMeta {
+            article_id: message.article_id,
+            page: message.page,
+            message: message_range,
+            #[cfg(feature = "raw")]
+            raw: raw_range,
+            correct: message.correct,
+            rects: message.rects,
+        });
+    }
+
+    pub fn write_to<W: Write>(&self, writer: &mut W) -> io::Result<()> {
+        writer.write_all(FLAT_MAGIC)?;
+        write_u32(writer, FLAT_VERSION)?;
+        write_u32(writer, self.flags())?;
+        write_u64(writer, self.messages.len() as u64)?;
+        write_u64(writer, self.message_bytes.len() as u64)?;
+        for meta in &self.messages {
+            FlatRecord::from_meta(*meta).write_to(writer)?;
+        }
+        writer.write_all(&self.message_bytes)?;
+        Ok(())
+    }
+
+    pub fn append(&mut self, other: Self) {
+        let byte_base = u64::try_from(self.message_bytes.len()).expect("message arena too large");
+        self.message_bytes.extend_from_slice(&other.message_bytes);
+        self.messages.reserve(other.messages.len());
+        for mut message in other.messages {
+            message.message.offset += byte_base;
+            #[cfg(feature = "raw")]
+            if let Some(raw) = &mut message.raw {
+                raw.offset += byte_base;
+            }
+            self.messages.push(message);
+        }
+    }
+
+    fn flags(&self) -> u32 {
+        #[cfg(feature = "raw")]
+        {
+            if self.messages.iter().any(|message| message.raw.is_some()) {
+                return FLAT_FLAG_RAW;
+            }
+        }
+        0
+    }
+
+    fn push_text(&mut self, text: &str) -> TextRange {
+        let offset = u64::try_from(self.message_bytes.len()).expect("message arena too large");
+        let len = u32::try_from(text.len()).expect("message text too large");
+        self.message_bytes.extend_from_slice(text.as_bytes());
+        TextRange { offset, len }
+    }
+}
+
+fn read_u32<R: Read>(reader: &mut R) -> io::Result<u32> {
+    let mut bytes = [0; 4];
+    reader.read_exact(&mut bytes)?;
+    Ok(u32::from_le_bytes(bytes))
+}
+
+fn read_u64<R: Read>(reader: &mut R) -> io::Result<u64> {
+    let mut bytes = [0; 8];
+    reader.read_exact(&mut bytes)?;
+    Ok(u64::from_le_bytes(bytes))
+}
+
+fn read_u32_from(bytes: &[u8], cursor: &mut usize) -> u32 {
+    let value = u32::from_le_bytes(bytes[*cursor..*cursor + 4].try_into().unwrap());
+    *cursor += 4;
+    value
+}
+
+fn read_u64_from(bytes: &[u8], cursor: &mut usize) -> u64 {
+    let value = u64::from_le_bytes(bytes[*cursor..*cursor + 8].try_into().unwrap());
+    *cursor += 8;
+    value
+}
+
+#[allow(dead_code)]
+fn write_u32<W: Write>(writer: &mut W, value: u32) -> io::Result<()> {
+    writer.write_all(&value.to_le_bytes())
+}
+
+#[allow(dead_code)]
+fn write_u64<W: Write>(writer: &mut W, value: u64) -> io::Result<()> {
+    writer.write_all(&value.to_le_bytes())
+}
+
+fn validate_range(offset: u64, len: u32, bytes_len: u64) -> io::Result<()> {
+    let end = offset
+        .checked_add(u64::from(len))
+        .ok_or_else(|| invalid_data("flat message text range overflow"))?;
+    if end > bytes_len {
+        return Err(invalid_data("flat message text range exceeds byte block"));
+    }
+    Ok(())
+}
+
+fn invalid_data(message: &'static str) -> io::Error {
+    io::Error::new(io::ErrorKind::InvalidData, message)
 }
 
 #[derive(Clone, Copy)]
@@ -275,6 +484,78 @@ impl MessageStore {
         }
     }
 
+    fn extend_from_flat_reader<R: Read>(&mut self, reader: R) -> io::Result<()> {
+        let mut reader = BufReader::with_capacity(1024 * 1024, reader);
+        let mut magic = [0; 8];
+        reader.read_exact(&mut magic)?;
+        if &magic != FLAT_MAGIC {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "invalid fast-search flat message magic",
+            ));
+        }
+
+        let version = read_u32(&mut reader)?;
+        if version != FLAT_VERSION {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("unsupported fast-search flat message version {version}"),
+            ));
+        }
+
+        let flags = read_u32(&mut reader)?;
+        if flags & !FLAT_FLAG_RAW != 0 {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("unsupported fast-search flat message flags {flags}"),
+            ));
+        }
+
+        let message_count = read_u64(&mut reader)?;
+        let message_bytes_len = read_u64(&mut reader)?;
+        let message_count =
+            usize::try_from(message_count).map_err(|_| invalid_data("too many messages"))?;
+        let message_bytes_len = usize::try_from(message_bytes_len)
+            .map_err(|_| invalid_data("message bytes too large"))?;
+
+        let byte_base = u64::try_from(self.message_bytes.len())
+            .map_err(|_| invalid_data("message arena too large"))?;
+        self.messages.reserve(message_count);
+        self.message_bytes.reserve(message_bytes_len);
+
+        for _ in 0..message_count {
+            let record = FlatRecord::read_from(&mut reader)?;
+            record.validate(message_bytes_len as u64)?;
+            let index = MessageIndex::try_from(self.messages.len()).map_err(|_| {
+                io::Error::new(io::ErrorKind::InvalidData, "too many message indexes")
+            })?;
+            self.by_article
+                .entry(record.article_id)
+                .or_default()
+                .push(index);
+            self.messages.push(MessageMeta {
+                article_id: record.article_id,
+                page: record.page,
+                message: TextRange {
+                    offset: byte_base + record.message_offset,
+                    len: record.message_len,
+                },
+                #[cfg(feature = "raw")]
+                raw: (record.raw_len > 0).then_some(TextRange {
+                    offset: byte_base + record.raw_offset,
+                    len: record.raw_len,
+                }),
+                correct: record.correct,
+                rects: record.rects,
+            });
+        }
+
+        let start = self.message_bytes.len();
+        self.message_bytes.resize(start + message_bytes_len, 0);
+        reader.read_exact(&mut self.message_bytes[start..])?;
+        Ok(())
+    }
+
     fn push_text(&mut self, text: &str) -> TextRange {
         let offset = u64::try_from(self.message_bytes.len()).expect("message arena too large");
         let len = u32::try_from(text.len()).expect("message text too large");
@@ -383,9 +664,20 @@ impl From<&StoredMessage<'_>> for MessageResult {
 }
 
 pub fn load_messages(path: PathBuf) {
-    let file = File::open(path).unwrap();
-    let msgs: Vec<Message> = simd_json::serde::from_reader(file).unwrap();
-    MESSAGES.write().unwrap().extend(msgs);
+    let file = File::open(&path).unwrap();
+    if path
+        .extension()
+        .is_some_and(|extension| extension == "fscm")
+    {
+        MESSAGES
+            .write()
+            .unwrap()
+            .extend_from_flat_reader(file)
+            .unwrap();
+    } else {
+        let msgs: Vec<Message> = simd_json::serde::from_reader(file).unwrap();
+        MESSAGES.write().unwrap().extend(msgs);
+    }
 }
 
 pub fn search_similar(id: Option<u32>, query: &str, take: usize) -> Vec<MessageResult> {
@@ -930,6 +1222,7 @@ fn article_candidate_count(id: u32) -> usize {
 
 #[cfg(test)]
 mod tests {
+    use std::io::Cursor;
     use std::sync::Mutex;
 
     use super::*;
@@ -970,6 +1263,56 @@ mod tests {
         assert_eq!(store.message_bytes, b"firstsecond");
         assert_eq!(store.message_at(0).message, "first");
         assert_eq!(store.message_at(1).message, "second");
+    }
+
+    #[test]
+    fn flat_message_file_roundtrips_into_message_store() {
+        let messages = vec![
+            test_message(10, "first"),
+            test_message(10, "second"),
+            test_message(20, "third"),
+        ];
+        let mut writer = FlatMessageWriter::default();
+        for message in &messages {
+            writer.push(message);
+        }
+
+        let mut bytes = Vec::new();
+        writer.write_to(&mut bytes).unwrap();
+
+        let mut store = MessageStore::default();
+        store
+            .extend_from_flat_reader(Cursor::new(bytes))
+            .expect("flat message file should load");
+
+        assert_eq!(store.message_at(0).message, "first");
+        assert_eq!(store.message_at(1).message, "second");
+        assert_eq!(store.message_at(2).message, "third");
+        assert_eq!(store.by_article.get(&10).unwrap(), &vec![0, 1]);
+        assert_eq!(store.by_article.get(&20).unwrap(), &vec![2]);
+    }
+
+    #[test]
+    fn flat_message_writer_append_rebases_text_offsets() {
+        let mut left = FlatMessageWriter::default();
+        left.push(&test_message(10, "first"));
+        let mut right = FlatMessageWriter::default();
+        right.push(&test_message(20, "second"));
+
+        left.append(right);
+
+        let mut bytes = Vec::new();
+        left.write_to(&mut bytes).unwrap();
+
+        let mut store = MessageStore::default();
+        store
+            .extend_from_flat_reader(Cursor::new(bytes))
+            .expect("merged flat writer should load");
+
+        assert_eq!(store.message_at(0).message, "first");
+        assert_eq!(store.message_at(1).message, "second");
+        assert_eq!(store.by_article.get(&10).unwrap(), &vec![0]);
+        assert_eq!(store.by_article.get(&20).unwrap(), &vec![1]);
     }
 
     #[test]

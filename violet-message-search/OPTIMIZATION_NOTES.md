@@ -146,6 +146,40 @@ millions of per-message `Arc` allocations and steady-state message `String`
 headers/allocations. Search avoids pointer chasing, atomic `Arc` clones in the
 top-k heap, and some memory bandwidth from oversized metadata.
 
+### Flat binary startup format
+
+The arena store reduced steady-state memory, but JSON startup still had a high
+temporary peak because each split was loaded as:
+
+```text
+JSON bytes -> Vec<Message> with per-message String allocations -> arena store
+```
+
+The `.fscm` format stores the runtime layout directly:
+
+```text
+magic/version/flags/counts
+fixed-size MessageMeta records
+contiguous normalized message bytes
+```
+
+`raw-compress --format fscm` writes `merged-N.fscm` files, and the server
+loader detects `.fscm` paths. Loading the flat file appends records directly to
+`MessageStore` and reads the byte block directly into `message_bytes`, avoiding
+the intermediate `Vec<Message>` and per-message `String` allocations.
+
+The fscm compression path is intentionally optimized for throughput rather than
+low memory use. Raw files are parsed and normalized in parallel, each worker
+builds a local flat writer, and the results are merged by split before the final
+files are written. This can use substantially more memory while generating the
+dataset, but it moves the expensive JSON parse and Hangul normalization work off
+the sequential path.
+
+The format is intentionally simple and little-endian. It does not depend on Rust
+struct layout or padding, but it keeps metadata and bytes in mmap-friendly
+contiguous sections so a future loader can replace the read path with mmap
+without changing the generated file shape.
+
 ### Prefix/suffix edge upper bound
 
 RapidFuzz `partial_ratio` checks full-length windows and then shorter prefix /

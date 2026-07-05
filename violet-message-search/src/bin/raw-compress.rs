@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use fast_search_rs::raw_compress::{compress_raw_dir, CompressOptions};
+use fast_search_rs::raw_compress::{compress_raw_dir, CompressOptions, OutputFormat};
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -17,6 +17,9 @@ struct Opt {
 
     #[structopt(long, default_value = "3")]
     splits: usize,
+
+    #[structopt(long, default_value = "json")]
+    format: OutputFormat,
 }
 
 fn main() {
@@ -25,6 +28,7 @@ fn main() {
         raw_dir: opt.raw_dir,
         output_dir: opt.output_dir,
         splits: opt.splits,
+        output_format: opt.format,
     }) {
         eprintln!("raw-compress failed: {err}");
         std::process::exit(1);

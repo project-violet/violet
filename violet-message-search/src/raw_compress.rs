@@ -2,10 +2,12 @@ use std::error::Error;
 use std::fs::{self, File};
 use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
+use std::str::FromStr;
 
+use rayon::prelude::*;
 use serde::Deserialize;
 
-use crate::message::{convert_query, Message};
+use crate::message::{convert_query, FlatMessageWriter, Message};
 
 #[derive(Deserialize)]
 pub struct RawArticle {
@@ -69,6 +71,36 @@ pub struct CompressOptions {
     pub raw_dir: PathBuf,
     pub output_dir: PathBuf,
     pub splits: usize,
+    pub output_format: OutputFormat,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum OutputFormat {
+    Json,
+    Fscm,
+}
+
+impl OutputFormat {
+    fn extension(self) -> &'static str {
+        match self {
+            Self::Json => "json",
+            Self::Fscm => "fscm",
+        }
+    }
+}
+
+impl FromStr for OutputFormat {
+    type Err = String;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "json" => Ok(Self::Json),
+            "fscm" => Ok(Self::Fscm),
+            _ => Err(format!(
+                "unsupported output format {value:?}; use json or fscm"
+            )),
+        }
+    }
 }
 
 pub fn compress_raw_dir(options: CompressOptions) -> Result<(), Box<dyn Error + Send + Sync>> {
@@ -81,21 +113,28 @@ pub fn compress_raw_dir(options: CompressOptions) -> Result<(), Box<dyn Error + 
     let mut raw_paths = collect_raw_json_paths(&options.raw_dir)?;
     raw_paths.sort();
 
+    if options.output_format == OutputFormat::Fscm {
+        return compress_raw_dir_fscm(&options, raw_paths);
+    }
+
+    compress_raw_dir_json(&options, raw_paths)
+}
+
+fn compress_raw_dir_json(
+    options: &CompressOptions,
+    raw_paths: Vec<PathBuf>,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
     let mut writers = Vec::with_capacity(options.splits);
     for split in 0..options.splits {
-        let path = options.output_dir.join(format!("merged-{split}.json"));
-        let mut writer = BufWriter::new(File::create(path)?);
-        writer.write_all(b"[")?;
-        writers.push(SplitWriter {
-            writer,
-            has_items: false,
-        });
+        let path = options.output_dir.join(format!(
+            "merged-{split}.{}",
+            options.output_format.extension()
+        ));
+        writers.push(JsonSplitWriter::create(path)?);
     }
 
     for (index, raw_path) in raw_paths.into_iter().enumerate() {
-        let file = File::open(&raw_path)?;
-        let article: RawArticle = simd_json::serde::from_reader(file)
-            .map_err(|err| format!("failed to parse {}: {err}", raw_path.display()))?;
+        let article = read_raw_article(&raw_path)?;
         let messages = convert_article(article)
             .map_err(|err| format!("failed to convert {}: {err}", raw_path.display()))?;
 
@@ -106,8 +145,81 @@ pub fn compress_raw_dir(options: CompressOptions) -> Result<(), Box<dyn Error + 
     }
 
     for split_writer in &mut writers {
-        split_writer.writer.write_all(b"]")?;
-        split_writer.writer.flush()?;
+        split_writer.finish()?;
+    }
+
+    Ok(())
+}
+
+fn compress_raw_dir_fscm(
+    options: &CompressOptions,
+    raw_paths: Vec<PathBuf>,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    let pieces: Vec<_> = raw_paths
+        .par_iter()
+        .enumerate()
+        .map(|(index, raw_path)| {
+            let article = read_raw_article(raw_path)?;
+            let mut writer = FlatMessageWriter::default();
+            convert_article_into_flat_writer(article, &mut writer)
+                .map_err(|err| format!("failed to convert {}: {err}", raw_path.display()))?;
+            Ok::<_, Box<dyn Error + Send + Sync>>((index % options.splits, writer))
+        })
+        .collect();
+
+    let mut writers: Vec<_> = (0..options.splits)
+        .map(|_| FlatMessageWriter::default())
+        .collect();
+    for piece in pieces {
+        let (split, writer) = piece?;
+        writers[split].append(writer);
+    }
+
+    for (split, writer) in writers.into_iter().enumerate() {
+        let path = options.output_dir.join(format!("merged-{split}.fscm"));
+        let mut file = BufWriter::new(File::create(path)?);
+        writer.write_to(&mut file)?;
+        file.flush()?;
+    }
+
+    Ok(())
+}
+
+fn read_raw_article(raw_path: &Path) -> Result<RawArticle, Box<dyn Error + Send + Sync>> {
+    let file = File::open(raw_path)?;
+    simd_json::serde::from_reader(file)
+        .map_err(|err| format!("failed to parse {}: {err}", raw_path.display()).into())
+}
+
+fn convert_article_into_flat_writer(
+    article: RawArticle,
+    writer: &mut FlatMessageWriter,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    let article_id = article.article_id.parse::<u32>()?;
+    let min_page = article
+        .pages
+        .iter()
+        .map(|page| page.page)
+        .min()
+        .unwrap_or(0);
+
+    for page in article.pages {
+        for dialogue in page.dialogues {
+            let message = convert_query(&dialogue.text);
+            if message.is_empty() {
+                continue;
+            }
+
+            writer.push(&Message {
+                article_id,
+                page: page.page - min_page,
+                message,
+                #[cfg(feature = "raw")]
+                raw: raw_message(dialogue.text),
+                correct: dialogue.confidence,
+                rects: dialogue.bbox,
+            });
+        }
     }
 
     Ok(())
@@ -125,12 +237,21 @@ fn collect_raw_json_paths(raw_dir: &Path) -> Result<Vec<PathBuf>, Box<dyn Error 
     Ok(paths)
 }
 
-struct SplitWriter {
+struct JsonSplitWriter {
     writer: BufWriter<File>,
     has_items: bool,
 }
 
-impl SplitWriter {
+impl JsonSplitWriter {
+    fn create(path: PathBuf) -> Result<Self, Box<dyn Error + Send + Sync>> {
+        let mut writer = BufWriter::new(File::create(path)?);
+        writer.write_all(b"[")?;
+        Ok(Self {
+            writer,
+            has_items: false,
+        })
+    }
+
     fn write_message(&mut self, message: &Message) -> Result<(), Box<dyn Error + Send + Sync>> {
         if self.has_items {
             self.writer.write_all(b",")?;
@@ -139,10 +260,19 @@ impl SplitWriter {
         self.has_items = true;
         Ok(())
     }
+
+    fn finish(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
+        self.writer.write_all(b"]")?;
+        self.writer.flush()?;
+        Ok(())
+    }
 }
 
 #[cfg(test)]
 mod tests {
+    use std::io::Read;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
     use super::*;
 
     #[test]
@@ -204,5 +334,53 @@ mod tests {
 
         assert_eq!(messages[0].page, 0);
         assert_eq!(messages[1].page, 1);
+    }
+
+    #[test]
+    fn fscm_compress_writes_split_flat_files() {
+        let root = unique_temp_dir("fscm-compress");
+        let raw_dir = root.join("raw");
+        let output_dir = root.join("out");
+        fs::create_dir_all(&raw_dir).unwrap();
+
+        fs::write(
+            raw_dir.join("a.json"),
+            r#"{"articleId":"10","pages":[{"page":1,"dialogues":[{"text":"first","confidence":0.5,"bbox":[1.0,2.0,3.0,4.0]}]}]}"#,
+        )
+        .unwrap();
+        fs::write(
+            raw_dir.join("b.json"),
+            r#"{"articleId":"20","pages":[{"page":1,"dialogues":[{"text":"second","confidence":0.7,"bbox":[5.0,6.0,7.0,8.0]}]}]}"#,
+        )
+        .unwrap();
+
+        compress_raw_dir(CompressOptions {
+            raw_dir,
+            output_dir: output_dir.clone(),
+            splits: 2,
+            output_format: OutputFormat::Fscm,
+        })
+        .unwrap();
+
+        assert_eq!(flat_message_count(&output_dir.join("merged-0.fscm")), 1);
+        assert_eq!(flat_message_count(&output_dir.join("merged-1.fscm")), 1);
+
+        fs::remove_dir_all(root).unwrap();
+    }
+
+    fn unique_temp_dir(name: &str) -> PathBuf {
+        let nanos = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        std::env::temp_dir().join(format!("{name}-{}-{nanos}", std::process::id()))
+    }
+
+    fn flat_message_count(path: &Path) -> u64 {
+        let mut file = File::open(path).unwrap();
+        let mut header = [0; 24];
+        file.read_exact(&mut header).unwrap();
+        assert_eq!(&header[0..8], b"FSCMMSG1");
+        u64::from_le_bytes(header[16..24].try_into().unwrap())
     }
 }
