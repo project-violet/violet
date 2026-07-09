@@ -20,6 +20,12 @@ fn main() {
     println!("cargo:rustc-link-search=native={}", dst.join("build").display());
 
     println!("cargo:rustc-link-lib=static=binding");
+    let target = env::var("TARGET").unwrap_or_default();
+    let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_default();
+    if target_os != "windows" && !target.contains("windows") {
+        println!("cargo:rustc-link-lib=dylib=stdc++");
+        println!("cargo:rustc-link-arg=-lstdc++");
+    }
 
     // Generate bindings using bindgen
     let bindings = bindgen::Builder::default()

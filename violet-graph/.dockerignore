@@ -1,0 +1,6 @@
+.git
+.gocache
+*.csv
+*.exe
+*.zip
+author_similarity.json

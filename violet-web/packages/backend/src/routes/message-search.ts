@@ -23,10 +23,21 @@ interface FscmRawResult {
   Rect?: unknown;
 }
 
+function isLoopbackUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.hostname === '::1';
+  } catch {
+    return false;
+  }
+}
+
 function normalizeBaseUrl(raw: unknown): string | null {
-  const value = typeof raw === 'string' && raw.trim()
-    ? raw.trim()
-    : process.env.FSCM_BASE_URL || DEFAULT_FSCM_BASE_URL;
+  const configured = process.env.FSCM_BASE_URL?.trim();
+  const requested = typeof raw === 'string' && raw.trim() ? raw.trim() : '';
+  const value = configured && (!requested || isLoopbackUrl(requested))
+    ? configured
+    : requested || DEFAULT_FSCM_BASE_URL;
 
   try {
     const url = new URL(value);
