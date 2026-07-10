@@ -17,13 +17,10 @@ Expected layout:
 
 ```text
 data/
-  web/
-    data.db
-    user.db
-  message-search/
-    merged-0.fscm
-  graph/
-    graph.csv
+  data.db
+  user.db
+  merged-0.fscm
+  graph.csv
 ```
 
 For an external folder, use a path such as:
@@ -32,7 +29,7 @@ For an external folder, use a path such as:
 VIOLET_DATA_ROOT=D:/violet-data
 ```
 
-with the same `web`, `message-search`, and `graph` subdirectories under it.
+All four data files go directly in that folder. No service-specific subdirectories are used.
 
 ## Run
 

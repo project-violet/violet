@@ -5,7 +5,7 @@ services:
     image: violet/fast-hsync:local
     command: ["/data/data.db"]
     volumes:
-      - ${VIOLET_DATA_ROOT:-./data}/web:/data
+      - ${VIOLET_DATA_ROOT:-./data}:/data
     profiles:
       - sync
 
@@ -21,7 +21,7 @@ services:
     ports:
       - "12332:12332"
     volumes:
-      - ${VIOLET_DATA_ROOT:-./data}/message-search:/data:ro
+      - ${VIOLET_DATA_ROOT:-./data}:/data:ro
     restart: unless-stopped
 
   graph:
@@ -39,7 +39,7 @@ services:
     ports:
       - "8787:8787"
     volumes:
-      - ${VIOLET_DATA_ROOT:-./data}/graph/graph.csv:/data/graph.csv:ro
+      - ${VIOLET_DATA_ROOT:-./data}:/data:ro
     restart: unless-stopped
 
   web:
@@ -56,7 +56,7 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ${VIOLET_DATA_ROOT:-./data}/web:/app/data
+      - ${VIOLET_DATA_ROOT:-./data}:/app/data
     depends_on:
       - message-search
       - graph
