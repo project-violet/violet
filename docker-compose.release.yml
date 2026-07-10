@@ -1,0 +1,55 @@
+services:
+  hsync:
+    image: violetdev/fast-hsync:${VIOLET_IMAGE_TAG:-latest}
+    command: ["/data/data.db"]
+    volumes:
+      - ${VIOLET_DATA_ROOT:-./data}:/data
+    profiles:
+      - sync
+
+  message-search:
+    image: violetdev/violet-message-search:${VIOLET_IMAGE_TAG:-latest}
+    command:
+      - "0.0.0.0"
+      - "12332"
+      - "--data-paths"
+      - "/data/merged-0.fscm"
+    ports:
+      - "12332:12332"
+    volumes:
+      - ${VIOLET_DATA_ROOT:-./data}:/data:ro
+    restart: unless-stopped
+
+  graph:
+    image: violetdev/violet-graph:${VIOLET_IMAGE_TAG:-latest}
+    command:
+      - "serve"
+      - "--host"
+      - "0.0.0.0"
+      - "--input"
+      - "/data/graph.csv"
+      - "--port"
+      - "8787"
+    ports:
+      - "8787:8787"
+    volumes:
+      - ${VIOLET_DATA_ROOT:-./data}:/data:ro
+    restart: unless-stopped
+
+  web:
+    image: violetdev/violet-web:${VIOLET_IMAGE_TAG:-latest}
+    environment:
+      DATA_DB_PATH: /app/data/data.db
+      USER_DB_PATH: /app/data/user.db
+      FSCM_BASE_URL: http://message-search:12332
+      KEYWORD_GRAPH_BASE_URL: http://graph:8787
+      SYNC_ENABLED: "false"
+      PORT: "3001"
+    ports:
+      - "3001:3001"
+    volumes:
+      - ${VIOLET_DATA_ROOT:-./data}:/app/data
+    depends_on:
+      - message-search
+      - graph
+    restart: unless-stopped
