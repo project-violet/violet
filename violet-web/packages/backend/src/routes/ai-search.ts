@@ -2,6 +2,12 @@ import { Router } from 'express';
 
 export const aiSearchRouter = Router();
 
+const DEFAULT_KEYWORD_GRAPH_BASE_URL = 'http://127.0.0.1:8787';
+
+function keywordGraphBaseUrl(): string {
+  return (process.env.KEYWORD_GRAPH_BASE_URL || DEFAULT_KEYWORD_GRAPH_BASE_URL).replace(/\/+$/, '');
+}
+
 aiSearchRouter.get('/', async (req, res) => {
   const q = (req.query.q as string) || '';
   const topK = parseInt(req.query.top_k as string) || 5;
@@ -13,7 +19,7 @@ aiSearchRouter.get('/', async (req, res) => {
   }
 
   try {
-    const url = `http://localhost:8787/search?q=${encodeURIComponent(q)}&top_k=${topK}&mode=${encodeURIComponent(mode)}`;
+    const url = `${keywordGraphBaseUrl()}/search?q=${encodeURIComponent(q)}&top_k=${topK}&mode=${encodeURIComponent(mode)}`;
     const response = await fetch(url);
 
     if (!response.ok) {

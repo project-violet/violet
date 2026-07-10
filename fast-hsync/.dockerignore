@@ -1,0 +1,7 @@
+.git
+.gocache
+.gopath
+chunk
+data.db
+fast-hsync.exe
+*.log

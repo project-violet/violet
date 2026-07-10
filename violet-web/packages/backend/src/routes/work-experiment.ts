@@ -6,6 +6,7 @@ import { getContentDb, isContentDbReady } from '../services/content-db.js';
 export const workExperimentRouter = Router();
 
 const DEFAULT_FSCM_BASE_URL = 'http://127.0.0.1:12332';
+const DEFAULT_KEYWORD_GRAPH_BASE_URL = 'http://127.0.0.1:8787';
 const DEFAULT_TIMEOUT_MS = 30_000;
 const AUTHOR_WORK_LIMIT = 5_000;
 const authorArticleIdsCache = new Map<string, string[]>();
@@ -29,6 +30,15 @@ function logWorkExperimentProfile(event: string, fields: Record<string, unknown>
     .map(([key, value]) => `${key}=${profileValue(value)}`)
     .join(' ');
   console.log(`[work-experiment-profile] event=${event} ${body}`);
+}
+
+function isLoopbackUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.hostname === '::1';
+  } catch {
+    return false;
+  }
 }
 
 interface FscmRawResult {
@@ -347,10 +357,25 @@ workExperimentRouter.get('/author', async (req, res) => {
   const author = normalizeAuthor(req.query.author);
   const messageQuery = typeof req.query.q === 'string' ? req.query.q.trim() : '';
   const limit = normalizeLimit(req.query.limit);
-  const graphBaseUrl = normalizeBaseUrl(req.query.keywordGraphServerUrl, 'http://127.0.0.1:8787');
+  const configuredGraphBaseUrl = process.env.KEYWORD_GRAPH_BASE_URL?.trim();
+  const requestedGraphBaseUrl = typeof req.query.keywordGraphServerUrl === 'string'
+    ? req.query.keywordGraphServerUrl.trim()
+    : '';
+  const configuredMessageBaseUrl = process.env.FSCM_BASE_URL?.trim();
+  const requestedMessageBaseUrl = typeof req.query.messageSearchServerUrl === 'string'
+    ? req.query.messageSearchServerUrl.trim()
+    : '';
+  const graphBaseUrl = normalizeBaseUrl(
+    configuredGraphBaseUrl && (!requestedGraphBaseUrl || isLoopbackUrl(requestedGraphBaseUrl))
+      ? configuredGraphBaseUrl
+      : requestedGraphBaseUrl,
+    DEFAULT_KEYWORD_GRAPH_BASE_URL,
+  );
   const messageBaseUrl = normalizeBaseUrl(
-    req.query.messageSearchServerUrl,
-    process.env.FSCM_BASE_URL || DEFAULT_FSCM_BASE_URL,
+    configuredMessageBaseUrl && (!requestedMessageBaseUrl || isLoopbackUrl(requestedMessageBaseUrl))
+      ? configuredMessageBaseUrl
+      : requestedMessageBaseUrl,
+    DEFAULT_FSCM_BASE_URL,
   );
 
   if (!author) {
