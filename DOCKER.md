@@ -2,7 +2,7 @@
 
 This Compose stack mirrors `boot.cmd` with separate containers for each process:
 
-- `hsync`: one-shot `fast-hsync` database sync job.
+- `hsync`: runs `fast-hsync` at startup and one hour after each completed run.
 - `message-search`: Rust `fast-search-rs` server on port `12332`.
 - `graph`: Go `violet-graph serve` server on port `8787`.
 - `web`: production `violet-web` backend and frontend on port `3001`.
@@ -34,14 +34,34 @@ All four data files go directly in that folder. No service-specific subdirectori
 ## Run
 
 ```sh
-docker compose up --build web message-search graph
+docker compose up --build
 ```
 
-Run the sync job only when you want to update the backend database:
+`hsync` starts with the rest of the stack. It runs immediately, waits 3600
+seconds after the process exits, and then runs again. Override the interval in
+`.env` when needed. The scheduled service enables quiet mode, so Docker logs
+keep phase summaries and errors without one progress update per request:
+
+```env
+HSYNC_INTERVAL_SECONDS=3600
+```
+
+Run a separate one-shot sync without starting the scheduler:
 
 ```sh
-docker compose --profile sync run --rm hsync
+docker compose run --rm --no-deps --entrypoint fast-hsync hsync /data/data.db
 ```
+
+### Database concurrency
+
+`fast-hsync` and `violet-web` both use SQLite WAL mode. The web backend keeps
+a read-only connection to `data.db`, while `fast-hsync` commits writes in
+transactions, so web requests can continue while synchronization is running.
+Only one `fast-hsync` process should write the database at a time.
+
+Content rows and FTS updates become visible after their transactions commit.
+The in-memory suggestion cache is not rebuilt automatically, so newly added
+suggestions require a web restart or a manual suggestion-cache rebuild.
 
 ## Multi-Arch Builds
 

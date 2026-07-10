@@ -3,11 +3,28 @@ services:
     build:
       context: ./fast-hsync
     image: violet/fast-hsync:local
-    command: ["/data/data.db"]
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        while true; do
+          echo "[fast-hsync] starting scheduled sync"
+          fast-hsync /data/data.db
+          status=$$?
+          if [ "$$status" -eq 0 ]; then
+            echo "[fast-hsync] scheduled sync completed"
+          else
+            echo "[fast-hsync] scheduled sync failed with exit code $$status" >&2
+          fi
+          echo "[fast-hsync] next sync in $${HSYNC_INTERVAL_SECONDS}s"
+          sleep "$${HSYNC_INTERVAL_SECONDS}"
+        done
+    environment:
+      HSYNC_INTERVAL_SECONDS: ${HSYNC_INTERVAL_SECONDS:-3600}
+      FAST_HSYNC_QUIET: "1"
     volumes:
       - ${VIOLET_DATA_ROOT:-./data}:/data
-    profiles:
-      - sync
+    init: true
+    restart: unless-stopped
 
   message-search:
     build:
