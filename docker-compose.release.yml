@@ -90,7 +90,7 @@ services:
       - "3001:3001"
     volumes:
       - ${VIOLET_DATA_ROOT:-./data}:/app/data
-      - violet-content-db:/content-data:ro
+      - violet-content-db:/content-data
     depends_on:
       content-db-init:
         condition: service_completed_successfully
