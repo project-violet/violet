@@ -38,8 +38,14 @@ export const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(function Searc
   const navigate = useNavigate();
   const { recentSearches, addRecentSearch, clearRecentSearches } = useSearchStore();
   const contentLanguage = useAppStore((s) => s.contentLanguage);
+  const contextualSuggestionCounts = useAppStore((s) => s.contextualSuggestionCounts);
   const languageContext = contentLanguage !== 'all' ? `lang:${contentLanguage}` : '';
-  const { data: apiSuggestions, isLoading } = useContextualSuggestions(value, languageContext);
+  const { data: apiSuggestions, isLoading } = useContextualSuggestions(
+    value,
+    languageContext,
+    20,
+    contextualSuggestionCounts,
+  );
   const { translateTag } = useTagTranslation();
 
   // Expose focus method to parent

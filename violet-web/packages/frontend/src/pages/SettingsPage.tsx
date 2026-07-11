@@ -21,7 +21,7 @@ const themeColors = [
 
 export function SettingsPage() {
   const { t } = useTranslation();
-  const { contentLanguage, uiLanguage, themeColor, scrollMode, tagClickAction, tagTranslation, aiSearchEnabled, messageSearchEnabled, messageSearchServerUrl, messageSearchResultLimit, keywordGraphServerUrl, excludedTags, imageCacheEnabled, imageCacheMaxSizeMB, imageCacheExpireDays, developerMode, hmacSalt, serverHost, setContentLanguage, setUILanguage, setThemeColor, setScrollMode, setTagClickAction, setTagTranslation, setAiSearchEnabled, setMessageSearchEnabled, setMessageSearchServerUrl, setMessageSearchResultLimit, setKeywordGraphServerUrl, addExcludedTag, removeExcludedTag, setImageCacheEnabled, setImageCacheMaxSizeMB, setImageCacheExpireDays, setDeveloperMode, setHmacSalt, setServerHost } = useAppStore();
+  const { contentLanguage, uiLanguage, themeColor, scrollMode, tagClickAction, tagTranslation, aiSearchEnabled, messageSearchEnabled, messageSearchServerUrl, messageSearchResultLimit, keywordGraphServerUrl, excludedTags, imageCacheEnabled, imageCacheMaxSizeMB, imageCacheExpireDays, contextualSuggestionCounts, developerMode, hmacSalt, serverHost, setContentLanguage, setUILanguage, setThemeColor, setScrollMode, setTagClickAction, setTagTranslation, setAiSearchEnabled, setMessageSearchEnabled, setMessageSearchServerUrl, setMessageSearchResultLimit, setKeywordGraphServerUrl, addExcludedTag, removeExcludedTag, setImageCacheEnabled, setImageCacheMaxSizeMB, setImageCacheExpireDays, setContextualSuggestionCounts, setDeveloperMode, setHmacSalt, setServerHost } = useAppStore();
   const { resumePromptEnabled, setResumePromptEnabled } = useViewerStore();
   const [showAiSearchHelp, setShowAiSearchHelp] = useState(false);
   const [showImageCacheHelp, setShowImageCacheHelp] = useState(false);
@@ -720,6 +720,21 @@ export function SettingsPage() {
               <span>{Object.values(cacheStatus.counts).reduce((sum, c) => sum + (c as number), 0).toLocaleString()}</span>
             </div>
           )}
+        </div>
+
+        <div className={styles.toggleRow}>
+          <div className={styles.toggleInfo}>
+            <span className={styles.toggleLabel}>{t('settings.suggestions.contextualCounts')}</span>
+            <span className={styles.toggleDesc}>{t('settings.suggestions.contextualCountsDesc')}</span>
+          </div>
+          <label className={styles.toggle}>
+            <input
+              type="checkbox"
+              checked={contextualSuggestionCounts}
+              onChange={(e) => setContextualSuggestionCounts(e.target.checked)}
+            />
+            <span className={styles.toggleTrack} />
+          </label>
         </div>
 
         <div className={styles.syncButtons}>
