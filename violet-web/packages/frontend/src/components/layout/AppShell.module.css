@@ -32,7 +32,11 @@
 .searchColumn {
   flex: 0 1 500px;
   min-width: 0;
-  width: 500px;
+}
+
+.dateRangeInline {
+  flex: 1 1 360px;
+  min-width: 280px;
 }
 
 .tagRow {
@@ -75,25 +79,6 @@
   background: var(--color-bg-hover);
   color: var(--color-text);
   border-color: var(--color-primary);
-}
-
-.results {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  flex-shrink: 0;
-  color: var(--color-text-secondary);
-  font-size: 0.9rem;
-  white-space: nowrap;
-}
-
-.query {
-  font-weight: 500;
-  color: var(--color-text);
-}
-
-.count {
-  font-size: 0.85rem;
 }
 
 .cardSizeSlider {

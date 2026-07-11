@@ -7,9 +7,10 @@ import { BottomNav } from './BottomNav';
 import { SearchBar, type SearchBarRef } from '../search/SearchBar';
 import { SearchDialog } from '../search/SearchDialog';
 import { TagChips } from '../search/TagChips';
+import { DateRangeFilter } from '../search/DateRangeFilter';
+import { updateDateParams } from '../search/date-range-model';
 import { Toast } from '../common/Toast';
 import { useIsMobile, useIsDesktop } from '../../hooks/useMediaQuery';
-import { useSearch } from '../../hooks/useSearch';
 import { useSearchTagSummary } from '../../hooks/useSearchTagSummary';
 import { useAppStore } from '../../stores/app-store';
 import { useSearchDialogStore, restoreSearchDialogFromUrl } from '../../stores/search-dialog-store';
@@ -22,6 +23,10 @@ export function AppShell() {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
+  const dateRange = {
+    from: searchParams.get('from') || undefined,
+    to: searchParams.get('to') || undefined,
+  };
   const dialogQuery = useSearchDialogStore((s) => s.query);
   const closeDialog = useSearchDialogStore((s) => s.close);
   const { contentLanguage, viewMode, setViewMode, cardMinWidth, setCardMinWidth, excludedTags } = useAppStore();
@@ -103,7 +108,6 @@ export function AppShell() {
     .map((tag) => `-${tag}`)
     .join(' ');
   const fullQuery = excludeSuffix ? `${baseQuery} ${excludeSuffix}` : baseQuery;
-  const { data } = useSearch(fullQuery || ' ', 0, 30, { enabled: enableShellSearch });
   const { data: tagSummary = [] } = useSearchTagSummary(fullQuery || ' ', 30, {
     enabled: enableShellSearch,
   });
@@ -159,11 +163,17 @@ export function AppShell() {
             <div className={styles.searchColumn}>
               <SearchBar ref={searchBarRef} />
             </div>
-            {data && (
-              <div className={styles.results}>
-                <span className={styles.count}>{t('home.results', { count: data.totalCount })}</span>
-              </div>
-            )}
+            <div className={styles.dateRangeInline}>
+              <DateRangeFilter
+                compact
+                query={fullQuery || ' '}
+                from={dateRange.from}
+                to={dateRange.to}
+                onCommit={(from, to) =>
+                  setSearchParams(updateDateParams(searchParams, from, to))
+                }
+              />
+            </div>
             <input
               type="range"
               className={styles.cardSizeSlider}

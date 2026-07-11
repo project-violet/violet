@@ -4,6 +4,8 @@ import type {
   SuggestionResult,
   SuggestionCacheStatus,
   TagEntry,
+  SearchDateRange,
+  DateDistributionResponse,
 } from '@violet-web/shared';
 import { api } from './client';
 
@@ -11,10 +13,22 @@ export async function searchArticles(
   query: string,
   page = 0,
   pageSize = 30,
+  dateRange: SearchDateRange = {},
 ): Promise<ArticleSearchResult> {
   const { data } = await api.get<ArticleSearchResult>('/content/search', {
-    params: { q: query, page, pageSize },
+    params: { q: query, page, pageSize, ...dateRange },
   });
+  return data;
+}
+
+export async function fetchDateDistribution(
+  query: string,
+  signal?: AbortSignal,
+): Promise<DateDistributionResponse> {
+  const { data } = await api.get<DateDistributionResponse>(
+    '/content/search/date-distribution',
+    { params: { q: query }, signal },
+  );
   return data;
 }
 

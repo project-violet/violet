@@ -2,6 +2,10 @@ import { Router } from 'express';
 import { getContentDb, isContentDbReady, isFtsReady } from '../services/content-db.js';
 import { translateQuery, translateQueryCondition } from '../services/query-engine.js';
 import {
+  getDateDistribution,
+  parseDateBounds,
+} from '../services/publication-date.js';
+import {
   buildSuggestionCache,
   loadSuggestionCacheFromFile,
   searchSuggestions,
@@ -128,17 +132,28 @@ contentRouter.get('/search', (req, res) => {
   const query = (req.query.q as string) || '';
   const page = parseInt(req.query.page as string) || 0;
   const pageSize = Math.min(parseInt(req.query.pageSize as string) || 30, 100);
+  const from = (req.query.from as string) || undefined;
+  const to = (req.query.to as string) || undefined;
+  const dateRange = { from, to };
+
+  try {
+    parseDateBounds(from, to);
+  } catch (error) {
+    res.status(400).json({ error: (error as Error).message });
+    return;
+  }
 
   const db = getContentDb();
   const useFts = isFtsReady();
-  let { sql, countSql } = translateQuery(query, page, pageSize, useFts);
+  const cacheKey = JSON.stringify([query, from ?? '', to ?? '']);
+  let { sql, countSql } = translateQuery(query, page, pageSize, useFts, dateRange);
 
   try {
     const t0 = performance.now();
     const articles = db.prepare(sql).all();
     const tQuery = performance.now() - t0;
 
-    const cached = getCachedCount(query);
+    const cached = getCachedCount(cacheKey);
     let totalCount: number;
     let tCount: number;
     if (cached !== null) {
@@ -148,23 +163,55 @@ contentRouter.get('/search', (req, res) => {
       const countRow = db.prepare(countSql).get() as { cnt: number } | undefined;
       tCount = performance.now() - t0 - tQuery;
       totalCount = countRow?.cnt ?? 0;
-      countCache.set(query, { count: totalCount, ts: Date.now() });
+      countCache.set(cacheKey, { count: totalCount, ts: Date.now() });
     }
 
     console.log(`[SQL] query=${tQuery.toFixed(1)}ms count=${tCount.toFixed(1)}ms${cached !== null ? '(cached)' : ''} total=${(tQuery+tCount).toFixed(1)}ms | q="${query}" fts=${useFts} | ${totalCount} results`);
     res.json({ articles, totalCount, page, pageSize });
   } catch {
     // FTS query failed, fall back to LIKE
-    const fallback = translateQuery(query, page, pageSize, false);
+    const fallback = translateQuery(query, page, pageSize, false, dateRange);
     const t0 = performance.now();
     const articles = db.prepare(fallback.sql).all();
     const tQuery = performance.now() - t0;
     const countRow = db.prepare(fallback.countSql).get() as { cnt: number } | undefined;
     const tCount = performance.now() - t0 - tQuery;
     const totalCount = countRow?.cnt ?? 0;
-    countCache.set(query, { count: totalCount, ts: Date.now() });
+    countCache.set(cacheKey, { count: totalCount, ts: Date.now() });
     console.log(`[SQL] query=${tQuery.toFixed(1)}ms count=${tCount.toFixed(1)}ms total=${(tQuery+tCount).toFixed(1)}ms | q="${query}" fts=fallback | ${totalCount} results`);
     res.json({ articles, totalCount, page, pageSize });
+  }
+});
+
+contentRouter.get('/search/date-distribution', (req, res) => {
+  if (!isContentDbReady()) {
+    res.status(503).json({ error: 'Database syncing, please wait.' });
+    return;
+  }
+
+  const query = ((req.query.q as string) || '').trim();
+  const db = getContentDb();
+  const useFts = isFtsReady();
+  const startedAt = performance.now();
+
+  try {
+    const condition = translateQueryCondition(query, useFts);
+    const value = getDateDistribution(
+      db,
+      condition,
+      JSON.stringify([query, useFts]),
+    );
+    console.log(`[SQL] date-distribution=${(performance.now() - startedAt).toFixed(1)}ms | q="${query}" fts=${useFts} | ${value.buckets.length} buckets`);
+    res.json(value);
+  } catch {
+    const condition = translateQueryCondition(query, false);
+    const value = getDateDistribution(
+      db,
+      condition,
+      JSON.stringify([query, false]),
+    );
+    console.log(`[SQL] date-distribution=${(performance.now() - startedAt).toFixed(1)}ms | q="${query}" fts=fallback | ${value.buckets.length} buckets`);
+    res.json(value);
   }
 });
 

@@ -10,7 +10,7 @@ export interface Article {
   Series: string | null;
   Tags: string | null;
   Uploader: string | null;
-  Published: number | null;
+  Published: number | string | null;
   Files: number | null;
   Class: string | null;
   PublishedEH: string | null;
@@ -24,6 +24,26 @@ export interface ArticleSearchResult {
   totalCount: number;
   page: number;
   pageSize: number;
+}
+
+export interface SearchDateRange {
+  from?: string;
+  to?: string;
+}
+
+export interface DateDistributionBucket {
+  start: string;
+  end: string;
+  count: number;
+}
+
+export interface DateDistributionResponse {
+  minDate: string | null;
+  maxDate: string | null;
+  totalCount: number;
+  invalidCount: number;
+  unit: 'year' | 'month' | 'day';
+  buckets: DateDistributionBucket[];
 }
 
 export interface ImageList {

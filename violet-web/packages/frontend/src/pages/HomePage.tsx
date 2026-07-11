@@ -14,6 +14,9 @@ export function HomePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
   const page = parseInt(searchParams.get('p') || '0');
+  const from = searchParams.get('from') || undefined;
+  const to = searchParams.get('to') || undefined;
+  const dateRange = { from, to };
   const { contentLanguage, scrollMode, excludedTags } = useAppStore();
 
   const setPage = useCallback(
@@ -48,6 +51,8 @@ export function HomePage() {
   const { data, isLoading } = useSearch(
     scrollMode === 'pagination' ? (fullQuery || ' ') : '',
     page,
+    30,
+    { dateRange },
   );
 
   // Infinite scroll mode
@@ -59,6 +64,8 @@ export function HomePage() {
     fetchNextPage,
   } = useInfiniteSearch(
     scrollMode === 'infinite' ? (fullQuery || ' ') : '',
+    30,
+    { dateRange },
   );
 
   const handleLoadMore = useCallback(() => {

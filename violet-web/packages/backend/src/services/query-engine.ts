@@ -4,13 +4,26 @@
  * Supports FTS5 acceleration when available.
  */
 
+import type { SearchDateRange } from '@violet-web/shared';
+import { normalizedPublishedSql, parseDateBounds } from './publication-date.js';
+
 export function translateQuery(
   query: string,
   page: number,
   pageSize: number,
   useFts: boolean = false,
+  dateRange: SearchDateRange = {},
 ): { sql: string; countSql: string } {
-  const condition = translateQueryCondition(query, useFts);
+  const baseCondition = translateQueryCondition(query, useFts);
+  const parsed = parseDateBounds(dateRange.from, dateRange.to);
+  const normalized = `(${normalizedPublishedSql('Published')})`;
+  const dateCondition = [
+    parsed.from ? `${normalized} >= '${parsed.from}'` : '',
+    parsed.toExclusive ? `${normalized} < '${parsed.toExclusive}'` : '',
+  ].filter(Boolean).join(' AND ');
+  const condition = dateCondition
+    ? `(${baseCondition}) AND ${dateCondition}`
+    : baseCondition;
   return {
     sql: `SELECT * FROM HitomiColumnModel WHERE ${condition} ORDER BY Id DESC LIMIT ${pageSize} OFFSET ${page * pageSize}`,
     countSql: `SELECT COUNT(*) as cnt FROM HitomiColumnModel WHERE ${condition}`,
