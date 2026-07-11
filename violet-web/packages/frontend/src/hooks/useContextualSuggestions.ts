@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { fetchContextualSuggestions, fetchSuggestions } from '../api/content';
 import { shouldUseContextualSuggestions } from './suggestion-mode.js';
 
@@ -35,6 +35,7 @@ export function useContextualSuggestions(
       ? fetchContextualSuggestions(partial, contextualBase, limit)
       : fetchSuggestions(partial, limit),
     enabled: partial.length > 0,
+    placeholderData: keepPreviousData,
     staleTime: 60000,
   });
 }

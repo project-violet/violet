@@ -6,6 +6,7 @@ import { useSearchStore } from '../../stores/search-store';
 import { useAppStore } from '../../stores/app-store';
 import { useContextualSuggestions } from '../../hooks/useContextualSuggestions';
 import { useTagTranslation } from '../../hooks/useTagTranslation';
+import { shouldShowSearchDropdown } from './dropdown-visibility.js';
 import type { TagEntry } from '@violet-web/shared';
 import styles from './SearchBar.module.css';
 
@@ -195,10 +196,15 @@ export const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(function Searc
     setIsOpen(false);
   };
 
-  // Memoize showDropdown to prevent flickering
-  const showDropdown = useMemo(() => {
-    return isOpen && dropdownItems.length > 0 && !isLoading;
-  }, [isOpen, dropdownItems.length, isLoading]);
+  const showDropdown = useMemo(() => (
+    shouldShowSearchDropdown(
+      isOpen,
+      dropdownItems.length,
+      isLoading,
+      Boolean(getSuggestions) || apiSuggestions !== undefined,
+      lastToken.length > 0,
+    )
+  ), [isOpen, dropdownItems.length, isLoading, getSuggestions, apiSuggestions, lastToken]);
 
   return (
     <div className={styles.container} ref={containerRef}>
