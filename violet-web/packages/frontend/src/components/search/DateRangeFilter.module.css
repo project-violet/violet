@@ -123,6 +123,12 @@
   opacity: 0.55;
 }
 
+.compactSkeleton {
+  width: 100%;
+  height: 40px;
+  margin: 0;
+}
+
 .error {
   display: flex;
   justify-content: space-between;

@@ -40,7 +40,12 @@ export function DateRangeFilter({ query, from, to, compact = false, onCommit }: 
   }, [from, maxDate, minDate, to]);
 
   if (distribution.isLoading) {
-    return <div className={styles.skeleton} aria-label="날짜 분포 불러오는 중" />;
+    return (
+      <div
+        className={`${styles.skeleton} ${compact ? styles.compactSkeleton : ''}`}
+        aria-label="날짜 분포 불러오는 중"
+      />
+    );
   }
 
   if (distribution.isError) {
