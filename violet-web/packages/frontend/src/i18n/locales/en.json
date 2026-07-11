@@ -228,7 +228,9 @@
       "notBuilt": "Not built",
       "built": "Built",
       "building": "Building...",
-      "totalTags": "Total Tags"
+      "totalTags": "Total Tags",
+      "contextualCounts": "Calculate contextual result counts",
+      "contextualCountsDesc": "Rank suggestions by the current search filters. This can slow autocomplete."
     },
     "messageSearch": {
       "heading": "Message Search",

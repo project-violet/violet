@@ -6,6 +6,7 @@ import { useSearchStore } from '../../stores/search-store';
 import { useAppStore } from '../../stores/app-store';
 import { useContextualSuggestions } from '../../hooks/useContextualSuggestions';
 import { useTagTranslation } from '../../hooks/useTagTranslation';
+import { shouldShowSearchDropdown } from './dropdown-visibility.js';
 import type { TagEntry } from '@violet-web/shared';
 import styles from './SearchBar.module.css';
 
@@ -38,8 +39,14 @@ export const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(function Searc
   const navigate = useNavigate();
   const { recentSearches, addRecentSearch, clearRecentSearches } = useSearchStore();
   const contentLanguage = useAppStore((s) => s.contentLanguage);
+  const contextualSuggestionCounts = useAppStore((s) => s.contextualSuggestionCounts);
   const languageContext = contentLanguage !== 'all' ? `lang:${contentLanguage}` : '';
-  const { data: apiSuggestions, isLoading } = useContextualSuggestions(value, languageContext);
+  const { data: apiSuggestions, isLoading } = useContextualSuggestions(
+    value,
+    languageContext,
+    20,
+    contextualSuggestionCounts,
+  );
   const { translateTag } = useTagTranslation();
 
   // Expose focus method to parent
@@ -189,10 +196,15 @@ export const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(function Searc
     setIsOpen(false);
   };
 
-  // Memoize showDropdown to prevent flickering
-  const showDropdown = useMemo(() => {
-    return isOpen && dropdownItems.length > 0 && !isLoading;
-  }, [isOpen, dropdownItems.length, isLoading]);
+  const showDropdown = useMemo(() => (
+    shouldShowSearchDropdown(
+      isOpen,
+      dropdownItems.length,
+      isLoading,
+      Boolean(getSuggestions) || apiSuggestions !== undefined,
+      lastToken.length > 0,
+    )
+  ), [isOpen, dropdownItems.length, isLoading, getSuggestions, apiSuggestions, lastToken]);
 
   return (
     <div className={styles.container} ref={containerRef}>

@@ -228,7 +228,9 @@
       "notBuilt": "빌드 안됨",
       "built": "빌드됨",
       "building": "빌드 중...",
-      "totalTags": "총 태그 수"
+      "totalTags": "총 태그 수",
+      "contextualCounts": "현재 검색 조건의 결과 수 계산",
+      "contextualCountsDesc": "현재 검색 조건에 맞춰 추천을 정렬합니다. 자동완성이 느려질 수 있습니다."
     },
     "messageSearch": {
       "heading": "메시지 검색",

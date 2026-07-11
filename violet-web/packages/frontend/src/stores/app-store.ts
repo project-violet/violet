@@ -37,6 +37,7 @@ interface AppState {
   imageCacheEnabled: boolean;
   imageCacheMaxSizeMB: number;
   imageCacheExpireDays: number;
+  contextualSuggestionCounts: boolean;
   developerMode: boolean;
   hmacSalt: string;
   serverHost: string;
@@ -63,6 +64,7 @@ interface AppState {
   setImageCacheEnabled: (enabled: boolean) => void;
   setImageCacheMaxSizeMB: (size: number) => void;
   setImageCacheExpireDays: (days: number) => void;
+  setContextualSuggestionCounts: (enabled: boolean) => void;
   setDeveloperMode: (enabled: boolean) => void;
   setHmacSalt: (salt: string) => void;
   setServerHost: (host: string) => void;
@@ -116,6 +118,7 @@ export const useAppStore = create<AppState>()(
       imageCacheEnabled: true,
       imageCacheMaxSizeMB: 500,
       imageCacheExpireDays: 7,
+      contextualSuggestionCounts: false,
       developerMode: false,
       hmacSalt: '',
       serverHost: 'https://koromo.cc',
@@ -154,6 +157,7 @@ export const useAppStore = create<AppState>()(
       setImageCacheEnabled: (imageCacheEnabled) => set({ imageCacheEnabled }),
       setImageCacheMaxSizeMB: (imageCacheMaxSizeMB) => set({ imageCacheMaxSizeMB }),
       setImageCacheExpireDays: (imageCacheExpireDays) => set({ imageCacheExpireDays }),
+      setContextualSuggestionCounts: (contextualSuggestionCounts) => set({ contextualSuggestionCounts }),
       setDeveloperMode: (developerMode) => set({ developerMode }),
       setHmacSalt: (hmacSalt) => set({ hmacSalt }),
       setServerHost: (serverHost) => set({ serverHost }),

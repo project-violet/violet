@@ -1,4 +1,25 @@
+volumes:
+  violet-content-db:
 services:
+  content-db-init:
+    image: alpine:3.21
+    command:
+      - /bin/sh
+      - -ec
+      - |
+          if [ -s /content-data/data.db ]; then
+            exit 0
+          fi
+          cp /seed/data.db /content-data/data.db
+          for suffix in -wal -shm; do
+            if [ -f "/seed/data.db$$suffix" ]; then
+              cp "/seed/data.db$$suffix" "/content-data/data.db$$suffix"
+            fi
+          done
+    volumes:
+      - ${VIOLET_DATA_ROOT:-./data}:/seed:ro
+      - violet-content-db:/content-data
+    restart: "no"
   hsync:
     image: violetdev/fast-hsync:${VIOLET_IMAGE_TAG:-latest}
     entrypoint: ["/bin/sh", "-c"]
@@ -6,7 +27,7 @@ services:
       - |
         while true; do
           echo "[fast-hsync] starting scheduled sync"
-          fast-hsync /data/data.db
+          fast-hsync /content-data/data.db
           status=$$?
           if [ "$$status" -eq 0 ]; then
             echo "[fast-hsync] scheduled sync completed"
@@ -20,7 +41,10 @@ services:
       HSYNC_INTERVAL_SECONDS: ${HSYNC_INTERVAL_SECONDS:-3600}
       FAST_HSYNC_QUIET: "1"
     volumes:
-      - ${VIOLET_DATA_ROOT:-./data}:/data
+      - violet-content-db:/content-data
+    depends_on:
+      content-db-init:
+        condition: service_completed_successfully
     init: true
     restart: unless-stopped
 
@@ -56,7 +80,7 @@ services:
   web:
     image: violetdev/violet-web:${VIOLET_IMAGE_TAG:-latest}
     environment:
-      DATA_DB_PATH: /app/data/data.db
+      DATA_DB_PATH: /content-data/data.db
       USER_DB_PATH: /app/data/user.db
       FSCM_BASE_URL: http://message-search:12332
       KEYWORD_GRAPH_BASE_URL: http://graph:8787
@@ -66,7 +90,12 @@ services:
       - "3001:3001"
     volumes:
       - ${VIOLET_DATA_ROOT:-./data}:/app/data
+      - violet-content-db:/content-data:ro
     depends_on:
-      - message-search
-      - graph
+      content-db-init:
+        condition: service_completed_successfully
+      message-search:
+        condition: service_started
+      graph:
+        condition: service_started
     restart: unless-stopped
