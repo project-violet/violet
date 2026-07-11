@@ -30,7 +30,7 @@ func TestProjectBrandingUsesFastHsync(t *testing.T) {
 }
 
 func TestParseOptions(t *testing.T) {
-	opts, err := parseOptions([]string{"custom.db", "--force", "--with-exh", "--latest-id=12345", "--start-id=0", "--end-id=4000000"})
+	opts, err := parseOptions([]string{"custom.db", "--force", "--with-exh", "--quiet", "--latest-id=12345", "--start-id=0", "--end-id=4000000"})
 	if err != nil {
 		t.Fatalf("parseOptions: %v", err)
 	}
@@ -43,6 +43,9 @@ func TestParseOptions(t *testing.T) {
 	if !opts.withExH {
 		t.Fatal("withExH should be true")
 	}
+	if !opts.quiet {
+		t.Fatal("quiet should be true")
+	}
 	if opts.seedLatestID != 12345 {
 		t.Fatalf("seedLatestID = %d, want 12345", opts.seedLatestID)
 	}
@@ -51,6 +54,48 @@ func TestParseOptions(t *testing.T) {
 	}
 	if opts.endID != 4000000 {
 		t.Fatalf("endID = %d, want 4000000", opts.endID)
+	}
+}
+
+func TestFormatDownloadProgressQuiet(t *testing.T) {
+	got := formatDownloadProgress(true, "galleryblock", 10, 20, 9, 1)
+	if got != "" {
+		t.Fatalf("quiet progress = %q, want empty", got)
+	}
+}
+
+func TestFormatDownloadProgressVisible(t *testing.T) {
+	got := formatDownloadProgress(false, "galleryblock", 10, 20, 9, 1)
+	want := "\r  galleryblock: 10/20 (ok: 9, errors: 1)"
+	if got != want {
+		t.Fatalf("progress = %q, want %q", got, want)
+	}
+}
+
+func TestFormatDownloadSummaryIncludesHTTPStatuses(t *testing.T) {
+	stats := &downloadStats{missing: 7, status: map[int]int64{404: 7, 429: 3, 200: 10}}
+	got := formatDownloadSummary("galleryblock", 20, 10, 7, 3, stats)
+	want := "galleryblock complete: total=20, ok=10, missing=7, errors=3, statuses=200:10,404:7,429:3"
+	if got != want {
+		t.Fatalf("summary = %q, want %q", got, want)
+	}
+}
+
+func TestResolveQuiet(t *testing.T) {
+	tests := []struct {
+		flag bool
+		env  string
+		want bool
+	}{
+		{flag: false, env: "", want: false},
+		{flag: true, env: "", want: true},
+		{flag: false, env: "1", want: true},
+		{flag: false, env: "true", want: true},
+	}
+	for _, tt := range tests {
+		if got := resolveQuiet(tt.flag, tt.env); got != tt.want {
+			t.Fatalf("resolveQuiet(%v, %q) = %v, want %v", tt.flag, tt.env, got, tt.want)
+		}
 	}
 }
 

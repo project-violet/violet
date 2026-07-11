@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -32,6 +33,7 @@ type options struct {
 	dbPath       string
 	forceAll     bool
 	withExH      bool
+	quiet        bool
 	seedLatestID int
 	startID      int
 	endID        int
@@ -45,6 +47,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	opts.quiet = resolveQuiet(opts.quiet, os.Getenv("FAST_HSYNC_QUIET"))
 
 	db, latestID := initDB(opts)
 	defer db.Close()
@@ -58,15 +61,14 @@ func main() {
 			log.Fatalf("Failed to get existing IDs: %v", err)
 		}
 	}
-	_, blockHTMLs := downloadGalleryBlocks(latestID, existingIDs, opts.startID, opts.endID)
+	_, blockHTMLs := downloadGalleryBlocks(latestID, existingIDs, opts.startID, opts.endID, opts.quiet)
 
 	// Phase 2: Parse blocks → prepare gallery JS URLs
 	entries, jsURLs := parseBlocks(blockHTMLs)
 	log.Printf("Found %d valid galleries, downloading gallery info...", len(entries))
 
 	// Phase 3: Download gallery JS (file counts + groups + characters)
-	jsResults := downloadStrings(jsURLs, maxConcurrency, "gallery-js")
-	fmt.Println()
+	jsResults := downloadStrings(jsURLs, maxConcurrency, "gallery-js", opts.quiet)
 
 	// Phase 4: Merge downloaded data → build column models
 	newModels, newIDs := buildModels(entries, jsResults)
@@ -94,6 +96,11 @@ func main() {
 	log.Printf("Sync complete! Upserted %d records.", len(toUpsert))
 }
 
+func resolveQuiet(flag bool, envValue string) bool {
+	envQuiet := strings.EqualFold(strings.TrimSpace(envValue), "true") || strings.TrimSpace(envValue) == "1"
+	return flag || envQuiet
+}
+
 func parseOptions(args []string) (options, error) {
 	opts := options{dbPath: defaultDBPath}
 	for i := 0; i < len(args); i++ {
@@ -103,6 +110,8 @@ func parseOptions(args []string) (options, error) {
 			opts.forceAll = true
 		case arg == "--with-exh":
 			opts.withExH = true
+		case arg == "-q" || arg == "--quiet":
+			opts.quiet = true
 		case arg == "--latest-id":
 			if i+1 >= len(args) {
 				return opts, errors.New("--latest-id requires a numeric value")
@@ -248,7 +257,7 @@ func resolveLatestID(dbLatestID, seedLatestID int, hasExplicitRange bool) (int, 
 
 // downloadGalleryBlocks generates gallery block URLs for [latestID-range, latestID+range)
 // and downloads them concurrently. If existingIDs is non-nil, already-known IDs are skipped.
-func downloadGalleryBlocks(latestID int, existingIDs map[int]bool, explicitStartID, explicitEndID int) (ids []int, htmls []string) {
+func downloadGalleryBlocks(latestID int, existingIDs map[int]bool, explicitStartID, explicitEndID int, quiet bool) (ids []int, htmls []string) {
 	ids = buildGalleryBlockIDs(latestID, existingIDs, explicitStartID, explicitEndID)
 
 	startID, endID := defaultGalleryBlockRange(latestID)
@@ -263,8 +272,7 @@ func downloadGalleryBlocks(latestID int, existingIDs map[int]bool, explicitStart
 	}
 
 	log.Printf("Downloading %d gallery blocks [%d ~ %d]...", len(ids), startID, endID-1)
-	htmls = downloadStrings(urls, maxConcurrency, "galleryblock")
-	fmt.Println()
+	htmls = downloadStrings(urls, maxConcurrency, "galleryblock", quiet)
 	return
 }
 
@@ -380,6 +388,7 @@ func diffWithExisting(db *sql.DB, models []*HitomiColumnModel, ids []int) []*Hit
 
 type downloadStats struct {
 	success int64
+	missing int64
 	errors  int64
 	status  map[int]int64
 	mu      sync.Mutex
@@ -391,7 +400,34 @@ func (s *downloadStats) recordStatus(code int) {
 	s.mu.Unlock()
 }
 
-func downloadStrings(urls []string, concurrency int, label string) []string {
+func formatDownloadProgress(quiet bool, label string, completed int64, total int, success int64, errors int64) string {
+	if quiet {
+		return ""
+	}
+	return fmt.Sprintf("\r  %s: %d/%d (ok: %d, errors: %d)", label, completed, total, success, errors)
+}
+
+func formatDownloadSummary(label string, total int, success int64, missing int64, errors int64, stats *downloadStats) string {
+	stats.mu.Lock()
+	codes := make([]int, 0, len(stats.status))
+	for code := range stats.status {
+		codes = append(codes, code)
+	}
+	sort.Ints(codes)
+	statuses := make([]string, 0, len(codes))
+	for _, code := range codes {
+		statuses = append(statuses, fmt.Sprintf("%d:%d", code, stats.status[code]))
+	}
+	stats.mu.Unlock()
+
+	summary := fmt.Sprintf("%s complete: total=%d, ok=%d, missing=%d, errors=%d", label, total, success, missing, errors)
+	if len(statuses) == 0 {
+		return summary
+	}
+	return summary + ", statuses=" + strings.Join(statuses, ",")
+}
+
+func downloadStrings(urls []string, concurrency int, label string, quiet bool) []string {
 	if len(urls) == 0 {
 		return nil
 	}
@@ -444,13 +480,14 @@ func downloadStrings(urls []string, concurrency int, label string) []string {
 						results[idx] = string(body)
 						s := atomic.AddInt64(&stats.success, 1)
 						e := atomic.LoadInt64(&stats.errors)
-						fmt.Printf("\r  %s: %d/%d (ok: %d, errors: %d)", label, s+e, len(urls), s, e)
+						fmt.Print(formatDownloadProgress(quiet, label, s+e, len(urls), s, e))
 						return
 					}
 				} else {
 					resp.Body.Close()
 					if resp.StatusCode == 404 {
-						break
+						atomic.AddInt64(&stats.missing, 1)
+						return
 					}
 					if retry < 2 {
 						time.Sleep(time.Duration(retry+1) * 500 * time.Millisecond)
@@ -462,11 +499,18 @@ func downloadStrings(urls []string, concurrency int, label string) []string {
 
 			s := atomic.LoadInt64(&stats.success)
 			e := atomic.AddInt64(&stats.errors, 1)
-			fmt.Printf("\r  %s: %d/%d (ok: %d, errors: %d)", label, s+e, len(urls), s, e)
+			fmt.Print(formatDownloadProgress(quiet, label, s+e, len(urls), s, e))
 		}(i, url)
 	}
 
 	wg.Wait()
+	if !quiet {
+		fmt.Println()
+	}
+	s := atomic.LoadInt64(&stats.success)
+	m := atomic.LoadInt64(&stats.missing)
+	e := atomic.LoadInt64(&stats.errors)
+	log.Print(formatDownloadSummary(label, len(urls), s, m, e, stats))
 	return results
 }
 

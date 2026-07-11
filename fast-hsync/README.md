@@ -57,6 +57,7 @@ go build -o fast-hsync.exe .
 | 옵션 | 설명 |
 | --- | --- |
 | `-f`, `--force` | 이미 DB에 있는 Hitomi ID도 다시 다운로드합니다. 기본값은 기존 ID를 건너뜁니다. |
+| `-q`, `--quiet` | 요청별 진행률 출력은 숨기고 단계별 요약과 오류만 출력합니다. |
 | `--with-exh` | ExHentai 목록도 함께 동기화하고 Hitomi 레코드와 병합합니다. |
 | `--latest-id=N` | DB가 비어 있을 때 첫 동기화 기준 ID를 지정합니다. `--latest-id N` 형식도 가능합니다. |
 | `--start-id=N` | 다운로드할 Hitomi gallery block 시작 ID를 지정합니다. |
@@ -66,6 +67,7 @@ go build -o fast-hsync.exe .
 
 ```powershell
 .\fast-hsync.exe data.db --force
+.\fast-hsync.exe data.db --quiet
 .\fast-hsync.exe data.db --with-exh
 .\fast-hsync.exe data.db --force --with-exh
 .\fast-hsync.exe data.db --latest-id=3000000
