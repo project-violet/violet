@@ -165,12 +165,18 @@
 }
 
 .compact .histogram {
-  height: 26px;
+  height: 24px;
+  overflow: hidden;
+  border-radius: 0 0 calc(var(--radius-md) - 1px) calc(var(--radius-md) - 1px);
 }
 
 .compact .rangeWrap {
+  position: absolute;
+  right: 0;
+  bottom: -4px;
+  left: 0;
   height: 10px;
-  margin: -10px 0 0;
+  margin: 0;
 }
 
 .compact .rangeWrap input {
