@@ -139,6 +139,16 @@
 .rankTitle small, .rankMetrics small { color: var(--color-text-secondary); font-size: .68rem; }
 .rankMetrics { display: flex; align-items: flex-end; flex-direction: column; min-width: 52px; padding-right: 6px; }
 .rankMetrics b { font-size: .84rem; font-weight: 610; font-variant-numeric: tabular-nums; }
+.moreButton { display: block; width: 100%; padding: 11px; border: 0; border-bottom: 1px solid var(--activity-line); background: transparent; color: var(--color-text-secondary); cursor: pointer; font: inherit; font-size: .72rem; }
+.moreButton:hover { background: var(--color-bg-hover); color: var(--color-text); }
+.rankingOverlay { position: fixed; inset: 0; z-index: 180; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(0, 0, 0, .68); }
+.rankingDialog { width: min(860px, 100%); max-height: min(840px, calc(100vh - 48px)); display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-elevated); box-shadow: var(--shadow-md); }
+.rankingDialogHeader { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 18px; border-bottom: 1px solid var(--activity-line); }
+.rankingDialogHeader h2 { margin: 0 0 3px; font-size: 1rem; }
+.rankingDialogHeader span { color: var(--color-text-secondary); font-size: .7rem; }
+.rankingDialogHeader button { display: grid; width: 32px; height: 32px; place-items: center; padding: 0; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--color-text-secondary); cursor: pointer; }
+.rankingDialogHeader button:hover { background: var(--color-bg-hover); color: var(--color-text); }
+.rankingDialogList { min-height: 0; padding: 0 18px 12px; overflow-y: auto; }
 .empty, .message { padding: 36px; color: var(--color-text-secondary); text-align: center; }
 
 @media (max-width: 900px) {
@@ -155,4 +165,7 @@
   .periods, .rankTabs { width: 100%; }
   .periods button, .rankTabs button { flex: 1; }
   .chartWrap { height: 210px; }
+  .rankingOverlay { padding: 0; }
+  .rankingDialog { max-height: 100vh; border-radius: 0; }
+  .rankingDialogList { padding: 0 10px 10px; }
 }

@@ -1,9 +1,10 @@
 import { useMemo, useState, type MouseEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Bookmark, CalendarDays, Crop, Download, Eye, TrendingUp } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { Bookmark, CalendarDays, Crop, Download, Eye, TrendingUp, X } from 'lucide-react';
 import type { Article } from '@violet-web/shared';
-import { getUserActivity, type ActivityDay } from '../api/activity';
+import { getUserActivity, type ActivityDay, type UserActivity } from '../api/activity';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { useAllArticles } from '../hooks/useAllArticles';
 import { ArticleInfoDialog } from '../components/search/ArticleInfoDialog';
@@ -13,6 +14,26 @@ import { filterActivityPeriod } from './activity-period';
 
 const PERIODS = [30, 90, 365, 0] as const;
 type RankMetric = 'reads' | 'recordedSeconds' | 'averageSessionSeconds' | 'secondsPerPageEstimate';
+type RankedArticle = UserActivity['topArticles'][number];
+
+function RankingRow({ item, index, work, detail, metric, metricLabel, onSelect }: {
+  item: RankedArticle;
+  index: number;
+  work?: Article;
+  detail: string;
+  metric: string;
+  metricLabel: string;
+  onSelect: (article: Article) => void;
+}) {
+  return (
+    <button className={styles.rankItem} type="button" onClick={() => work && onSelect(work)} disabled={!work}>
+      <strong className={styles.rankNumber}>{index + 1}</strong>
+      <WorkThumbnail articleId={Number(item.articleId)} size="activity" />
+      <span className={styles.rankTitle}><strong>{work?.Title ?? `#${item.articleId}`}</strong><small>{detail}</small></span>
+      <span className={styles.rankMetrics}><b>{metric}</b><small>{metricLabel}</small></span>
+    </button>
+  );
+}
 
 function ActivityChart({ days, labels }: { days: ActivityDay[]; labels: { total: string; reads: string; bookmarks: string; crops: string; downloads: string } }) {
   const [hovered, setHovered] = useState<{ index: number; left: number } | null>(null);
@@ -69,6 +90,7 @@ export function ActivityPage() {
   const [period, setPeriod] = useState<(typeof PERIODS)[number]>(90);
   const [rankBy, setRankBy] = useState<RankMetric>('reads');
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const [showRankingDialog, setShowRankingDialog] = useState(false);
   const { data, isLoading, isError } = useQuery({ queryKey: ['userActivity'], queryFn: getUserActivity });
   const days = useMemo(() => filterActivityPeriod(data?.days ?? [], period), [data, period]);
   const periodTotal = days.reduce((sum, day) => sum + day.total, 0);
@@ -84,10 +106,13 @@ export function ActivityPage() {
   };
   const formatDate = (value: string) => new Intl.DateTimeFormat(i18n.language, { dateStyle: 'medium' }).format(new Date(value));
   const rankedArticles = useMemo(() => [...(data?.topArticles ?? [])]
-    .sort((a, b) => b[rankBy] - a[rankBy] || b.total - a.total)
-    .slice(0, 8), [data, rankBy]);
-  const { data: rankedWorks } = useAllArticles('activity-ranking', rankedArticles.map((item) => item.articleId));
+    .sort((a, b) => b[rankBy] - a[rankBy] || b.total - a.total), [data, rankBy]);
+  const topRankingArticles = rankedArticles.slice(0, 50);
+  const visibleRankingArticles = topRankingArticles.slice(0, 8);
+  const { data: rankedWorks } = useAllArticles('activity-ranking', topRankingArticles.map((item) => item.articleId));
   const workById = new Map(rankedWorks?.map((work) => [String(work.Id), work]));
+  const rankDetail = (item: RankedArticle) => `#${item.articleId} · ${number(item.reads)}${t('activity.time.sessions')} · ${duration(item.recordedSeconds)} ${t('activity.time.recorded')}`;
+  const rankMetric = (item: RankedArticle) => rankBy === 'reads' ? number(item.reads) : duration(item[rankBy]);
 
   if (isLoading) return <LoadingSpinner />;
   if (isError || !data) return <div className={styles.message}>{t('activity.error')}</div>;
@@ -157,19 +182,26 @@ export function ActivityPage() {
             </div>
           </div>
           <div className={styles.rankingList}>
-            {rankedArticles.length === 0 && <div className={styles.empty}>{t('activity.empty')}</div>}
-            {rankedArticles.map((item, index) => {
-              const work = workById.get(item.articleId);
-              return <button className={styles.rankItem} type="button" onClick={() => work && setSelectedArticle(work)} disabled={!work} key={item.articleId}>
-                <strong className={styles.rankNumber}>{index + 1}</strong>
-                <WorkThumbnail articleId={Number(item.articleId)} size="activity" />
-                <span className={styles.rankTitle}><strong>{work?.Title ?? `#${item.articleId}`}</strong><small>#{item.articleId} · {number(item.reads)}{t('activity.time.sessions')} · {duration(item.recordedSeconds)} {t('activity.time.recorded')}</small></span>
-                <span className={styles.rankMetrics}><b>{rankBy === 'reads' ? number(item.reads) : duration(item[rankBy])}</b><small>{t(`activity.rank.${rankBy}`)}</small></span>
-              </button>;
-            })}
+            {visibleRankingArticles.length === 0 && <div className={styles.empty}>{t('activity.empty')}</div>}
+            {visibleRankingArticles.map((item, index) => <RankingRow key={item.articleId} item={item} index={index} work={workById.get(item.articleId)} detail={rankDetail(item)} metric={rankMetric(item)} metricLabel={t(`activity.rank.${rankBy}`)} onSelect={setSelectedArticle} />)}
           </div>
+          {topRankingArticles.length > 8 && <button className={styles.moreButton} type="button" onClick={() => setShowRankingDialog(true)}>{t('activity.showMore')}</button>}
         </section>
       </div>
+      {showRankingDialog && createPortal(
+        <div className={styles.rankingOverlay} onClick={() => setShowRankingDialog(false)}>
+          <div className={styles.rankingDialog} role="dialog" aria-modal="true" aria-labelledby="activity-ranking-dialog-title" onClick={(event) => event.stopPropagation()}>
+            <header className={styles.rankingDialogHeader}>
+              <div><h2 id="activity-ranking-dialog-title">{t('activity.rankingDialog')}</h2><span>{t(`activity.rank.${rankBy}`)} · {topRankingArticles.length}</span></div>
+              <button type="button" onClick={() => setShowRankingDialog(false)} aria-label={t('activity.close')}><X size={18} /></button>
+            </header>
+            <div className={styles.rankingDialogList}>
+              {topRankingArticles.map((item, index) => <RankingRow key={item.articleId} item={item} index={index} work={workById.get(item.articleId)} detail={rankDetail(item)} metric={rankMetric(item)} metricLabel={t(`activity.rank.${rankBy}`)} onSelect={setSelectedArticle} />)}
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
       {selectedArticle && <ArticleInfoDialog article={selectedArticle} onClose={() => setSelectedArticle(null)} />}
     </div>
   );
