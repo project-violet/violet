@@ -14,6 +14,7 @@ import { HotPage } from '../pages/HotPage';
 import { KeywordGraphPage } from '../pages/KeywordGraphPage';
 import { WorkExperimentPage } from '../pages/WorkExperimentPage';
 import { AuthorSimilarityPage } from '../pages/AuthorSimilarityPage';
+import { ActivityPage } from '../pages/ActivityPage';
 
 export function AppRoutes() {
   return (
@@ -31,6 +32,7 @@ export function AppRoutes() {
         <Route path="keyword-graph" element={<KeywordGraphPage />} />
         <Route path="work-experiment" element={<WorkExperimentPage />} />
         <Route path="author-similarity" element={<AuthorSimilarityPage />} />
+        <Route path="activity" element={<ActivityPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="viewer/:id" element={<ViewerPage />} />

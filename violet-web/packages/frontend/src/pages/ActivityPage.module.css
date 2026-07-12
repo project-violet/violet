@@ -1,0 +1,55 @@
+.page { display: flex; flex-direction: column; gap: var(--spacing-lg); max-width: 1440px; margin: 0 auto; padding-bottom: var(--spacing-xl); }
+.header { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--spacing-lg); padding: var(--spacing-md) 0 var(--spacing-sm); }
+.header h1 { margin: 2px 0 8px; font-size: clamp(1.8rem, 3vw, 2.6rem); letter-spacing: -0.04em; }
+.header p { margin: 0; color: var(--color-text-secondary); }
+.eyebrow { color: var(--color-primary) !important; font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.dateSpan { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid var(--color-border); border-radius: 999px; color: var(--color-text-secondary); font-size: .8rem; white-space: nowrap; }
+.stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--spacing-sm); }
+.statCard { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 16px; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-bg-elevated); }
+.statIcon { display: grid; place-items: center; flex: 0 0 auto; color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 14%, transparent); }
+.statIcon { width: 40px; height: 40px; border-radius: 11px; }
+.statCard div { display: flex; flex-direction: column; min-width: 0; }
+.statCard strong { font-size: 1.35rem; line-height: 1.2; }
+.statCard span:last-child { color: var(--color-text-secondary); font-size: .78rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.panel { min-width: 0; padding: var(--spacing-lg); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-bg-elevated); }
+.panelHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--spacing-md); }
+.panelHeader h2 { margin: 0 0 5px; font-size: 1rem; }
+.panelHeader p { margin: 0; color: var(--color-text-secondary); font-size: .78rem; }
+.periods { display: flex; padding: 3px; border: 1px solid var(--color-border); border-radius: 9px; background: var(--color-surface); }
+.periods button { padding: 5px 9px; border: 0; border-radius: 6px; background: transparent; color: var(--color-text-secondary); cursor: pointer; font: inherit; font-size: .75rem; }
+.periods button.active { background: var(--color-primary); color: var(--color-on-primary); }
+.chartWrap { position: relative; height: 220px; margin-top: var(--spacing-lg); border-bottom: 1px solid var(--color-border); background-image: linear-gradient(var(--color-border) 1px, transparent 1px); background-size: 100% 25%; cursor: crosshair; }
+.chart { display: block; width: 100%; height: 100%; overflow: visible; }
+.guideX, .guideY, .chartDot, .chartTooltip { position: absolute; pointer-events: none; }
+.guideX { top: 0; bottom: 0; width: 1px; background: color-mix(in srgb, var(--color-text) 38%, transparent); }
+.guideY { left: 0; right: 0; height: 1px; background: color-mix(in srgb, var(--color-text) 20%, transparent); }
+.chartDot { width: 9px; height: 9px; border: 2px solid var(--color-bg-elevated); border-radius: 50%; background: var(--color-primary); transform: translate(-50%, -50%); box-shadow: 0 0 0 2px var(--color-primary); }
+.chartTooltip { z-index: 2; display: flex; flex-direction: column; gap: 3px; min-width: 205px; padding: 8px 10px; border: 1px solid var(--color-border); border-radius: 8px; background: color-mix(in srgb, var(--color-bg-elevated) 94%, transparent); box-shadow: var(--shadow-md); transform: translate(10px, -100%); font-size: .72rem; }
+.chartTooltip span, .chartTooltip small { color: var(--color-text-secondary); }
+.chartTooltip small { font-size: .64rem; white-space: nowrap; }
+.chartTooltip.tooltipLeft { transform: translate(calc(-100% - 10px), -100%); }
+.emptyChart { display: grid; place-items: center; height: 100%; color: var(--color-text-secondary); }
+.chartDates { display: flex; justify-content: space-between; margin-top: 7px; color: var(--color-text-secondary); font-size: .7rem; }
+.lowerGrid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: var(--spacing-md); align-items: start; }
+.mixList { display: flex; flex-direction: column; gap: 17px; margin-top: var(--spacing-lg); }
+.mixRow { display: grid; grid-template-columns: 115px 1fr 50px; align-items: center; gap: 10px; font-size: .8rem; }
+.mixRow > span { display: flex; align-items: center; gap: 7px; }
+.mixRow > div { height: 7px; overflow: hidden; border-radius: 999px; background: var(--color-surface); }
+.mixRow i { display: block; height: 100%; border-radius: inherit; background: var(--color-primary); }
+.mixRow strong { text-align: right; font-variant-numeric: tabular-nums; }
+.rankTabs { display: flex; gap: 3px; padding: 3px; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-surface); }
+.rankTabs button { padding: 5px 8px; border: 0; border-radius: 5px; background: transparent; color: var(--color-text-secondary); cursor: pointer; font: inherit; font-size: .72rem; }
+.rankTabs button.active { background: var(--color-primary); color: var(--color-on-primary); }
+.rankingList { display: flex; flex-direction: column; margin-top: 12px; }
+.rankItem { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; gap: 10px; min-height: 43px; padding: 5px 4px; border-top: 1px solid var(--color-border); color: var(--color-text); text-decoration: none; }
+.rankItem:hover { color: var(--color-primary); }
+.rankNumber { color: var(--color-primary); font-size: .9rem; text-align: center; font-variant-numeric: tabular-nums; }
+.rankTitle { display: flex; flex-direction: column; min-width: 0; }
+.rankTitle > strong { overflow: hidden; font-size: .8rem; text-overflow: ellipsis; white-space: nowrap; }
+.rankTitle small, .rankMetrics small { color: var(--color-text-secondary); font-size: .68rem; }
+.rankMetrics { display: flex; align-items: flex-end; flex-direction: column; min-width: 52px; }
+.rankMetrics b { font-size: .82rem; font-variant-numeric: tabular-nums; }
+.empty, .message { padding: var(--spacing-xl); color: var(--color-text-secondary); text-align: center; }
+@media (max-width: 1050px) { .stats { grid-template-columns: repeat(3, 1fr); } .lowerGrid { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .header { align-items: flex-start; flex-direction: column; } .stats { grid-template-columns: repeat(2, 1fr); } .panel { padding: var(--spacing-md); } .panelHeader { flex-direction: column; } .periods { width: 100%; } .periods button { flex: 1; } .chartWrap { height: 170px; } }
+@media (max-width: 410px) { .stats { grid-template-columns: 1fr; } .mixRow { grid-template-columns: 95px 1fr 46px; } .rankTabs { width: 100%; } .rankTabs button { flex: 1; } }

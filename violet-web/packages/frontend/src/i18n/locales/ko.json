@@ -14,7 +14,8 @@
     "messageSearch": "메시지",
     "keywordGraph": "키워드 그래프",
     "workExperiment": "실험",
-    "authorSimilarity": "유사 작가"
+    "authorSimilarity": "유사 작가",
+    "activity": "사용자 활동"
   },
   "home": {
     "heading": "둘러보기",
@@ -307,6 +308,12 @@
       "resume": "이어서 읽기",
       "startOver": "처음부터"
     }
+  },
+  "activity": {
+    "eyebrow": "나의 라이브러리", "heading": "사용자 활동", "subtitle": "Violet에서 쌓인 활동을 한눈에 확인하세요.",
+    "reads": "읽기", "read": "읽음", "bookmarks": "북마크", "bookmark": "북마크 추가", "crops": "크롭", "crop": "크롭 저장", "downloads": "다운로드", "download": "다운로드", "uniqueWorks": "고유 작품", "actions": "회",
+    "trend": "활동 추이", "periodSummary": "활동 {{total}}회 · 활동일 {{days}}일 · 활동일 평균 {{average}}회", "days": "{{count}}일", "all": "전체",
+    "mix": "활동 구성", "mixSubtitle": "전체 기록에서 각 활동이 차지하는 비중", "recent": "최근 활동", "recentSubtitle": "user.db에 최근 저장된 변경 사항", "ranking": "많이 본 작품", "rankingSubtitle": "기록된 활동을 기준으로 작품을 순위별로 보여줍니다", "rank": { "total": "종합", "reads": "읽기", "bookmarks": "북마크" }, "empty": "아직 활동 기록이 없습니다", "error": "사용자 활동을 불러오지 못했습니다."
   },
   "messageSearch": {
     "heading": "메시지 검색",

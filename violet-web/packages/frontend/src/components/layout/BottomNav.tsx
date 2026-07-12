@@ -15,6 +15,7 @@ const navItems = [
   { to: '/keyword-graph', labelKey: 'nav.keywordGraph' },
   { to: '/work-experiment', labelKey: 'nav.workExperiment' },
   { to: '/author-similarity', labelKey: 'nav.authorSimilarity' },
+  { to: '/activity', labelKey: 'nav.activity' },
   { to: '/settings', labelKey: 'nav.settings' },
 ];
 
