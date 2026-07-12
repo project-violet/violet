@@ -99,7 +99,7 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ${VIOLET_DATA_ROOT:-./data}:/app/data
+      - ./violet-web/packages/backend/data:/app/data
       - violet-content-db:/content-data
     depends_on:
       content-db-init:
