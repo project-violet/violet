@@ -1,15 +1,18 @@
 import { useMemo, useState, type MouseEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
 import { Bookmark, CalendarDays, Crop, Download, Eye, TrendingUp } from 'lucide-react';
+import type { Article } from '@violet-web/shared';
 import { getUserActivity, type ActivityDay } from '../api/activity';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { useAllArticles } from '../hooks/useAllArticles';
+import { ArticleInfoDialog } from '../components/search/ArticleInfoDialog';
+import { WorkThumbnail } from '../components/common/WorkThumbnail';
 import styles from './ActivityPage.module.css';
 import { filterActivityPeriod } from './activity-period';
 
 const PERIODS = [30, 90, 365, 0] as const;
+type RankMetric = 'reads' | 'recordedSeconds' | 'averageSessionSeconds' | 'secondsPerPageEstimate';
 
 function ActivityChart({ days, labels }: { days: ActivityDay[]; labels: { total: string; reads: string; bookmarks: string; crops: string; downloads: string } }) {
   const [hovered, setHovered] = useState<{ index: number; left: number } | null>(null);
@@ -64,13 +67,21 @@ function ActivityChart({ days, labels }: { days: ActivityDay[]; labels: { total:
 export function ActivityPage() {
   const { t, i18n } = useTranslation();
   const [period, setPeriod] = useState<(typeof PERIODS)[number]>(90);
-  const [rankBy, setRankBy] = useState<'total' | 'reads' | 'bookmarks'>('total');
+  const [rankBy, setRankBy] = useState<RankMetric>('reads');
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const { data, isLoading, isError } = useQuery({ queryKey: ['userActivity'], queryFn: getUserActivity });
   const days = useMemo(() => filterActivityPeriod(data?.days ?? [], period), [data, period]);
   const periodTotal = days.reduce((sum, day) => sum + day.total, 0);
   const activeDays = days.filter((day) => day.total > 0).length;
   const average = activeDays ? periodTotal / activeDays : 0;
   const number = (value: number) => value.toLocaleString(i18n.language);
+  const duration = (seconds: number) => {
+    if (seconds <= 0) return '—';
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    if (hours) return `${hours}${t('activity.time.hours')} ${minutes}${t('activity.time.minutes')}`;
+    return `${minutes}${t('activity.time.minutes')} ${Math.round(seconds % 60)}${t('activity.time.seconds')}`;
+  };
   const formatDate = (value: string) => new Intl.DateTimeFormat(i18n.language, { dateStyle: 'medium' }).format(new Date(value));
   const rankedArticles = useMemo(() => [...(data?.topArticles ?? [])]
     .sort((a, b) => b[rankBy] - a[rankBy] || b.total - a.total)
@@ -142,22 +153,24 @@ export function ActivityPage() {
           <div className={styles.panelHeader}>
             <div><h2>{t('activity.ranking')}</h2><p>{t('activity.rankingSubtitle')}</p></div>
             <div className={styles.rankTabs}>
-              {(['total', 'reads', 'bookmarks'] as const).map((key) => <button key={key} className={rankBy === key ? styles.active : ''} onClick={() => setRankBy(key)}>{t(`activity.rank.${key}`)}</button>)}
+              {(['reads', 'recordedSeconds', 'averageSessionSeconds', 'secondsPerPageEstimate'] as const).map((key) => <button key={key} className={rankBy === key ? styles.active : ''} onClick={() => setRankBy(key)}>{t(`activity.rank.${key}`)}</button>)}
             </div>
           </div>
           <div className={styles.rankingList}>
             {rankedArticles.length === 0 && <div className={styles.empty}>{t('activity.empty')}</div>}
             {rankedArticles.map((item, index) => {
               const work = workById.get(item.articleId);
-              return <Link className={styles.rankItem} to={`/article/${item.articleId}`} key={item.articleId}>
+              return <button className={styles.rankItem} type="button" onClick={() => work && setSelectedArticle(work)} disabled={!work} key={item.articleId}>
                 <strong className={styles.rankNumber}>{index + 1}</strong>
-                <span className={styles.rankTitle}><strong>{work?.Title ?? `#${item.articleId}`}</strong><small>#{item.articleId}</small></span>
-                <span className={styles.rankMetrics}><b>{number(item[rankBy])}</b><small>{t(`activity.rank.${rankBy}`)}</small></span>
-              </Link>;
+                <WorkThumbnail articleId={Number(item.articleId)} size="activity" />
+                <span className={styles.rankTitle}><strong>{work?.Title ?? `#${item.articleId}`}</strong><small>#{item.articleId} · {number(item.reads)}{t('activity.time.sessions')} · {duration(item.recordedSeconds)} {t('activity.time.recorded')}</small></span>
+                <span className={styles.rankMetrics}><b>{rankBy === 'reads' ? number(item.reads) : duration(item[rankBy])}</b><small>{t(`activity.rank.${rankBy}`)}</small></span>
+              </button>;
             })}
           </div>
         </section>
       </div>
+      {selectedArticle && <ArticleInfoDialog article={selectedArticle} onClose={() => setSelectedArticle(null)} />}
     </div>
   );
 }

@@ -13,7 +13,7 @@ import { parsePipeTags, type Article } from '@violet-web/shared';
 import { fetchKeywordGraph, fetchKeywordLinks, fetchRelatedWorks } from '../api/keyword-graph';
 import { ArticleInfoDialog } from '../components/search/ArticleInfoDialog';
 import { useAllArticles } from '../hooks/useAllArticles';
-import { useCachedThumbnail } from '../hooks/useCachedThumbnail';
+import { WorkThumbnail } from '../components/common/WorkThumbnail';
 import { useAppStore } from '../stores/app-store';
 import type {
   ExpandMode,
@@ -1189,27 +1189,13 @@ function RelatedWorkArticleRow({
   articleLoading: boolean;
 }) {
   const [showInfoDialog, setShowInfoDialog] = useState(false);
-  const [previewPosition, setPreviewPosition] = useState<{ left: number; top: number } | null>(null);
   const articleId = Number(work.article_id);
-  const { src: thumbnailSrc, onLoadSuccess: onThumbnailLoad } = useCachedThumbnail(article?.Id ?? articleId);
   const artists = article ? parsePipeTags(article.Artists).slice(0, 2).join(', ') : '';
   const language = article?.Language ? article.Language.toUpperCase() : '';
   const pageCount = article?.Files ? `${article.Files.toLocaleString()}p` : '';
   const metaParts = [artists, language, pageCount].filter(Boolean);
   const matchedKeywords = formatWorkKeywords(work.matched_keywords);
   const fallbackKeywords = formatWorkKeywords(work.top_keywords);
-
-  const handlePreviewMove = (event: React.MouseEvent) => {
-    if (!thumbnailSrc) return;
-    const previewWidth = 280;
-    const previewHeight = 380;
-    const gap = 18;
-    const leftSide = event.clientX - previewWidth - gap;
-    setPreviewPosition({
-      left: leftSide >= gap ? leftSide : Math.max(gap, Math.min(event.clientX + gap, window.innerWidth - previewWidth - gap)),
-      top: Math.max(gap, Math.min(event.clientY + gap, window.innerHeight - previewHeight - gap)),
-    });
-  };
 
   return (
     <>
@@ -1221,19 +1207,7 @@ function RelatedWorkArticleRow({
         }}
         title={article ? article.Title : work.article_id}
       >
-        <span
-          className={styles.workThumb}
-          aria-hidden="true"
-          onMouseEnter={handlePreviewMove}
-          onMouseMove={handlePreviewMove}
-          onMouseLeave={() => setPreviewPosition(null)}
-        >
-          {thumbnailSrc ? (
-            <img src={thumbnailSrc} alt="" loading="lazy" onLoad={onThumbnailLoad} />
-          ) : (
-            <span className={styles.workThumbEmpty}>#{work.article_id}</span>
-          )}
-        </span>
+        <WorkThumbnail articleId={article?.Id ?? articleId} />
         <span className={styles.workMain}>
           <span className={styles.workTitle}>{article?.Title ?? (articleLoading ? 'loading article...' : `#${work.article_id}`)}</span>
           {metaParts.length > 0 && <span className={styles.workMeta}>{metaParts.join(' / ')}</span>}
@@ -1247,14 +1221,6 @@ function RelatedWorkArticleRow({
       {showInfoDialog &&
         article &&
         createPortal(<ArticleInfoDialog article={article} onClose={() => setShowInfoDialog(false)} />, document.body)}
-      {previewPosition &&
-        thumbnailSrc &&
-        createPortal(
-          <div className={styles.thumbnailPreview} style={{ left: previewPosition.left, top: previewPosition.top }}>
-            <img src={thumbnailSrc} alt="" />
-          </div>,
-          document.body,
-        )}
     </>
   );
 }

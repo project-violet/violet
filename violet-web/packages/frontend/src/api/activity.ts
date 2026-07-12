@@ -29,6 +29,11 @@ export interface UserActivity {
     crops: number;
     downloads: number;
     total: number;
+    recordedSeconds: number;
+    timedSessions: number;
+    averageSessionSeconds: number;
+    maxSessionSeconds: number;
+    secondsPerPageEstimate: number;
   }>;
   firstActivityAt: string | null;
   lastActivityAt: string | null;

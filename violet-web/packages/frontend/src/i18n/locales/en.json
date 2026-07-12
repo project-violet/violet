@@ -313,7 +313,7 @@
     "eyebrow": "Your library", "heading": "User activity", "subtitle": "A clear view of how you use Violet.",
     "reads": "Reads", "read": "Read", "bookmarks": "Bookmarks", "bookmark": "Bookmarked", "crops": "Crops", "crop": "Cropped", "downloads": "Downloads", "download": "Downloaded", "uniqueWorks": "Unique works", "actions": "actions",
     "trend": "Activity trend", "periodSummary": "{{total}} actions · {{days}} active days · {{average}} per active day", "days": "{{count}}d", "all": "All",
-    "mix": "Activity mix", "mixSubtitle": "Share of all recorded actions", "recent": "Recent activity", "recentSubtitle": "Latest changes saved in user.db", "ranking": "Top works", "rankingSubtitle": "Works ranked by your recorded activity", "rank": { "total": "Overall", "reads": "Reads", "bookmarks": "Bookmarks" }, "empty": "No activity yet", "error": "Failed to load user activity."
+    "mix": "Activity mix", "mixSubtitle": "Share of all recorded actions", "recent": "Recent activity", "recentSubtitle": "Latest changes saved in user.db", "ranking": "Most-read works", "rankingSubtitle": "Sessions longer than four hours are excluded", "rank": { "reads": "Sessions", "recordedSeconds": "Total time", "averageSessionSeconds": "Avg. session", "secondsPerPageEstimate": "Per page (est.)" }, "time": { "hours": "h", "minutes": "m", "seconds": "s", "sessions": " sessions", "recorded": "recorded" }, "empty": "No activity yet", "error": "Failed to load user activity."
   },
   "messageSearch": {
     "heading": "Message Search",

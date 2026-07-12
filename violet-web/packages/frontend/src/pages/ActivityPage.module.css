@@ -129,15 +129,16 @@
 .mixRow strong { font-size: .68rem; font-weight: 560; text-align: right; font-variant-numeric: tabular-nums; }
 
 .rankingList { display: flex; flex-direction: column; margin-top: 18px; border-top: 1px solid var(--activity-line); }
-.rankItem { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; gap: 10px; min-height: 42px; border-bottom: 1px solid var(--activity-line); color: var(--color-text); text-decoration: none; }
+.rankItem { width: 100%; display: grid; grid-template-columns: 30px 72px minmax(0, 1fr) auto; align-items: center; gap: 12px; min-height: 106px; padding: 5px 0; border: 0; border-bottom: 1px solid var(--activity-line); background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer; }
 .rankItem:hover { background: color-mix(in srgb, var(--color-bg-hover) 52%, transparent); }
-.rankNumber { color: var(--color-text-secondary); font-size: .7rem; font-weight: 500; text-align: center; font-variant-numeric: tabular-nums; }
+.rankItem:disabled { cursor: default; opacity: .65; }
+.rankNumber { color: var(--color-text-secondary); font-size: .76rem; font-weight: 500; text-align: center; font-variant-numeric: tabular-nums; }
 .rankItem:nth-child(-n+3) .rankNumber { color: var(--color-primary); }
 .rankTitle { display: flex; flex-direction: column; min-width: 0; }
-.rankTitle > strong { overflow: hidden; font-size: .74rem; font-weight: 540; text-overflow: ellipsis; white-space: nowrap; }
-.rankTitle small, .rankMetrics small { color: var(--color-text-secondary); font-size: .61rem; }
+.rankTitle > strong { overflow: hidden; font-size: .84rem; font-weight: 560; text-overflow: ellipsis; white-space: nowrap; }
+.rankTitle small, .rankMetrics small { color: var(--color-text-secondary); font-size: .68rem; }
 .rankMetrics { display: flex; align-items: flex-end; flex-direction: column; min-width: 52px; padding-right: 6px; }
-.rankMetrics b { font-size: .75rem; font-weight: 610; font-variant-numeric: tabular-nums; }
+.rankMetrics b { font-size: .84rem; font-weight: 610; font-variant-numeric: tabular-nums; }
 .empty, .message { padding: 36px; color: var(--color-text-secondary); text-align: center; }
 
 @media (max-width: 900px) {
