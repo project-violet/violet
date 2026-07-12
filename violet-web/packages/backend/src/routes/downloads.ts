@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getUserDb } from '../services/user-db.js';
 import { startDownload, retryDownload } from '../services/download-service.js';
+import { getLatestDownloadEntries } from '../services/user-date.js';
 
 export const downloadsRouter = Router();
 
@@ -24,10 +25,8 @@ downloadsRouter.post('/', async (req, res) => {
 
 downloadsRouter.get('/ids', (_req, res) => {
   const db = getUserDb();
-  const rows = db
-    .prepare('SELECT Article FROM Download ORDER BY Id DESC')
-    .all() as { Article: string }[];
-  res.json({ articleIds: rows.map((r) => r.Article) });
+  const entries = getLatestDownloadEntries(db);
+  res.json({ articleIds: entries.map((entry) => entry.articleId), entries });
 });
 
 downloadsRouter.get('/', (req, res) => {
