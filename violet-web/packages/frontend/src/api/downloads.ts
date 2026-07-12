@@ -15,9 +15,14 @@ export async function getDownloads(page = 0, pageSize = 30): Promise<DownloadsRe
   return data;
 }
 
-export async function getDownloadIds(): Promise<string[]> {
-  const { data } = await api.get<{ articleIds: string[] }>('/downloads/ids');
-  return data.articleIds;
+export interface DownloadDateEntry {
+  articleId: string;
+  date: string;
+}
+
+export async function getDownloadEntries(): Promise<DownloadDateEntry[]> {
+  const { data } = await api.get<{ entries: DownloadDateEntry[] }>('/downloads/ids');
+  return data.entries;
 }
 
 export async function getDownload(id: number): Promise<DownloadRecord> {

@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useCropBookmarks, useDeleteCropBookmark } from '../hooks/useBookmarks';
 import { useUserCropBookmarks } from '../hooks/useUserCropBookmarks';
@@ -14,11 +14,17 @@ import { useLocalSearchState } from '../hooks/useLocalSearchState';
 import { useIsMobile } from '../hooks/useMediaQuery';
 import { useAppStore } from '../stores/app-store';
 import styles from './CropBookmarksPage.module.css';
+import { DateRangeFilter } from '../components/search/DateRangeFilter';
+import { updateDateParams } from '../components/search/date-range-model';
+import { buildLocalDateDistribution, filterItemsByDateRange } from '../components/search/local-date-range-model';
 
 export function CropBookmarksPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const from = searchParams.get('from') || undefined;
+  const to = searchParams.get('to') || undefined;
 
   const { data: cropBookmarks, isLoading } = useCropBookmarks();
   const deleteCropMutation = useDeleteCropBookmark();
@@ -75,9 +81,15 @@ export function CropBookmarksPage() {
 
   // Filter crops based on filtered articles
   const filteredArticleIds = new Set(filteredArticles.map((a) => a.Id));
-  const filteredCrops = displayCrops.filter((crop) =>
+  const tagFilteredCrops = displayCrops.filter((crop) =>
     filteredArticleIds.has(crop.Article),
   );
+  const dateDistribution = buildLocalDateDistribution(
+    showUserBookmarks ? [] : tagFilteredCrops.map((crop) => crop.DateTime),
+  );
+  const filteredCrops = showUserBookmarks
+    ? tagFilteredCrops
+    : filterItemsByDateRange(tagFilteredCrops, (crop) => crop.DateTime, from, to);
 
   const cropControls = (
     <>
@@ -121,6 +133,19 @@ export function CropBookmarksPage() {
           showViewControls={false}
           sticky
           extraControls={cropControls}
+          dateRangeContent={!showUserBookmarks ? (
+            <DateRangeFilter
+              compact
+              query=""
+              from={from}
+              to={to}
+              distributionData={dateDistribution}
+              distributionLoading={loading}
+              onCommit={(nextFrom, nextTo) =>
+                setSearchParams(updateDateParams(searchParams, nextFrom, nextTo))
+              }
+            />
+          ) : undefined}
         />
       )}
 

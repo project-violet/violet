@@ -1,0 +1,171 @@
+.page {
+  --activity-line: color-mix(in srgb, var(--color-border) 72%, transparent);
+  width: min(100%, 1420px);
+  margin: 0 auto;
+  padding: 4px 0 48px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 74px;
+  padding: 8px 2px 18px;
+}
+
+.header h1 {
+  margin: 0 0 5px;
+  font-size: 1.45rem;
+  font-weight: 680;
+  letter-spacing: -.035em;
+}
+
+.header p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: .79rem;
+}
+
+.dateSpan {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--color-text-secondary);
+  font-size: .72rem;
+  white-space: nowrap;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-top: 1px solid var(--activity-line);
+  border-bottom: 1px solid var(--activity-line);
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 9px;
+  padding: 18px 20px 17px;
+  border-right: 1px solid var(--activity-line);
+}
+
+.statCard:first-child { padding-left: 2px; }
+.statCard:last-child { border-right: 0; }
+.statCard span { color: var(--color-text-secondary); font-size: .69rem; letter-spacing: .02em; }
+.statCard strong { font-size: clamp(1.25rem, 2vw, 1.75rem); font-weight: 590; letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
+
+.panel {
+  min-width: 0;
+  padding: 28px 2px 24px;
+  border-bottom: 1px solid var(--activity-line);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.panelHeader h2 { margin: 0 0 5px; font-size: .88rem; font-weight: 620; letter-spacing: -.01em; }
+.panelHeader p { margin: 0; color: var(--color-text-secondary); font-size: .7rem; }
+
+.periods, .rankTabs {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--activity-line);
+  border-radius: 5px;
+}
+
+.periods button, .rankTabs button {
+  padding: 5px 9px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: .68rem;
+}
+
+.periods button:hover, .rankTabs button:hover { color: var(--color-text); background: var(--color-bg-hover); }
+.periods button.active, .rankTabs button.active { background: var(--color-text); color: var(--color-bg); }
+
+.chartWrap {
+  position: relative;
+  height: 280px;
+  margin-top: 26px;
+  border-bottom: 1px solid var(--activity-line);
+  background-image: linear-gradient(var(--activity-line) 1px, transparent 1px);
+  background-size: 100% 25%;
+  cursor: crosshair;
+}
+
+.chart { display: block; width: 100%; height: 100%; overflow: visible; }
+.emptyChart { display: grid; place-items: center; height: 100%; color: var(--color-text-secondary); }
+.guideX, .guideY, .chartDot, .chartTooltip { position: absolute; pointer-events: none; }
+.guideX { top: 0; bottom: 0; width: 1px; background: color-mix(in srgb, var(--color-text) 42%, transparent); }
+.guideY { left: 0; right: 0; height: 1px; background: color-mix(in srgb, var(--color-text) 16%, transparent); }
+.chartDot { width: 7px; height: 7px; border: 2px solid var(--color-bg); border-radius: 50%; background: var(--color-primary); transform: translate(-50%, -50%); outline: 1px solid var(--color-primary); }
+.chartTooltip { z-index: 2; display: flex; flex-direction: column; gap: 3px; min-width: 205px; padding: 8px 10px; border: 1px solid var(--activity-line); border-radius: 4px; background: var(--color-bg-elevated); box-shadow: var(--shadow-sm); transform: translate(10px, -100%); font-size: .7rem; }
+.chartTooltip span, .chartTooltip small { color: var(--color-text-secondary); }
+.chartTooltip small { font-size: .62rem; white-space: nowrap; }
+.chartTooltip.tooltipLeft { transform: translate(calc(-100% - 10px), -100%); }
+.chartDates { display: flex; justify-content: space-between; margin-top: 7px; color: var(--color-text-secondary); font-size: .64rem; font-variant-numeric: tabular-nums; }
+
+.lowerGrid { display: grid; grid-template-columns: minmax(280px, .72fr) minmax(0, 1.28fr); border-bottom: 1px solid var(--activity-line); }
+.lowerGrid > .panel { padding: 26px 28px 20px 2px; border-bottom: 0; }
+.lowerGrid > .panel + .panel { padding-right: 2px; padding-left: 28px; border-left: 1px solid var(--activity-line); }
+
+.mixList { display: flex; flex-direction: column; gap: 18px; margin-top: 28px; }
+.mixRow { display: grid; grid-template-columns: 98px 1fr 48px; align-items: center; gap: 10px; font-size: .72rem; }
+.mixRow > span { display: flex; align-items: center; gap: 7px; }
+.mixRow > span svg { color: var(--color-text-secondary); }
+.mixRow > div { height: 3px; overflow: hidden; background: var(--activity-line); }
+.mixRow i { display: block; height: 100%; background: var(--color-primary); }
+.mixRow strong { font-size: .68rem; font-weight: 560; text-align: right; font-variant-numeric: tabular-nums; }
+
+.rankingList { display: flex; flex-direction: column; margin-top: 18px; border-top: 1px solid var(--activity-line); }
+.rankItem { width: 100%; display: grid; grid-template-columns: 30px 72px minmax(0, 1fr) auto; align-items: center; gap: 12px; min-height: 106px; padding: 5px 0; border: 0; border-bottom: 1px solid var(--activity-line); background: transparent; color: var(--color-text); font: inherit; text-align: left; cursor: pointer; }
+.rankItem:hover { background: color-mix(in srgb, var(--color-bg-hover) 52%, transparent); }
+.rankItem:disabled { cursor: default; opacity: .65; }
+.rankNumber { color: var(--color-text-secondary); font-size: .76rem; font-weight: 500; text-align: center; font-variant-numeric: tabular-nums; }
+.rankItem:nth-child(-n+3) .rankNumber { color: var(--color-primary); }
+.rankTitle { display: flex; flex-direction: column; min-width: 0; }
+.rankTitle > strong { overflow: hidden; font-size: .84rem; font-weight: 560; text-overflow: ellipsis; white-space: nowrap; }
+.rankTitle small, .rankMetrics small { color: var(--color-text-secondary); font-size: .68rem; }
+.rankMetrics { display: flex; align-items: flex-end; flex-direction: column; min-width: 52px; padding-right: 6px; }
+.rankMetrics b { font-size: .84rem; font-weight: 610; font-variant-numeric: tabular-nums; }
+.moreButton { display: block; width: 100%; padding: 11px; border: 0; border-bottom: 1px solid var(--activity-line); background: transparent; color: var(--color-text-secondary); cursor: pointer; font: inherit; font-size: .72rem; }
+.moreButton:hover { background: var(--color-bg-hover); color: var(--color-text); }
+.rankingOverlay { position: fixed; inset: 0; z-index: 180; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(0, 0, 0, .68); }
+.rankingDialog { width: min(860px, 100%); max-height: min(840px, calc(100vh - 48px)); display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-elevated); box-shadow: var(--shadow-md); }
+.rankingDialogHeader { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 18px; border-bottom: 1px solid var(--activity-line); }
+.rankingDialogHeader h2 { margin: 0 0 3px; font-size: 1rem; }
+.rankingDialogHeader span { color: var(--color-text-secondary); font-size: .7rem; }
+.rankingDialogHeader button { display: grid; width: 32px; height: 32px; place-items: center; padding: 0; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--color-text-secondary); cursor: pointer; }
+.rankingDialogHeader button:hover { background: var(--color-bg-hover); color: var(--color-text); }
+.rankingDialogList { min-height: 0; padding: 0 18px 12px; overflow-y: auto; }
+.empty, .message { padding: 36px; color: var(--color-text-secondary); text-align: center; }
+
+@media (max-width: 900px) {
+  .stats { grid-template-columns: repeat(5, minmax(100px, 1fr)); overflow-x: auto; }
+  .lowerGrid { grid-template-columns: 1fr; }
+  .lowerGrid > .panel, .lowerGrid > .panel + .panel { padding: 24px 2px; border-left: 0; border-bottom: 1px solid var(--activity-line); }
+}
+
+@media (max-width: 700px) {
+  .header { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .statCard { padding: 15px 14px; }
+  .statCard:first-child { padding-left: 14px; }
+  .panelHeader { flex-direction: column; }
+  .periods, .rankTabs { width: 100%; }
+  .periods button, .rankTabs button { flex: 1; }
+  .chartWrap { height: 210px; }
+  .rankingOverlay { padding: 0; }
+  .rankingDialog { max-height: 100vh; border-radius: 0; }
+  .rankingDialogList { padding: 0 10px 10px; }
+}

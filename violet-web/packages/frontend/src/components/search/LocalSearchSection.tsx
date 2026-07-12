@@ -20,6 +20,7 @@ interface LocalSearchSectionProps {
   sticky?: boolean;
   headerContent?: React.ReactNode;
   extraControls?: React.ReactNode;
+  dateRangeContent?: React.ReactNode;
 }
 
 export function LocalSearchSection({
@@ -35,6 +36,7 @@ export function LocalSearchSection({
   sticky = false,
   headerContent,
   extraControls,
+  dateRangeContent,
 }: LocalSearchSectionProps) {
   const { t } = useTranslation();
   const { viewMode, setViewMode, cardMinWidth, setCardMinWidth } = useAppStore();
@@ -48,7 +50,8 @@ export function LocalSearchSection({
           getSuggestions={getSuggestions}
           basePath={basePath}
         />
-        {!isLoading && resultCount !== undefined && resultCount > 0 && (
+        {dateRangeContent && <div className={styles.dateRange}>{dateRangeContent}</div>}
+        {!dateRangeContent && !isLoading && resultCount !== undefined && resultCount > 0 && (
           <div className={styles.resultCount}>
             {t('home.results', { count: resultCount })}
           </div>

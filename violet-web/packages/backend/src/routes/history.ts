@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { getUserDb } from '../services/user-db.js';
+import { getLatestHistoryEntries } from '../services/user-date.js';
 
 export const historyRouter = Router();
 
@@ -32,16 +33,8 @@ historyRouter.get('/', (req, res) => {
 
 historyRouter.get('/ids', (_req, res) => {
   const db = getUserDb();
-  const rows = db
-    .prepare(`
-      SELECT Article FROM (
-        SELECT Article, Id, ROW_NUMBER() OVER (PARTITION BY Article ORDER BY Id DESC) as rn
-        FROM ArticleReadLog
-      ) WHERE rn = 1
-      ORDER BY Id DESC
-    `)
-    .all() as { Article: string }[];
-  res.json({ articleIds: rows.map((r) => r.Article) });
+  const entries = getLatestHistoryEntries(db);
+  res.json({ articleIds: entries.map((entry) => entry.articleId), entries });
 });
 
 historyRouter.get('/last-page/:article', (req, res) => {

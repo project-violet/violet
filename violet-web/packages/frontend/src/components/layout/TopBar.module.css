@@ -22,23 +22,4 @@
 
 .searchWrapper {
   flex: 1;
-  max-width: 600px;
-}
-
-.results {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  color: var(--color-text-secondary);
-  font-size: 0.9rem;
-  white-space: nowrap;
-}
-
-.query {
-  font-weight: 500;
-  color: var(--color-text);
-}
-
-.count {
-  font-size: 0.85rem;
 }
