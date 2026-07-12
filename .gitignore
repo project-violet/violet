@@ -4,4 +4,5 @@ violet-graph/*.zip
 violet-graph/author_similarity.json
 violet-graph/.gocache/
 /data/
+/artifacts/
 /docs/superpowers/
