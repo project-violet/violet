@@ -47,7 +47,7 @@ def main() -> None:
         args.model,
         device=device,
         model_kwargs={"torch_dtype": torch.float16 if device != "cpu" else torch.float32},
-        tokenizer_kwargs={"padding_side": "left"},
+        processor_kwargs={"padding_side": "left"},
     )
     model.max_seq_length = int(manifest["max_length"])
     prompt = f"Instruct: {INSTRUCTION}\nQuery: {args.query}"
