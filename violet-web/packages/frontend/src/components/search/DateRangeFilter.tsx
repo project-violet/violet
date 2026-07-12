@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDateDistribution } from '../../hooks/useDateDistribution';
+import type { DateDistributionResponse } from '@violet-web/shared';
 import {
   buildSmoothAreaPath,
   clampRange,
@@ -14,14 +15,26 @@ interface DateRangeFilterProps {
   from?: string;
   to?: string;
   compact?: boolean;
+  distributionData?: DateDistributionResponse;
+  distributionLoading?: boolean;
   onCommit: (from?: string, to?: string) => void;
 }
 
-export function DateRangeFilter({ query, from, to, compact = false, onCommit }: DateRangeFilterProps) {
-  const distribution = useDateDistribution(query);
-  const buckets = distribution.data?.buckets ?? [];
-  const minDate = distribution.data?.minDate ?? '';
-  const maxDate = distribution.data?.maxDate ?? '';
+export function DateRangeFilter({
+  query,
+  from,
+  to,
+  compact = false,
+  distributionData,
+  distributionLoading = false,
+  onCommit,
+}: DateRangeFilterProps) {
+  const distribution = useDateDistribution(query, distributionData === undefined);
+  const data = distributionData ?? distribution.data;
+  const isLoading = distributionData === undefined ? distribution.isLoading : distributionLoading;
+  const buckets = data?.buckets ?? [];
+  const minDate = data?.minDate ?? '';
+  const maxDate = data?.maxDate ?? '';
   const maxOffset = useMemo(
     () => minDate && maxDate ? dateToDayOffset(minDate, maxDate) : 0,
     [maxDate, minDate],
@@ -31,15 +44,18 @@ export function DateRangeFilter({ query, from, to, compact = false, onCommit }: 
 
   useEffect(() => {
     if (!minDate || !maxDate) return;
-    const next: [number, number] = [
+    const next = clampRange(
       dateToDayOffset(minDate, from ?? minDate),
       dateToDayOffset(minDate, to ?? maxDate),
-    ];
+      0,
+      maxOffset,
+      'from',
+    );
     draftRef.current = next;
     setDraft(next);
-  }, [from, maxDate, minDate, to]);
+  }, [from, maxDate, maxOffset, minDate, to]);
 
-  if (distribution.isLoading) {
+  if (isLoading) {
     return (
       <div
         className={`${styles.skeleton} ${compact ? styles.compactSkeleton : ''}`}
@@ -48,7 +64,7 @@ export function DateRangeFilter({ query, from, to, compact = false, onCommit }: 
     );
   }
 
-  if (distribution.isError) {
+  if (distributionData === undefined && distribution.isError) {
     return (
       <div className={styles.error}>
         <span>날짜 분포를 불러오지 못했습니다.</span>
@@ -57,7 +73,7 @@ export function DateRangeFilter({ query, from, to, compact = false, onCommit }: 
     );
   }
 
-  if (!distribution.data || buckets.length === 0) return null;
+  if (!data || buckets.length === 0) return null;
 
   const fromDate = dayOffsetToDate(minDate, draft[0]);
   const toDate = dayOffsetToDate(minDate, draft[1]);
@@ -102,6 +118,7 @@ export function DateRangeFilter({ query, from, to, compact = false, onCommit }: 
     <section
       className={`${styles.container} ${compact ? styles.compact : ''}`}
       aria-label="작품 날짜 범위"
+      onDoubleClick={() => onCommit(undefined, undefined)}
     >
       <header className={styles.header}>
         <span>{fromDate} – {toDate}</span>

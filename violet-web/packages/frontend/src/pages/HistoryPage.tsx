@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { getHistoryIds } from '../api/history';
+import { getHistoryEntries } from '../api/history';
 import { useAllArticles } from '../hooks/useAllArticles';
 import { LocalSearchSection } from '../components/search/LocalSearchSection';
 import { SearchResultGrid } from '../components/search/SearchResultGrid';
@@ -15,6 +15,9 @@ import { useIsMobile } from '../hooks/useMediaQuery';
 import { useAppStore } from '../stores/app-store';
 import { usePaginationKeyboard } from '../hooks/usePaginationKeyboard';
 import styles from './HistoryPage.module.css';
+import { DateRangeFilter } from '../components/search/DateRangeFilter';
+import { updateDateParams } from '../components/search/date-range-model';
+import { buildLocalDateDistribution, filterItemsByDateRange } from '../components/search/local-date-range-model';
 
 const PAGE_SIZE = 30;
 
@@ -26,6 +29,8 @@ export function HistoryPage() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const page = parseInt(searchParams.get('p') || '0');
+  const from = searchParams.get('from') || undefined;
+  const to = searchParams.get('to') || undefined;
   const setPage = useCallback(
     (updater: number | ((prev: number) => number)) => {
       const newPage = typeof updater === 'function' ? updater(page) : updater;
@@ -42,10 +47,11 @@ export function HistoryPage() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   // Fetch all history article IDs
-  const { data: articleIds, isLoading: idsLoading } = useQuery({
+  const { data: historyEntries, isLoading: idsLoading } = useQuery({
     queryKey: ['readHistory', 'ids'],
-    queryFn: getHistoryIds,
+    queryFn: getHistoryEntries,
   });
+  const articleIds = historyEntries?.map((entry) => entry.articleId);
 
   // Fetch all articles in bulk
   const { data: allArticles, isLoading: articlesLoading } = useAllArticles(
@@ -59,7 +65,17 @@ export function HistoryPage() {
   const tagSummary = useArticleTagSummary(allArticles ?? []);
 
   // Filter articles based on search query
-  const filteredArticles = useLocalArticleSearch(allArticles ?? []);
+  const searchFilteredArticles = useLocalArticleSearch(allArticles ?? []);
+  const historyDateByArticle = new Map(historyEntries?.map((entry) => [entry.articleId, entry.date]));
+  const dateDistribution = buildLocalDateDistribution(
+    searchFilteredArticles.map((article) => historyDateByArticle.get(String(article.Id)) ?? ''),
+  );
+  const filteredArticles = filterItemsByDateRange(
+    searchFilteredArticles,
+    (article) => historyDateByArticle.get(String(article.Id)) ?? '',
+    from,
+    to,
+  );
 
   // Paginate/slice filtered results for display
   const totalPages = Math.ceil(filteredArticles.length / PAGE_SIZE);
@@ -100,6 +116,19 @@ export function HistoryPage() {
           resultCount={filteredArticles.length}
           isLoading={isLoading}
           sticky
+          dateRangeContent={
+            <DateRangeFilter
+              compact
+              query=""
+              from={from}
+              to={to}
+              distributionData={dateDistribution}
+              distributionLoading={isLoading}
+              onCommit={(nextFrom, nextTo) =>
+                setSearchParams(updateDateParams(searchParams, nextFrom, nextTo))
+              }
+            />
+          }
         />
       )}
 

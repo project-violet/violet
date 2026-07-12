@@ -15,6 +15,9 @@ import { useIsMobile } from '../hooks/useMediaQuery';
 import { useAppStore } from '../stores/app-store';
 import { usePaginationKeyboard } from '../hooks/usePaginationKeyboard';
 import styles from './BookmarksPage.module.css';
+import { DateRangeFilter } from '../components/search/DateRangeFilter';
+import { updateDateParams } from '../components/search/date-range-model';
+import { buildLocalDateDistribution, filterItemsByDateRange } from '../components/search/local-date-range-model';
 
 const PAGE_SIZE = 30;
 
@@ -35,6 +38,8 @@ export function BookmarksPage() {
   });
   const [searchParams, setSearchParams] = useSearchParams();
   const page = parseInt(searchParams.get('p') || '0');
+  const from = searchParams.get('from') || undefined;
+  const to = searchParams.get('to') || undefined;
   const setPage = useCallback(
     (updater: number | ((prev: number) => number)) => {
       const newPage = typeof updater === 'function' ? updater(page) : updater;
@@ -68,7 +73,19 @@ export function BookmarksPage() {
   const tagSummary = useArticleTagSummary(allArticles ?? []);
 
   // Filter articles based on search query
-  const filteredArticles = useLocalArticleSearch(allArticles ?? []);
+  const searchFilteredArticles = useLocalArticleSearch(allArticles ?? []);
+  const bookmarkDateByArticle = new Map(
+    allBookmarks.map((bookmark) => [bookmark.Article, bookmark.DateTime]),
+  );
+  const dateDistribution = buildLocalDateDistribution(
+    searchFilteredArticles.map((article) => bookmarkDateByArticle.get(String(article.Id)) ?? ''),
+  );
+  const filteredArticles = filterItemsByDateRange(
+    searchFilteredArticles,
+    (article) => bookmarkDateByArticle.get(String(article.Id)) ?? '',
+    from,
+    to,
+  );
 
   // Paginate/slice filtered results for display
   const totalPages = Math.ceil(filteredArticles.length / PAGE_SIZE);
@@ -156,6 +173,19 @@ export function BookmarksPage() {
                 onSelect={setSelectedGroupId}
               />
             )
+          }
+          dateRangeContent={
+            <DateRangeFilter
+              compact
+              query=""
+              from={from}
+              to={to}
+              distributionData={dateDistribution}
+              distributionLoading={isLoading}
+              onCommit={(nextFrom, nextTo) =>
+                setSearchParams(updateDateParams(searchParams, nextFrom, nextTo))
+              }
+            />
           }
         />
       )}

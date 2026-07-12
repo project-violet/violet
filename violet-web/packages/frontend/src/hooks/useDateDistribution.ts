@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchDateDistribution } from '../api/content';
 
-export function useDateDistribution(query: string) {
+export function useDateDistribution(query: string, enabled = true) {
   const [debouncedQuery, setDebouncedQuery] = useState(query);
 
   useEffect(() => {
@@ -13,7 +13,7 @@ export function useDateDistribution(query: string) {
   return useQuery({
     queryKey: ['date-distribution', debouncedQuery],
     queryFn: ({ signal }) => fetchDateDistribution(debouncedQuery, signal),
-    enabled: debouncedQuery.length > 0,
+    enabled: enabled && debouncedQuery.length > 0,
     staleTime: 60_000,
   });
 }
