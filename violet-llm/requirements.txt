@@ -1,0 +1,5 @@
+numpy>=1.26
+orjson>=3.10
+sentence-transformers>=2.7
+transformers>=4.51
+tqdm>=4.66
