@@ -2,7 +2,7 @@ import { useMemo, useState, type MouseEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
-import { Bookmark, CalendarDays, Crop, Download, Eye, Images, TrendingUp } from 'lucide-react';
+import { Bookmark, CalendarDays, Crop, Download, Eye, TrendingUp } from 'lucide-react';
 import { getUserActivity, type ActivityDay } from '../api/activity';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { useAllArticles } from '../hooks/useAllArticles';
@@ -82,6 +82,13 @@ export function ActivityPage() {
   if (isError || !data) return <div className={styles.message}>{t('activity.error')}</div>;
 
   const cards = [
+    ['reads', data.totals.reads],
+    ['bookmarks', data.totals.bookmarks],
+    ['crops', data.totals.crops],
+    ['downloads', data.totals.downloads],
+    ['uniqueWorks', data.totals.uniqueArticles],
+  ] as const;
+  const mixCards = [
     ['reads', data.totals.reads, Eye],
     ['bookmarks', data.totals.bookmarks, Bookmark],
     ['crops', data.totals.crops, Crop],
@@ -92,7 +99,6 @@ export function ActivityPage() {
     <div className={styles.page}>
       <header className={styles.header}>
         <div>
-          <p className={styles.eyebrow}>{t('activity.eyebrow')}</p>
           <h1>{t('activity.heading')}</h1>
           <p>{t('activity.subtitle')}</p>
         </div>
@@ -102,16 +108,12 @@ export function ActivityPage() {
       </header>
 
       <section className={styles.stats}>
-        {cards.map(([key, value, Icon]) => (
+        {cards.map(([key, value]) => (
           <article className={styles.statCard} key={key}>
-            <span className={styles.statIcon}><Icon size={20} /></span>
-            <div><strong>{number(value)}</strong><span>{t(`activity.${key}`)}</span></div>
+            <span>{t(`activity.${key}`)}</span>
+            <strong>{number(value)}</strong>
           </article>
         ))}
-        <article className={styles.statCard}>
-          <span className={styles.statIcon}><Images size={20} /></span>
-          <div><strong>{number(data.totals.uniqueArticles)}</strong><span>{t('activity.uniqueWorks')}</span></div>
-        </article>
       </section>
 
       <section className={styles.panel}>
@@ -129,7 +131,7 @@ export function ActivityPage() {
         <section className={styles.panel}>
           <div className={styles.panelHeader}><div><h2>{t('activity.mix')}</h2><p>{t('activity.mixSubtitle')}</p></div><TrendingUp size={20} /></div>
           <div className={styles.mixList}>
-            {cards.map(([key, value, Icon]) => {
+            {mixCards.map(([key, value, Icon]) => {
               const ratio = data.totals.total ? (value / data.totals.total) * 100 : 0;
               return <div className={styles.mixRow} key={key}><span><Icon size={16} />{t(`activity.${key}`)}</span><div><i style={{ width: `${ratio}%` }} /></div><strong>{ratio.toFixed(1)}%</strong></div>;
             })}
