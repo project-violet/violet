@@ -32,8 +32,8 @@ class PendingWork:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Embed prepared works with Qwen3-Embedding-4B.")
-    parser.add_argument("--dataset-name", default="latest-1000")
-    parser.add_argument("--output-name", default="latest-1000")
+    parser.add_argument("--dataset-name", default="latest-5000")
+    parser.add_argument("--output-name", default="latest-5000")
     parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument("--batch-size", type=int, default=64, help="Maximum requests in one GPU batch.")
     parser.add_argument(

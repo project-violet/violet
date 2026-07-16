@@ -22,7 +22,7 @@ INSTRUCTION = (
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Search local scene embeddings.")
     parser.add_argument("query")
-    parser.add_argument("--output-name", default="latest-1000")
+    parser.add_argument("--output-name", default="latest-5000")
     parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument("--top-k", type=int, default=20)
     parser.add_argument("--device")
