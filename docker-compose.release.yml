@@ -77,6 +77,30 @@ services:
       - ${VIOLET_DATA_ROOT:-./data}:/data:ro
     restart: unless-stopped
 
+  llm-search:
+    image: violetdev/violet-llm-search:${VIOLET_IMAGE_TAG:-latest}
+    environment:
+      VIOLET_LLM_OUTPUT_ROOT: /data
+      VIOLET_LLM_OUTPUT_NAME: ${VIOLET_LLM_OUTPUT_NAME:-latest-5000}
+      VIOLET_LLM_INDEX_NAME: ${VIOLET_LLM_INDEX_NAME:-index}
+      VIOLET_LLM_SEARCH_CONCURRENCY: ${VIOLET_LLM_SEARCH_CONCURRENCY:-1}
+      VIOLET_EMBEDDING_URL: ${VIOLET_EMBEDDING_URL:-http://host.docker.internal:8081/v1/embeddings}
+      VIOLET_RERANKER_URL: ${VIOLET_RERANKER_URL:-http://host.docker.internal:8082/v1/rerank}
+    ports:
+      - "8788:8788"
+    volumes:
+      - ${VIOLET_LLM_OUTPUT_ROOT:-./violet-llm/outputs}:/data:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8788/health', timeout=2)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    init: true
+    restart: unless-stopped
+
   web:
     image: violetdev/violet-web:${VIOLET_IMAGE_TAG:-latest}
     environment:
