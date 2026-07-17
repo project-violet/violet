@@ -4,8 +4,6 @@ import argparse
 import heapq
 import json
 import os
-import shutil
-import subprocess
 import sys
 import time
 from pathlib import Path
@@ -22,7 +20,7 @@ from common import load_json, read_jsonl, safe_model_name
 ROOT = Path(__file__).resolve().parent
 DEFAULT_INDEX_MODEL = "Qwen/Qwen3-Embedding-4B"
 DEFAULT_EMBEDDING_MODEL = "Qwen/Qwen3-Embedding-4B-GGUF:Q5_K_M"
-DEFAULT_RERANKER_MODEL = "Voodisss/Qwen3-Reranker-4B-GGUF-llama_cpp:Q4_K_M"
+DEFAULT_RERANKER_MODEL = "Qwen/Qwen3-Reranker-0.6B"
 INSTRUCTION = (
     "Given a Korean natural-language query, retrieve Korean comic dialogue scenes "
     "that best match the described situation, emotional tone, and dialogue style."
@@ -32,7 +30,7 @@ DEFAULT_INDEX_BLOCK_ROWS = 32_768
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Search embeddings and rerank with quantized Qwen3 4B models.")
+    parser = argparse.ArgumentParser(description="Search with Qwen3 4B embeddings and a Qwen3 reranker.")
     parser.add_argument("query")
     parser.add_argument("--output-name", default="latest-5000")
     parser.add_argument("--index-name", default="index")
@@ -53,12 +51,25 @@ def parse_args() -> argparse.Namespace:
         default=os.environ.get("VIOLET_RERANKER_URL", "http://127.0.0.1:8082/v1/rerank"),
     )
     parser.add_argument("--embedding-model", default=DEFAULT_EMBEDDING_MODEL)
-    parser.add_argument("--reranker-model", default=DEFAULT_RERANKER_MODEL)
+    parser.add_argument(
+        "--reranker-model",
+        default=os.environ.get("VIOLET_RERANKER_MODEL", DEFAULT_RERANKER_MODEL),
+    )
+    parser.add_argument(
+        "--reranker-separate-instruction",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Send the task instruction through the vLLM rerank API instruction field.",
+    )
     parser.add_argument("--timeout", type=float, default=300.0)
     parser.add_argument("--no-rerank", action="store_true")
-    parser.add_argument("--no-auto-start", action="store_true")
     parser.add_argument("--json", action="store_true", dest="as_json")
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.reranker_separate_instruction is None:
+        args.reranker_separate_instruction = (
+            args.reranker_model == DEFAULT_RERANKER_MODEL
+        )
+    return args
 
 
 def post_json(url: str, payload: dict[str, Any], timeout: float) -> Any:
@@ -76,8 +87,8 @@ def post_json(url: str, payload: dict[str, Any], timeout: float) -> Any:
         raise RuntimeError(f"{url} returned HTTP {error.code}: {detail}") from error
     except URLError as error:
         raise RuntimeError(
-            f"Cannot reach {url}. Start the quantized llama.cpp servers with "
-            ".\\start-search-models.ps1 first."
+            f"Cannot reach {url}. Start the Docker model services with "
+            "`docker compose up -d embedding-llama reranker-vllm` first."
         ) from error
 
 
@@ -94,60 +105,21 @@ def server_is_ready(url: str) -> bool:
         return False
 
 
-def find_llama_server() -> str:
-    bundled = ROOT / ".tools" / "llama-cuda" / "llama-server.exe"
-    if bundled.exists():
-        return str(bundled)
-    executable = shutil.which("llama-server")
-    if executable:
-        return executable
-    local_app_data = os.environ.get("LOCALAPPDATA")
-    if local_app_data:
-        package_root = Path(local_app_data) / "Microsoft" / "WinGet" / "Packages"
-        candidates = sorted(package_root.glob("ggml.llamacpp_*/llama-server.exe"), reverse=True)
-        if candidates:
-            return str(candidates[0])
-    raise RuntimeError(
-        "llama-server is not installed. Run `winget install --id ggml.llamacpp --exact`, "
-        "then retry."
-    )
-
-
 def ensure_servers(args: argparse.Namespace) -> None:
-    required_urls = [args.embedding_url]
-    if not args.no_rerank:
-        required_urls.append(args.reranker_url)
     embedding_ready = server_is_ready(args.embedding_url)
     reranker_ready = args.no_rerank or server_is_ready(args.reranker_url)
     if embedding_ready and reranker_ready:
         return
-    if args.no_auto_start:
-        raise RuntimeError("Search model servers are not running. Run .\\start-search-models.ps1 first.")
-    if any(urlsplit(url).hostname not in {"127.0.0.1", "localhost"} for url in required_urls):
-        raise RuntimeError("A configured remote model server is unavailable; automatic startup is local-only.")
-
-    command = [
-        "powershell.exe",
-        "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-File",
-        str(ROOT / "start-search-models.ps1"),
-        "-LlamaServer",
-        find_llama_server(),
-    ]
-    if not embedding_ready and reranker_ready:
-        command.append("-EmbeddingOnly")
-        service_description = "quantized embedding server"
-    elif embedding_ready and not reranker_ready:
-        command.append("-RerankerOnly")
-        service_description = "quantized reranker server"
-    else:
-        service_description = "quantized embedding and reranker servers"
-    print(f"Starting {service_description}...", file=sys.stderr)
-    subprocess.run(command, cwd=ROOT, check=True)
-    if not all(server_is_ready(url) for url in required_urls):
-        raise RuntimeError("Quantized servers did not become ready. Check violet-llm/.runtime logs.")
+    missing = []
+    if not embedding_ready:
+        missing.append(f"embedding ({args.embedding_url})")
+    if not reranker_ready:
+        missing.append(f"reranker ({args.reranker_url})")
+    raise RuntimeError(
+        f"Search model services are not ready: {', '.join(missing)}. "
+        "From the repository root, run "
+        "`docker compose up -d embedding-llama reranker-vllm`."
+    )
 
 
 def embed_query(args: argparse.Namespace, dimensions: int) -> np.ndarray:
@@ -335,15 +307,22 @@ def rerank_candidates(
             for rank, row in enumerate(candidates[: args.top_k], 1)
         ]
 
-    query = f"Instruct: {INSTRUCTION}\nQuery: {args.query}"
+    query = (
+        args.query
+        if args.reranker_separate_instruction
+        else f"Instruct: {INSTRUCTION}\nQuery: {args.query}"
+    )
+    payload: dict[str, Any] = {
+        "model": args.reranker_model,
+        "query": query,
+        "documents": [str(row["text"]) for row in candidates],
+        "top_n": min(args.top_k, len(candidates)),
+    }
+    if args.reranker_separate_instruction:
+        payload["instruction"] = INSTRUCTION
     response = post_json(
         args.reranker_url,
-        {
-            "model": args.reranker_model,
-            "query": query,
-            "documents": [str(row["text"]) for row in candidates],
-            "top_n": min(args.top_k, len(candidates)),
-        },
+        payload,
         args.timeout,
     )
     ranked = parse_reranker_results(response)

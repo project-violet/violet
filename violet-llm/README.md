@@ -18,23 +18,24 @@ Qwen3-Embedding-4B experiment over the latest 10,000 numeric files in
     python prepare.py --overwrite
     python embed.py
 
-Search uses two quantized Qwen3 4B models by default: the official
-`Qwen3-Embedding-4B-GGUF` Q5_K_M model for the query and a
-`Voodisss/Qwen3-Reranker-4B-GGUF-llama_cpp` Q4_K_M model for reranking. This
-conversion includes Qwen's yes/no classifier, rank pooling metadata, and the
-reranking chat template; generic Qwen3 GGUF conversions do not. Install a current
-CUDA-enabled llama.cpp build, start both local servers, then search:
+Search uses the quantized `Qwen3-Embedding-4B-GGUF` Q5_K_M model through
+llama.cpp for the query and the official BF16 `Qwen3-Reranker-0.6B` through
+vLLM for reranking. Both model servers run as CUDA-enabled Docker Compose
+services. Start them from the repository root, then search:
 
+    docker compose up -d embedding-llama reranker-vllm
+    cd violet-llm
     python search.py "your Korean scene query" --top-k 20
 
-Use a CUDA-enabled llama.cpp build. The winget package currently installs the
-Vulkan build, which can fail with `vk::Queue::submit: ErrorDeviceLost` under
-this two-model workload. Put the official CUDA build in
-`.tools/llama-cuda`; `search.py` prefers it over PATH. `search.py` starts both
-local servers automatically when needed. Manual server
-startup remains available for inspecting logs or warming the models first:
+The embedding service uses the official llama.cpp `server-cuda` image and keeps
+downloaded GGUF files in the `violet-llama-cache` Docker volume. The reranker
+keeps Hugging Face model files in `violet-huggingface-cache`. Inspect startup
+and model-loading logs with:
 
-    .\start-search-models.ps1
+    docker compose logs -f embedding-llama reranker-vllm
+
+`search.py` only checks that the configured endpoints are ready; service
+lifecycle is owned entirely by Docker Compose.
 
 The embedding search retrieves 100 candidates by default and the reranker
 returns the final 20. Increase the candidate pool independently when needed:
@@ -60,13 +61,13 @@ load the embedding model or require a GPU. Rebuild it after adding more works.
 
     python search.py "your Korean scene query" --candidate-k 300 --top-k 100
 
-Use `--no-rerank` to inspect the quantized embedding ranking alone. Stop both
-background servers when finished:
+Use `--no-rerank` to inspect the quantized embedding ranking alone. Stop the
+model services when finished:
 
-    .\stop-search-models.ps1
+    docker compose stop embedding-llama reranker-vllm
 
-The first server startup downloads roughly 5.4 GB of model files. Runtime logs
-and process IDs are kept under the ignored `.runtime` directory. The endpoints
+The first startup downloads the model files and the vLLM CUDA image. Runtime
+logs and process IDs are kept under the ignored `.runtime` directory. The endpoints
 can also be supplied through `--embedding-url`, `--reranker-url`,
 `VIOLET_EMBEDDING_URL`, and `VIOLET_RERANKER_URL`.
 
@@ -156,14 +157,14 @@ after a successful merge; pass `--keep-remote` to retain them.
 
 `server.py` exposes the consolidated embedding index over HTTP. It opens the
 index and its memory maps once at startup. Dialogue text is not preloaded.
-Start the local quantized embedding and reranker servers first, then start the
-Docker service from the repository root:
+Start both model servers and the search API from the repository root:
 
-    .\violet-llm\start-search-models.ps1
-    docker compose up -d --build llm-search
+    docker compose up -d --build embedding-llama reranker-vllm llm-search
 
-The container listens on port `8788` and calls the host model servers through
-`host.docker.internal`. The default output mount is
+The search container listens on port `8788` and calls both model services
+through the Compose network. For local CLI and diagnostics, the embedding API
+is exposed on port `8081` and vLLM on the original reranker port `8082`. The
+default output mount is
 `./violet-llm/outputs:/data:ro`; override `VIOLET_LLM_OUTPUT_ROOT` or
 `VIOLET_LLM_OUTPUT_NAME` when necessary.
 

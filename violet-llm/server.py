@@ -35,6 +35,13 @@ def env_int(name: str, default: int) -> int:
     return value
 
 
+def env_bool(name: str, default: bool = False) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
 class SearchRequest(BaseModel):
     query: str = Field(min_length=1, max_length=500)
     candidate_k: int = Field(default=500, ge=1)
@@ -72,6 +79,9 @@ class SearchEngine:
         )
         self.reranker_model = os.environ.get(
             "VIOLET_RERANKER_MODEL", DEFAULT_RERANKER_MODEL
+        )
+        self.reranker_separate_instruction = env_bool(
+            "VIOLET_RERANKER_SEPARATE_INSTRUCTION"
         )
 
         manifest_path = self.index_dir / "manifest.json"
@@ -201,15 +211,22 @@ class SearchEngine:
         results: list[dict[str, Any]] = []
         if request.rerank:
             candidates = self.materialize(refs)
-            reranker_query = f"Instruct: {INSTRUCTION}\nQuery: {request.query}"
+            reranker_query = (
+                request.query
+                if self.reranker_separate_instruction
+                else f"Instruct: {INSTRUCTION}\nQuery: {request.query}"
+            )
+            reranker_payload: dict[str, Any] = {
+                "model": self.reranker_model,
+                "query": reranker_query,
+                "documents": [str(row["text"]) for row in candidates],
+                "top_n": min(request.top_k, len(candidates)),
+            }
+            if self.reranker_separate_instruction:
+                reranker_payload["instruction"] = INSTRUCTION
             response = post_json(
                 self.reranker_url,
-                {
-                    "model": self.reranker_model,
-                    "query": reranker_query,
-                    "documents": [str(row["text"]) for row in candidates],
-                    "top_n": min(request.top_k, len(candidates)),
-                },
+                reranker_payload,
                 self.timeout,
             )
             ranked = parse_reranker_results(response)
