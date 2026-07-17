@@ -34,7 +34,7 @@ this two-model workload. Put the official CUDA build in
 local servers automatically when needed. Manual server
 startup remains available for inspecting logs or warming the models first:
 
-    .\start-quantized.ps1
+    .\start-search-models.ps1
 
 The embedding search retrieves 100 candidates by default and the reranker
 returns the final 20. Increase the candidate pool independently when needed:
@@ -63,7 +63,7 @@ load the embedding model or require a GPU. Rebuild it after adding more works.
 Use `--no-rerank` to inspect the quantized embedding ranking alone. Stop both
 background servers when finished:
 
-    .\stop-quantized.ps1
+    .\stop-search-models.ps1
 
 The first server startup downloads roughly 5.4 GB of model files. Runtime logs
 and process IDs are kept under the ignored `.runtime` directory. The endpoints
@@ -159,7 +159,7 @@ index and its memory maps once at startup. Dialogue text is not preloaded.
 Start the local quantized embedding and reranker servers first, then start the
 Docker service from the repository root:
 
-    .\violet-llm\start-quantized.ps1
+    .\violet-llm\start-search-models.ps1
     docker compose up -d --build llm-search
 
 The container listens on port `8788` and calls the host model servers through

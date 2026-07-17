@@ -3,7 +3,7 @@ $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $statePath = Join-Path $root ".runtime\servers.json"
 
 if (-not (Test-Path -LiteralPath $statePath)) {
-    Write-Host "No quantized server state found."
+    Write-Host "No search model server state found."
     exit 0
 }
 

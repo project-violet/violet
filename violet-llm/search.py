@@ -77,7 +77,7 @@ def post_json(url: str, payload: dict[str, Any], timeout: float) -> Any:
     except URLError as error:
         raise RuntimeError(
             f"Cannot reach {url}. Start the quantized llama.cpp servers with "
-            ".\\start-quantized.ps1 first."
+            ".\\start-search-models.ps1 first."
         ) from error
 
 
@@ -122,7 +122,7 @@ def ensure_servers(args: argparse.Namespace) -> None:
     if embedding_ready and reranker_ready:
         return
     if args.no_auto_start:
-        raise RuntimeError("Quantized llama.cpp servers are not running. Run .\\start-quantized.ps1 first.")
+        raise RuntimeError("Search model servers are not running. Run .\\start-search-models.ps1 first.")
     if any(urlsplit(url).hostname not in {"127.0.0.1", "localhost"} for url in required_urls):
         raise RuntimeError("A configured remote model server is unavailable; automatic startup is local-only.")
 
@@ -132,7 +132,7 @@ def ensure_servers(args: argparse.Namespace) -> None:
         "-ExecutionPolicy",
         "Bypass",
         "-File",
-        str(ROOT / "start-quantized.ps1"),
+        str(ROOT / "start-search-models.ps1"),
         "-LlamaServer",
         find_llama_server(),
     ]
