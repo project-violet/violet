@@ -7,6 +7,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -26,12 +27,16 @@ INSTRUCTION = (
     "Given a Korean natural-language query, retrieve Korean comic dialogue scenes "
     "that best match the described situation, emotional tone, and dialogue style."
 )
+LOCATION_DTYPE = np.dtype([("work_id", "<i8"), ("chunk_index", "<i4")])
+DEFAULT_INDEX_BLOCK_ROWS = 32_768
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Search embeddings and rerank with quantized Qwen3 4B models.")
     parser.add_argument("query")
     parser.add_argument("--output-name", default="latest-5000")
+    parser.add_argument("--index-name", default="index")
+    parser.add_argument("--index-block-rows", type=int, default=DEFAULT_INDEX_BLOCK_ROWS)
     parser.add_argument(
         "--model",
         default=DEFAULT_INDEX_MODEL,
@@ -171,12 +176,18 @@ def embed_query(args: argparse.Namespace, dimensions: int) -> np.ndarray:
     return vector / norm
 
 
-def retrieve_candidates(
+def top_indices(scores: np.ndarray, count: int) -> np.ndarray:
+    if count >= len(scores):
+        return np.arange(len(scores))
+    return np.argpartition(scores, len(scores) - count)[-count:]
+
+
+def retrieve_legacy_candidates(
     output_dir: Path,
     query: np.ndarray,
     candidate_k: int,
 ) -> list[dict[str, Any]]:
-    heap: list[tuple[float, int, dict[str, Any]]] = []
+    heap: list[tuple[float, int, Path, int]] = []
     serial = 0
     for work_dir in (output_dir / "works").iterdir():
         if not work_dir.is_dir() or work_dir.name.startswith("."):
@@ -186,20 +197,113 @@ def retrieve_candidates(
         count = min(candidate_k, len(scores))
         if not count:
             continue
-        rows = read_jsonl(work_dir / "chunks.jsonl")
-        indices = np.argpartition(scores, len(scores) - count)[-count:]
+        indices = top_indices(scores, count)
         for index in indices:
-            item = (float(scores[index]), serial, rows[int(index)])
+            item = (float(scores[index]), serial, work_dir, int(index))
             serial += 1
             if len(heap) < candidate_k:
                 heapq.heappush(heap, item)
             elif item[0] > heap[0][0]:
                 heapq.heapreplace(heap, item)
 
-    return [
-        {"embedding_score": score, **row}
-        for score, _, row in sorted(heap, reverse=True)
-    ]
+    rows_cache: dict[Path, list[dict[str, Any]]] = {}
+    results: list[dict[str, Any]] = []
+    for score, _, work_dir, index in sorted(heap, reverse=True):
+        rows = rows_cache.get(work_dir)
+        if rows is None:
+            rows = read_jsonl(work_dir / "chunks.jsonl")
+            rows_cache[work_dir] = rows
+        results.append({"embedding_score": score, **rows[index]})
+    return results
+
+
+def retrieve_index_candidates(
+    output_dir: Path,
+    index_dir: Path,
+    query: np.ndarray,
+    candidate_k: int,
+    block_rows: int,
+) -> list[dict[str, Any]]:
+    manifest = load_json(index_dir / "manifest.json")
+    dimensions = int(manifest["dimensions"])
+    if dimensions != query.size:
+        raise RuntimeError(
+            f"Search index has {dimensions} dimensions, but query has {query.size}"
+        )
+    vector_count = int(manifest["vector_count"])
+    storage_dtype = np.dtype(str(manifest["storage_dtype"]))
+    locations = np.memmap(
+        index_dir / "locations.bin",
+        mode="r",
+        dtype=LOCATION_DTYPE,
+        shape=(vector_count,),
+    )
+
+    heap: list[tuple[float, int]] = []
+    for shard in manifest["shards"]:
+        shard_start = int(shard["start"])
+        shard_count = int(shard["count"])
+        vectors = np.memmap(
+            index_dir / str(shard["file"]),
+            mode="r",
+            dtype=storage_dtype,
+            shape=(shard_count, dimensions),
+        )
+        for block_start in range(0, shard_count, block_rows):
+            block_end = min(block_start + block_rows, shard_count)
+            block = np.asarray(vectors[block_start:block_end], dtype=np.float32)
+            scores = block @ query
+            count = min(candidate_k, len(scores))
+            for index in top_indices(scores, count):
+                row_id = shard_start + block_start + int(index)
+                item = (float(scores[index]), row_id)
+                if len(heap) < candidate_k:
+                    heapq.heappush(heap, item)
+                elif item[0] > heap[0][0]:
+                    heapq.heapreplace(heap, item)
+
+    rows_cache: dict[int, list[dict[str, Any]]] = {}
+    results: list[dict[str, Any]] = []
+    for score, row_id in sorted(heap, reverse=True):
+        location = locations[row_id]
+        work_id = int(location["work_id"])
+        chunk_index = int(location["chunk_index"])
+        rows = rows_cache.get(work_id)
+        if rows is None:
+            rows = read_jsonl(output_dir / "works" / str(work_id) / "chunks.jsonl")
+            rows_cache[work_id] = rows
+        if chunk_index >= len(rows):
+            raise RuntimeError(
+                f"Index row {row_id} points past work {work_id} chunks: {chunk_index}"
+            )
+        results.append({"embedding_score": score, **rows[chunk_index]})
+    return results
+
+
+def retrieve_candidates(
+    output_dir: Path,
+    index_name: str,
+    query: np.ndarray,
+    candidate_k: int,
+    block_rows: int,
+) -> list[dict[str, Any]]:
+    index_dir = output_dir / index_name
+    if (index_dir / "manifest.json").is_file():
+        manifest = load_json(index_dir / "manifest.json")
+        print(
+            f"Searching consolidated index: {int(manifest['vector_count']):,} vectors "
+            f"in {len(manifest['shards']):,} shards, window=3...",
+            file=sys.stderr,
+        )
+        return retrieve_index_candidates(
+            output_dir, index_dir, query, candidate_k, block_rows
+        )
+    print(
+        f"Consolidated index not found at {index_dir}; scanning per-work files. "
+        f"Run: python build_index.py --output-name {output_dir.name}",
+        file=sys.stderr,
+    )
+    return retrieve_legacy_candidates(output_dir, query, candidate_k)
 
 
 def parse_reranker_results(response: Any) -> list[dict[str, Any]]:
@@ -266,13 +370,27 @@ def main() -> None:
     args = parse_args()
     if args.top_k < 1 or args.candidate_k < args.top_k:
         raise ValueError("--top-k must be positive and --candidate-k must be at least --top-k.")
+    if args.index_block_rows < 1:
+        raise ValueError("--index-block-rows must be positive")
 
     output_dir = ROOT / "outputs" / safe_model_name(args.model) / args.output_name
     manifest = load_json(output_dir / "manifest.json")
     dimensions = int(manifest["dimensions"])
     ensure_servers(args)
     query = embed_query(args, dimensions)
-    candidates = retrieve_candidates(output_dir, query, args.candidate_k)
+    retrieval_started = time.perf_counter()
+    candidates = retrieve_candidates(
+        output_dir,
+        args.index_name,
+        query,
+        args.candidate_k,
+        args.index_block_rows,
+    )
+    print(
+        f"Retrieved {len(candidates):,} candidates in "
+        f"{time.perf_counter() - retrieval_started:.2f}s.",
+        file=sys.stderr,
+    )
     results = rerank_candidates(args, candidates)
 
     if args.as_json:

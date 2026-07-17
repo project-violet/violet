@@ -33,8 +33,8 @@ $rerankerArgs = @(
     "-hf", "Voodisss/Qwen3-Reranker-4B-GGUF-llama_cpp:Q4_K_M",
     "--reranking", "--pooling", "rank",
     "--host", "127.0.0.1", "--port", "8082",
-    "--n-gpu-layers", "99", "--ctx-size", "2048",
-    "--batch-size", "2048", "--ubatch-size", "2048"
+    "--n-gpu-layers", "99", "--ctx-size", "4096",
+    "--batch-size", "4096", "--ubatch-size", "4096"
 )
 
 $statePath = Join-Path $runtime "servers.json"
