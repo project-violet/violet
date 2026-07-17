@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Home, Bookmark, Crop, History, Download, Settings, ChevronLeft, ChevronRight, Sparkles, Flame, Sun, Moon, Monitor, MessageSquareText, Network, FlaskConical, UsersRound, ChartNoAxesCombined } from 'lucide-react';
+import { Home, Bookmark, Crop, History, Download, Settings, ChevronLeft, ChevronRight, Sparkles, Flame, Sun, Moon, Monitor, MessageSquareText, BrainCircuit, Network, FlaskConical, UsersRound, ChartNoAxesCombined } from 'lucide-react';
 import { DiscordIcon } from '../icons/DiscordIcon';
 import { GithubIcon } from '../icons/GithubIcon';
 import { useAppStore } from '../../stores/app-store';
@@ -15,6 +15,7 @@ const navItems = [
   { to: '/downloads', labelKey: 'nav.downloads', icon: Download },
   { to: '/ai-search', labelKey: 'nav.aiSearch', icon: Sparkles },
   { to: '/message-search', labelKey: 'nav.messageSearch', icon: MessageSquareText },
+  { to: '/llm-search', labelKey: 'nav.llmSearch', icon: BrainCircuit },
   { to: '/keyword-graph', labelKey: 'nav.keywordGraph', icon: Network },
   { to: '/work-experiment', labelKey: 'nav.workExperiment', icon: FlaskConical },
   { to: '/author-similarity', labelKey: 'nav.authorSimilarity', icon: UsersRound },
@@ -25,7 +26,7 @@ const navItems = [
 export function Sidebar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { themeColor, themeMode, sidebarCollapsed, toggleSidebar, setThemeMode, aiSearchEnabled, messageSearchEnabled } = useAppStore();
+  const { themeColor, themeMode, sidebarCollapsed, toggleSidebar, setThemeMode, aiSearchEnabled, messageSearchEnabled, llmSearchEnabled } = useAppStore();
 
   const logoSrc = themeColor === 'purple'
     ? '/logos/logo.png'
@@ -42,6 +43,7 @@ export function Sidebar() {
         {navItems.filter((item) =>
           (item.to !== '/ai-search' || aiSearchEnabled)
           && (item.to !== '/message-search' || messageSearchEnabled)
+          && (item.to !== '/llm-search' || llmSearchEnabled)
         ).map((item) => {
           const Icon = item.icon;
           return (

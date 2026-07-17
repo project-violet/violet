@@ -3,6 +3,7 @@ export * from './types/ai-search.js';
 export * from './types/bookmark.js';
 export * from './types/download.js';
 export * from './types/history.js';
+export * from './types/llm-search.js';
 export * from './types/message-search.js';
 export * from './utils/tag-parser.js';
 export * from './utils/date-convert.js';

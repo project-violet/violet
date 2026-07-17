@@ -12,6 +12,7 @@
     "settings": "설정",
     "hot": "인기",
     "messageSearch": "메시지",
+    "llmSearch": "LLM 검색",
     "keywordGraph": "키워드 그래프",
     "workExperiment": "실험",
     "authorSimilarity": "유사 작가",
@@ -246,6 +247,19 @@
       "connectionFailed": "연결 실패",
       "sampleCount": "샘플 {{count}}개"
     },
+    "llmSearch": {
+      "heading": "LLM 검색",
+      "enable": "LLM 검색 사용",
+      "enableDesc": "내비게이션에 LLM 검색 탭을 표시합니다",
+      "serverUrl": "LLM 검색 서버 URL",
+      "serverUrlPlaceholder": "http://127.0.0.1:8788",
+      "serverUrlDesc": "LLM 검색 탭에서 사용할 서버 주소입니다.",
+      "testConnection": "연결 테스트",
+      "testing": "테스트 중...",
+      "connectionOk": "연결됨",
+      "connectionFailed": "연결 실패",
+      "workCount": "인덱스 작품 {{count}}개"
+    },
     "keywordGraph": {
       "heading": "키워드 그래프",
       "serverUrl": "work-keywords-go 서버 URL",
@@ -314,6 +328,26 @@
     "reads": "읽기", "read": "읽음", "bookmarks": "북마크", "bookmark": "북마크 추가", "crops": "크롭", "crop": "크롭 저장", "downloads": "다운로드", "download": "다운로드", "uniqueWorks": "고유 작품", "actions": "회",
     "trend": "활동 추이", "periodSummary": "활동 {{total}}회 · 활동일 {{days}}일 · 활동일 평균 {{average}}회", "days": "{{count}}일", "all": "전체",
     "mix": "활동 구성", "mixSubtitle": "전체 기록에서 각 활동이 차지하는 비중", "recent": "최근 활동", "recentSubtitle": "user.db에 최근 저장된 변경 사항", "ranking": "많이 본 작품", "rankingSubtitle": "4시간을 넘는 방치 세션은 시간 집계에서 제외됩니다", "rankingDialog": "상위 50개 작품", "showMore": "더보기", "close": "닫기", "rank": { "reads": "본 횟수", "recordedSeconds": "누적 시간", "averageSessionSeconds": "평균 세션", "secondsPerPageEstimate": "페이지당(추정)" }, "time": { "hours": "시간", "minutes": "분", "seconds": "초", "sessions": "회", "recorded": "기록" }, "empty": "아직 활동 기록이 없습니다", "error": "사용자 활동을 불러오지 못했습니다."
+  },
+  "llmSearch": {
+    "heading": "LLM 검색",
+    "placeholder": "찾고 싶은 장면을 설명하세요...",
+    "search": "검색",
+    "topK": "Top K",
+    "candidateK": "Candidate K",
+    "resultSummary": "{{seconds}}초 · 결과 {{count}}개",
+    "empty": "LLM 검색 결과가 없습니다",
+    "error": "LLM 검색 중 오류가 발생했습니다",
+    "retry": "다시 시도",
+    "disabled": "설정에서 LLM 검색이 비활성화되어 있습니다.",
+    "rerankScore": "리랭크",
+    "embedScore": "임베딩",
+    "imageError": "이미지 로드 실패",
+    "invalidPage": "잘못된 페이지",
+    "resultImageAlt": "갤러리 {{id}} {{page}}페이지",
+    "columnWidth": "열 너비",
+    "searchHistory": "LLM 검색 기록",
+    "historyCount": "{{count}}회"
   },
   "messageSearch": {
     "heading": "메시지 검색",

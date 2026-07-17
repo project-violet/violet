@@ -12,6 +12,7 @@ const navItems = [
   { to: '/downloads', labelKey: 'nav.downloads' },
   { to: '/ai-search', labelKey: 'nav.aiSearch' },
   { to: '/message-search', labelKey: 'nav.messageSearch' },
+  { to: '/llm-search', labelKey: 'nav.llmSearch' },
   { to: '/keyword-graph', labelKey: 'nav.keywordGraph' },
   { to: '/work-experiment', labelKey: 'nav.workExperiment' },
   { to: '/author-similarity', labelKey: 'nav.authorSimilarity' },
@@ -21,13 +22,14 @@ const navItems = [
 
 export function BottomNav() {
   const { t } = useTranslation();
-  const { aiSearchEnabled, messageSearchEnabled } = useAppStore();
+  const { aiSearchEnabled, messageSearchEnabled, llmSearchEnabled } = useAppStore();
 
   return (
     <nav className={styles.nav}>
       {navItems.filter((item) =>
         (item.to !== '/ai-search' || aiSearchEnabled)
         && (item.to !== '/message-search' || messageSearchEnabled)
+        && (item.to !== '/llm-search' || llmSearchEnabled)
       ).map((item) => (
         <NavLink
           key={item.to}

@@ -7,6 +7,7 @@ import { useViewerStore } from '../stores/viewer-store';
 import { useSyncStatus, useTriggerSync, useTriggerFullSync } from '../hooks/useSync';
 import { useSuggestionCacheStatus, useRebuildSuggestionCache } from '../hooks/useSuggestionCache';
 import { useMessageSearchStatus } from '../hooks/useMessageSearchStatus';
+import { useLlmSearchStatus } from '../hooks/useLlmSearchStatus';
 import { useSuggestions } from '../hooks/useSuggestions';
 import { useTagTranslation } from '../hooks/useTagTranslation';
 import { getCacheStats, clearAllCache } from '../services/image-cache';
@@ -21,7 +22,7 @@ const themeColors = [
 
 export function SettingsPage() {
   const { t } = useTranslation();
-  const { contentLanguage, uiLanguage, themeColor, scrollMode, tagClickAction, tagTranslation, aiSearchEnabled, messageSearchEnabled, messageSearchServerUrl, messageSearchResultLimit, keywordGraphServerUrl, excludedTags, imageCacheEnabled, imageCacheMaxSizeMB, imageCacheExpireDays, contextualSuggestionCounts, developerMode, hmacSalt, serverHost, setContentLanguage, setUILanguage, setThemeColor, setScrollMode, setTagClickAction, setTagTranslation, setAiSearchEnabled, setMessageSearchEnabled, setMessageSearchServerUrl, setMessageSearchResultLimit, setKeywordGraphServerUrl, addExcludedTag, removeExcludedTag, setImageCacheEnabled, setImageCacheMaxSizeMB, setImageCacheExpireDays, setContextualSuggestionCounts, setDeveloperMode, setHmacSalt, setServerHost } = useAppStore();
+  const { contentLanguage, uiLanguage, themeColor, scrollMode, tagClickAction, tagTranslation, aiSearchEnabled, messageSearchEnabled, messageSearchServerUrl, messageSearchResultLimit, llmSearchEnabled, llmSearchServerUrl, keywordGraphServerUrl, excludedTags, imageCacheEnabled, imageCacheMaxSizeMB, imageCacheExpireDays, contextualSuggestionCounts, developerMode, hmacSalt, serverHost, setContentLanguage, setUILanguage, setThemeColor, setScrollMode, setTagClickAction, setTagTranslation, setAiSearchEnabled, setMessageSearchEnabled, setMessageSearchServerUrl, setMessageSearchResultLimit, setLlmSearchEnabled, setLlmSearchServerUrl, setKeywordGraphServerUrl, addExcludedTag, removeExcludedTag, setImageCacheEnabled, setImageCacheMaxSizeMB, setImageCacheExpireDays, setContextualSuggestionCounts, setDeveloperMode, setHmacSalt, setServerHost } = useAppStore();
   const { resumePromptEnabled, setResumePromptEnabled } = useViewerStore();
   const [showAiSearchHelp, setShowAiSearchHelp] = useState(false);
   const [showImageCacheHelp, setShowImageCacheHelp] = useState(false);
@@ -34,6 +35,7 @@ export function SettingsPage() {
   const { data: cacheStatus } = useSuggestionCacheStatus();
   const rebuildCache = useRebuildSuggestionCache();
   const messageSearchStatus = useMessageSearchStatus();
+  const llmSearchStatus = useLlmSearchStatus();
 
   const [cacheStats, setCacheStats] = useState<{ totalSizeBytes: number; itemCount: number }>({ totalSizeBytes: 0, itemCount: 0 });
   const [isClearing, setIsClearing] = useState(false);
@@ -108,6 +110,10 @@ export function SettingsPage() {
 
   const handleMessageSearchStatus = () => {
     messageSearchStatus.mutate(messageSearchServerUrl);
+  };
+
+  const handleLlmSearchStatus = () => {
+    llmSearchStatus.mutate(llmSearchServerUrl);
   };
 
   useEffect(() => {
@@ -502,6 +508,65 @@ export function SettingsPage() {
             <span className={styles.statusError}>
               {t('settings.messageSearch.connectionFailed')}
             </span>
+          </div>
+        )}
+      </div>
+
+      <div className={styles.section}>
+        <h3 className={styles.subheading}>{t('settings.llmSearch.heading')}</h3>
+
+        <div className={styles.toggleRow}>
+          <div className={styles.toggleInfo}>
+            <span className={styles.toggleLabel}>{t('settings.llmSearch.enable')}</span>
+            <span className={styles.toggleDesc}>{t('settings.llmSearch.enableDesc')}</span>
+          </div>
+          <label className={styles.toggle}>
+            <input
+              type="checkbox"
+              checked={llmSearchEnabled}
+              onChange={(e) => setLlmSearchEnabled(e.target.checked)}
+            />
+            <span className={styles.toggleTrack} />
+          </label>
+        </div>
+
+        <div className={styles.settingGroup}>
+          <label className={styles.settingLabel}>{t('settings.llmSearch.serverUrl')}</label>
+          <input
+            type="url"
+            className={styles.tagInput}
+            value={llmSearchServerUrl}
+            onChange={(e) => setLlmSearchServerUrl(e.target.value)}
+            placeholder={t('settings.llmSearch.serverUrlPlaceholder')}
+          />
+          <p className={styles.excludedTagsDesc}>{t('settings.llmSearch.serverUrlDesc')}</p>
+        </div>
+
+        <div className={styles.syncButtons}>
+          <button
+            className={styles.syncBtn}
+            onClick={handleLlmSearchStatus}
+            disabled={llmSearchStatus.isPending}
+          >
+            {llmSearchStatus.isPending
+              ? t('settings.llmSearch.testing')
+              : t('settings.llmSearch.testConnection')}
+          </button>
+        </div>
+
+        {llmSearchStatus.isSuccess && (
+          <div className={styles.statusMessage}>
+            <span className={styles.statusOk}>{t('settings.llmSearch.connectionOk')}</span>
+            {typeof llmSearchStatus.data.works === 'number' && (
+              <span className={styles.statusDetail}>
+                {t('settings.llmSearch.workCount', { count: llmSearchStatus.data.works })}
+              </span>
+            )}
+          </div>
+        )}
+        {llmSearchStatus.isError && (
+          <div className={styles.statusMessage}>
+            <span className={styles.statusError}>{t('settings.llmSearch.connectionFailed')}</span>
           </div>
         )}
       </div>

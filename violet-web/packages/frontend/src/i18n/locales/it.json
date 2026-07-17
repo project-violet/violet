@@ -12,6 +12,7 @@
     "settings": "Impostazioni",
     "hot": "Hot",
     "messageSearch": "Messaggi",
+    "llmSearch": "LLM Search",
     "keywordGraph": "Keyword Graph",
     "workExperiment": "Experiment",
     "authorSimilarity": "Similar Authors",
@@ -218,6 +219,19 @@
       "connectionFailed": "Connessione non riuscita",
       "sampleCount": "{{count}} risultati campione"
     },
+    "llmSearch": {
+      "heading": "LLM Search",
+      "enable": "Enable LLM Search",
+      "enableDesc": "Show LLM Search tab in navigation",
+      "serverUrl": "LLM search server URL",
+      "serverUrlPlaceholder": "http://127.0.0.1:8788",
+      "serverUrlDesc": "Used by the LLM Search tab.",
+      "testConnection": "Test Connection",
+      "testing": "Testing...",
+      "connectionOk": "Connected",
+      "connectionFailed": "Connection failed",
+      "workCount": "{{count}} indexed works"
+    },
     "keywordGraph": {
       "heading": "Keyword Graph",
       "serverUrl": "work-keywords-go server URL",
@@ -266,6 +280,9 @@
     }
   },
   "activity": { "eyebrow": "Your library", "heading": "User activity", "subtitle": "A clear view of how you use Violet.", "reads": "Reads", "read": "Read", "bookmarks": "Bookmarks", "bookmark": "Bookmarked", "crops": "Crops", "crop": "Cropped", "downloads": "Downloads", "download": "Downloaded", "uniqueWorks": "Unique works", "trend": "Activity trend", "periodSummary": "{{total}} actions · {{days}} active days · {{average}} per active day", "days": "{{count}}d", "all": "All", "mix": "Activity mix", "mixSubtitle": "Share of all recorded actions", "recent": "Recent activity", "recentSubtitle": "Latest changes saved in user.db", "empty": "No activity yet", "error": "Failed to load user activity." },
+  "llmSearch": {
+    "heading": "LLM Search", "placeholder": "Describe a scene to search...", "search": "Search", "topK": "Top K", "candidateK": "Candidate K", "resultSummary": "{{count}} results in {{seconds}}s", "empty": "No LLM search results", "error": "Failed to search with LLM", "retry": "Retry", "disabled": "LLM search is disabled in Settings.", "rerankScore": "Rerank", "embedScore": "Embed", "imageError": "Failed to load image", "invalidPage": "Invalid page", "resultImageAlt": "Gallery {{id}} page {{page}}", "columnWidth": "Column width", "searchHistory": "LLM search history", "historyCount": "{{count}}x"
+  },
   "messageSearch": {
     "heading": "Ricerca messaggi",
     "placeholder": "Cerca testo nei messaggi...",

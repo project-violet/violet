@@ -66,6 +66,14 @@ CREATE TABLE IF NOT EXISTS MessageSearchHistory (
   SearchCount    INTEGER NOT NULL DEFAULT 1,
   LastSearchedAt TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS LlmSearchHistory (
+  Query          TEXT PRIMARY KEY,
+  TopK           INTEGER NOT NULL,
+  CandidateK     INTEGER NOT NULL,
+  SearchCount    INTEGER NOT NULL DEFAULT 1,
+  LastSearchedAt TEXT NOT NULL
+);
 `;
 
 const DEFAULT_GROUP_SQL = `

@@ -32,6 +32,11 @@ interface AppState {
   messageSearchServerUrl: string;
   messageSearchResultLimit: number;
   messageSearchColumnWidth: number;
+  llmSearchEnabled: boolean;
+  llmSearchServerUrl: string;
+  llmSearchTopK: number;
+  llmSearchCandidateK: number;
+  llmSearchColumnWidth: number;
   keywordGraphServerUrl: string;
   excludedTags: string[];
   imageCacheEnabled: boolean;
@@ -58,6 +63,11 @@ interface AppState {
   setMessageSearchServerUrl: (url: string) => void;
   setMessageSearchResultLimit: (limit: number) => void;
   setMessageSearchColumnWidth: (width: number) => void;
+  setLlmSearchEnabled: (enabled: boolean) => void;
+  setLlmSearchServerUrl: (url: string) => void;
+  setLlmSearchTopK: (value: number) => void;
+  setLlmSearchCandidateK: (value: number) => void;
+  setLlmSearchColumnWidth: (width: number) => void;
   setKeywordGraphServerUrl: (url: string) => void;
   addExcludedTag: (tag: string) => void;
   removeExcludedTag: (tag: string) => void;
@@ -113,6 +123,11 @@ export const useAppStore = create<AppState>()(
       messageSearchServerUrl: 'http://127.0.0.1:12332',
       messageSearchResultLimit: 100,
       messageSearchColumnWidth: 420,
+      llmSearchEnabled: true,
+      llmSearchServerUrl: 'http://127.0.0.1:8788',
+      llmSearchTopK: 10,
+      llmSearchCandidateK: 500,
+      llmSearchColumnWidth: 420,
       keywordGraphServerUrl: 'http://127.0.0.1:8787',
       excludedTags: ['female:snuff', 'female:gore'],
       imageCacheEnabled: true,
@@ -143,6 +158,11 @@ export const useAppStore = create<AppState>()(
       setMessageSearchServerUrl: (messageSearchServerUrl) => set({ messageSearchServerUrl }),
       setMessageSearchResultLimit: (messageSearchResultLimit) => set({ messageSearchResultLimit }),
       setMessageSearchColumnWidth: (messageSearchColumnWidth) => set({ messageSearchColumnWidth }),
+      setLlmSearchEnabled: (llmSearchEnabled) => set({ llmSearchEnabled }),
+      setLlmSearchServerUrl: (llmSearchServerUrl) => set({ llmSearchServerUrl }),
+      setLlmSearchTopK: (llmSearchTopK) => set({ llmSearchTopK }),
+      setLlmSearchCandidateK: (llmSearchCandidateK) => set({ llmSearchCandidateK }),
+      setLlmSearchColumnWidth: (llmSearchColumnWidth) => set({ llmSearchColumnWidth }),
       setKeywordGraphServerUrl: (keywordGraphServerUrl) => set({ keywordGraphServerUrl }),
       addExcludedTag: (tag) =>
         set((state) => ({

@@ -108,6 +108,7 @@ services:
       USER_DB_PATH: /app/data/user.db
       FSCM_BASE_URL: http://message-search:12332
       KEYWORD_GRAPH_BASE_URL: http://graph:8787
+      LLM_SEARCH_BASE_URL: http://llm-search:8788
       SYNC_ENABLED: "false"
       PORT: "3001"
     ports:
