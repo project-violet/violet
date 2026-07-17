@@ -8,7 +8,6 @@ import sys
 import tempfile
 import time
 import uuid
-import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -26,6 +25,7 @@ RESULT_VOLUME_NAME = "violet-llm-embedding-results"
 
 image = (
     modal.Image.debian_slim(python_version="3.12")
+    .apt_install("tar", "zstd")
     .uv_pip_install("torch", "sentence-transformers", "numpy", "tqdm")
     .add_local_file(ROOT / "embed.py", "/app/embed.py", copy=True)
     .add_local_file(ROOT / "common.py", "/app/common.py", copy=True)
@@ -104,25 +104,92 @@ def prepare_staging_dataset(
     return manifest
 
 
+def create_native_archive(source: Path, archive: Path) -> float:
+    started = time.perf_counter()
+    if os.name == "nt":
+        command = [
+            "tar",
+            "-a",
+            "-cf",
+            str(archive),
+            "-C",
+            str(source.parent),
+            source.name,
+        ]
+    else:
+        command = [
+            "tar",
+            "-I",
+            "zstd -T0 -1",
+            "-cf",
+            str(archive),
+            "-C",
+            str(source.parent),
+            source.name,
+        ]
+    subprocess.run(command, check=True)
+    return time.perf_counter() - started
+
+
+def extract_native_archive(archive: Path, destination: Path) -> float:
+    started = time.perf_counter()
+    destination.mkdir(parents=True, exist_ok=True)
+    if os.name == "nt":
+        command = ["tar", "-xf", str(archive), "-C", str(destination)]
+    else:
+        command = [
+            "tar",
+            "-I",
+            "zstd -d -T0",
+            "-xf",
+            str(archive),
+            "-C",
+            str(destination),
+        ]
+    subprocess.run(command, check=True)
+    return time.perf_counter() - started
+
+
+def run_logged_subprocess(
+    command: list[str],
+    *,
+    cwd: str,
+    env: dict[str, str],
+    log_path: Path,
+) -> None:
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    with log_path.open("wb") as log_handle:
+        process = subprocess.Popen(
+            command,
+            cwd=cwd,
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        assert process.stdout is not None
+        while chunk := process.stdout.read1(64 * 1024):
+            log_handle.write(chunk)
+            log_handle.flush()
+            console = getattr(sys.stdout, "buffer", None)
+            if console is not None:
+                console.write(chunk)
+                console.flush()
+            else:
+                print(chunk.decode("utf-8", errors="replace"), end="", flush=True)
+        return_code = process.wait()
+    if return_code:
+        raise subprocess.CalledProcessError(return_code, command)
+
+
 def create_input_archive(dataset_dir: Path, archive: Path) -> None:
     files = [path for path in dataset_dir.rglob("*") if path.is_file()]
     source_bytes = sum(path.stat().st_size for path in files)
-    with zipfile.ZipFile(
-        archive,
-        mode="w",
-        compression=zipfile.ZIP_DEFLATED,
-        compresslevel=1,
-        allowZip64=True,
-    ) as bundle:
-        for path in tqdm(files, desc="Compressing upload", unit="file"):
-            bundle.write(
-                path,
-                Path("modal-pending") / path.relative_to(dataset_dir),
-            )
+    print(f"Creating native tar.zst from {len(files):,} files ...", flush=True)
+    elapsed = create_native_archive(dataset_dir, archive)
     archive_bytes = archive.stat().st_size
     ratio = archive_bytes / max(source_bytes, 1)
     print(
-        f"Compressed {len(files):,} files: "
+        f"Created {archive.name} in {elapsed:.2f}s: "
         f"{source_bytes / 1_000_000_000:.2f} GB -> "
         f"{archive_bytes / 1_000_000_000:.2f} GB ({ratio:.1%})",
         flush=True,
@@ -130,7 +197,7 @@ def create_input_archive(dataset_dir: Path, archive: Path) -> None:
 
 
 def upload_dataset(run_id: str, dataset_dir: Path) -> None:
-    archive = dataset_dir.parent / f"{run_id}.zip"
+    archive = dataset_dir.parent / f"{run_id}.tar.zst"
     create_input_archive(dataset_dir, archive)
     print(
         f"Uploading one archive to Modal Volume "
@@ -140,18 +207,6 @@ def upload_dataset(run_id: str, dataset_dir: Path) -> None:
     with input_volume.batch_upload() as batch:
         batch.put_file(str(archive), f"/{archive.name}")
     print("Input archive upload committed.", flush=True)
-
-
-def zip_directory(source: Path, archive: Path) -> None:
-    with zipfile.ZipFile(
-        archive,
-        mode="w",
-        compression=zipfile.ZIP_STORED,
-        allowZip64=True,
-    ) as bundle:
-        for path in source.rglob("*"):
-            if path.is_file():
-                bundle.write(path, path.relative_to(source.parent))
 
 
 @app.function(
@@ -171,22 +226,24 @@ def embed_pending(
 ) -> dict[str, object]:
     import torch
 
-    remote_archive = Path("/inputs") / f"{run_id}.zip"
+    remote_archive = Path("/inputs") / f"{run_id}.tar.zst"
     if not remote_archive.exists():
         raise FileNotFoundError(f"Uploaded dataset archive is missing: {remote_archive}")
 
     app_data = Path("/app/data")
     app_data.mkdir(exist_ok=True)
-    with zipfile.ZipFile(remote_archive) as bundle:
-        bundle.extractall(app_data)
+    input_extract_seconds = extract_native_archive(remote_archive, app_data)
     remote_dataset = app_data / "modal-pending"
     if not (remote_dataset / "manifest.json").exists():
         raise FileNotFoundError(f"Extracted dataset is missing: {remote_dataset}")
 
     env = os.environ.copy()
     env["HF_HOME"] = "/cache/huggingface"
+    generated = Path("/app/outputs") / MODEL_DIR_NAME / run_id
+    generated.mkdir(parents=True, exist_ok=True)
+    remote_log = generated / "remote.log"
     started_at = time.perf_counter()
-    subprocess.run(
+    run_logged_subprocess(
         [
             sys.executable,
             "/app/embed.py",
@@ -203,15 +260,20 @@ def embed_pending(
         ],
         cwd="/app",
         env=env,
-        check=True,
+        log_path=remote_log,
     )
     elapsed = time.perf_counter() - started_at
 
-    generated = Path("/app/outputs") / MODEL_DIR_NAME / run_id
-    archive = Path("/results") / f"{run_id}.zip"
+    archive = Path("/results") / f"{run_id}.tar.zst"
     if archive.exists():
         archive.unlink()
-    zip_directory(generated, archive)
+    print(f"Creating native result archive {archive.name} ...", flush=True)
+    result_archive_seconds = create_native_archive(generated, archive)
+    print(
+        f"Created result archive in {result_archive_seconds:.2f}s "
+        f"({archive.stat().st_size / 1_000_000_000:.2f} GB).",
+        flush=True,
+    )
 
     metadata_paths = list((generated / "works").glob("*/metadata.json"))
     metadata = [json.loads(path.read_text(encoding="utf-8")) for path in metadata_paths]
@@ -227,6 +289,9 @@ def embed_pending(
         "elapsed_seconds_including_model_load": elapsed,
         "tokens_per_second_including_model_load": total_tokens / max(elapsed, 0.001),
         "archive": archive.name,
+        "input_extract_seconds": input_extract_seconds,
+        "result_archive_seconds": result_archive_seconds,
+        "archive_bytes": archive.stat().st_size,
     }
 
 
@@ -248,11 +313,15 @@ def download_and_merge(
         with archive.open("wb") as handle:
             for chunk in result_volume.read_file(archive_name):
                 handle.write(chunk)
-        with zipfile.ZipFile(archive) as bundle:
-            bundle.extractall(temporary_dir)
+        print(f"Extracting native tar.zst {archive_name} ...")
+        extract_seconds = extract_native_archive(archive, temporary_dir)
+        print(f"Extracted result in {extract_seconds:.2f}s.")
 
         extracted = temporary_dir / run_id
         extracted_works = extracted / "works"
+        remote_log = extracted / "remote.log"
+        if remote_log.exists():
+            shutil.copy2(remote_log, runtime_dir / f"modal-{run_id}.remote.log")
         actual_ids = {
             int(path.name)
             for path in extracted_works.iterdir()
@@ -291,7 +360,7 @@ def download_and_merge(
 
 
 def cleanup_remote(run_id: str, archive_name: str) -> None:
-    input_volume.remove_file(f"{run_id}.zip")
+    input_volume.remove_file(f"{run_id}.tar.zst")
     result_volume.remove_file(archive_name)
 
 
@@ -325,7 +394,7 @@ def main(
     runtime_dir = ROOT / ".runtime"
     runtime_dir.mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(dir=runtime_dir, prefix="modal-upload-") as temporary:
-        dataset_dir = Path(temporary) / "dataset"
+        dataset_dir = Path(temporary) / "modal-pending"
         prepare_staging_dataset(selected, dataset_dir, window_pages, stride_pages)
         upload_dataset(run_id, dataset_dir)
 
@@ -351,6 +420,11 @@ def main(
         f"input_tokens={int(stats['input_tokens']):,} "
         f"elapsed={float(stats['elapsed_seconds_including_model_load']):.2f}s "
         f"tok/s={float(stats['tokens_per_second_including_model_load']):,.0f}"
+    )
+    print(
+        f"Remote input extract={float(stats['input_extract_seconds']):.2f}s, "
+        f"result archive={float(stats['result_archive_seconds']):.2f}s, "
+        f"result size={int(stats['archive_bytes']) / 1_000_000:.2f} MB"
     )
     print(
         f"Merged {merged:,} works, skipped {skipped:,} concurrently completed works. "

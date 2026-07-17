@@ -41,6 +41,25 @@ returns the final 20. Increase the candidate pool independently when needed:
 
     python search.py "your Korean scene query" --candidate-k 200 --top-k 20
 
+After adding or embedding works, build the consolidated search index once:
+
+    python build_index.py --output-name latest-5000
+
+The builder combines the per-work float16 arrays into 100,000-vector binary
+shards and writes one compact location map. Eight reader threads prefetch the
+many small source files by default, while tqdm reports works, vectors, and
+completed shards. Tune the readers or rebuild an existing index when needed:
+
+    python build_index.py --workers 8 --shard-rows 100000 --overwrite
+
+Search automatically uses the consolidated index when its manifest exists.
+Only the final candidate works have their chunks JSON parsed; without an index,
+search falls back to the legacy per-work scan and prints the build command.
+The index is derived entirely from existing embeddings, so building it does not
+load the embedding model or require a GPU. Rebuild it after adding more works.
+
+    python search.py "your Korean scene query" --candidate-k 300 --top-k 100
+
 Use `--no-rerank` to inspect the quantized embedding ranking alone. Stop both
 background servers when finished:
 
@@ -118,12 +137,53 @@ PyTorch path remains the default.
 a completed `metadata.json`, then prepares and uploads the requested number of
 newest unfinished works. H100 is the default GPU.
 
-    $env:PYTHONUTF8="1"
-    python3 -m modal run embed-modal.py --work-count 5000
-    python3 -m modal run embed-modal.py --work-count 10000
+    .\run-modal.ps1 -WorkCount 5000
+    .\run-modal.ps1 -WorkCount 10000
+
+The wrapper keeps the console output visible and saves the complete local and
+streamed Modal output under `.runtime/modal-YYYYMMDD-HHMMSS.log`. The remote
+embedding subprocess also writes `remote.log`; after a successful result
+download it is retained as `.runtime/modal-RUN_ID.remote.log`. Modal keeps the
+same remote output in the App Logs view for failed or interrupted runs.
 
 `--work-count` means new works, not the final total. With 10,000 works already
 complete, the first command processes works 10,001 through 15,000. Results are
 downloaded, validated, and merged into the existing `latest-5000` output one
 work directory at a time. Temporary Modal inputs and result archives are removed
 after a successful merge; pass `--keep-remote` to retain them.
+
+## Search API
+
+`server.py` exposes the consolidated embedding index over HTTP. It opens the
+index and its memory maps once at startup. Dialogue text is not preloaded.
+Start the local quantized embedding and reranker servers first, then start the
+Docker service from the repository root:
+
+    .\violet-llm\start-quantized.ps1
+    docker compose up -d --build llm-search
+
+The container listens on port `8788` and calls the host model servers through
+`host.docker.internal`. The default output mount is
+`./violet-llm/outputs:/data:ro`; override `VIOLET_LLM_OUTPUT_ROOT` or
+`VIOLET_LLM_OUTPUT_NAME` when necessary.
+
+    Invoke-RestMethod http://127.0.0.1:8788/health
+
+    $body = @{
+      query = "검색어"
+      candidate_k = 500
+      top_k = 10
+      rerank = $true
+      include_messages = $false
+    } | ConvertTo-Json
+    Invoke-RestMethod -Method Post `
+      -Uri http://127.0.0.1:8788/v1/search `
+      -ContentType "application/json; charset=utf-8" `
+      -Body ([Text.Encoding]::UTF8.GetBytes($body))
+
+Results contain `rank`, `rerank_score`, `embed_score`, `work`, and `pages`.
+Set `include_messages` to `true` to add `messages`. Reranking still reads the
+candidate dialogue internally even when messages are omitted from the response.
+Set `rerank` to `false` for embedding-only ranking. The first search after a
+container start can be slower while Docker Desktop warms the read-only index
+pages; subsequent searches use the OS page cache.
