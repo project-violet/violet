@@ -12,6 +12,7 @@ import numpy as np
 from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel, Field, model_validator
 
+from accelerated_index import AcceleratedSearchIndex
 from common import load_json, read_jsonl, safe_model_name
 from search import (
     DEFAULT_EMBEDDING_MODEL,
@@ -83,6 +84,10 @@ class SearchEngine:
         self.reranker_separate_instruction = env_bool(
             "VIOLET_RERANKER_SEPARATE_INSTRUCTION"
         )
+        self.accelerated_enabled = env_bool("VIOLET_LLM_ACCELERATED_INDEX", True)
+        self.faiss_threads = env_int(
+            "VIOLET_LLM_FAISS_THREADS", min(16, os.cpu_count() or 1)
+        )
 
         manifest_path = self.index_dir / "manifest.json"
         if not manifest_path.is_file():
@@ -95,23 +100,49 @@ class SearchEngine:
         self.vector_count = int(self.manifest["vector_count"])
         self.work_count = int(self.manifest["work_count"])
         self.storage_dtype = np.dtype(str(self.manifest["storage_dtype"]))
-        self.locations = np.memmap(
-            self.index_dir / "locations.bin",
-            mode="r",
-            dtype=LOCATION_DTYPE,
-            shape=(self.vector_count,),
-        )
+        self.accelerated: AcceleratedSearchIndex | None = None
+        self.locations: np.memmap | None = None
         self.shards: list[tuple[int, int, np.memmap]] = []
-        for shard in self.manifest["shards"]:
-            start = int(shard["start"])
-            count = int(shard["count"])
-            vectors = np.memmap(
-                self.index_dir / str(shard["file"]),
-                mode="r",
-                dtype=self.storage_dtype,
-                shape=(count, self.dimensions),
+        accelerated_files = (
+            self.index_dir / "faiss-sq8.index",
+            self.index_dir / "compact-metadata.json",
+            self.index_dir / "compact-metadata.bin",
+            self.index_dir / "compact-metadata-offsets.bin",
+        )
+        if self.accelerated_enabled and all(
+            path.is_file() for path in accelerated_files
+        ):
+            self.accelerated = AcceleratedSearchIndex(
+                self.index_dir,
+                self.vector_count,
+                self.dimensions,
+                self.faiss_threads,
             )
-            self.shards.append((start, count, vectors))
+            self.search_backend = "faiss-sq8"
+        else:
+            if self.accelerated_enabled:
+                missing = ", ".join(
+                    path.name for path in accelerated_files if not path.is_file()
+                )
+                print(f"Accelerated index unavailable ({missing}); using FP16 scan")
+            self.locations = np.memmap(
+                self.index_dir / "locations.bin",
+                mode="r",
+                dtype=LOCATION_DTYPE,
+                shape=(self.vector_count,),
+            )
+            for shard in self.manifest["shards"]:
+                start = int(shard["start"])
+                count = int(shard["count"])
+                vectors = np.memmap(
+                    self.index_dir / str(shard["file"]),
+                    mode="r",
+                    dtype=self.storage_dtype,
+                    shape=(count, self.dimensions),
+                )
+                self.shards.append((start, count, vectors))
+            self.search_backend = "fp16-scan"
+        print(f"Search index backend: {self.search_backend}")
 
     def embed_query(self, query: str) -> np.ndarray:
         prompt = f"Instruct: {INSTRUCTION}\nQuery: {query}"
@@ -140,6 +171,8 @@ class SearchEngine:
         return vector / norm
 
     def retrieve_refs(self, query: np.ndarray, candidate_k: int) -> list[tuple[float, int]]:
+        if self.accelerated is not None:
+            return self.accelerated.search(query, candidate_k)
         heap: list[tuple[float, int]] = []
         for shard_start, shard_count, vectors in self.shards:
             for block_start in range(0, shard_count, self.block_rows):
@@ -163,6 +196,13 @@ class SearchEngine:
     def materialize(
         self, refs: list[tuple[float, int]]
     ) -> list[dict[str, Any]]:
+        if self.accelerated is not None:
+            return [
+                {"embedding_score": score, **self.accelerated.get(row_id)}
+                for score, row_id in refs
+            ]
+        if self.locations is None:
+            raise RuntimeError("Legacy index locations are not loaded")
         rows_cache: dict[int, list[dict[str, Any]]] = {}
         candidates: list[dict[str, Any]] = []
         for embedding_score, row_id in refs:
@@ -255,8 +295,13 @@ class SearchEngine:
         }
 
     def close(self) -> None:
+        if self.accelerated is not None:
+            self.accelerated.close()
+            return
         mappings = [self.locations, *(vectors for _, _, vectors in self.shards)]
         for mapping in mappings:
+            if mapping is None:
+                continue
             mmap = getattr(mapping, "_mmap", None)
             if mmap is not None:
                 mmap.close()
@@ -289,6 +334,7 @@ async def health(request: Request) -> dict[str, Any]:
         "works": engine.work_count,
         "vectors": engine.vector_count,
         "dimensions": engine.dimensions,
+        "backend": engine.search_backend,
     }
 
 

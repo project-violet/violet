@@ -155,8 +155,25 @@ after a successful merge; pass `--keep-remote` to retain them.
 
 ## Search API
 
-`server.py` exposes the consolidated embedding index over HTTP. It opens the
-index and its memory maps once at startup. Dialogue text is not preloaded.
+`server.py` exposes the consolidated embedding index over HTTP. By default it
+uses a FAISS SQ8 exhaustive index and compact random-access metadata. Build
+these artifacts after each `build_index.py` run:
+
+    pip install -r requirements-benchmark.txt
+    python benchmark_search_index.py build --kind sq8 --overwrite
+    python benchmark_search_index.py build-metadata --overwrite
+
+Run an isolated A/B benchmark without invoking the reranker:
+
+    python benchmark_search_index.py bench --candidate-k 500 `
+      --report .runtime/search-index-benchmark.json
+
+On the current 2,537,826-vector index, the ten-query test measured a 6.43s
+median for the FP16 scan versus 0.245s for SQ8, with 99.34% mean Recall@500.
+Compact metadata lookup took 0.003s versus 1.22s for per-work JSON files.
+Set `VIOLET_LLM_ACCELERATED_INDEX=false` to A/B test or immediately roll back
+to the exact FP16 scan. `VIOLET_LLM_FAISS_THREADS` controls FAISS CPU threads.
+
 Start both model servers and the search API from the repository root:
 
     docker compose up -d --build embedding-llama reranker-vllm llm-search

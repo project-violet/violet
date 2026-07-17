@@ -8,7 +8,7 @@ WORKDIR /app
 COPY requirements-server.txt ./
 RUN pip install --no-cache-dir -r requirements-server.txt
 
-COPY common.py search.py server.py ./
+COPY accelerated_index.py common.py search.py server.py ./
 
 EXPOSE 8788
 
