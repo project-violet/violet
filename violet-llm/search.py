@@ -3,8 +3,15 @@ from __future__ import annotations
 import argparse
 import heapq
 import json
+import os
+import shutil
+import subprocess
 import sys
 from pathlib import Path
+from typing import Any
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlsplit, urlunsplit
+from urllib.request import Request, urlopen
 
 import numpy as np
 
@@ -12,7 +19,9 @@ from common import load_json, read_jsonl, safe_model_name
 
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_MODEL = "Qwen/Qwen3-Embedding-4B"
+DEFAULT_INDEX_MODEL = "Qwen/Qwen3-Embedding-4B"
+DEFAULT_EMBEDDING_MODEL = "Qwen/Qwen3-Embedding-4B-GGUF:Q5_K_M"
+DEFAULT_RERANKER_MODEL = "Voodisss/Qwen3-Reranker-4B-GGUF-llama_cpp:Q4_K_M"
 INSTRUCTION = (
     "Given a Korean natural-language query, retrieve Korean comic dialogue scenes "
     "that best match the described situation, emotional tone, and dialogue style."
@@ -20,70 +29,267 @@ INSTRUCTION = (
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Search local scene embeddings.")
+    parser = argparse.ArgumentParser(description="Search embeddings and rerank with quantized Qwen3 4B models.")
     parser.add_argument("query")
     parser.add_argument("--output-name", default="latest-5000")
-    parser.add_argument("--model", default=DEFAULT_MODEL)
+    parser.add_argument(
+        "--model",
+        default=DEFAULT_INDEX_MODEL,
+        help="Model name used to locate the existing embedding index.",
+    )
     parser.add_argument("--top-k", type=int, default=20)
-    parser.add_argument("--device")
+    parser.add_argument("--candidate-k", type=int, default=100)
+    parser.add_argument(
+        "--embedding-url",
+        default=os.environ.get("VIOLET_EMBEDDING_URL", "http://127.0.0.1:8081/v1/embeddings"),
+    )
+    parser.add_argument(
+        "--reranker-url",
+        default=os.environ.get("VIOLET_RERANKER_URL", "http://127.0.0.1:8082/v1/rerank"),
+    )
+    parser.add_argument("--embedding-model", default=DEFAULT_EMBEDDING_MODEL)
+    parser.add_argument("--reranker-model", default=DEFAULT_RERANKER_MODEL)
+    parser.add_argument("--timeout", type=float, default=300.0)
+    parser.add_argument("--no-rerank", action="store_true")
+    parser.add_argument("--no-auto-start", action="store_true")
     parser.add_argument("--json", action="store_true", dest="as_json")
     return parser.parse_args()
 
 
-def main() -> None:
-    # OCR can contain characters outside the legacy Windows cp949 code page.
-    # Keep search output usable from a standard PowerShell console.
-    if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    args = parse_args()
-    output_dir = ROOT / "outputs" / safe_model_name(args.model) / args.output_name
-    manifest = load_json(output_dir / "manifest.json")
-
-    import torch
-    from sentence_transformers import SentenceTransformer
-
-    device = args.device or ("cuda" if torch.cuda.is_available() else "cpu")
-    model = SentenceTransformer(
-        args.model,
-        device=device,
-        model_kwargs={"torch_dtype": torch.float16 if device != "cpu" else torch.float32},
-        processor_kwargs={"padding_side": "left"},
+def post_json(url: str, payload: dict[str, Any], timeout: float) -> Any:
+    request = Request(
+        url,
+        data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
     )
-    model.max_seq_length = int(manifest["max_length"])
-    prompt = f"Instruct: {INSTRUCTION}\nQuery: {args.query}"
-    query = model.encode([prompt], normalize_embeddings=True, convert_to_numpy=True)[0]
-    query = query[: int(manifest["dimensions"])].astype(np.float32)
-    query /= np.linalg.norm(query)
+    try:
+        with urlopen(request, timeout=timeout) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except HTTPError as error:
+        detail = error.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"{url} returned HTTP {error.code}: {detail}") from error
+    except URLError as error:
+        raise RuntimeError(
+            f"Cannot reach {url}. Start the quantized llama.cpp servers with "
+            ".\\start-quantized.ps1 first."
+        ) from error
 
-    heap: list[tuple[float, int, dict[str, object]]] = []
+
+def health_url(url: str) -> str:
+    parts = urlsplit(url)
+    return urlunsplit((parts.scheme, parts.netloc, "/health", "", ""))
+
+
+def server_is_ready(url: str) -> bool:
+    try:
+        with urlopen(health_url(url), timeout=1.0) as response:
+            return response.status == 200
+    except (HTTPError, URLError, TimeoutError):
+        return False
+
+
+def find_llama_server() -> str:
+    bundled = ROOT / ".tools" / "llama-cuda" / "llama-server.exe"
+    if bundled.exists():
+        return str(bundled)
+    executable = shutil.which("llama-server")
+    if executable:
+        return executable
+    local_app_data = os.environ.get("LOCALAPPDATA")
+    if local_app_data:
+        package_root = Path(local_app_data) / "Microsoft" / "WinGet" / "Packages"
+        candidates = sorted(package_root.glob("ggml.llamacpp_*/llama-server.exe"), reverse=True)
+        if candidates:
+            return str(candidates[0])
+    raise RuntimeError(
+        "llama-server is not installed. Run `winget install --id ggml.llamacpp --exact`, "
+        "then retry."
+    )
+
+
+def ensure_servers(args: argparse.Namespace) -> None:
+    required_urls = [args.embedding_url]
+    if not args.no_rerank:
+        required_urls.append(args.reranker_url)
+    embedding_ready = server_is_ready(args.embedding_url)
+    reranker_ready = args.no_rerank or server_is_ready(args.reranker_url)
+    if embedding_ready and reranker_ready:
+        return
+    if args.no_auto_start:
+        raise RuntimeError("Quantized llama.cpp servers are not running. Run .\\start-quantized.ps1 first.")
+    if any(urlsplit(url).hostname not in {"127.0.0.1", "localhost"} for url in required_urls):
+        raise RuntimeError("A configured remote model server is unavailable; automatic startup is local-only.")
+
+    command = [
+        "powershell.exe",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        str(ROOT / "start-quantized.ps1"),
+        "-LlamaServer",
+        find_llama_server(),
+    ]
+    if not embedding_ready and reranker_ready:
+        command.append("-EmbeddingOnly")
+        service_description = "quantized embedding server"
+    elif embedding_ready and not reranker_ready:
+        command.append("-RerankerOnly")
+        service_description = "quantized reranker server"
+    else:
+        service_description = "quantized embedding and reranker servers"
+    print(f"Starting {service_description}...", file=sys.stderr)
+    subprocess.run(command, cwd=ROOT, check=True)
+    if not all(server_is_ready(url) for url in required_urls):
+        raise RuntimeError("Quantized servers did not become ready. Check violet-llm/.runtime logs.")
+
+
+def embed_query(args: argparse.Namespace, dimensions: int) -> np.ndarray:
+    prompt = f"Instruct: {INSTRUCTION}\nQuery: {args.query}"
+    response = post_json(
+        args.embedding_url,
+        {
+            "model": args.embedding_model,
+            "input": [prompt],
+            "encoding_format": "float",
+        },
+        args.timeout,
+    )
+    try:
+        vector = np.asarray(response["data"][0]["embedding"], dtype=np.float32)
+    except (KeyError, IndexError, TypeError) as error:
+        raise RuntimeError(f"Unexpected embedding response: {response!r}") from error
+    if vector.size < dimensions:
+        raise RuntimeError(
+            f"Embedding server returned {vector.size} dimensions, but the index needs {dimensions}."
+        )
+    vector = vector[:dimensions]
+    norm = float(np.linalg.norm(vector))
+    if not np.isfinite(norm) or norm <= 0:
+        raise RuntimeError("Embedding server returned a zero or non-finite query vector.")
+    return vector / norm
+
+
+def retrieve_candidates(
+    output_dir: Path,
+    query: np.ndarray,
+    candidate_k: int,
+) -> list[dict[str, Any]]:
+    heap: list[tuple[float, int, dict[str, Any]]] = []
     serial = 0
     for work_dir in (output_dir / "works").iterdir():
         if not work_dir.is_dir() or work_dir.name.startswith("."):
             continue
         vectors = np.load(work_dir / "embeddings.npy", mmap_mode="r", allow_pickle=False)
         scores = np.asarray(vectors, dtype=np.float32) @ query
-        count = min(args.top_k, len(scores))
+        count = min(candidate_k, len(scores))
         if not count:
             continue
         rows = read_jsonl(work_dir / "chunks.jsonl")
-        for index in np.argpartition(scores, len(scores) - count)[-count:]:
+        indices = np.argpartition(scores, len(scores) - count)[-count:]
+        for index in indices:
             item = (float(scores[index]), serial, rows[int(index)])
             serial += 1
-            if len(heap) < args.top_k:
+            if len(heap) < candidate_k:
                 heapq.heappush(heap, item)
             elif item[0] > heap[0][0]:
                 heapq.heapreplace(heap, item)
 
-    results = [
-        {"rank": rank, "score": score, **row}
-        for rank, (score, _, row) in enumerate(sorted(heap, reverse=True), 1)
+    return [
+        {"embedding_score": score, **row}
+        for score, _, row in sorted(heap, reverse=True)
     ]
+
+
+def parse_reranker_results(response: Any) -> list[dict[str, Any]]:
+    if isinstance(response, dict):
+        items = response.get("results", response.get("data"))
+    else:
+        items = response
+    if not isinstance(items, list):
+        raise RuntimeError(f"Unexpected reranker response: {response!r}")
+
+    parsed: list[dict[str, Any]] = []
+    for item in items:
+        if not isinstance(item, dict) or "index" not in item:
+            raise RuntimeError(f"Unexpected reranker result: {item!r}")
+        score = item.get("relevance_score", item.get("score"))
+        if score is None:
+            raise RuntimeError(f"Reranker result has no score: {item!r}")
+        parsed.append({"index": int(item["index"]), "rerank_score": float(score)})
+    return parsed
+
+
+def rerank_candidates(
+    args: argparse.Namespace,
+    candidates: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    if args.no_rerank:
+        return [
+            {"rank": rank, "score": row["embedding_score"], "rerank_score": None, **row}
+            for rank, row in enumerate(candidates[: args.top_k], 1)
+        ]
+
+    query = f"Instruct: {INSTRUCTION}\nQuery: {args.query}"
+    response = post_json(
+        args.reranker_url,
+        {
+            "model": args.reranker_model,
+            "query": query,
+            "documents": [str(row["text"]) for row in candidates],
+            "top_n": min(args.top_k, len(candidates)),
+        },
+        args.timeout,
+    )
+    ranked = parse_reranker_results(response)
+    results: list[dict[str, Any]] = []
+    for rank, item in enumerate(ranked[: args.top_k], 1):
+        index = item["index"]
+        if index < 0 or index >= len(candidates):
+            raise RuntimeError(f"Reranker returned invalid document index {index}.")
+        row = candidates[index]
+        results.append(
+            {
+                "rank": rank,
+                "score": item["rerank_score"],
+                "rerank_score": item["rerank_score"],
+                **row,
+            }
+        )
+    return results
+
+
+def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    args = parse_args()
+    if args.top_k < 1 or args.candidate_k < args.top_k:
+        raise ValueError("--top-k must be positive and --candidate-k must be at least --top-k.")
+
+    output_dir = ROOT / "outputs" / safe_model_name(args.model) / args.output_name
+    manifest = load_json(output_dir / "manifest.json")
+    dimensions = int(manifest["dimensions"])
+    ensure_servers(args)
+    query = embed_query(args, dimensions)
+    candidates = retrieve_candidates(output_dir, query, args.candidate_k)
+    results = rerank_candidates(args, candidates)
+
     if args.as_json:
         print(json.dumps(results, ensure_ascii=False, indent=2))
         return
     for result in results:
-        print(f"[{result['rank']:02d}] score={result['score']:.4f} work={result['work_id']} pages={result['page_ids']}")
-        print(result["text"].replace("\n", " / ")[:500])
+        rerank = result["rerank_score"]
+        score_text = (
+            f"rerank={rerank:.4f} embed={result['embedding_score']:.4f}"
+            if rerank is not None
+            else f"embed={result['embedding_score']:.4f}"
+        )
+        print(
+            f"[{result['rank']:02d}] {score_text} "
+            f"work={result['work_id']} pages={result['page_ids']}"
+        )
+        print(str(result["text"]).replace("\n", " / ")[:500])
         print()
 
 

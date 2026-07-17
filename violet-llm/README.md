@@ -1,6 +1,6 @@
 # violet-llm
 
-Qwen3-Embedding-4B experiment over the latest 5,000 numeric files in
+Qwen3-Embedding-4B experiment over the latest 10,000 numeric files in
 `../violet-ocr/raw-merged-v2`.
 
     cd violet-llm
@@ -13,16 +13,56 @@ Qwen3-Embedding-4B experiment over the latest 5,000 numeric files in
     python prepare.py --work-count 3 --dataset-name smoke-3 --overwrite
     python embed.py --dataset-name smoke-3 --output-name smoke-3 --batch-size 2
 
-    # Full latest 5,000.
-    python prepare.py
+    # Expand the existing latest-5000 dataset to the latest 10,000 works.
+    # The output name stays latest-5000 so the completed first 5,000 are reused.
+    python prepare.py --overwrite
     python embed.py
 
+Search uses two quantized Qwen3 4B models by default: the official
+`Qwen3-Embedding-4B-GGUF` Q5_K_M model for the query and a
+`Voodisss/Qwen3-Reranker-4B-GGUF-llama_cpp` Q4_K_M model for reranking. This
+conversion includes Qwen's yes/no classifier, rank pooling metadata, and the
+reranking chat template; generic Qwen3 GGUF conversions do not. Install a current
+CUDA-enabled llama.cpp build, start both local servers, then search:
+
     python search.py "your Korean scene query" --top-k 20
+
+Use a CUDA-enabled llama.cpp build. The winget package currently installs the
+Vulkan build, which can fail with `vk::Queue::submit: ErrorDeviceLost` under
+this two-model workload. Put the official CUDA build in
+`.tools/llama-cuda`; `search.py` prefers it over PATH. `search.py` starts both
+local servers automatically when needed. Manual server
+startup remains available for inspecting logs or warming the models first:
+
+    .\start-quantized.ps1
+
+The embedding search retrieves 100 candidates by default and the reranker
+returns the final 20. Increase the candidate pool independently when needed:
+
+    python search.py "your Korean scene query" --candidate-k 200 --top-k 20
+
+Use `--no-rerank` to inspect the quantized embedding ranking alone. Stop both
+background servers when finished:
+
+    .\stop-quantized.ps1
+
+The first server startup downloads roughly 5.4 GB of model files. Runtime logs
+and process IDs are kept under the ignored `.runtime` directory. The endpoints
+can also be supplied through `--embedding-url`, `--reranker-url`,
+`VIOLET_EMBEDDING_URL`, and `VIOLET_RERANKER_URL`.
+
+Existing indexes remain usable: their document vectors were created with the
+same Qwen3-Embedding-4B vector space. The quantized query vector is truncated
+to the index's configured Matryoshka dimension and normalized before cosine
+search. Compare `--no-rerank` results against the prior FP16 query path before
+rebuilding a large index if exact rank stability matters.
 
 The default chunk is a three-page window with a two-page stride. Each stored
 chunk retains the source page, dialogue index, confidence, and bbox.
 
-Performance defaults use CUDA FP16, SDPA, TF32 settings, length bucketing,
+Offline index construction in `embed.py` continues to use CUDA FP16 because
+that path already has high-throughput token-budget batching. Performance
+defaults use CUDA FP16, SDPA, TF32 settings, length bucketing,
 inference mode, and automatic CUDA OOM backoff. Tokenization results are reused
 directly by the model forward pass, and a background worker prepares the next
 work buffer while the GPU processes the current one. Up to 16 works are
@@ -71,3 +111,19 @@ driver library to be preloaded on this PC before it selected FlashQwen3:
 
 Sequential TEI measured about 4,584 input tok/s, so the optimized local
 PyTorch path remains the default.
+## Incremental Modal embedding
+
+`embed-modal.py` runs only embedding on Modal and keeps search local. It scans
+`outputs/Qwen--Qwen3-Embedding-4B/latest-5000/works`, excludes every work with
+a completed `metadata.json`, then prepares and uploads the requested number of
+newest unfinished works. H100 is the default GPU.
+
+    $env:PYTHONUTF8="1"
+    python3 -m modal run embed-modal.py --work-count 5000
+    python3 -m modal run embed-modal.py --work-count 10000
+
+`--work-count` means new works, not the final total. With 10,000 works already
+complete, the first command processes works 10,001 through 15,000. Results are
+downloaded, validated, and merged into the existing `latest-5000` output one
+work directory at a time. Temporary Modal inputs and result archives are removed
+after a successful merge; pass `--keep-remote` to retain them.

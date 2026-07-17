@@ -17,7 +17,7 @@ DEFAULT_RAW_DIR = ROOT.parent / "violet-ocr" / "raw-merged-v2"
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Prepare latest raw-merged-v2 works for embedding.")
     parser.add_argument("--input-dir", type=Path, default=DEFAULT_RAW_DIR)
-    parser.add_argument("--work-count", type=int, default=5000)
+    parser.add_argument("--work-count", type=int, default=10000)
     parser.add_argument("--dataset-name", default="latest-5000")
     parser.add_argument("--window-pages", type=int, default=3)
     parser.add_argument("--stride-pages", type=int, default=2)
