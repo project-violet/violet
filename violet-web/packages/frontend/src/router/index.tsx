@@ -10,6 +10,7 @@ import { DownloadsPage } from '../pages/DownloadsPage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { AiSearchPage } from '../pages/AiSearchPage';
 import { MessageSearchPage } from '../pages/MessageSearchPage';
+import { LlmSearchPage } from '../pages/LlmSearchPage';
 import { HotPage } from '../pages/HotPage';
 import { KeywordGraphPage } from '../pages/KeywordGraphPage';
 import { WorkExperimentPage } from '../pages/WorkExperimentPage';
@@ -29,6 +30,7 @@ export function AppRoutes() {
         <Route path="hot" element={<HotPage />} />
         <Route path="ai-search" element={<AiSearchPage />} />
         <Route path="message-search" element={<MessageSearchPage />} />
+        <Route path="llm-search" element={<LlmSearchPage />} />
         <Route path="keyword-graph" element={<KeywordGraphPage />} />
         <Route path="work-experiment" element={<WorkExperimentPage />} />
         <Route path="author-similarity" element={<AuthorSimilarityPage />} />

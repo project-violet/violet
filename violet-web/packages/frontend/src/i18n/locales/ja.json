@@ -12,6 +12,7 @@
     "settings": "設定",
     "hot": "Hot",
     "messageSearch": "メッセージ",
+    "llmSearch": "LLM検索",
     "keywordGraph": "Keyword Graph",
     "workExperiment": "Experiment",
     "authorSimilarity": "Similar Authors",
@@ -218,6 +219,19 @@
       "connectionFailed": "接続失敗",
       "sampleCount": "サンプル{{count}}件"
     },
+    "llmSearch": {
+      "heading": "LLM検索",
+      "enable": "LLM検索を有効化",
+      "enableDesc": "ナビゲーションにLLM検索タブを表示します",
+      "serverUrl": "LLM検索サーバーURL",
+      "serverUrlPlaceholder": "http://127.0.0.1:8788",
+      "serverUrlDesc": "LLM検索タブで使用するサーバーです。",
+      "testConnection": "接続テスト",
+      "testing": "テスト中...",
+      "connectionOk": "接続済み",
+      "connectionFailed": "接続失敗",
+      "workCount": "{{count}}作品を索引化"
+    },
     "keywordGraph": {
       "heading": "Keyword Graph",
       "serverUrl": "work-keywords-go server URL",
@@ -266,6 +280,26 @@
     }
   },
   "activity": { "eyebrow": "Your library", "heading": "User activity", "subtitle": "A clear view of how you use Violet.", "reads": "Reads", "read": "Read", "bookmarks": "Bookmarks", "bookmark": "Bookmarked", "crops": "Crops", "crop": "Cropped", "downloads": "Downloads", "download": "Downloaded", "uniqueWorks": "Unique works", "trend": "Activity trend", "periodSummary": "{{total}} actions · {{days}} active days · {{average}} per active day", "days": "{{count}}d", "all": "All", "mix": "Activity mix", "mixSubtitle": "Share of all recorded actions", "recent": "Recent activity", "recentSubtitle": "Latest changes saved in user.db", "empty": "No activity yet", "error": "Failed to load user activity." },
+  "llmSearch": {
+    "heading": "LLM検索",
+    "placeholder": "検索したいシーンを説明...",
+    "search": "検索",
+    "topK": "Top K",
+    "candidateK": "Candidate K",
+    "resultSummary": "{{seconds}}秒で{{count}}件",
+    "empty": "検索結果がありません",
+    "error": "LLM検索に失敗しました",
+    "retry": "再試行",
+    "disabled": "設定でLLM検索が無効です。",
+    "rerankScore": "リランク",
+    "embedScore": "埋め込み",
+    "imageError": "画像の読み込みに失敗",
+    "invalidPage": "無効なページ",
+    "resultImageAlt": "ギャラリー{{id}} {{page}}ページ",
+    "columnWidth": "列幅",
+    "searchHistory": "LLM検索履歴",
+    "historyCount": "{{count}}回"
+  },
   "messageSearch": {
     "heading": "メッセージ検索",
     "placeholder": "メッセージテキストを検索...",

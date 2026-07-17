@@ -1,5 +1,8 @@
 volumes:
   violet-content-db:
+  violet-llm-index:
+  violet-huggingface-cache:
+  violet-llama-cache:
 
 services:
   content-db-init:
@@ -64,7 +67,7 @@ services:
     ports:
       - "12332:12332"
     volumes:
-      - ${VIOLET_DATA_ROOT:-./data}:/data:ro
+      - ${VIOLET_MESSAGE_SEARCH_DATA:-./violet-message-search/data/merged-0.fscm}:/data/merged-0.fscm:ro
     restart: unless-stopped
 
   graph:
@@ -82,7 +85,147 @@ services:
     ports:
       - "8787:8787"
     volumes:
-      - ${VIOLET_DATA_ROOT:-./data}:/data:ro
+      - ${VIOLET_GRAPH_DATA:-./violet-graph/graph.csv}:/data/graph.csv:ro
+    restart: unless-stopped
+
+  llm-index-init:
+    image: alpine:3.21
+    command:
+      - /bin/sh
+      - -ec
+      - |
+          src="/seed/Qwen--Qwen3-Embedding-4B/$${OUTPUT_NAME}/$${INDEX_NAME}"
+          if [ ! -f "$$src/manifest.json" ]; then
+            echo "missing LLM index: $$src/manifest.json" >&2
+            exit 1
+          fi
+          case "$${ACCELERATED_INDEX}" in
+            1|true|TRUE|yes|on)
+              for file in faiss-sq8.index faiss-sq8.json compact-metadata.json compact-metadata.bin compact-metadata-offsets.bin; do
+                if [ ! -f "$$src/$$file" ]; then
+                  echo "missing accelerated LLM index: $$src/$$file" >&2
+                  exit 1
+                fi
+              done
+              checksum="$$(cat "$$src/manifest.json" "$$src/faiss-sq8.json" "$$src/compact-metadata.json" | sha256sum | awk '{print $$1}')"
+              ;;
+            *) checksum="$$(sha256sum "$$src/manifest.json" | awk '{print $$1}')" ;;
+          esac
+          if [ -f /index/.source-manifest.sha256 ] && [ "$$(cat /index/.source-manifest.sha256)" = "$$checksum" ]; then
+            echo "LLM index volume is current"
+            exit 0
+          fi
+          echo "copying LLM index into Docker volume"
+          find /index -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+          cp -a "$$src"/. /index/
+          printf '%s\n' "$$checksum" > /index/.source-manifest.sha256
+          echo "LLM index volume is ready"
+    environment:
+      OUTPUT_NAME: ${VIOLET_LLM_OUTPUT_NAME:-latest-5000}
+      INDEX_NAME: ${VIOLET_LLM_INDEX_NAME:-index}
+      ACCELERATED_INDEX: ${VIOLET_LLM_ACCELERATED_INDEX:-true}
+    volumes:
+      - ${VIOLET_LLM_OUTPUT_ROOT:-./violet-llm/outputs}:/seed:ro
+      - violet-llm-index:/index
+    restart: "no"
+
+  embedding-llama:
+    image: ghcr.io/ggml-org/llama.cpp:${VIOLET_LLAMA_CPP_VERSION:-server-cuda-b10015}
+    command:
+      - -hf
+      - ${VIOLET_EMBEDDING_MODEL:-Qwen/Qwen3-Embedding-4B-GGUF:Q5_K_M}
+      - --embedding
+      - --pooling
+      - last
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8080"
+      - --n-gpu-layers
+      - "99"
+      - --ctx-size
+      - "2048"
+      - --batch-size
+      - "2048"
+      - --ubatch-size
+      - "2048"
+    ports:
+      - "${VIOLET_EMBEDDING_PORT:-8081}:8080"
+    volumes:
+      - violet-llama-cache:/root/.cache/huggingface
+    gpus: all
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 2 bash -c '</dev/tcp/127.0.0.1/8080'"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 120s
+    restart: unless-stopped
+
+  reranker-vllm:
+    image: vllm/vllm-openai:${VIOLET_VLLM_VERSION:-v0.25.1}
+    command:
+      - Qwen/Qwen3-Reranker-0.6B
+      - --runner
+      - pooling
+      - --hf-overrides
+      - '{"architectures":["Qwen3ForSequenceClassification"],"classifier_from_token":["no","yes"],"is_original_qwen3_reranker":true}'
+      - --chat-template
+      - /templates/qwen3-reranker.jinja
+      - --max-model-len
+      - "4096"
+      - --gpu-memory-utilization
+      - ${VIOLET_RERANKER_GPU_MEMORY_UTILIZATION:-0.30}
+    ports:
+      - "${VIOLET_RERANKER_PORT:-8082}:8000"
+    volumes:
+      - violet-huggingface-cache:/root/.cache/huggingface
+      - ./violet-llm/qwen3-reranker.jinja:/templates/qwen3-reranker.jinja:ro
+    gpus: all
+    ipc: host
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 120s
+    restart: unless-stopped
+
+  llm-search:
+    build:
+      context: ./violet-llm
+    image: violet/llm-search:local
+    environment:
+      VIOLET_LLM_OUTPUT_ROOT: /data
+      VIOLET_LLM_OUTPUT_NAME: ${VIOLET_LLM_OUTPUT_NAME:-latest-5000}
+      VIOLET_LLM_INDEX_NAME: ${VIOLET_LLM_INDEX_NAME:-index}
+      VIOLET_LLM_SEARCH_CONCURRENCY: ${VIOLET_LLM_SEARCH_CONCURRENCY:-1}
+      VIOLET_LLM_ACCELERATED_INDEX: ${VIOLET_LLM_ACCELERATED_INDEX:-true}
+      VIOLET_LLM_FAISS_THREADS: ${VIOLET_LLM_FAISS_THREADS:-16}
+      VIOLET_EMBEDDING_URL: ${VIOLET_EMBEDDING_URL:-http://embedding-llama:8080/v1/embeddings}
+      VIOLET_EMBEDDING_MODEL: ${VIOLET_EMBEDDING_MODEL:-Qwen/Qwen3-Embedding-4B-GGUF:Q5_K_M}
+      VIOLET_RERANKER_URL: ${VIOLET_RERANKER_URL:-http://reranker-vllm:8000/v1/rerank}
+      VIOLET_RERANKER_MODEL: ${VIOLET_RERANKER_MODEL:-Qwen/Qwen3-Reranker-0.6B}
+      VIOLET_RERANKER_SEPARATE_INSTRUCTION: "true"
+    ports:
+      - "8788:8788"
+    volumes:
+      - ${VIOLET_LLM_OUTPUT_ROOT:-./violet-llm/outputs}:/data:ro
+      - violet-llm-index:/data/Qwen--Qwen3-Embedding-4B/${VIOLET_LLM_OUTPUT_NAME:-latest-5000}/${VIOLET_LLM_INDEX_NAME:-index}:ro
+    depends_on:
+      llm-index-init:
+        condition: service_completed_successfully
+      embedding-llama:
+        condition: service_healthy
+      reranker-vllm:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8788/health', timeout=2)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    init: true
     restart: unless-stopped
 
   web:
@@ -94,6 +237,7 @@ services:
       USER_DB_PATH: /app/data/user.db
       FSCM_BASE_URL: http://message-search:12332
       KEYWORD_GRAPH_BASE_URL: http://graph:8787
+      LLM_SEARCH_BASE_URL: http://llm-search:8788
       SYNC_ENABLED: "false"
       PORT: "3001"
     ports:
