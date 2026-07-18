@@ -14,6 +14,7 @@ import { workExperimentRouter } from './routes/work-experiment.js';
 import { authorSimilarityRouter } from './routes/author-similarity.js';
 import { summaryRouter } from './routes/summary.js';
 import { activityRouter } from './routes/activity.js';
+import { intensityRouter } from './routes/intensity.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { requestLogger } from './middleware/request-logger.js';
 
@@ -41,6 +42,7 @@ export function createApp() {
   app.use('/api/author-similarity', authorSimilarityRouter);
   app.use('/api/summary', summaryRouter);
   app.use('/api/activity', activityRouter);
+  app.use('/api/intensity', intensityRouter);
 
   app.use(errorHandler);
 

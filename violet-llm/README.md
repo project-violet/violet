@@ -153,6 +153,33 @@ downloaded, validated, and merged into the existing `latest-5000` output one
 work directory at a time. Temporary Modal inputs and result archives are removed
 after a successful merge; pass `--keep-remote` to retain them.
 
+## Intensity timelines
+
+`build_intensity.py` projects every completed work embedding onto a semantic
+axis defined by three high-intensity anchors minus three calm anchors. It
+averages overlapping window scores per page, normalizes each work to its own
+5th-95th percentile range, and applies a `[1, 2, 3, 2, 1]` smoothing kernel.
+
+Start the embedding service, then build one JSONL file for every completed
+work:
+
+    docker compose up -d embedding-llama
+    python build_intensity.py
+
+The default output is
+`outputs/Qwen--Qwen3-Embedding-4B/latest-5000/intensity-timelines.jsonl`.
+The first line contains method metadata; every remaining line contains one
+work's `work_id`, `page_count`, normalized `raw` scores, `smooth` scores, and
+separated local `peaks`. Pages without dialogue windows are linearly
+interpolated and listed under `interpolated_ranges`. Works with no dialogue
+chunks are retained with empty arrays and `status: "no_dialogue_chunks"`.
+
+Generation is parallel and resumable. While running it writes a neighboring
+`.partial` file, scans completed work IDs after an interruption, and atomically
+renames the file when all selected works are present. Use `--max-works 1000`
+with a different `--output-file` for a smoke test, or `--overwrite` to rebuild
+an existing result from scratch.
+
 ## Search API
 
 `server.py` exposes the consolidated embedding index over HTTP. By default it

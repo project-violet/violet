@@ -62,6 +62,18 @@ textarea:focus {
   border-color: var(--color-primary);
 }
 
+/* Range controls are not text fields and must not inherit their box padding. */
+input[type='range'] {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+input[type='range']:focus {
+  border-color: transparent;
+}
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,

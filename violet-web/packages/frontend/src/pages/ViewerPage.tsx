@@ -11,6 +11,7 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { getProxyImageUrl } from '../api/proxy';
 import { getLastPage } from '../api/history';
 import { cleanupExpired } from '../services/image-cache';
+import { useIntensityTimeline } from '../hooks/useIntensityTimeline';
 import { useEffect, useRef, useState } from 'react';
 
 export function ViewerPage() {
@@ -20,6 +21,7 @@ export function ViewerPage() {
   const [searchParams] = useSearchParams();
   const galleryId = parseInt(id!);
   const { data: imageList, isLoading } = useImageList(galleryId);
+  const { data: intensityTimeline } = useIntensityTimeline(galleryId);
 
   const totalPages = imageList?.urls.length ?? 0;
   // URL uses 1-based indexing, convert to 0-based for internal use
@@ -97,9 +99,11 @@ export function ViewerPage() {
 
   // Update URL without navigation (use 1-based indexing in URL)
   useEffect(() => {
+    if (totalPages <= 0) return;
+
     const url = `/viewer/${galleryId}?page=${currentPage + 1}`;
     window.history.replaceState(null, '', url);
-  }, [currentPage, galleryId]);
+  }, [currentPage, galleryId, totalPages]);
 
   if (isLoading) {
     return (
@@ -156,6 +160,7 @@ export function ViewerPage() {
         totalPages={totalPages}
         onPageChange={goToPage}
         onClose={() => navigate(-1)}
+        intensityTimeline={intensityTimeline}
       />
       {showResumeDialog && resumePage != null && (
         <ResumeDialog

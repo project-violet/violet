@@ -4,6 +4,7 @@ import { HorizontalReader } from './HorizontalReader';
 import { PagedReader } from './PagedReader';
 import { ViewerOverlay } from './ViewerOverlay';
 import styles from './ViewerContainer.module.css';
+import type { IntensityTimeline } from '@violet-web/shared';
 
 interface ViewerContainerProps {
   galleryId: number;
@@ -13,6 +14,7 @@ interface ViewerContainerProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onClose: () => void;
+  intensityTimeline?: IntensityTimeline;
 }
 
 export function ViewerContainer({
@@ -23,6 +25,7 @@ export function ViewerContainer({
   totalPages,
   onPageChange,
   onClose,
+  intensityTimeline,
 }: ViewerContainerProps) {
   const { viewMode, pageMode, readDirection, padding, twoPageMode, coverPageMode } =
     useViewerStore();
@@ -66,6 +69,7 @@ export function ViewerContainer({
         onClose={onClose}
         thumbnailUrls={thumbnailUrls}
         imageUrls={imageUrls}
+        intensityTimeline={intensityTimeline}
       />
     </div>
   );

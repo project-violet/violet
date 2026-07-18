@@ -244,6 +244,10 @@
     "back": "戻る",
     "settings": "設定",
     "pageInfo": "{{current}} / {{total}}",
+    "intensity": {
+      "label": "セリフの高まり",
+      "ariaLabel": "{{page}}ページ、セリフの高まりは100点中{{score}}点"
+    },
     "loading": "読み込み中...",
     "retrying": "再試行中... ({{current}}/{{max}})",
     "loadError": "{{max}}回の試行後、画像の読み込みに失敗しました。クリックして再試行。",

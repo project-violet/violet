@@ -272,6 +272,10 @@
     "back": "뒤로",
     "settings": "설정",
     "pageInfo": "{{current}} / {{total}}",
+    "intensity": {
+      "label": "대사 고조도",
+      "ariaLabel": "{{page}}페이지, 대사 고조도 100점 중 {{score}}점"
+    },
     "loading": "로딩 중...",
     "retrying": "재시도 중... ({{current}}/{{max}})",
     "loadError": "{{max}}번 시도 후 이미지 로드 실패. 클릭하여 재시도.",

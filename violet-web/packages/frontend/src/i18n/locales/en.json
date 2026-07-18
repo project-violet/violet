@@ -272,6 +272,10 @@
     "back": "Back",
     "settings": "Settings",
     "pageInfo": "{{current}} / {{total}}",
+    "intensity": {
+      "label": "Dialogue intensity",
+      "ariaLabel": "Page {{page}}, dialogue intensity {{score}} out of 100"
+    },
     "loading": "Loading...",
     "retrying": "Retrying... ({{current}}/{{max}})",
     "loadError": "Failed to load image after {{max}} attempts. Click to retry.",

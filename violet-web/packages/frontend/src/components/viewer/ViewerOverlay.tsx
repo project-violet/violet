@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useViewerStore } from '../../stores/viewer-store';
 import { useIsBookmarked, useToggleBookmark } from '../../hooks/useBookmarks';
@@ -6,6 +6,8 @@ import { ViewerSettingsPanel } from './ViewerSettingsPanel';
 import { PageThumbnailDialog } from './PageThumbnailDialog';
 import { CropDialog } from './CropDialog';
 import styles from './ViewerOverlay.module.css';
+import type { IntensityTimeline } from '@violet-web/shared';
+import { ViewerIntensityTimeline } from './ViewerIntensityTimeline';
 
 interface ViewerOverlayProps {
   galleryId: number;
@@ -15,6 +17,7 @@ interface ViewerOverlayProps {
   onClose: () => void;
   thumbnailUrls: string[];
   imageUrls: string[];
+  intensityTimeline?: IntensityTimeline;
 }
 
 export function ViewerOverlay({
@@ -25,10 +28,12 @@ export function ViewerOverlay({
   onClose,
   thumbnailUrls,
   imageUrls,
+  intensityTimeline,
 }: ViewerOverlayProps) {
   const { t } = useTranslation();
   const { showOverlay, showSettings, readDirection, twoPageMode, coverPageMode, toggleOverlay, toggleSettings, setTwoPageMode } = useViewerStore();
   const { data: isBookmarked } = useIsBookmarked(String(galleryId));
+  const sliderProgress = totalPages <= 1 ? 0 : (currentPage / (totalPages - 1)) * 100;
   const toggleBookmark = useToggleBookmark();
   const rtl = readDirection === 'rtl';
   const [showThumbnails, setShowThumbnails] = useState(false);
@@ -149,7 +154,7 @@ export function ViewerOverlay({
       <div className={styles.tapZoneRight} onClick={handleRightTap} />
 
       <div
-        className={`${styles.pageIndicator} ${showOverlay ? styles.pageIndicatorAboveSlider : ''}`}
+        className={`${styles.pageIndicator} ${showOverlay ? styles.pageIndicatorAboveSlider : ''} ${showOverlay && intensityTimeline?.smooth.length ? styles.pageIndicatorAboveTimeline : ''}`}
         onClick={(e) => {
           e.stopPropagation();
           setShowThumbnails(true);
@@ -196,7 +201,7 @@ export function ViewerOverlay({
               {t('viewer.settings')}
             </button>
           </div>
-          <div className={styles.shortcutHint}>
+          <div className={`${styles.shortcutHint} ${intensityTimeline?.smooth.length ? styles.shortcutHintAboveTimeline : ''}`}>
             <span><kbd>H</kbd> {t('viewer.settingsPanel.shortcuts.overlay')}</span>
             <span><kbd>S</kbd> {t('viewer.settingsPanel.shortcuts.settings')}</span>
             <span><kbd>B</kbd> {t('viewer.settingsPanel.shortcuts.bookmark')}</span>
@@ -205,12 +210,21 @@ export function ViewerOverlay({
             <span><kbd>D</kbd> {t('viewer.settingsPanel.shortcuts.twoPage')}</span>
           </div>
           <div className={styles.bottom}>
+            {intensityTimeline && (
+              <ViewerIntensityTimeline
+                timeline={intensityTimeline}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={onPageChange}
+              />
+            )}
             <input
               type="range"
               className={styles.slider}
               min={0}
               max={totalPages - 1}
               value={currentPage}
+              style={{ '--viewer-slider-progress': `${sliderProgress}%` } as CSSProperties}
               onChange={(e) => onPageChange(Number(e.target.value))}
             />
           </div>
