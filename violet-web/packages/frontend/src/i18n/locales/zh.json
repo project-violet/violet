@@ -244,6 +244,10 @@
     "back": "返回",
     "settings": "设置",
     "pageInfo": "{{current}} / {{total}}",
+    "intensity": {
+      "label": "对白强度",
+      "ariaLabel": "第{{page}}页，对白强度为100分中的{{score}}分"
+    },
     "loading": "加载中...",
     "retrying": "重试中... ({{current}}/{{max}})",
     "loadError": "{{max}}次尝试后加载图片失败。点击重试。",
