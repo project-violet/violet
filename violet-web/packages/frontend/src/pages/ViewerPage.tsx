@@ -99,9 +99,11 @@ export function ViewerPage() {
 
   // Update URL without navigation (use 1-based indexing in URL)
   useEffect(() => {
+    if (totalPages <= 0) return;
+
     const url = `/viewer/${galleryId}?page=${currentPage + 1}`;
     window.history.replaceState(null, '', url);
-  }, [currentPage, galleryId]);
+  }, [currentPage, galleryId, totalPages]);
 
   if (isLoading) {
     return (
