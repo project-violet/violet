@@ -1,0 +1,15 @@
+비번: somisoft
+배포판
+https://kio.ac/c/c4yF-HNmbmTVrWzJ6dL58b
+
+소스코드 포함
+https://kio.ac/c/dxXcslg2nlTpn5xw_zL58b
+
+docker를 설치는 해야합니다.
+
+실행 과정
+1. Docker Desktop 설치
+2. 설치 과정에서 WSL2 사용 허용
+3. 재부팅 요구 시 재부팅
+4. 배포 ZIP 전체 압축 해제
+5. VioletLauncher.exe 실행
