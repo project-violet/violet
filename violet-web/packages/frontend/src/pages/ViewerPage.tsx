@@ -12,6 +12,7 @@ import { getProxyImageUrl } from '../api/proxy';
 import { getLastPage } from '../api/history';
 import { cleanupExpired } from '../services/image-cache';
 import { useIntensityTimeline } from '../hooks/useIntensityTimeline';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useEffect, useRef, useState } from 'react';
 
 export function ViewerPage() {
@@ -35,9 +36,15 @@ export function ViewerPage() {
   const logIdRef = useRef<number | null>(null);
   const { imageCacheEnabled, imageCacheExpireDays } = useAppStore();
   const resumePromptEnabled = useViewerStore((s) => s.resumePromptEnabled);
+  const setDetectedProfile = useViewerStore((s) => s.setDetectedProfile);
+  const usesTouchProfile = useMediaQuery('(hover: none) and (pointer: coarse)');
 
   const [resumePage, setResumePage] = useState<number | null>(null);
   const [showResumeDialog, setShowResumeDialog] = useState(false);
+
+  useEffect(() => {
+    setDetectedProfile(usesTouchProfile ? 'mobile' : 'desktop');
+  }, [setDetectedProfile, usesTouchProfile]);
 
   // Cleanup expired cache on mount
   useEffect(() => {

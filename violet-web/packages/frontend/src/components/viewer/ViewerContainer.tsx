@@ -27,7 +27,7 @@ export function ViewerContainer({
   onClose,
   intensityTimeline,
 }: ViewerContainerProps) {
-  const { viewMode, pageMode, readDirection, padding, twoPageMode, coverPageMode } =
+  const { viewMode, pageMode, readDirection, padding, twoPageMode, coverPageMode, toggleOverlay } =
     useViewerStore();
 
   const rtl = readDirection === 'rtl';
@@ -49,6 +49,7 @@ export function ViewerContainer({
           imageUrls={imageUrls}
           currentPage={currentPage}
           onPageChange={onPageChange}
+          onTap={toggleOverlay}
           padding={padding}
           galleryId={galleryId}
         />

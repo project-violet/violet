@@ -53,3 +53,13 @@
   font-weight: 400;
   margin-left: 4px;
 }
+
+@media (max-width: 1024px) {
+  .chip {
+    min-height: 34px;
+    padding: 7px 11px;
+    border-color: color-mix(in srgb, var(--color-chip-border) 78%, var(--color-primary));
+    font-size: 12px;
+    -webkit-tap-highlight-color: transparent;
+  }
+}

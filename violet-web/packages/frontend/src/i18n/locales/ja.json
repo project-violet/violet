@@ -16,7 +16,8 @@
     "keywordGraph": "Keyword Graph",
     "workExperiment": "Experiment",
     "authorSimilarity": "Similar Authors",
-    "activity": "Activity"
+    "activity": "Activity",
+    "more": "その他"
   },
   "home": {
     "heading": "閲覧",
@@ -243,6 +244,7 @@
     "noImages": "このギャラリーの画像が見つかりませんでした。",
     "back": "戻る",
     "settings": "設定",
+    "more": "\u305D\u306E\u4ED6",
     "pageInfo": "{{current}} / {{total}}",
     "intensity": {
       "label": "セリフの高まり",
@@ -253,6 +255,13 @@
     "loadError": "{{max}}回の試行後、画像の読み込みに失敗しました。クリックして再試行。",
     "settingsPanel": {
       "title": "ビューア設定",
+      "profile": {
+        "title": "設定プロファイル",
+        "auto": "自動",
+        "mobile": "モバイル",
+        "desktop": "デスクトップ",
+        "active": "{{profile}}設定を使用中"
+      },
       "pageMode": {
         "title": "ページモード",
         "scroll": "スクロール",

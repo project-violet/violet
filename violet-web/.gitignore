@@ -11,3 +11,5 @@ packages/backend/data/*
 packages/backend/suggestion-cache.json
 .claude/*
 data/*
+.runtime/
+dev-server.*.log

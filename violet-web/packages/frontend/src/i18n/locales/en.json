@@ -16,7 +16,8 @@
     "keywordGraph": "Keyword Graph",
     "workExperiment": "Experiment",
     "authorSimilarity": "Similar Authors",
-    "activity": "Activity"
+    "activity": "Activity",
+    "more": "More"
   },
   "home": {
     "heading": "Browse",
@@ -271,6 +272,7 @@
     "noImages": "No images found for this gallery.",
     "back": "Back",
     "settings": "Settings",
+    "more": "More",
     "pageInfo": "{{current}} / {{total}}",
     "intensity": {
       "label": "Dialogue intensity",
@@ -281,6 +283,13 @@
     "loadError": "Failed to load image after {{max}} attempts. Click to retry.",
     "settingsPanel": {
       "title": "Viewer Settings",
+      "profile": {
+        "title": "Settings Profile",
+        "auto": "Auto",
+        "mobile": "Mobile",
+        "desktop": "Desktop",
+        "active": "Using {{profile}} settings"
+      },
       "pageMode": {
         "title": "Page Mode",
         "scroll": "Scroll",

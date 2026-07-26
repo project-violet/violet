@@ -9,7 +9,6 @@ import { useArticleTagSummary } from '../hooks/useArticleTagSummary';
 import { useLocalArticleSearch } from '../hooks/useLocalArticleSearch';
 import { useLocalSearchState } from '../hooks/useLocalSearchState';
 import { usePaginationKeyboard } from '../hooks/usePaginationKeyboard';
-import { useIsMobile } from '../hooks/useMediaQuery';
 import { useAppStore } from '../stores/app-store';
 import type { HotPeriod } from '../api/hot';
 import styles from './HotPage.module.css';
@@ -27,7 +26,6 @@ const PAGE_SIZE = 50;
 export function HotPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
   const { scrollMode } = useAppStore();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -115,22 +113,18 @@ export function HotPage() {
 
   return (
     <div className={styles.page}>
-      {!isMobile && (
-        <LocalSearchSection
-          basePath="/hot"
-          searchBarRef={searchBarRef}
-          getSuggestions={getSuggestions}
-          tagSummary={tagSummary}
-          selectedTags={selectedTags}
-          onTagToggle={handleTagToggle}
-          resultCount={filteredArticles.length}
-          isLoading={isLoading}
-          sticky
-          headerContent={periodSelector}
-        />
-      )}
-
-      {isMobile && periodSelector}
+      <LocalSearchSection
+        basePath="/hot"
+        searchBarRef={searchBarRef}
+        getSuggestions={getSuggestions}
+        tagSummary={tagSummary}
+        selectedTags={selectedTags}
+        onTagToggle={handleTagToggle}
+        resultCount={filteredArticles.length}
+        isLoading={isLoading}
+        sticky
+        headerContent={periodSelector}
+      />
 
       {error && <div className={styles.errorMessage}>{t('hot.error')}</div>}
 

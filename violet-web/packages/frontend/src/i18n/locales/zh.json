@@ -16,7 +16,8 @@
     "keywordGraph": "Keyword Graph",
     "workExperiment": "Experiment",
     "authorSimilarity": "Similar Authors",
-    "activity": "Activity"
+    "activity": "Activity",
+    "more": "更多"
   },
   "home": {
     "heading": "浏览",
@@ -243,6 +244,7 @@
     "noImages": "未找到该图库的图片。",
     "back": "返回",
     "settings": "设置",
+    "more": "\u66F4\u591A",
     "pageInfo": "{{current}} / {{total}}",
     "intensity": {
       "label": "对白强度",
@@ -253,6 +255,13 @@
     "loadError": "{{max}}次尝试后加载图片失败。点击重试。",
     "settingsPanel": {
       "title": "查看器设置",
+      "profile": {
+        "title": "设置配置",
+        "auto": "自动",
+        "mobile": "移动端",
+        "desktop": "桌面端",
+        "active": "正在使用{{profile}}设置"
+      },
       "pageMode": {
         "title": "页面模式",
         "scroll": "滚动",

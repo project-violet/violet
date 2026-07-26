@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
+  margin-left: auto;
 }
 
 .sizeSlider {
@@ -70,4 +70,17 @@
 
 .toggle input:checked + .toggleTrack::after {
   transform: translateX(18px);
+}
+
+@media (max-width: 1024px) {
+  .headerControls {
+    flex: 1 0 100%;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .sizeSlider {
+    flex: 1;
+    min-width: 120px;
+  }
 }

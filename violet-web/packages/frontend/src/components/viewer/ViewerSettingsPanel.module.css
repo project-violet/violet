@@ -88,6 +88,16 @@
   gap: var(--spacing-sm, 8px);
 }
 
+.profileSection {
+  padding-bottom: var(--spacing-md, 16px);
+  border-bottom: 1px solid var(--color-border, #333);
+}
+
+.profileStatus {
+  color: var(--color-text-secondary, #aaa);
+  font-size: 0.75rem;
+}
+
 .label {
   font-weight: 500;
   color: var(--color-text, #fff);
