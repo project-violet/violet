@@ -271,6 +271,7 @@
     "noImages": "No images found for this gallery.",
     "back": "Back",
     "settings": "Settings",
+    "more": "More",
     "pageInfo": "{{current}} / {{total}}",
     "intensity": {
       "label": "Dialogue intensity",

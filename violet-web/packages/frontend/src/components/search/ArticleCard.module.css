@@ -358,3 +358,53 @@
   background: #e0e0e0;
   color: #333;
 }
+
+@media (max-width: 767px) {
+  .card {
+    border: 1px solid color-mix(in srgb, var(--color-border) 75%, transparent);
+    border-radius: 12px;
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--color-bg) 42%, transparent);
+  }
+
+  .card:hover {
+    transform: none;
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--color-bg) 42%, transparent);
+  }
+
+  .info {
+    padding: 9px;
+  }
+
+  .title {
+    min-height: 2.7em;
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 0.8rem;
+    line-height: 1.35;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .meta {
+    min-width: 0;
+    gap: 5px;
+    overflow: hidden;
+    font-size: 0.68rem;
+    white-space: nowrap;
+  }
+
+  .meta > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .articleId {
+    display: none;
+  }
+
+  .downloadBtn {
+    opacity: 0.9;
+  }
+}

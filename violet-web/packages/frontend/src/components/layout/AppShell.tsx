@@ -101,7 +101,7 @@ export function AppShell() {
   }, [location.key]);
 
   const showSearchBar = location.pathname === '/';
-  const enableShellSearch = isDesktop && showSearchBar;
+  const enableShellSearch = showSearchBar;
   const baseQuery = contentLanguage !== 'all' ? `${query} lang:${contentLanguage}` : query;
   const excludeSuffix = excludedTags
     .filter((tag) => !query.includes(`-${tag}`))
@@ -217,6 +217,25 @@ export function AppShell() {
               </div>
             )}
           </div>
+        )}
+        {isMobile && showSearchBar && (
+          <section className={styles.mobileDiscovery}>
+            <div className={styles.mobileDiscoveryHeading}>
+              <strong>{t('app.name')}</strong>
+              <span>{t('home.heading')}</span>
+            </div>
+            <SearchBar ref={searchBarRef} />
+            {tagSummary.length > 0 && (
+              <div className={styles.mobileTagRail}>
+                <TagChips
+                  tags={tagSummary}
+                  selectedTags={selectedTags}
+                  onToggle={handleTagToggle}
+                  className={styles.mobileSearchTags}
+                />
+              </div>
+            )}
+          </section>
         )}
         <main ref={contentRef} className={styles.content}>
           <Outlet />

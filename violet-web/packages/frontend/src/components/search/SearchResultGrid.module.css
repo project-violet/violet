@@ -10,3 +10,17 @@
   padding: var(--spacing-xl);
   color: var(--color-text-secondary);
 }
+
+@media (max-width: 767px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding-bottom: 12px;
+  }
+}
+
+@media (max-width: 359px) {
+  .grid {
+    gap: 8px;
+  }
+}

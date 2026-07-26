@@ -243,6 +243,7 @@
     "noImages": "このギャラリーの画像が見つかりませんでした。",
     "back": "戻る",
     "settings": "設定",
+    "more": "\u305D\u306E\u4ED6",
     "pageInfo": "{{current}} / {{total}}",
     "intensity": {
       "label": "セリフの高まり",
