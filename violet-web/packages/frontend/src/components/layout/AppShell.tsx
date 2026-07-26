@@ -33,8 +33,10 @@ export function AppShell() {
   const closeDialog = useSearchDialogStore((s) => s.close);
   const { contentLanguage, viewMode, setViewMode, cardMinWidth, setCardMinWidth, excludedTags } = useAppStore();
   const [showAllSearchTags, setShowAllSearchTags] = useState(false);
+  const [compactHeaderHidden, setCompactHeaderHidden] = useState(false);
   const searchBarRef = useRef<SearchBarRef>(null);
   const contentRef = useRef<HTMLElement>(null);
+  const lastScrollTopRef = useRef(0);
 
   // Flag to prevent saving scroll position while restoring
   const isRestoringRef = useRef(false);
@@ -50,11 +52,30 @@ export function AppShell() {
     if (!content) return;
     const handleScroll = () => {
       if (isRestoringRef.current) return;
-      sessionStorage.setItem(`scroll:${location.key}`, String(content.scrollTop));
+      const scrollTop = content.scrollTop;
+      sessionStorage.setItem(`scroll:${location.key}`, String(scrollTop));
+
+      if (useCompactShell) {
+        const delta = scrollTop - lastScrollTopRef.current;
+        if (scrollTop <= 12) {
+          setCompactHeaderHidden(false);
+        } else if (delta > 10) {
+          setCompactHeaderHidden(true);
+        } else if (delta < -4) {
+          setCompactHeaderHidden(false);
+        }
+      }
+
+      lastScrollTopRef.current = scrollTop;
     };
     content.addEventListener('scroll', handleScroll, { passive: true });
     return () => content.removeEventListener('scroll', handleScroll);
-  }, [location.key]);
+  }, [location.key, useCompactShell]);
+
+  useEffect(() => {
+    setCompactHeaderHidden(false);
+    lastScrollTopRef.current = 0;
+  }, [location.pathname]);
 
   // Restore saved scroll position or scroll to top on navigation
   useEffect(() => {
@@ -65,6 +86,7 @@ export function AppShell() {
     const target = saved ? parseInt(saved) : 0;
 
     content.scrollTo(0, target);
+    lastScrollTopRef.current = target;
 
     if (!saved) return;
 
@@ -156,7 +178,10 @@ export function AppShell() {
   }, [location.pathname]);
 
   return (
-    <div className={styles.shell}>
+    <div
+      className={styles.shell}
+      data-compact-header-hidden={compactHeaderHidden ? 'true' : 'false'}
+    >
       {isDesktop && <Sidebar />}
       <div className={styles.mainArea}>
         {isDesktop && showSearchBar && (
@@ -220,13 +245,51 @@ export function AppShell() {
             )}
           </div>
         )}
-        {useCompactShell && showSearchBar && (
-          <section className={styles.mobileDiscovery}>
-            <div className={styles.mobileDiscoveryHeading}>
-              <strong>{t('app.name')}</strong>
-              <span>{t('home.heading')}</span>
-            </div>
+        <main ref={contentRef} className={styles.content}>
+          {useCompactShell && showSearchBar && (
+            <section className={styles.mobileDiscovery}>
             <SearchBar ref={searchBarRef} />
+            <div className={styles.mobileDiscoveryControls}>
+              <div className={styles.mobileDateRange}>
+                <DateRangeFilter
+                  compact
+                  query={fullQuery || ' '}
+                  from={dateRange.from}
+                  to={dateRange.to}
+                  onCommit={(from, to) =>
+                    setSearchParams(updateDateParams(searchParams, from, to))
+                  }
+                />
+              </div>
+              <div className={styles.mobileViewControls}>
+                <input
+                  type="range"
+                  className={styles.cardSizeSlider}
+                  min={120}
+                  max={350}
+                  step={10}
+                  value={cardMinWidth}
+                  onChange={(e) => setCardMinWidth(Number(e.target.value))}
+                  aria-label="Card size"
+                />
+                <label
+                  className={styles.viewSwitch}
+                  title={viewMode === 'grid' ? 'Detail view' : 'Grid view'}
+                >
+                  <span className={styles.switchLabel}>▦</span>
+                  <input
+                    type="checkbox"
+                    className={styles.switchInput}
+                    checked={viewMode === 'detail'}
+                    onChange={() => setViewMode(viewMode === 'grid' ? 'detail' : 'grid')}
+                  />
+                  <span className={styles.switchTrack}>
+                    <span className={styles.switchThumb} />
+                  </span>
+                  <span className={styles.switchLabel}>☰</span>
+                </label>
+              </div>
+            </div>
             {tagSummary.length > 0 && (
               <div className={styles.mobileTagRail}>
                 <TagChips
@@ -237,9 +300,8 @@ export function AppShell() {
                 />
               </div>
             )}
-          </section>
-        )}
-        <main ref={contentRef} className={styles.content}>
+            </section>
+          )}
           <Outlet />
         </main>
       </div>

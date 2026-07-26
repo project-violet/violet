@@ -13,7 +13,6 @@ import { DownloadProgressProvider } from '../contexts/DownloadProgressContext';
 import { useArticleTagSummary } from '../hooks/useArticleTagSummary';
 import { useLocalArticleSearch } from '../hooks/useLocalArticleSearch';
 import { useLocalSearchState } from '../hooks/useLocalSearchState';
-import { useIsMobile } from '../hooks/useMediaQuery';
 import { useAppStore } from '../stores/app-store';
 import { usePaginationKeyboard } from '../hooks/usePaginationKeyboard';
 import { useToastStore } from '../stores/toast-store';
@@ -27,7 +26,6 @@ const PAGE_SIZE = 30;
 export function DownloadsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
   const addToast = useToastStore((s) => s.addToast);
   const { scrollMode } = useAppStore();
 
@@ -153,32 +151,30 @@ export function DownloadsPage() {
 
   return (
     <div className={styles.page}>
-      {!isMobile && (
-        <LocalSearchSection
-          basePath="/downloads"
-          searchBarRef={searchBarRef}
-          getSuggestions={getSuggestions}
-          tagSummary={tagSummary}
-          selectedTags={selectedTags}
-          onTagToggle={handleTagToggle}
-          resultCount={filteredArticles.length}
-          isLoading={isLoading}
-          sticky
-          dateRangeContent={
-            <DateRangeFilter
-              compact
-              query=""
-              from={from}
-              to={to}
-              distributionData={dateDistribution}
-              distributionLoading={isLoading}
-              onCommit={(nextFrom, nextTo) =>
-                setSearchParams(updateDateParams(searchParams, nextFrom, nextTo))
-              }
-            />
-          }
-        />
-      )}
+      <LocalSearchSection
+        basePath="/downloads"
+        searchBarRef={searchBarRef}
+        getSuggestions={getSuggestions}
+        tagSummary={tagSummary}
+        selectedTags={selectedTags}
+        onTagToggle={handleTagToggle}
+        resultCount={filteredArticles.length}
+        isLoading={isLoading}
+        sticky
+        dateRangeContent={
+          <DateRangeFilter
+            compact
+            query=""
+            from={from}
+            to={to}
+            distributionData={dateDistribution}
+            distributionLoading={isLoading}
+            onCommit={(nextFrom, nextTo) =>
+              setSearchParams(updateDateParams(searchParams, nextFrom, nextTo))
+            }
+          />
+        }
+      />
 
       <DownloadProgressProvider value={downloadProgressMap}>
         {scrollMode === 'infinite' ? (

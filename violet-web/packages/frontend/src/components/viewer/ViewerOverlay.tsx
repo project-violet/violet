@@ -31,13 +31,14 @@ export function ViewerOverlay({
   intensityTimeline,
 }: ViewerOverlayProps) {
   const { t } = useTranslation();
-  const { showOverlay, showSettings, readDirection, twoPageMode, coverPageMode, toggleOverlay, toggleSettings, setTwoPageMode } = useViewerStore();
+  const { showOverlay, showSettings, viewMode, pageMode, readDirection, twoPageMode, coverPageMode, toggleOverlay, toggleSettings, setTwoPageMode } = useViewerStore();
   const { data: isBookmarked } = useIsBookmarked(String(galleryId));
   const sliderProgress = totalPages <= 1 ? 0 : (currentPage / (totalPages - 1)) * 100;
   const toggleBookmark = useToggleBookmark();
   const rtl = readDirection === 'rtl';
   const [showThumbnails, setShowThumbnails] = useState(false);
   const [showCropDialog, setShowCropDialog] = useState(false);
+  const isVerticalScroll = pageMode === 'scroll' && viewMode === 'vertical';
 
   const handleBookmarkToggle = useCallback(() => {
     toggleBookmark.mutate({ articleId: String(galleryId), isBookmarked: !!isBookmarked });
@@ -149,9 +150,13 @@ export function ViewerOverlay({
 
   return (
     <>
-      <div className={styles.tapZoneLeft} onClick={handleLeftTap} />
-      <div className={styles.tapZoneCenter} onClick={toggleOverlay} />
-      <div className={styles.tapZoneRight} onClick={handleRightTap} />
+      {!isVerticalScroll && (
+        <>
+          <div className={styles.tapZoneLeft} onClick={handleLeftTap} />
+          <div className={styles.tapZoneCenter} onClick={toggleOverlay} />
+          <div className={styles.tapZoneRight} onClick={handleRightTap} />
+        </>
+      )}
 
       <div
         className={`${styles.pageIndicator} ${showOverlay ? styles.pageIndicatorAboveSlider : ''} ${showOverlay && intensityTimeline?.smooth.length ? styles.pageIndicatorAboveTimeline : ''}`}

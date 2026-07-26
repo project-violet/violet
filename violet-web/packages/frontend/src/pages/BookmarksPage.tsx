@@ -11,7 +11,6 @@ import { useAllArticles } from '../hooks/useAllArticles';
 import { useArticleTagSummary } from '../hooks/useArticleTagSummary';
 import { useLocalArticleSearch } from '../hooks/useLocalArticleSearch';
 import { useLocalSearchState } from '../hooks/useLocalSearchState';
-import { useIsMobile } from '../hooks/useMediaQuery';
 import { useAppStore } from '../stores/app-store';
 import { usePaginationKeyboard } from '../hooks/usePaginationKeyboard';
 import styles from './BookmarksPage.module.css';
@@ -25,7 +24,6 @@ export function BookmarksPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const isMobile = useIsMobile();
   const { scrollMode } = useAppStore();
 
   const [selectedGroupId, setSelectedGroupId] = useState<number | undefined>(() => {
@@ -146,49 +144,39 @@ export function BookmarksPage() {
 
   return (
     <div>
-      {isMobile && groups && (
-        <BookmarkGroupList
-          groups={groups}
-          selectedId={selectedGroupId}
-          onSelect={setSelectedGroupId}
-        />
-      )}
-
-      {!isMobile && (
-        <LocalSearchSection
-          basePath="/bookmarks"
-          searchBarRef={searchBarRef}
-          getSuggestions={getSuggestions}
-          tagSummary={tagSummary}
-          selectedTags={selectedTags}
-          onTagToggle={handleTagToggle}
-          resultCount={filteredArticles.length}
-          isLoading={isLoading}
-          sticky
-          headerContent={
-            groups && (
-              <BookmarkGroupList
-                groups={groups}
-                selectedId={selectedGroupId}
-                onSelect={setSelectedGroupId}
-              />
-            )
-          }
-          dateRangeContent={
-            <DateRangeFilter
-              compact
-              query=""
-              from={from}
-              to={to}
-              distributionData={dateDistribution}
-              distributionLoading={isLoading}
-              onCommit={(nextFrom, nextTo) =>
-                setSearchParams(updateDateParams(searchParams, nextFrom, nextTo))
-              }
+      <LocalSearchSection
+        basePath="/bookmarks"
+        searchBarRef={searchBarRef}
+        getSuggestions={getSuggestions}
+        tagSummary={tagSummary}
+        selectedTags={selectedTags}
+        onTagToggle={handleTagToggle}
+        resultCount={filteredArticles.length}
+        isLoading={isLoading}
+        sticky
+        headerContent={
+          groups && (
+            <BookmarkGroupList
+              groups={groups}
+              selectedId={selectedGroupId}
+              onSelect={setSelectedGroupId}
             />
-          }
-        />
-      )}
+          )
+        }
+        dateRangeContent={
+          <DateRangeFilter
+            compact
+            query=""
+            from={from}
+            to={to}
+            distributionData={dateDistribution}
+            distributionLoading={isLoading}
+            onCommit={(nextFrom, nextTo) =>
+              setSearchParams(updateDateParams(searchParams, nextFrom, nextTo))
+            }
+          />
+        }
+      />
 
       {isLoading && <LoadingSpinner />}
       {!isLoading && scrollMode === 'infinite' ? (

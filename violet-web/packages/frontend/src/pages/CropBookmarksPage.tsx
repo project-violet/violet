@@ -11,7 +11,6 @@ import { getArticlesBatch } from '../api/content';
 import { useArticleTagSummary } from '../hooks/useArticleTagSummary';
 import { useLocalArticleSearch } from '../hooks/useLocalArticleSearch';
 import { useLocalSearchState } from '../hooks/useLocalSearchState';
-import { useIsMobile } from '../hooks/useMediaQuery';
 import { useAppStore } from '../stores/app-store';
 import styles from './CropBookmarksPage.module.css';
 import { DateRangeFilter } from '../components/search/DateRangeFilter';
@@ -21,7 +20,6 @@ import { buildLocalDateDistribution, filterItemsByDateRange } from '../component
 export function CropBookmarksPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
   const [searchParams, setSearchParams] = useSearchParams();
   const from = searchParams.get('from') || undefined;
   const to = searchParams.get('to') || undefined;
@@ -118,36 +116,32 @@ export function CropBookmarksPage() {
 
   return (
     <div>
-      {isMobile && <div className={styles.headerControls}>{cropControls}</div>}
-
-      {!isMobile && (
-        <LocalSearchSection
-          basePath="/crop-bookmarks"
-          searchBarRef={searchBarRef}
-          getSuggestions={getSuggestions}
-          tagSummary={tagSummary}
-          selectedTags={selectedTags}
-          onTagToggle={handleTagToggle}
-          resultCount={filteredCrops.length}
-          isLoading={loading}
-          showViewControls={false}
-          sticky
-          extraControls={cropControls}
-          dateRangeContent={!showUserBookmarks ? (
-            <DateRangeFilter
-              compact
-              query=""
-              from={from}
-              to={to}
-              distributionData={dateDistribution}
-              distributionLoading={loading}
-              onCommit={(nextFrom, nextTo) =>
-                setSearchParams(updateDateParams(searchParams, nextFrom, nextTo))
-              }
-            />
-          ) : undefined}
-        />
-      )}
+      <LocalSearchSection
+        basePath="/crop-bookmarks"
+        searchBarRef={searchBarRef}
+        getSuggestions={getSuggestions}
+        tagSummary={tagSummary}
+        selectedTags={selectedTags}
+        onTagToggle={handleTagToggle}
+        resultCount={filteredCrops.length}
+        isLoading={loading}
+        showViewControls={false}
+        sticky
+        extraControls={<div className={styles.headerControls}>{cropControls}</div>}
+        dateRangeContent={!showUserBookmarks ? (
+          <DateRangeFilter
+            compact
+            query=""
+            from={from}
+            to={to}
+            distributionData={dateDistribution}
+            distributionLoading={loading}
+            onCommit={(nextFrom, nextTo) =>
+              setSearchParams(updateDateParams(searchParams, nextFrom, nextTo))
+            }
+          />
+        ) : undefined}
+      />
 
       {loading && <LoadingSpinner />}
       {!loading && (

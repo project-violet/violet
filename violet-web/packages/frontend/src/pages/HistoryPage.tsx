@@ -11,7 +11,6 @@ import { InfiniteScroll } from '../components/common/InfiniteScroll';
 import { useArticleTagSummary } from '../hooks/useArticleTagSummary';
 import { useLocalArticleSearch } from '../hooks/useLocalArticleSearch';
 import { useLocalSearchState } from '../hooks/useLocalSearchState';
-import { useIsMobile } from '../hooks/useMediaQuery';
 import { useAppStore } from '../stores/app-store';
 import { usePaginationKeyboard } from '../hooks/usePaginationKeyboard';
 import styles from './HistoryPage.module.css';
@@ -24,7 +23,6 @@ const PAGE_SIZE = 30;
 export function HistoryPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
   const { scrollMode } = useAppStore();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -105,32 +103,30 @@ export function HistoryPage() {
 
   return (
     <div className={styles.page}>
-      {!isMobile && (
-        <LocalSearchSection
-          basePath="/history"
-          searchBarRef={searchBarRef}
-          getSuggestions={getSuggestions}
-          tagSummary={tagSummary}
-          selectedTags={selectedTags}
-          onTagToggle={handleTagToggle}
-          resultCount={filteredArticles.length}
-          isLoading={isLoading}
-          sticky
-          dateRangeContent={
-            <DateRangeFilter
-              compact
-              query=""
-              from={from}
-              to={to}
-              distributionData={dateDistribution}
-              distributionLoading={isLoading}
-              onCommit={(nextFrom, nextTo) =>
-                setSearchParams(updateDateParams(searchParams, nextFrom, nextTo))
-              }
-            />
-          }
-        />
-      )}
+      <LocalSearchSection
+        basePath="/history"
+        searchBarRef={searchBarRef}
+        getSuggestions={getSuggestions}
+        tagSummary={tagSummary}
+        selectedTags={selectedTags}
+        onTagToggle={handleTagToggle}
+        resultCount={filteredArticles.length}
+        isLoading={isLoading}
+        sticky
+        dateRangeContent={
+          <DateRangeFilter
+            compact
+            query=""
+            from={from}
+            to={to}
+            distributionData={dateDistribution}
+            distributionLoading={isLoading}
+            onCommit={(nextFrom, nextTo) =>
+              setSearchParams(updateDateParams(searchParams, nextFrom, nextTo))
+            }
+          />
+        }
+      />
 
       {scrollMode === 'infinite' ? (
         <>

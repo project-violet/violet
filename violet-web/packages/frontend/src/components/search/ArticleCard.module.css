@@ -400,10 +400,6 @@
     text-overflow: ellipsis;
   }
 
-  .articleId {
-    display: none;
-  }
-
   .downloadBtn {
     opacity: 0.9;
   }

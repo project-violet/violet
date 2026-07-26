@@ -8,18 +8,24 @@ import {
   BrainCircuit,
   Clock3,
   Download,
+  Flame,
   Home,
   Menu,
   MessageSquare,
+  Monitor,
+  Moon,
   Network,
   Scissors,
   Settings,
   Sparkles,
+  Sun,
   UsersRound,
   X,
 } from 'lucide-react';
 import { useLocation } from 'react-router';
 import { useAppStore } from '../../stores/app-store';
+import { DiscordIcon } from '../icons/DiscordIcon';
+import { GithubIcon } from '../icons/GithubIcon';
 import styles from './BottomNav.module.css';
 
 const navItems = [
@@ -30,6 +36,7 @@ const navItems = [
 ];
 
 const moreItems = [
+  { to: '/hot', labelKey: 'nav.hot', icon: Flame },
   { to: '/crop-bookmarks', labelKey: 'nav.cropBookmarks', icon: Scissors },
   { to: '/downloads', labelKey: 'nav.downloads', icon: Download },
   { to: '/ai-search', labelKey: 'nav.aiSearch', icon: Sparkles, feature: 'ai' },
@@ -45,7 +52,13 @@ export function BottomNav() {
   const { t } = useTranslation();
   const location = useLocation();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
-  const { aiSearchEnabled, messageSearchEnabled, llmSearchEnabled } = useAppStore();
+  const {
+    aiSearchEnabled,
+    messageSearchEnabled,
+    llmSearchEnabled,
+    themeMode,
+    setThemeMode,
+  } = useAppStore();
   const visibleMoreItems = useMemo(
     () => moreItems.filter((item) =>
       (item.feature !== 'ai' || aiSearchEnabled)
@@ -98,6 +111,54 @@ export function BottomNav() {
                   </NavLink>
                 );
               })}
+            </div>
+            <div className={styles.moreUtilities}>
+              <div className={styles.themeToggle} aria-label="Theme">
+                <button
+                  type="button"
+                  className={`${styles.themeButton} ${themeMode === 'light' ? styles.themeButtonActive : ''}`}
+                  onClick={() => setThemeMode('light')}
+                  aria-label="Light"
+                >
+                  <Sun size={18} aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.themeButton} ${themeMode === 'dark' ? styles.themeButtonActive : ''}`}
+                  onClick={() => setThemeMode('dark')}
+                  aria-label="Dark"
+                >
+                  <Moon size={18} aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.themeButton} ${themeMode === 'system' ? styles.themeButtonActive : ''}`}
+                  onClick={() => setThemeMode('system')}
+                  aria-label="System"
+                >
+                  <Monitor size={18} aria-hidden="true" />
+                </button>
+              </div>
+              <div className={styles.socialLinks}>
+                <a
+                  href="https://discord.com/invite/fqrtRxC"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.socialLink}
+                >
+                  <DiscordIcon size={18} />
+                  <span>Discord</span>
+                </a>
+                <a
+                  href="https://github.com/project-violet/violet"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.socialLink}
+                >
+                  <GithubIcon size={18} />
+                  <span>GitHub</span>
+                </a>
+              </div>
             </div>
           </section>
         </div>

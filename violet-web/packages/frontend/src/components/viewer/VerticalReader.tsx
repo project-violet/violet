@@ -8,6 +8,7 @@ interface VerticalReaderProps {
   imageUrls: string[];
   currentPage: number;
   onPageChange: (page: number) => void;
+  onTap: () => void;
   padding: number;
   galleryId: number;
 }
@@ -16,12 +17,14 @@ export function VerticalReader({
   imageUrls,
   currentPage,
   onPageChange,
+  onTap,
   padding,
   galleryId,
 }: VerticalReaderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const isScrolling = useRef(false);
+  const observedPageChange = useRef<number | null>(null);
 
   // Track current page via IntersectionObserver
   useEffect(() => {
@@ -35,6 +38,7 @@ export function VerticalReader({
           if (entry.isIntersecting) {
             const idx = Number(entry.target.getAttribute('data-page'));
             if (!isNaN(idx)) {
+              observedPageChange.current = idx;
               onPageChange(idx);
             }
             break;
@@ -67,6 +71,10 @@ export function VerticalReader({
 
   // Scroll to page when currentPage changes externally (e.g., slider)
   useEffect(() => {
+    if (observedPageChange.current === currentPage) {
+      observedPageChange.current = null;
+      return;
+    }
     scrollToPage(currentPage);
   }, [currentPage, scrollToPage]);
 
@@ -78,8 +86,17 @@ export function VerticalReader({
     [currentPage]
   );
 
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLElement;
+      if (target.closest('button, a, input')) return;
+      onTap();
+    },
+    [onTap],
+  );
+
   return (
-    <div ref={containerRef} className={styles.container}>
+    <div ref={containerRef} className={styles.container} onClick={handleClick}>
       {imageUrls.map((url, i) => (
         <div
           key={i}

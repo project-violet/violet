@@ -164,3 +164,61 @@
   background: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface));
   color: var(--color-primary);
 }
+
+.moreUtilities {
+  display: grid;
+  grid-template-columns: minmax(132px, 0.8fr) minmax(0, 1.2fr);
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.themeToggle,
+.socialLinks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.themeButton,
+.socialLink {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+}
+
+.themeButton {
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.themeButtonActive {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface));
+  color: var(--color-primary);
+}
+
+.socialLinks {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.socialLink {
+  gap: 7px;
+  padding: 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+@media (max-width: 360px) {
+  .moreUtilities {
+    grid-template-columns: 1fr;
+  }
+}

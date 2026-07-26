@@ -57,7 +57,7 @@ export function LocalSearchSection({
           </div>
         )}
         {showViewControls && (
-          <>
+          <div className={styles.viewControls}>
             <input
               type="range"
               className={styles.cardSizeSlider}
@@ -80,9 +80,9 @@ export function LocalSearchSection({
               </span>
               <span className={styles.switchLabel}>☰</span>
             </label>
-          </>
+          </div>
         )}
-        {extraControls}
+        {extraControls && <div className={styles.extraControls}>{extraControls}</div>}
       </div>
 
       {!isLoading && tagSummary.length > 0 && (
@@ -90,6 +90,7 @@ export function LocalSearchSection({
           tags={tagSummary}
           selectedTags={selectedTags}
           onToggle={onTagToggle}
+          className={styles.compactTags}
         />
       )}
     </div>
