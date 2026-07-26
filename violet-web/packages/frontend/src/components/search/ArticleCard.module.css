@@ -1,6 +1,6 @@
 .card {
   background: var(--color-bg-elevated);
-  border-radius: var(--radius-md);
+  border-radius: 6px;
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
@@ -362,7 +362,6 @@
 @media (max-width: 767px) {
   .card {
     border: 1px solid color-mix(in srgb, var(--color-border) 75%, transparent);
-    border-radius: 12px;
     box-shadow: 0 4px 14px color-mix(in srgb, var(--color-bg) 42%, transparent);
   }
 

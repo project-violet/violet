@@ -31,10 +31,18 @@ export function ThemeProvider() {
   useEffect(() => {
     const color = themeColors[themeColor];
     document.documentElement.style.setProperty('--color-primary', color);
+    document.documentElement.style.setProperty(
+      '--color-primary-hover',
+      'color-mix(in srgb, var(--color-primary) 82%, var(--color-text))'
+    );
 
     // Calculate lighter and darker variants
     const rgb = hexToRgb(color);
     if (rgb) {
+      document.documentElement.style.setProperty(
+        '--color-primary-rgb',
+        `${rgb.r}, ${rgb.g}, ${rgb.b}`
+      );
       document.documentElement.style.setProperty(
         '--color-primary-light',
         `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`
