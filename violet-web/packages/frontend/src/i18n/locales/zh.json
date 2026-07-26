@@ -254,6 +254,13 @@
     "loadError": "{{max}}次尝试后加载图片失败。点击重试。",
     "settingsPanel": {
       "title": "查看器设置",
+      "profile": {
+        "title": "设置配置",
+        "auto": "自动",
+        "mobile": "移动端",
+        "desktop": "桌面端",
+        "active": "正在使用{{profile}}设置"
+      },
       "pageMode": {
         "title": "页面模式",
         "scroll": "滚动",

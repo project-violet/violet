@@ -11,6 +11,9 @@ export function ViewerSettingsPanel() {
     twoPageMode,
     coverPageMode,
     padding,
+    profilePreference,
+    activeProfile,
+    setProfilePreference,
     setViewMode,
     setPageMode,
     setReadDirection,
@@ -31,6 +34,35 @@ export function ViewerSettingsPanel() {
         </div>
 
         <div className={styles.content}>
+          <div className={`${styles.section} ${styles.profileSection}`}>
+            <label className={styles.label}>{t('viewer.settingsPanel.profile.title')}</label>
+            <div className={styles.buttons}>
+              <button
+                className={`${styles.btn} ${profilePreference === 'auto' ? styles.active : ''}`}
+                onClick={() => setProfilePreference('auto')}
+              >
+                {t('viewer.settingsPanel.profile.auto')}
+              </button>
+              <button
+                className={`${styles.btn} ${profilePreference === 'mobile' ? styles.active : ''}`}
+                onClick={() => setProfilePreference('mobile')}
+              >
+                {t('viewer.settingsPanel.profile.mobile')}
+              </button>
+              <button
+                className={`${styles.btn} ${profilePreference === 'desktop' ? styles.active : ''}`}
+                onClick={() => setProfilePreference('desktop')}
+              >
+                {t('viewer.settingsPanel.profile.desktop')}
+              </button>
+            </div>
+            <span className={styles.profileStatus}>
+              {t('viewer.settingsPanel.profile.active', {
+                profile: t(`viewer.settingsPanel.profile.${activeProfile}`),
+              })}
+            </span>
+          </div>
+
           {/* Page Mode */}
           <div className={styles.section}>
             <label className={styles.label}>{t('viewer.settingsPanel.pageMode.title')}</label>

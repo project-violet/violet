@@ -54,7 +54,7 @@
   margin-left: 4px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
   .chip {
     min-height: 34px;
     padding: 7px 11px;

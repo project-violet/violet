@@ -10,7 +10,7 @@ import { TagChips } from '../search/TagChips';
 import { DateRangeFilter } from '../search/DateRangeFilter';
 import { updateDateParams } from '../search/date-range-model';
 import { Toast } from '../common/Toast';
-import { useIsMobile, useIsDesktop } from '../../hooks/useMediaQuery';
+import { useIsMobile, useIsTablet, useIsDesktop } from '../../hooks/useMediaQuery';
 import { useSearchTagSummary } from '../../hooks/useSearchTagSummary';
 import { useAppStore } from '../../stores/app-store';
 import { useSearchDialogStore, restoreSearchDialogFromUrl } from '../../stores/search-dialog-store';
@@ -18,7 +18,9 @@ import styles from './AppShell.module.css';
 
 export function AppShell() {
   const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   const isDesktop = useIsDesktop();
+  const useCompactShell = isMobile || isTablet;
   const { t } = useTranslation();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -218,7 +220,7 @@ export function AppShell() {
             )}
           </div>
         )}
-        {isMobile && showSearchBar && (
+        {useCompactShell && showSearchBar && (
           <section className={styles.mobileDiscovery}>
             <div className={styles.mobileDiscoveryHeading}>
               <strong>{t('app.name')}</strong>
@@ -241,7 +243,7 @@ export function AppShell() {
           <Outlet />
         </main>
       </div>
-      {isMobile && <BottomNav />}
+      {useCompactShell && <BottomNav />}
       {dialogQuery && (
         <SearchDialog query={dialogQuery} onClose={closeDialog} />
       )}

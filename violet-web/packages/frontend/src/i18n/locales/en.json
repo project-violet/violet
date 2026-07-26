@@ -282,6 +282,13 @@
     "loadError": "Failed to load image after {{max}} attempts. Click to retry.",
     "settingsPanel": {
       "title": "Viewer Settings",
+      "profile": {
+        "title": "Settings Profile",
+        "auto": "Auto",
+        "mobile": "Mobile",
+        "desktop": "Desktop",
+        "active": "Using {{profile}} settings"
+      },
       "pageMode": {
         "title": "Page Mode",
         "scroll": "Scroll",

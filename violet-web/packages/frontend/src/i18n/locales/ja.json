@@ -254,6 +254,13 @@
     "loadError": "{{max}}回の試行後、画像の読み込みに失敗しました。クリックして再試行。",
     "settingsPanel": {
       "title": "ビューア設定",
+      "profile": {
+        "title": "設定プロファイル",
+        "auto": "自動",
+        "mobile": "モバイル",
+        "desktop": "デスクトップ",
+        "active": "{{profile}}設定を使用中"
+      },
       "pageMode": {
         "title": "ページモード",
         "scroll": "スクロール",

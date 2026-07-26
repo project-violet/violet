@@ -27,7 +27,7 @@
   color: var(--color-text-secondary);
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
   .container {
     max-width: none;
   }
@@ -132,7 +132,7 @@
   margin-left: auto;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
   .dropdown {
     max-height: min(360px, 52vh);
     border-radius: 14px;
