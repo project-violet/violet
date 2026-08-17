@@ -13,6 +13,7 @@ import { useLocalArticleSearch } from '../hooks/useLocalArticleSearch';
 import { useLocalSearchState } from '../hooks/useLocalSearchState';
 import { useAppStore } from '../stores/app-store';
 import { usePaginationKeyboard } from '../hooks/usePaginationKeyboard';
+import { useResultGridKeyboard } from '../hooks/useResultGridKeyboard';
 import styles from './BookmarksPage.module.css';
 import { DateRangeFilter } from '../components/search/DateRangeFilter';
 import { updateDateParams } from '../components/search/date-range-model';
@@ -91,6 +92,11 @@ export function BookmarksPage() {
     scrollMode === 'infinite'
       ? filteredArticles.slice(0, visibleCount)
       : filteredArticles.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+  const keyboardSelectedId = useResultGridKeyboard(
+    displayArticles,
+    ['bookmarks', selectedGroupId, page, scrollMode, searchParams.toString()].join('|'),
+  );
 
   // Reset page if out of bounds
   useEffect(() => {
@@ -185,12 +191,20 @@ export function BookmarksPage() {
           loading={false}
           onLoadMore={handleLoadMore}
         >
-          <SearchResultGrid articles={displayArticles} />
+          <SearchResultGrid
+            articles={displayArticles}
+            keyboardSelectedId={keyboardSelectedId}
+            keyboardNavigation
+          />
         </InfiniteScroll>
       ) : (
         !isLoading && (
           <>
-            <SearchResultGrid articles={displayArticles} />
+            <SearchResultGrid
+              articles={displayArticles}
+              keyboardSelectedId={keyboardSelectedId}
+              keyboardNavigation
+            />
             {totalPages > 1 && (
               <div className={styles.pagination}>
                 <button

@@ -13,6 +13,7 @@ import { useLocalArticleSearch } from '../hooks/useLocalArticleSearch';
 import { useLocalSearchState } from '../hooks/useLocalSearchState';
 import { useAppStore } from '../stores/app-store';
 import { usePaginationKeyboard } from '../hooks/usePaginationKeyboard';
+import { useResultGridKeyboard } from '../hooks/useResultGridKeyboard';
 import styles from './HistoryPage.module.css';
 import { DateRangeFilter } from '../components/search/DateRangeFilter';
 import { updateDateParams } from '../components/search/date-range-model';
@@ -82,6 +83,11 @@ export function HistoryPage() {
       ? filteredArticles.slice(0, visibleCount)
       : filteredArticles.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
+  const keyboardSelectedId = useResultGridKeyboard(
+    displayArticles,
+    ['history', page, scrollMode, searchParams.toString()].join('|'),
+  );
+
   usePaginationKeyboard(page, totalPages, setPage, scrollMode === 'pagination');
 
   const handleReset = useCallback(() => {
@@ -137,14 +143,24 @@ export function HistoryPage() {
               loading={false}
               onLoadMore={handleLoadMore}
             >
-              <SearchResultGrid articles={displayArticles} />
+              <SearchResultGrid
+                articles={displayArticles}
+                keyboardSelectedId={keyboardSelectedId}
+                keyboardNavigation
+              />
             </InfiniteScroll>
           )}
         </>
       ) : (
         <>
           {isLoading && <LoadingSpinner />}
-          {!isLoading && <SearchResultGrid articles={displayArticles} />}
+          {!isLoading && (
+            <SearchResultGrid
+              articles={displayArticles}
+              keyboardSelectedId={keyboardSelectedId}
+              keyboardNavigation
+            />
+          )}
 
           {totalPages > 1 && (
             <div className={styles.pagination}>

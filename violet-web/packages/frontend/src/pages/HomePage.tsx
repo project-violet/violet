@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useSearch, useInfiniteSearch } from '../hooks/useSearch';
 import { useAppStore } from '../stores/app-store';
 import { usePaginationKeyboard } from '../hooks/usePaginationKeyboard';
+import { useResultGridKeyboard } from '../hooks/useResultGridKeyboard';
 import { SearchResultGrid } from '../components/search/SearchResultGrid';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { InfiniteScroll } from '../components/common/InfiniteScroll';
@@ -79,9 +80,16 @@ export function HomePage() {
 
   usePaginationKeyboard(page, displayTotalPages, setPage, scrollMode === 'pagination');
 
-  if (scrollMode === 'infinite') {
-    const allArticles = infiniteData?.pages.flatMap((p) => p.articles) ?? [];
+  const displayedArticles = scrollMode === 'infinite'
+    ? (infiniteData?.pages.flatMap((p) => p.articles) ?? [])
+    : (data?.articles ?? []);
 
+  const keyboardSelectedId = useResultGridKeyboard(
+    displayedArticles,
+    [query, page, scrollMode, from, to, contentLanguage].join('|'),
+  );
+
+  if (scrollMode === 'infinite') {
     return (
       <div className={styles.page}>
         {infiniteLoading && !infiniteData && <LoadingSpinner />}
@@ -90,7 +98,11 @@ export function HomePage() {
           loading={isFetchingNextPage}
           onLoadMore={handleLoadMore}
         >
-          <SearchResultGrid articles={allArticles} />
+          <SearchResultGrid
+            articles={displayedArticles}
+            keyboardSelectedId={keyboardSelectedId}
+            keyboardNavigation
+          />
         </InfiniteScroll>
       </div>
     );
@@ -99,7 +111,13 @@ export function HomePage() {
   return (
     <div className={styles.page}>
       {isLoading && <LoadingSpinner />}
-      {data && <SearchResultGrid articles={data.articles} />}
+      {data && (
+        <SearchResultGrid
+          articles={data.articles}
+          keyboardSelectedId={keyboardSelectedId}
+          keyboardNavigation
+        />
+      )}
       {displayTotalPages > 1 && (
         <div className={styles.pagination}>
           <button

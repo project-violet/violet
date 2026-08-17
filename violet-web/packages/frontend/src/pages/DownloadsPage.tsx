@@ -15,6 +15,7 @@ import { useLocalArticleSearch } from '../hooks/useLocalArticleSearch';
 import { useLocalSearchState } from '../hooks/useLocalSearchState';
 import { useAppStore } from '../stores/app-store';
 import { usePaginationKeyboard } from '../hooks/usePaginationKeyboard';
+import { useResultGridKeyboard } from '../hooks/useResultGridKeyboard';
 import { useToastStore } from '../stores/toast-store';
 import styles from './DownloadsPage.module.css';
 import { DateRangeFilter } from '../components/search/DateRangeFilter';
@@ -130,6 +131,11 @@ export function DownloadsPage() {
       ? filteredArticles.slice(0, visibleCount)
       : filteredArticles.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
+  const keyboardSelectedId = useResultGridKeyboard(
+    displayArticles,
+    ['downloads', page, scrollMode, searchParams.toString()].join('|'),
+  );
+
   usePaginationKeyboard(page, totalPages, setPage, scrollMode === 'pagination');
 
   const handleReset = useCallback(() => {
@@ -186,14 +192,24 @@ export function DownloadsPage() {
                 loading={false}
                 onLoadMore={handleLoadMore}
               >
-                <SearchResultGrid articles={displayArticles} />
+                <SearchResultGrid
+                  articles={displayArticles}
+                  keyboardSelectedId={keyboardSelectedId}
+                  keyboardNavigation
+                />
               </InfiniteScroll>
             )}
           </>
         ) : (
           <>
             {isLoading && <LoadingSpinner />}
-            {!isLoading && <SearchResultGrid articles={displayArticles} />}
+            {!isLoading && (
+              <SearchResultGrid
+                articles={displayArticles}
+                keyboardSelectedId={keyboardSelectedId}
+                keyboardNavigation
+              />
+            )}
 
             {totalPages > 1 && (
               <div className={styles.pagination}>
