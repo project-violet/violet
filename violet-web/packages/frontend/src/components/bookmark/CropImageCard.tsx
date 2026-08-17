@@ -14,6 +14,8 @@ interface CropImageCardProps {
   cachedUrl?: string;
   cacheLoading?: boolean;
   onDelete: (id: number) => void;
+  keyboardKey: string;
+  keyboardSelected?: boolean;
 }
 
 function parseCropArea(area: string) {
@@ -21,7 +23,7 @@ function parseCropArea(area: string) {
   return { left, top, right, bottom };
 }
 
-export function CropImageCard({ crop, cachedUrl, cacheLoading, onDelete }: CropImageCardProps) {
+export function CropImageCard({ crop, cachedUrl, cacheLoading, onDelete, keyboardKey, keyboardSelected = false }: CropImageCardProps) {
   const navigate = useNavigate();
   const cardRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -30,6 +32,12 @@ export function CropImageCard({ crop, cachedUrl, cacheLoading, onDelete }: CropI
   const imageCacheEnabled = useAppStore((s) => s.imageCacheEnabled);
   const imageCacheMaxSizeMB = useAppStore((s) => s.imageCacheMaxSizeMB);
   const savingRef = useRef(false);
+
+  useEffect(() => {
+    if (keyboardSelected) {
+      cardRef.current?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
+  }, [keyboardSelected]);
 
   // IntersectionObserver for lazy loading
   useEffect(() => {
@@ -106,7 +114,14 @@ export function CropImageCard({ crop, cachedUrl, cacheLoading, onDelete }: CropI
 
   return (
     <>
-      <div ref={cardRef} className={styles.card} onClick={handleClick}>
+      <div
+        ref={cardRef}
+        className={`${styles.card} ${keyboardSelected ? styles.keyboardSelected : ''}`}
+        data-masonry-crop-card="true"
+        data-crop-keyboard-key={keyboardKey}
+        aria-current={keyboardSelected ? 'true' : undefined}
+        onClick={handleClick}
+      >
         <div
           className={styles.imageWrapper}
           style={{ aspectRatio: String(cropAspectRatio) }}

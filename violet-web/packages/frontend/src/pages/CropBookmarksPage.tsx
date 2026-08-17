@@ -12,6 +12,7 @@ import { useArticleTagSummary } from '../hooks/useArticleTagSummary';
 import { useLocalArticleSearch } from '../hooks/useLocalArticleSearch';
 import { useLocalSearchState } from '../hooks/useLocalSearchState';
 import { useAppStore } from '../stores/app-store';
+import { useMasonryCropKeyboard } from '../hooks/useMasonryCropKeyboard';
 import styles from './CropBookmarksPage.module.css';
 import { DateRangeFilter } from '../components/search/DateRangeFilter';
 import { updateDateParams } from '../components/search/date-range-model';
@@ -89,6 +90,11 @@ export function CropBookmarksPage() {
     ? tagFilteredCrops
     : filterItemsByDateRange(tagFilteredCrops, (crop) => crop.DateTime, from, to);
 
+  const keyboardSelectedKey = useMasonryCropKeyboard(
+    filteredCrops,
+    ['crop-bookmarks', showUserBookmarks, searchParams.toString()].join('|'),
+  );
+
   const cropControls = (
     <>
       <label className={styles.toggleRow}>
@@ -149,6 +155,7 @@ export function CropBookmarksPage() {
           crops={filteredCrops}
           columnWidth={cropColumnWidth}
           onDelete={handleDelete}
+          keyboardSelectedKey={keyboardSelectedKey}
         />
       )}
     </div>

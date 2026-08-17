@@ -1,6 +1,7 @@
 import { useMemo, useEffect, useRef, useState } from 'react';
 import type { BookmarkCropImage } from '@violet-web/shared';
 import { CropImageCard } from './CropImageCard';
+import { getCropKeyboardKey } from '../../hooks/useMasonryCropKeyboard';
 import { useColumnCount } from '../../hooks/useColumnCount';
 import { useAppStore } from '../../stores/app-store';
 import {
@@ -14,6 +15,7 @@ interface CropBookmarkGridProps {
   crops: BookmarkCropImage[];
   columnWidth: number;
   onDelete: (id: number) => void;
+  keyboardSelectedKey?: string | null;
 }
 
 function parseCropArea(area: string) {
@@ -178,7 +180,7 @@ function usePrefetchedCache(crops: BookmarkCropImage[]) {
   return { cachedUrls, loading };
 }
 
-export function CropBookmarkGrid({ crops, columnWidth, onDelete }: CropBookmarkGridProps) {
+export function CropBookmarkGrid({ crops, columnWidth, onDelete, keyboardSelectedKey }: CropBookmarkGridProps) {
   const columnCount = useColumnCount(columnWidth);
   const gridRef = useRef<HTMLDivElement>(null);
   const scrollTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -219,6 +221,8 @@ export function CropBookmarkGrid({ crops, columnWidth, onDelete }: CropBookmarkG
               cachedUrl={cachedUrls.get(`${crop.Article}:${crop.Page}:${crop.Area}`)}
               cacheLoading={cacheLoading}
               onDelete={onDelete}
+              keyboardKey={getCropKeyboardKey(crop)}
+              keyboardSelected={getCropKeyboardKey(crop) === keyboardSelectedKey}
             />
           ))}
         </div>
