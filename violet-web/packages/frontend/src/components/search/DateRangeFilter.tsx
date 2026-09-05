@@ -20,6 +20,8 @@ interface DateRangeFilterProps {
   onCommit: (from?: string, to?: string) => void;
 }
 
+const EMPTY_BUCKETS: DateDistributionResponse['buckets'] = [];
+
 export function DateRangeFilter({
   query,
   from,
@@ -32,12 +34,18 @@ export function DateRangeFilter({
   const distribution = useDateDistribution(query, distributionData === undefined);
   const data = distributionData ?? distribution.data;
   const isLoading = distributionData === undefined ? distribution.isLoading : distributionLoading;
-  const buckets = data?.buckets ?? [];
+  const buckets = data?.buckets ?? EMPTY_BUCKETS;
   const minDate = data?.minDate ?? '';
   const maxDate = data?.maxDate ?? '';
   const maxOffset = useMemo(
     () => minDate && maxDate ? dateToDayOffset(minDate, maxDate) : 0,
     [maxDate, minDate],
+  );
+  const chartWidth = 1000;
+  const chartHeight = compact ? 26 : 66;
+  const areaPath = useMemo(
+    () => buildSmoothAreaPath(buckets.map((bucket) => bucket.count), chartWidth, chartHeight),
+    [buckets, chartHeight],
   );
   const [draft, setDraft] = useState<[number, number]>([0, 0]);
   const draftRef = useRef<[number, number]>([0, 0]);
@@ -84,9 +92,6 @@ export function DateRangeFilter({
     minDate,
     maxDate,
   );
-  const chartWidth = 1000;
-  const chartHeight = compact ? 26 : 66;
-  const areaPath = buildSmoothAreaPath(buckets.map((bucket) => bucket.count), chartWidth, chartHeight);
   const selectionStart = maxOffset > 0 ? (draft[0] / maxOffset) * 100 : 0;
   const selectionEnd = maxOffset > 0 ? (draft[1] / maxOffset) * 100 : 100;
 

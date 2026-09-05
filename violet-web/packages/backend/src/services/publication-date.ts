@@ -8,10 +8,21 @@ const DOTNET_UNIX_EPOCH_TICKS = 621355968000000000;
 const CACHE_TTL_MS = 60_000;
 const CACHE_MAX_ENTRIES = 100;
 
-const distributionCache = new Map<
-  string,
-  { value: DateDistributionResponse; expiresAt: number }
->();
+const distributionCaches = new WeakMap<Database.Database, {
+  revision: string;
+  entries: Map<string, { value: DateDistributionResponse; expiresAt: number }>;
+}>();
+
+function getDistributionCache(db: Database.Database) {
+  if (db.inTransaction) return new Map<string, { value: DateDistributionResponse; expiresAt: number }>();
+  const revision = `${db.pragma('data_version', { simple: true })}:${db.pragma('schema_version', { simple: true })}:${db.prepare('SELECT total_changes()').pluck().get()}`;
+  let cache = distributionCaches.get(db);
+  if (!cache || cache.revision !== revision) {
+    cache = { revision, entries: new Map() };
+    distributionCaches.set(db, cache);
+  }
+  return cache.entries;
+}
 
 export function normalizedPublishedSql(column = 'Published'): string {
   return `CASE
@@ -70,12 +81,6 @@ function selectBucketUnit(
   return 'day';
 }
 
-function bucketStartExpression(unit: DateDistributionResponse['unit']): string {
-  if (unit === 'year') return "strftime('%Y-01-01', publishedAt)";
-  if (unit === 'month') return "strftime('%Y-%m-01', publishedAt)";
-  return 'date(publishedAt)';
-}
-
 function addBucket(date: Date, unit: DateDistributionResponse['unit']): void {
   if (unit === 'year') date.setUTCFullYear(date.getUTCFullYear() + 1);
   else if (unit === 'month') date.setUTCMonth(date.getUTCMonth() + 1);
@@ -102,6 +107,7 @@ export function getDateDistribution(
   cacheKey: string,
 ): DateDistributionResponse {
   const now = Date.now();
+  const distributionCache = getDistributionCache(db);
   const cached = distributionCache.get(cacheKey);
   if (cached && cached.expiresAt > now) return cached.value;
   if (cached) distributionCache.delete(cacheKey);
@@ -112,31 +118,22 @@ export function getDateDistribution(
     FROM HitomiColumnModel
     WHERE ${condition}
   )`;
-  const summary = db.prepare(`${baseCte}
-    SELECT MIN(publishedAt) AS minDate,
-           MAX(publishedAt) AS maxDate,
-           SUM(publishedAt IS NOT NULL) AS totalCount,
-           SUM(publishedAt IS NULL) AS invalidCount
-    FROM matched`).get() as {
-      minDate: string | null;
-      maxDate: string | null;
-      totalCount: number | null;
-      invalidCount: number | null;
-    };
-
-  const minDate = summary.minDate?.slice(0, 10) ?? null;
-  const maxDate = summary.maxDate?.slice(0, 10) ?? null;
+  // Aggregate once per day, then derive the same adaptive buckets in memory.
+  const days = db.prepare(`${baseCte}
+    SELECT substr(publishedAt, 1, 10) AS start, COUNT(*) AS count
+    FROM matched GROUP BY start ORDER BY start`).all() as Array<{ start: string | null; count: number }>;
+  const validDays = days.filter((row): row is { start: string; count: number } => row.start !== null);
+  const minDate = validDays[0]?.start ?? null;
+  const maxDate = validDays.at(-1)?.start ?? null;
   const unit = minDate && maxDate ? selectBucketUnit(minDate, maxDate) : 'year';
   const buckets: DateDistributionBucket[] = [];
 
   if (minDate && maxDate) {
-    const grouped = db.prepare(`${baseCte}
-      SELECT ${bucketStartExpression(unit)} AS start, COUNT(*) AS count
-      FROM matched
-      WHERE publishedAt IS NOT NULL
-      GROUP BY start
-      ORDER BY start`).all() as Array<{ start: string; count: number }>;
-    const counts = new Map(grouped.map((row) => [row.start, row.count]));
+    const counts = new Map<string, number>();
+    for (const row of validDays) {
+      const start = formatDay(floorDate(row.start, unit));
+      counts.set(start, (counts.get(start) ?? 0) + row.count);
+    }
     const cursor = floorDate(minDate, unit);
     const last = floorDate(maxDate, unit);
     while (cursor <= last) {
@@ -151,8 +148,8 @@ export function getDateDistribution(
   const value: DateDistributionResponse = {
     minDate,
     maxDate,
-    totalCount: summary.totalCount ?? 0,
-    invalidCount: summary.invalidCount ?? 0,
+    totalCount: validDays.reduce((sum, row) => sum + row.count, 0),
+    invalidCount: days.find((row) => row.start === null)?.count ?? 0,
     unit,
     buckets,
   };

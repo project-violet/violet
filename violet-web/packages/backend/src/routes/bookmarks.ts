@@ -1,3 +1,4 @@
+import { articleStatusHandler } from '../services/article-status.js';
 import { Router } from 'express';
 import { unzipSync, strFromU8 } from 'fflate';
 import { getUserDb } from '../services/user-db.js';
@@ -6,6 +7,8 @@ const DAILY_ZIP_URL =
   'https://github.com/project-violet/violet/raw/refs/heads/dev/violet/assets/daily.zip';
 
 export const bookmarksRouter = Router();
+
+bookmarksRouter.post('/articles/check', articleStatusHandler(getUserDb, 'bookmark'));
 
 // --- Groups ---
 

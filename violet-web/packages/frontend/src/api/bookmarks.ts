@@ -1,3 +1,4 @@
+import { createStatusBatcher } from './batch-status';
 import type {
   BookmarkGroup,
   BookmarkArticle,
@@ -42,12 +43,10 @@ export async function deleteBookmarkArticle(id: number): Promise<void> {
   await api.delete(`/bookmarks/articles/${id}`);
 }
 
-export async function checkBookmark(articleId: string): Promise<boolean> {
-  const { data } = await api.get<{ bookmarked: boolean }>(
-    `/bookmarks/articles/check/${articleId}`,
-  );
-  return data.bookmarked;
-}
+export const checkBookmark = createStatusBatcher(async (ids) => {
+  const { data } = await api.post<Record<string, boolean>>('/bookmarks/articles/check', { ids });
+  return data;
+});
 
 // Artists
 export async function getBookmarkArtists(groupId?: number): Promise<BookmarkArtist[]> {

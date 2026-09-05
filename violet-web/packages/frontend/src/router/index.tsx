@@ -1,3 +1,5 @@
+import { lazy, Suspense } from 'react';
+import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { Routes, Route } from 'react-router';
 import { AppShell } from '../components/layout/AppShell';
 import { HomePage } from '../pages/HomePage';
@@ -7,15 +9,15 @@ import { BookmarksPage } from '../pages/BookmarksPage';
 import { CropBookmarksPage } from '../pages/CropBookmarksPage';
 import { HistoryPage } from '../pages/HistoryPage';
 import { DownloadsPage } from '../pages/DownloadsPage';
-import { SettingsPage } from '../pages/SettingsPage';
+const SettingsPage = lazy(() => import('../pages/SettingsPage').then((module) => ({ default: module.SettingsPage })));
 import { AiSearchPage } from '../pages/AiSearchPage';
 import { MessageSearchPage } from '../pages/MessageSearchPage';
 import { LlmSearchPage } from '../pages/LlmSearchPage';
 import { HotPage } from '../pages/HotPage';
-import { KeywordGraphPage } from '../pages/KeywordGraphPage';
-import { WorkExperimentPage } from '../pages/WorkExperimentPage';
-import { AuthorSimilarityPage } from '../pages/AuthorSimilarityPage';
-import { ActivityPage } from '../pages/ActivityPage';
+const KeywordGraphPage = lazy(() => import('../pages/KeywordGraphPage').then((module) => ({ default: module.KeywordGraphPage })));
+const WorkExperimentPage = lazy(() => import('../pages/WorkExperimentPage').then((module) => ({ default: module.WorkExperimentPage })));
+const AuthorSimilarityPage = lazy(() => import('../pages/AuthorSimilarityPage').then((module) => ({ default: module.AuthorSimilarityPage })));
+const ActivityPage = lazy(() => import('../pages/ActivityPage').then((module) => ({ default: module.ActivityPage })));
 
 export function AppRoutes() {
   return (
@@ -31,11 +33,11 @@ export function AppRoutes() {
         <Route path="ai-search" element={<AiSearchPage />} />
         <Route path="message-search" element={<MessageSearchPage />} />
         <Route path="llm-search" element={<LlmSearchPage />} />
-        <Route path="keyword-graph" element={<KeywordGraphPage />} />
-        <Route path="work-experiment" element={<WorkExperimentPage />} />
-        <Route path="author-similarity" element={<AuthorSimilarityPage />} />
-        <Route path="activity" element={<ActivityPage />} />
-        <Route path="settings" element={<SettingsPage />} />
+        <Route path="keyword-graph" element={<Suspense fallback={<LoadingSpinner />}><KeywordGraphPage /></Suspense>} />
+        <Route path="work-experiment" element={<Suspense fallback={<LoadingSpinner />}><WorkExperimentPage /></Suspense>} />
+        <Route path="author-similarity" element={<Suspense fallback={<LoadingSpinner />}><AuthorSimilarityPage /></Suspense>} />
+        <Route path="activity" element={<Suspense fallback={<LoadingSpinner />}><ActivityPage /></Suspense>} />
+        <Route path="settings" element={<Suspense fallback={<LoadingSpinner />}><SettingsPage /></Suspense>} />
       </Route>
       <Route path="viewer/:id" element={<ViewerPage />} />
     </Routes>

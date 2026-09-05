@@ -1,9 +1,12 @@
+import { articleStatusHandler } from '../services/article-status.js';
 import { Router } from 'express';
 import { getUserDb } from '../services/user-db.js';
 import { startDownload, retryDownload } from '../services/download-service.js';
 import { getLatestDownloadEntries } from '../services/user-date.js';
 
 export const downloadsRouter = Router();
+
+downloadsRouter.post('/check', articleStatusHandler(getUserDb, 'download'));
 
 downloadsRouter.post('/', async (req, res) => {
   const { articleId } = req.body;

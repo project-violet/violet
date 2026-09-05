@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Download, Trash2, RotateCw } from 'lucide-react';
@@ -36,7 +36,7 @@ function getTagOrder(ns: string): number {
   return TAG_ORDER[ns] ?? 3;
 }
 
-export function ArticleCard({ article, viewMode = 'grid', aiScore, aiDescription, rank, viewCount, keyboardSelected = false }: ArticleCardProps) {
+export const ArticleCard = memo(function ArticleCard({ article, viewMode = 'grid', aiScore, aiDescription, rank, viewCount, keyboardSelected = false }: ArticleCardProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { src: thumbnailSrc, onLoadSuccess: onThumbnailLoad } = useCachedThumbnail(article.Id);
@@ -324,4 +324,4 @@ export function ArticleCard({ article, viewMode = 'grid', aiScore, aiDescription
       )}
     </>
   );
-}
+});

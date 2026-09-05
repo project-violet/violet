@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import type { MessageSearchResult } from '@violet-web/shared';
 import { useColumnCount } from '../../hooks/useColumnCount';
 import { MessageSearchCard } from './MessageSearchCard';
@@ -17,7 +17,7 @@ function distributeToColumns(results: MessageSearchResult[], columnCount: number
   return columns;
 }
 
-export function MessageSearchGrid({ results, columnWidth }: MessageSearchGridProps) {
+export const MessageSearchGrid = memo(function MessageSearchGrid({ results, columnWidth }: MessageSearchGridProps) {
   const columnCount = useColumnCount(columnWidth);
   const columns = useMemo(
     () => distributeToColumns(results, columnCount),
@@ -38,4 +38,4 @@ export function MessageSearchGrid({ results, columnWidth }: MessageSearchGridPro
       ))}
     </div>
   );
-}
+});
