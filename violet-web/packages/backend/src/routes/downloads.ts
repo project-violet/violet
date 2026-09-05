@@ -32,6 +32,11 @@ downloadsRouter.get('/ids', (_req, res) => {
   res.json({ articleIds: entries.map((entry) => entry.articleId), entries });
 });
 
+downloadsRouter.get('/completed-ids', (_req, res) => {
+  const rows = getUserDb().prepare("SELECT DISTINCT Article FROM Download WHERE Status='completed'").all() as Array<{ Article: string }>;
+  res.json({ ids: rows.map((row) => Number(row.Article)).filter((id) => Number.isInteger(id) && id >= 0 && id <= 0xffffffff) });
+});
+
 downloadsRouter.get('/', (req, res) => {
   const page = parseInt(req.query.page as string) || 0;
   const pageSize = Math.min(parseInt(req.query.pageSize as string) || 30, 100);

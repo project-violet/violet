@@ -1,3 +1,4 @@
+import { ScopedMessageSearchButton } from '../components/message-search/ScopedMessageSearchButton';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -160,6 +161,9 @@ export function BookmarksPage() {
         resultCount={filteredArticles.length}
         isLoading={isLoading}
         sticky
+        extraControls={<ScopedMessageSearchButton articleIds={filteredArticles.map((article) => article.Id)}
+          label={groups?.find((group) => group.Id === selectedGroupId)?.Name ?? t('nav.bookmarks')}
+          disabled={isLoading} />}
         headerContent={
           groups && (
             <BookmarkGroupList

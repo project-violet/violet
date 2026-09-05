@@ -81,6 +81,7 @@ interface FetchFscmOptions {
   statusCheck?: boolean;
   limit?: number;
   range?: ArticleIdRange;
+  ids?: number[];
 }
 
 async function fetchFscm(
@@ -92,10 +93,18 @@ async function fetchFscm(
 ): Promise<unknown> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), getTimeoutMs(options.statusCheck ?? false));
-  const upstreamUrl = buildFscmSearchUrl(baseUrl, mode, query, articleId, options.limit, options.range);
+  const upstreamUrl = options.ids !== undefined
+    ? `${baseUrl}/${mode === 'similar' ? 'wsimilar' : 'wcontains'}/`
+    : buildFscmSearchUrl(baseUrl, mode, query, articleId, options.limit, options.range);
 
   try {
-    const response = await fetch(upstreamUrl, { signal: controller.signal });
+    const response = await fetch(upstreamUrl, {
+      signal: controller.signal,
+      ...(options.ids !== undefined ? {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: options.ids, query, limit: options.limit }),
+      } : {}),
+    });
     if (!response.ok) {
       throw new Error(`fscm returned ${response.status}`);
     }
@@ -270,6 +279,39 @@ messageSearchRouter.get('/', async (req, res) => {
   } catch (error) {
     console.error('Message search proxy error:', error);
     res.status(502).json({ error: 'Failed to reach fscm search server.' });
+  }
+});
+
+messageSearchRouter.post('/scoped', async (req, res) => {
+  const q = typeof req.body?.q === 'string' ? req.body.q.trim() : '';
+  const mode = req.body?.mode ?? 'contains';
+  const ids: unknown = req.body?.ids;
+  const baseUrl = normalizeBaseUrl(req.body?.baseUrl);
+  const rawLimit = req.body?.limit ?? 100;
+  if (!q || !['contains', 'similar'].includes(mode) || !baseUrl
+    || !Number.isInteger(rawLimit) || rawLimit < 1 || rawLimit > 500
+    || !Array.isArray(ids) || ids.length > 50_000
+    || ids.some((id) => !Number.isInteger(id) || id < 0 || id > 0xffffffff)) {
+    res.status(400).json({ error: 'Expected a query, contains/similar mode, limit 1–500 and at most 50000 unsigned article IDs.' });
+    return;
+  }
+  const scope = [...new Set(ids as number[])].sort((a, b) => a - b);
+  if (!scope.length) {
+    res.json({ query: q, mode, total: 0, results: [] } satisfies MessageSearchResponse);
+    return;
+  }
+  try {
+    const raw = await fetchFscm(baseUrl, mode, q, null, { ids: scope, limit: rawLimit });
+    if (!Array.isArray(raw)) throw new Error('Invalid scoped response');
+    const results = raw.map((item) => normalizeResult(item as FscmRawResult))
+      .filter((item): item is MessageSearchResult => item !== null);
+    // An incompatible server must fail rather than silently return global results.
+    const allowed = new Set(scope);
+    if (results.some((item) => !allowed.has(item.articleId))) throw new Error('FSCM ignored article scope');
+    res.json({ query: q, mode, total: results.length, results: results.slice(0, rawLimit) } satisfies MessageSearchResponse);
+  } catch (error) {
+    console.error('Scoped message search error:', error);
+    res.status(502).json({ error: 'Failed to perform scoped message search.' });
   }
 });
 

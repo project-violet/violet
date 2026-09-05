@@ -402,5 +402,15 @@
     "count": "{{formattedCount}}개 작품",
     "to": "종료 날짜",
     "from": "시작 날짜"
+  },
+  "scopedMessageSearch": {
+    "open": "대사 검색",
+    "title": "{{scope}} 내 대사 검색",
+    "scopeCount": "현재 필터 기준 {{formattedCount}}개 작품 · 작품 전체 대사",
+    "emptyScope": "검색할 작품이 없습니다. 목록의 필터를 확인해 주세요.",
+    "close": "닫기",
+    "preparing": "대상 확인 중…",
+    "loadError": "검색 대상을 불러오지 못했습니다. 다시 시도해 주세요.",
+    "tooLarge": "한 번에 최대 50,000개 작품을 검색할 수 있습니다. 목록 필터로 범위를 줄여 주세요."
   }
 }

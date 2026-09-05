@@ -3,6 +3,49 @@ import { test } from 'node:test';
 import express from 'express';
 import { messageSearchRouter, buildFscmSearchUrl } from './message-search.js';
 
+test('scoped proxy posts exact deduplicated IDs, handles empty scope, and fails closed', async () => {
+  const app = express();
+  app.use(express.json({ limit: '1mb' }));
+  app.use('/search', messageSearchRouter);
+  const server = app.listen(0, '127.0.0.1');
+  await new Promise<void>((resolve) => server.once('listening', resolve));
+  const { port } = server.address() as { port: number };
+  const originalFetch = globalThis.fetch;
+  const upstream: Array<{ url: string; body: Record<string, unknown>; method: string | undefined }> = [];
+  let wrongScope = false;
+  globalThis.fetch = async (input, options) => {
+    if (new URL(String(input)).port === String(port)) return originalFetch(input, options);
+    upstream.push({ url: String(input), body: JSON.parse(String(options?.body)), method: options?.method });
+    return new Response(JSON.stringify([{ Id: wrongScope ? 99 : 20, Page: 0, Correctness: 1, MatchScore: 100, Rect: [0, 0, 10, 10] }]));
+  };
+  const post = (body: unknown) => fetch(`http://127.0.0.1:${port}/search/scoped`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+  });
+  try {
+    for (const mode of ['contains', 'similar']) {
+      const response = await post({ q: 'needle', ids: [20, 10, 20], mode, limit: 1 });
+      assert.equal(response.status, 200);
+      assert.equal((await response.json()).results[0].articleId, 20);
+      const request = upstream.at(-1)!;
+      assert.equal(new URL(request.url).pathname, mode === 'similar' ? '/wsimilar/' : '/wcontains/');
+      assert.equal(request.method, 'POST');
+      assert.deepEqual(request.body, { query: 'needle', ids: [10, 20], limit: 1 });
+    }
+    const calls = upstream.length;
+    assert.deepEqual(await (await post({ q: 'needle', ids: [] })).json(), { query: 'needle', mode: 'contains', total: 0, results: [] });
+    for (const ids of [undefined, null, ['20'], [-1], [1.5], [4294967296], Array(50_001).fill(20)]) {
+      assert.equal((await post({ q: 'needle', ids })).status, 400);
+    }
+    assert.equal((await post({ q: 'needle', ids: [20], mode: 'lcs' })).status, 400);
+    assert.equal(upstream.length, calls);
+    wrongScope = true;
+    assert.equal((await post({ q: 'needle', ids: [20] })).status, 502);
+  } finally {
+    globalThis.fetch = originalFetch;
+    await new Promise<void>((resolve) => server.close(() => resolve()));
+  }
+});
+
 test('proxy passes bounds to FSCM and rejects invalid ranges before fetching', async () => {
   const app = express();
   app.use('/search', messageSearchRouter);

@@ -1,3 +1,4 @@
+import { ScopedMessageSearchButton } from '../components/message-search/ScopedMessageSearchButton';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -167,6 +168,8 @@ export function DownloadsPage() {
         resultCount={filteredArticles.length}
         isLoading={isLoading}
         sticky
+        extraControls={<ScopedMessageSearchButton articleIds={filteredArticles.map((article) => article.Id)}
+          label={t('nav.downloads')} disabled={isLoading} completedOnly />}
         dateRangeContent={
           <DateRangeFilter
             compact

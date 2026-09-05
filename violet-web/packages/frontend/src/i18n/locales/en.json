@@ -402,5 +402,15 @@
     "count": "{{formattedCount}} works",
     "to": "End date",
     "from": "Start date"
+  },
+  "scopedMessageSearch": {
+    "open": "Search dialogue",
+    "title": "Search dialogue in {{scope}}",
+    "scopeCount": "{{formattedCount}} works matching current filters · All dialogue in each work",
+    "emptyScope": "No works to search. Check the list filters.",
+    "close": "Close",
+    "preparing": "Preparing…",
+    "loadError": "Could not load search targets. Please try again.",
+    "tooLarge": "Search up to 50,000 works at a time. Narrow the list filters."
   }
 }

@@ -1405,6 +1405,24 @@ mod tests {
     }
 
     #[test]
+    fn many_scope_filters_before_top_k_and_keeps_empty_scope_empty() {
+        let _guard = TEST_LOCK.lock().unwrap();
+        reset_messages(vec![
+            test_message(10, "scopeddialogunique"),
+            test_message(20, "scopeddialogunique"),
+            test_message(30, "scopeddialogunique"),
+        ]);
+        for search in [search_similar_many, search_partial_contains_many] {
+            assert!(search(&[], "scopeddialogunique", 1).is_empty());
+            assert!(search(&[999], "scopeddialogunique", 1).is_empty());
+            let result = search(&[30, 30], "scopeddialogunique", 1);
+            assert_eq!(result.len(), 1);
+            assert_eq!(result[0].id, 30);
+            assert_eq!(search(&[20], "scopeddialogunique", 1)[0].id, 20);
+        }
+    }
+
+    #[test]
     fn range_filters_before_top_k_and_separates_cached_bounds() {
         let _guard = TEST_LOCK.lock().unwrap();
         reset_messages(vec![

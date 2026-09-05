@@ -9,6 +9,11 @@ export interface DownloadsResponse {
   pageSize: number;
 }
 
+export async function getCompletedDownloadIds(): Promise<number[]> {
+  const { data } = await api.get<{ ids: number[] }>('/downloads/completed-ids');
+  return data.ids;
+}
+
 export async function getDownloads(page = 0, pageSize = 30): Promise<DownloadsResponse> {
   const { data } = await api.get<DownloadsResponse>('/downloads', {
     params: { page, pageSize },

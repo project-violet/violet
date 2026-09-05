@@ -353,5 +353,15 @@
     "count": "{{formattedCount}}作品",
     "to": "終了日",
     "from": "開始日"
+  },
+  "scopedMessageSearch": {
+    "open": "セリフ検索",
+    "title": "{{scope}}内のセリフ検索",
+    "scopeCount": "現在の絞り込み対象 {{formattedCount}}作品 · 作品全体のセリフ",
+    "emptyScope": "検索対象の作品がありません。絞り込み条件を確認してください。",
+    "close": "閉じる",
+    "preparing": "対象を確認中…",
+    "loadError": "検索対象を読み込めませんでした。再試行してください。",
+    "tooLarge": "一度に検索できるのは50,000作品までです。条件を絞り込んでください。"
   }
 }

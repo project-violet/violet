@@ -1,3 +1,4 @@
+import { ScopedMessageSearchButton } from '../components/message-search/ScopedMessageSearchButton';
 import { useCallback, useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -6,8 +7,7 @@ import { useUserCropBookmarks } from '../hooks/useUserCropBookmarks';
 import { CropBookmarkGrid } from '../components/bookmark/CropBookmarkGrid';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { LocalSearchSection } from '../components/search/LocalSearchSection';
-import { useQuery } from '@tanstack/react-query';
-import { getArticlesBatch } from '../api/content';
+import { useAllArticles } from '../hooks/useAllArticles';
 import { useArticleTagSummary } from '../hooks/useArticleTagSummary';
 import { useLocalArticleSearch } from '../hooks/useLocalArticleSearch';
 import { useLocalSearchState } from '../hooks/useLocalSearchState';
@@ -45,15 +45,14 @@ export function CropBookmarksPage() {
   const displayCrops = showUserBookmarks
     ? (userCropBookmarks ?? [])
     : (cropBookmarks ?? []);
-  const loading = showUserBookmarks ? isUserLoading : isLoading;
+  const cropsLoading = showUserBookmarks ? isUserLoading : isLoading;
 
   // Fetch all articles in bulk for tag summary
   const uniqueArticleIds = [...new Set(displayCrops.map((crop) => crop.Article))];
-  const { data: articles = [] } = useQuery({
-    queryKey: ['articlesBatch', uniqueArticleIds],
-    queryFn: () => getArticlesBatch(uniqueArticleIds),
-    enabled: uniqueArticleIds.length > 0,
-  });
+  const { data: articles = [], isLoading: articlesLoading } = useAllArticles(
+    `crop-bookmarks-${showUserBookmarks}`, uniqueArticleIds.map(String),
+  );
+  const loading = cropsLoading || articlesLoading;
 
   const tagSummary = useArticleTagSummary(articles);
   const filteredArticles = useLocalArticleSearch(articles);
@@ -133,7 +132,10 @@ export function CropBookmarksPage() {
         isLoading={loading}
         showViewControls={false}
         sticky
-        extraControls={<div className={styles.headerControls}>{cropControls}</div>}
+        extraControls={<div className={styles.headerControls}>{cropControls}
+          <ScopedMessageSearchButton articleIds={filteredCrops.map((crop) => crop.Article)}
+            label={t(showUserBookmarks ? 'crop.userBookmarks' : 'nav.cropBookmarks')} disabled={loading} />
+        </div>}
         dateRangeContent={!showUserBookmarks ? (
           <DateRangeFilter
             compact

@@ -353,5 +353,15 @@
     "count": "{{formattedCount}}部作品",
     "to": "结束日期",
     "from": "开始日期"
+  },
+  "scopedMessageSearch": {
+    "open": "搜索台词",
+    "title": "在{{scope}}中搜索台词",
+    "scopeCount": "当前筛选包含 {{formattedCount}} 部作品 · 搜索作品全部台词",
+    "emptyScope": "没有可搜索的作品，请检查列表筛选条件。",
+    "close": "关闭",
+    "preparing": "正在确认范围…",
+    "loadError": "无法加载搜索范围，请重试。",
+    "tooLarge": "每次最多搜索50,000部作品，请缩小筛选范围。"
   }
 }
