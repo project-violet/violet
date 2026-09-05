@@ -35,7 +35,11 @@ export function ScopedMessageSearchButton({ articleIds, label, disabled, complet
   const setScope = useCallback((next: typeof scope, replace = false) => {
     const nextParams = new URLSearchParams(location.search);
     if (next) {
-      const id = nextParams.get('messageScope') || crypto.randomUUID();
+      // getRandomValues also works on plain HTTP LAN/Tailscale origins.
+      const id = nextParams.get('messageScope') || Array.from(
+        crypto.getRandomValues(new Uint8Array(16)),
+        (byte) => byte.toString(16).padStart(2, '0'),
+      ).join('');
       sessionStorage.setItem(`messageScope:${id}`, JSON.stringify({ ids: next.ids, label: next.label }));
       nextParams.set('messageScope', id);
       nextParams.set('messageQ', next.query);
