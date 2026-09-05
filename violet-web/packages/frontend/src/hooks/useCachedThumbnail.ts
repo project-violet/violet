@@ -12,59 +12,51 @@ export function useCachedThumbnail(galleryId: number): { src: string; onLoadSucc
   const imageCacheEnabled = useAppStore((s) => s.imageCacheEnabled);
   const imageCacheMaxSizeMB = useAppStore((s) => s.imageCacheMaxSizeMB);
 
+  // Include the article ID so a recycled card never displays the previous blob.
+  const [local, setLocal] = useState<{ galleryId: number; src: string | null } | null>(null);
+  const savingRef = useRef<string | null>(null);
+  const cacheChecked = !imageCacheEnabled || local?.galleryId === galleryId;
+  const blobUrl = imageCacheEnabled && local?.galleryId === galleryId ? local.src : null;
+
   const { data: proxyUrl } = useQuery({
     queryKey: ['thumbnail', galleryId],
     queryFn: async () => {
       const url = await getThumbnailUrl(galleryId);
       return getProxyImageUrl(url, `https://hitomi.la/reader/${galleryId}.html`);
     },
+    // An IndexedDB hit can be displayed without resolving a remote gallery at all.
+    enabled: cacheChecked && !blobUrl,
     staleTime: 30 * 60 * 1000,
   });
 
-  const [blobUrl, setBlobUrl] = useState<string | null>(null);
-  const [cacheChecked, setCacheChecked] = useState(false);
-  const blobUrlRef = useRef<string | null>(null);
-  const savingRef = useRef(false);
-
-  const enabled = imageCacheEnabled && !!proxyUrl;
-
   useEffect(() => {
-    if (!enabled) {
-      setCacheChecked(true);
+    if (!imageCacheEnabled) {
+      setLocal(null);
       return;
     }
-
     let cancelled = false;
-    setCacheChecked(false);
-    setBlobUrl(null);
-
+    let objectUrl: string | null = null;
+    setLocal(null);
     getCachedImage(galleryId, THUMBNAIL_PAGE)
       .then((cached) => {
         if (cancelled) return;
-        if (cached) {
-          const url = URL.createObjectURL(cached.blob);
-          blobUrlRef.current = url;
-          setBlobUrl(url);
-        }
-        setCacheChecked(true);
+        objectUrl = cached ? URL.createObjectURL(cached.blob) : null;
+        setLocal({ galleryId, src: objectUrl });
       })
       .catch(() => {
-        if (!cancelled) setCacheChecked(true);
+        if (!cancelled) setLocal({ galleryId, src: null });
       });
-
     return () => {
       cancelled = true;
-      if (blobUrlRef.current) {
-        URL.revokeObjectURL(blobUrlRef.current);
-        blobUrlRef.current = null;
-      }
-      setBlobUrl(null);
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [enabled, galleryId]);
+  }, [imageCacheEnabled, galleryId]);
 
   const onLoadSuccess = useCallback(() => {
-    if (!enabled || blobUrl !== null || savingRef.current || !proxyUrl) return;
-    savingRef.current = true;
+    if (!imageCacheEnabled || blobUrl !== null || !proxyUrl) return;
+    const saveKey = `${galleryId}:${proxyUrl}`;
+    if (savingRef.current === saveKey) return;
+    savingRef.current = saveKey;
 
     fetch(proxyUrl)
       .then((res) => {
@@ -78,9 +70,9 @@ export function useCachedThumbnail(galleryId: number): { src: string; onLoadSucc
       })
       .catch(() => {})
       .finally(() => {
-        savingRef.current = false;
+        if (savingRef.current === saveKey) savingRef.current = null;
       });
-  }, [enabled, blobUrl, proxyUrl, galleryId, imageCacheMaxSizeMB]);
+  }, [imageCacheEnabled, blobUrl, proxyUrl, galleryId, imageCacheMaxSizeMB]);
 
   if (!imageCacheEnabled) {
     return { src: proxyUrl ?? '', onLoadSuccess: noop };

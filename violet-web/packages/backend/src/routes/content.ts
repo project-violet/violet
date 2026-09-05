@@ -1,3 +1,4 @@
+import { getCachedSearchCount, getCachedSearchResult } from '../services/content-search-cache.js';
 import { BoundedCache } from '../services/bounded-cache.js';
 import { Router } from 'express';
 import { getContentDb, isContentDbReady, isFtsReady } from '../services/content-db.js';
@@ -23,38 +24,20 @@ if (!loadSuggestionCacheFromFile() && isContentDbReady()) {
 
 export const contentRouter = Router();
 
-// COUNT cache: same query string → cached count (expires after 60s)
-const countCache = new BoundedCache<{ count: number; ts: number }>();
-const COUNT_CACHE_TTL = 60_000;
 const tagSummaryCache = new BoundedCache<{ tags: TagEntry[]; ts: number }>();
 const TAG_SUMMARY_CACHE_TTL = 60_000;
 const contextualSuggestionCache = new BoundedCache<{ suggestions: TagEntry[]; ts: number }>();
 const CONTEXTUAL_SUGGESTION_CACHE_TTL = 60_000;
 
-function getCachedCount(query: string): number | null {
-  const entry = countCache.get(query);
-  if (entry && Date.now() - entry.ts < COUNT_CACHE_TTL) return entry.count;
-  return null;
-}
-
 function getSearchCount(query: string, useFts: boolean): number {
-  const cached = getCachedCount(query);
-  if (cached !== null) return cached;
-
   const db = getContentDb();
   try {
     const { countSql } = translateQuery(query, 0, 1, useFts);
-    const countRow = db.prepare(countSql).get() as { cnt: number } | undefined;
-    const count = countRow?.cnt ?? 0;
-    countCache.set(query, { count, ts: Date.now() });
-    return count;
+    return getCachedSearchCount(db, countSql);
   } catch {
     try {
       const { countSql } = translateQuery(query, 0, 1, false);
-      const countRow = db.prepare(countSql).get() as { cnt: number } | undefined;
-      const count = countRow?.cnt ?? 0;
-      countCache.set(query, { count, ts: Date.now() });
-      return count;
+      return getCachedSearchCount(db, countSql);
     } catch {
       return 0;
     }
@@ -146,41 +129,17 @@ contentRouter.get('/search', (req, res) => {
 
   const db = getContentDb();
   const useFts = isFtsReady();
-  const cacheKey = JSON.stringify([query, from ?? '', to ?? '']);
-  let { sql, countSql } = translateQuery(query, page, pageSize, useFts, dateRange);
-
+  const { sql, countSql } = translateQuery(query, page, pageSize, useFts, dateRange);
+  const started = performance.now();
   try {
-    const t0 = performance.now();
-    const articles = db.prepare(sql).all();
-    const tQuery = performance.now() - t0;
-
-    const cached = getCachedCount(cacheKey);
-    let totalCount: number;
-    let tCount: number;
-    if (cached !== null) {
-      totalCount = cached;
-      tCount = 0;
-    } else {
-      const countRow = db.prepare(countSql).get() as { cnt: number } | undefined;
-      tCount = performance.now() - t0 - tQuery;
-      totalCount = countRow?.cnt ?? 0;
-      countCache.set(cacheKey, { count: totalCount, ts: Date.now() });
-    }
-
-    console.log(`[SQL] query=${tQuery.toFixed(1)}ms count=${tCount.toFixed(1)}ms${cached !== null ? '(cached)' : ''} total=${(tQuery+tCount).toFixed(1)}ms | q="${query}" fts=${useFts} | ${totalCount} results`);
-    res.json({ articles, totalCount, page, pageSize });
+    const { result, cacheHit } = getCachedSearchResult(db, sql, countSql, page, pageSize);
+    console.log(`[SQL] search=${(performance.now() - started).toFixed(1)}ms cached=${cacheHit} | q="${query}" fts=${useFts} | ${result.totalCount} results`);
+    res.json(result);
   } catch {
-    // FTS query failed, fall back to LIKE
     const fallback = translateQuery(query, page, pageSize, false, dateRange);
-    const t0 = performance.now();
-    const articles = db.prepare(fallback.sql).all();
-    const tQuery = performance.now() - t0;
-    const countRow = db.prepare(fallback.countSql).get() as { cnt: number } | undefined;
-    const tCount = performance.now() - t0 - tQuery;
-    const totalCount = countRow?.cnt ?? 0;
-    countCache.set(cacheKey, { count: totalCount, ts: Date.now() });
-    console.log(`[SQL] query=${tQuery.toFixed(1)}ms count=${tCount.toFixed(1)}ms total=${(tQuery+tCount).toFixed(1)}ms | q="${query}" fts=fallback | ${totalCount} results`);
-    res.json({ articles, totalCount, page, pageSize });
+    const { result, cacheHit } = getCachedSearchResult(db, fallback.sql, fallback.countSql, page, pageSize);
+    console.log(`[SQL] search=${(performance.now() - started).toFixed(1)}ms cached=${cacheHit} | q="${query}" fts=fallback | ${result.totalCount} results`);
+    res.json(result);
   }
 });
 
