@@ -343,5 +343,15 @@
     "searchHistory": "検索履歴",
     "historyCount": "{{count}}回",
     "scrollToTop": "先頭へ"
+  },
+  "dateRange": {
+    "label": "作品の日付範囲",
+    "loading": "読み込み中…",
+    "error": "日付分布を読み込めません",
+    "retry": "再試行",
+    "reset": "リセット",
+    "count": "{{formattedCount}}作品",
+    "to": "終了日",
+    "from": "開始日"
   }
 }

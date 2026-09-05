@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { fetchDateDistribution } from '../api/content';
 
 export function useDateDistribution(query: string, enabled = true) {
@@ -10,10 +10,12 @@ export function useDateDistribution(query: string, enabled = true) {
     return () => window.clearTimeout(timer);
   }, [query]);
 
-  return useQuery({
+  const result = useQuery({
     queryKey: ['date-distribution', debouncedQuery],
     queryFn: ({ signal }) => fetchDateDistribution(debouncedQuery, signal),
     enabled: enabled && debouncedQuery.length > 0,
     staleTime: 60_000,
+    placeholderData: keepPreviousData,
   });
+  return { ...result, isQueryChanging: enabled && debouncedQuery !== query };
 }

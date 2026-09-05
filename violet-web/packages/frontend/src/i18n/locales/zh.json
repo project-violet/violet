@@ -343,5 +343,15 @@
     "searchHistory": "搜索记录",
     "historyCount": "{{count}}次",
     "scrollToTop": "返回顶部"
+  },
+  "dateRange": {
+    "label": "作品日期范围",
+    "loading": "加载中…",
+    "error": "日期分布加载失败",
+    "retry": "重试",
+    "reset": "重置",
+    "count": "{{formattedCount}}部作品",
+    "to": "结束日期",
+    "from": "开始日期"
   }
 }

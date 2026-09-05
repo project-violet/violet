@@ -392,5 +392,15 @@
     "searchHistory": "검색 기록",
     "historyCount": "{{count}}회",
     "scrollToTop": "맨 위로"
+  },
+  "dateRange": {
+    "label": "작품 날짜 범위",
+    "loading": "불러오는 중…",
+    "error": "날짜 분포 로드 실패",
+    "retry": "다시 시도",
+    "reset": "초기화",
+    "count": "{{formattedCount}}개 작품",
+    "to": "종료 날짜",
+    "from": "시작 날짜"
   }
 }

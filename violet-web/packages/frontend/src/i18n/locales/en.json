@@ -392,5 +392,15 @@
     "searchHistory": "Search history",
     "historyCount": "{{count}}x",
     "scrollToTop": "Scroll to top"
+  },
+  "dateRange": {
+    "label": "Publication date range",
+    "loading": "Loading…",
+    "error": "Date distribution unavailable",
+    "retry": "Retry",
+    "reset": "Reset",
+    "count": "{{formattedCount}} works",
+    "to": "End date",
+    "from": "Start date"
   }
 }
