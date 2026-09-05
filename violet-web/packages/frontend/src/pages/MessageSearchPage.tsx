@@ -8,6 +8,7 @@ import { useMessageSearch } from '../hooks/useMessageSearch';
 import { useMessageSearchHistory, useRecordMessageSearchHistory } from '../hooks/useMessageSearchHistory';
 import { MessageSearchGrid } from '../components/message-search/MessageSearchGrid';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import { DateRangeFilter } from '../components/search/DateRangeFilter';
 import styles from './MessageSearchPage.module.css';
 
 const MODES: MessageSearchMode[] = ['contains', 'similar', 'lcs'];
@@ -22,6 +23,10 @@ export function MessageSearchPage() {
   const pageRef = useRef<HTMLDivElement>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const queryFromUrl = searchParams.get('q') || '';
+  const from = searchParams.get('from') || undefined;
+  const to = searchParams.get('to') || undefined;
+  const idMin = searchParams.get('idMin') || '';
+  const idMax = searchParams.get('idMax') || '';
   const modeFromUrl = searchParams.get('mode') || 'contains';
   const mode: MessageSearchMode = isMessageSearchMode(modeFromUrl)
     ? modeFromUrl
@@ -47,6 +52,7 @@ export function MessageSearchPage() {
     mode,
     messageSearchResultLimit,
     messageSearchServerUrl,
+    { from, to, idMin: idMin ? Number(idMin) : undefined, idMax: idMax ? Number(idMax) : undefined },
   );
   const { data: historyData } = useMessageSearchHistory(inputValue);
   const recordHistory = useRecordMessageSearchHistory();
@@ -55,6 +61,7 @@ export function MessageSearchPage() {
   useEffect(() => {
     setInputValue(queryFromUrl);
   }, [queryFromUrl]);
+
 
   useEffect(() => {
     setSelectedMode(mode);
@@ -93,6 +100,10 @@ export function MessageSearchPage() {
     if (!q) return;
 
     const params: Record<string, string> = { q };
+    if (from) params.from = from;
+    if (to) params.to = to;
+    if (idMin) params.idMin = idMin;
+    if (idMax) params.idMax = idMax;
     if (selectedMode !== 'contains') params.mode = selectedMode;
     recordHistory.mutate(q);
     setSearchParams(params);
@@ -224,6 +235,17 @@ export function MessageSearchPage() {
                   ))}
                 </div>
               )}
+            </div>
+
+            <div className={styles.dateRange} title={t('messageSearch.dateRangeHint')}>
+              <DateRangeFilter query="lang:korean" from={from} to={to} compact onCommit={(nextFrom, nextTo) => {
+                const params = new URLSearchParams(searchParams);
+                if (nextFrom) params.set('from', nextFrom); else params.delete('from');
+                if (nextTo) params.set('to', nextTo); else params.delete('to');
+                params.delete('idMin');
+                params.delete('idMax');
+                setSearchParams(params);
+              }} />
             </div>
 
             <div className={styles.segmented}>

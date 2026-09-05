@@ -314,6 +314,11 @@
     "historyCount": "{{count}}次"
   },
   "messageSearch": {
+    "idMin": "起始编号",
+    "idMax": "结束编号",
+    "noBound": "不限",
+    "resetRange": "重置范围",
+    "dateRangeHint": "日期会转换为作品编号范围。编号与日期顺序不一致时，可能包含所选期间以外的作品。",
     "heading": "消息搜索",
     "placeholder": "搜索消息文本...",
     "mode": {

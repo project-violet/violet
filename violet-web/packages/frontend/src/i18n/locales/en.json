@@ -363,6 +363,11 @@
     "historyCount": "{{count}}x"
   },
   "messageSearch": {
+    "idMin": "Minimum ID",
+    "idMax": "Maximum ID",
+    "noBound": "No limit",
+    "resetRange": "Reset range",
+    "dateRangeHint": "Dates are converted to an article ID range. Results may fall outside the period when ID and date order differ.",
     "heading": "Message Search",
     "placeholder": "Search message text...",
     "mode": {

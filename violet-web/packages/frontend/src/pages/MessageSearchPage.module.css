@@ -21,6 +21,15 @@
   width: 100%;
 }
 
+.dateRange {
+  flex: 0 1 360px;
+  min-width: 300px;
+}
+
+.dateRange > section {
+  margin: 0;
+}
+
 .searchRow {
   display: flex;
   gap: var(--spacing-sm);
@@ -235,10 +244,26 @@
   color: var(--color-danger);
 }
 
+@media (min-width: 701px) and (max-width: 1100px) {
+  .searchRow {
+    flex-wrap: wrap;
+  }
+
+  .inputWrapper {
+    flex-basis: calc(100% - 380px);
+  }
+}
+
 @media (max-width: 700px) {
   .searchRow {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .dateRange {
+    flex: none;
+    width: 100%;
+    min-width: 0;
   }
 
   .segmented {

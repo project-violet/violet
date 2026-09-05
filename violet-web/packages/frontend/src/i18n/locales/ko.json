@@ -363,6 +363,11 @@
     "historyCount": "{{count}}회"
   },
   "messageSearch": {
+    "idMin": "시작 번호",
+    "idMax": "끝 번호",
+    "noBound": "제한 없음",
+    "resetRange": "범위 초기화",
+    "dateRangeHint": "기간을 작품 번호 범위로 변환해 검색합니다. 번호와 날짜 순서가 다르면 기간 밖의 작품이 포함될 수 있습니다.",
     "heading": "메시지 검색",
     "placeholder": "메시지 텍스트 검색...",
     "mode": {

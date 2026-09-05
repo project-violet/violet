@@ -314,6 +314,11 @@
     "historyCount": "{{count}}回"
   },
   "messageSearch": {
+    "idMin": "開始番号",
+    "idMax": "終了番号",
+    "noBound": "制限なし",
+    "resetRange": "範囲をリセット",
+    "dateRangeHint": "期間を作品番号の範囲に変換します。番号と日付の順序が異なる場合、期間外の作品が含まれることがあります。",
     "heading": "メッセージ検索",
     "placeholder": "メッセージテキストを検索...",
     "mode": {

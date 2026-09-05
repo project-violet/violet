@@ -33,3 +33,9 @@ export interface MessageSearchHistoryEntry {
 export interface MessageSearchHistoryResponse {
   items: MessageSearchHistoryEntry[];
 }
+export interface MessageSearchFilters {
+  from?: string;
+  to?: string;
+  idMin?: number;
+  idMax?: number;
+}

@@ -1,5 +1,6 @@
 import type {
   MessageSearchHistoryResponse,
+  MessageSearchFilters,
   MessageSearchMode,
   MessageSearchResponse,
   MessageSearchStatusResponse,
@@ -12,9 +13,10 @@ export async function messageSearch(
   limit = 100,
   baseUrl?: string,
   articleId?: string,
+  filters: MessageSearchFilters = {},
 ): Promise<MessageSearchResponse> {
   const { data } = await api.get<MessageSearchResponse>('/message-search', {
-    params: { q: query, mode, limit, baseUrl, articleId },
+    params: { q: query, mode, limit, baseUrl, articleId, ...filters },
   });
   return data;
 }

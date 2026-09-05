@@ -7,6 +7,9 @@ import type {
   MessageSearchStatusResponse,
 } from '@violet-web/shared';
 import { getUserDb } from '../services/user-db.js';
+import { getContentDb, isContentDbReady } from '../services/content-db.js';
+import { parseDateBounds } from '../services/publication-date.js';
+import { parseArticleIdBound, resolveMessageSearchRange, type ArticleIdRange } from '../services/message-search-range.js';
 
 export const messageSearchRouter = Router();
 
@@ -60,6 +63,7 @@ export function buildFscmSearchUrl(
   query: string,
   articleId: string | null = null,
   limit?: number,
+  range: ArticleIdRange = {},
 ): string {
   const route = articleId
     ? `${mode === 'similar' ? 'wsimilar' : 'wcontains'}/${encodeURIComponent(articleId)}`
@@ -68,12 +72,15 @@ export function buildFscmSearchUrl(
   if (limit !== undefined) {
     url.searchParams.set('limit', String(limit));
   }
+  if (range.idMin !== undefined) url.searchParams.set('id_min', String(range.idMin));
+  if (range.idMax !== undefined) url.searchParams.set('id_max', String(range.idMax));
   return url.toString();
 }
 
 interface FetchFscmOptions {
   statusCheck?: boolean;
   limit?: number;
+  range?: ArticleIdRange;
 }
 
 async function fetchFscm(
@@ -85,7 +92,7 @@ async function fetchFscm(
 ): Promise<unknown> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), getTimeoutMs(options.statusCheck ?? false));
-  const upstreamUrl = buildFscmSearchUrl(baseUrl, mode, query, articleId, options.limit);
+  const upstreamUrl = buildFscmSearchUrl(baseUrl, mode, query, articleId, options.limit, options.range);
 
   try {
     const response = await fetch(upstreamUrl, { signal: controller.signal });
@@ -216,8 +223,32 @@ messageSearchRouter.get('/', async (req, res) => {
     return;
   }
 
+  let range: ArticleIdRange | null;
   try {
-    const raw = await fetchFscm(baseUrl, mode, q, articleId, { limit });
+    for (const date of [req.query.from, req.query.to]) {
+      if (date !== undefined && typeof date !== 'string') throw new Error('Invalid date');
+    }
+    const from = req.query.from as string | undefined;
+    const to = req.query.to as string | undefined;
+    parseDateBounds(from, to);
+    const bounds = { idMin: parseArticleIdBound(req.query.idMin), idMax: parseArticleIdBound(req.query.idMax) };
+    if ((bounds.idMin ?? 0) > (bounds.idMax ?? 0xffffffff)) throw new Error('Reversed article ID range');
+    if ((from || to) && !isContentDbReady()) {
+      res.status(503).json({ error: 'Database syncing, please wait.' });
+      return;
+    }
+    range = resolveMessageSearchRange(from || to ? getContentDb() : undefined, from, to, bounds);
+  } catch (error) {
+    res.status(400).json({ error: error instanceof Error ? error.message : 'Invalid search range.' });
+    return;
+  }
+  if (!range || (articleId && (Number(articleId) < (range.idMin ?? 0) || Number(articleId) > (range.idMax ?? 0xffffffff)))) {
+    res.json({ query: q, mode, total: 0, results: [] } satisfies MessageSearchResponse);
+    return;
+  }
+
+  try {
+    const raw = await fetchFscm(baseUrl, mode, q, articleId, { limit, range });
 
     if (!Array.isArray(raw)) {
       res.status(502).json({ error: 'fscm returned an invalid response.' });
