@@ -1,5 +1,10 @@
 import Database from 'better-sqlite3';
 
+/** Covers language-filtered counts and descending result pagination. */
+export function ensureLanguageSearchIndex(db: Database.Database): void {
+  db.exec('CREATE INDEX IF NOT EXISTS idx_language_exist_id ON HitomiColumnModel(Language, ExistOnHitomi, Id DESC)');
+}
+
 /**
  * Normalize pipe-delimited field for FTS5 token indexing.
  * |entry one||male:tag||dark skin| → entry_one male:tag dark_skin
@@ -22,6 +27,7 @@ function normalizePipedField(value: string | null): string {
 export function buildFtsIndex(db: Database.Database): void {
   const start = Date.now();
   console.log('[FTS] Building search indexes...');
+  ensureLanguageSearchIndex(db);
 
   // B-tree indexes for exact-match columns
   db.exec(`

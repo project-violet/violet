@@ -2,7 +2,7 @@ import { createApp } from './app.js';
 import { SyncManager } from './services/sync-manager.js';
 import { recoverInterruptedDownloads } from './services/download-service.js';
 import { isContentDbReady, getContentDb, getDbPath, closeContentDb, reopenContentDb, isFtsReady, resetFtsReady } from './services/content-db.js';
-import { buildFtsIndex } from './services/fts-indexer.js';
+import { buildFtsIndex, ensureLanguageSearchIndex } from './services/fts-indexer.js';
 import Database from 'better-sqlite3';
 import { getIntensityTimelineStore } from './services/intensity-timelines.js';
 
@@ -49,6 +49,24 @@ app.listen(PORT, async () => {
         });
       } else {
         console.log('[violet-web] FTS index already available');
+        // Upgrade existing databases without rebuilding their full-text indexes.
+        const hasLanguageIndex = getContentDb().prepare(
+          "SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_language_exist_id'",
+        ).get();
+        if (!hasLanguageIndex) {
+          setImmediate(() => {
+            let writeDb: Database.Database | undefined;
+            try {
+              writeDb = new Database(getDbPath(), { fileMustExist: true });
+              ensureLanguageSearchIndex(writeDb);
+              console.log('[violet-web] Language search index ready');
+            } catch (err) {
+              console.error('[violet-web] Language search index upgrade failed:', err);
+            } finally {
+              writeDb?.close();
+            }
+          });
+        }
       }
     } catch (err) {
       console.error('[violet-web] FTS check failed:', err);
