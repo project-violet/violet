@@ -734,6 +734,61 @@ pub fn search_similar_many(ids: &[u32], query: &str, take: usize) -> Vec<Message
     )
 }
 
+/// Inclusive article bounds. Restrict candidates before scoring and top-k selection.
+pub fn search_similar_range(min: u32, max: u32, query: &str, take: usize) -> Vec<MessageResult> {
+    if min > max {
+        return vec![];
+    }
+    let converted = convert_query(query);
+    let scope = format!("range={min}..={max}");
+    search_with_profile(
+        "similar-range",
+        search_cache_key("similar-range", &scope, &converted, take),
+        query,
+        &converted,
+        scope,
+        move |store| candidate_indices_range(min, max, store),
+        CachedRatio::from(&converted),
+        |_| true,
+        take,
+    )
+}
+
+pub fn search_partial_contains_range(
+    min: u32,
+    max: u32,
+    query: &str,
+    take: usize,
+) -> Vec<MessageResult> {
+    if min > max {
+        return vec![];
+    }
+    let converted = convert_query(query);
+    let query_len = converted.len();
+    let scope = format!("range={min}..={max}");
+    search_with_profile(
+        "contains-range",
+        search_cache_key("contains-range", &scope, &converted, take),
+        query,
+        &converted,
+        scope,
+        move |store| candidate_indices_range(min, max, store),
+        CachedPartialRatio::from(&converted),
+        move |message| query_len <= message.message.len(),
+        take,
+    )
+}
+
+fn candidate_indices_range(min: u32, max: u32, store: &MessageStore) -> Vec<MessageIndex> {
+    store
+        .by_article
+        .iter()
+        .filter(|(id, _)| min <= **id && **id <= max)
+        .flat_map(|(_, indices)| indices.iter().copied())
+        .sorted()
+        .collect()
+}
+
 pub fn search_partial_contains(id: Option<u32>, query: &str, take: usize) -> Vec<MessageResult> {
     let converted_query = convert_query(query);
     let converted_query_len = converted_query.len();
@@ -1347,6 +1402,43 @@ mod tests {
         let article_ids: Vec<_> = results.iter().map(|result| result.id).sorted().collect();
 
         assert_eq!(article_ids, vec![10, 20]);
+    }
+
+    #[test]
+    fn many_scope_filters_before_top_k_and_keeps_empty_scope_empty() {
+        let _guard = TEST_LOCK.lock().unwrap();
+        reset_messages(vec![
+            test_message(10, "scopeddialogunique"),
+            test_message(20, "scopeddialogunique"),
+            test_message(30, "scopeddialogunique"),
+        ]);
+        for search in [search_similar_many, search_partial_contains_many] {
+            assert!(search(&[], "scopeddialogunique", 1).is_empty());
+            assert!(search(&[999], "scopeddialogunique", 1).is_empty());
+            let result = search(&[30, 30], "scopeddialogunique", 1);
+            assert_eq!(result.len(), 1);
+            assert_eq!(result[0].id, 30);
+            assert_eq!(search(&[20], "scopeddialogunique", 1)[0].id, 20);
+        }
+    }
+
+    #[test]
+    fn range_filters_before_top_k_and_separates_cached_bounds() {
+        let _guard = TEST_LOCK.lock().unwrap();
+        reset_messages(vec![
+            test_message(10, "rangefilterunique"),
+            test_message(20, "rangefilterunique"),
+            test_message(30, "rangefilterunique"),
+        ]);
+        for search in [search_similar_range, search_partial_contains_range] {
+            assert_eq!(search(20, 20, "rangefilterunique", 1)[0].id, 20);
+            assert_eq!(search(30, u32::MAX, "rangefilterunique", 1)[0].id, 30);
+            assert_eq!(search(0, 10, "rangefilterunique", 1)[0].id, 10);
+            assert_eq!(search(10, 30, "rangefilterunique", 3).len(), 3);
+            assert_eq!(search(10, 30, "rangefilterunique", 1).len(), 1);
+            assert!(search(21, 29, "rangefilterunique", 10).is_empty());
+            assert!(search(30, 20, "rangefilterunique", 10).is_empty());
+        }
     }
 
     #[test]

@@ -1,3 +1,4 @@
+import { ScopedMessageSearchButton } from '../components/message-search/ScopedMessageSearchButton';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +14,7 @@ import { useLocalArticleSearch } from '../hooks/useLocalArticleSearch';
 import { useLocalSearchState } from '../hooks/useLocalSearchState';
 import { useAppStore } from '../stores/app-store';
 import { usePaginationKeyboard } from '../hooks/usePaginationKeyboard';
+import { useResultGridKeyboard } from '../hooks/useResultGridKeyboard';
 import styles from './BookmarksPage.module.css';
 import { DateRangeFilter } from '../components/search/DateRangeFilter';
 import { updateDateParams } from '../components/search/date-range-model';
@@ -92,6 +94,11 @@ export function BookmarksPage() {
       ? filteredArticles.slice(0, visibleCount)
       : filteredArticles.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
+  const keyboardSelectedId = useResultGridKeyboard(
+    displayArticles,
+    ['bookmarks', selectedGroupId, page, scrollMode, searchParams.toString()].join('|'),
+  );
+
   // Reset page if out of bounds
   useEffect(() => {
     if (page >= totalPages && totalPages > 0) setPage(totalPages - 1);
@@ -154,6 +161,9 @@ export function BookmarksPage() {
         resultCount={filteredArticles.length}
         isLoading={isLoading}
         sticky
+        extraControls={<ScopedMessageSearchButton articleIds={filteredArticles.map((article) => article.Id)}
+          label={groups?.find((group) => group.Id === selectedGroupId)?.Name ?? t('nav.bookmarks')}
+          disabled={isLoading} />}
         headerContent={
           groups && (
             <BookmarkGroupList
@@ -185,12 +195,20 @@ export function BookmarksPage() {
           loading={false}
           onLoadMore={handleLoadMore}
         >
-          <SearchResultGrid articles={displayArticles} />
+          <SearchResultGrid
+            articles={displayArticles}
+            keyboardSelectedId={keyboardSelectedId}
+            keyboardNavigation
+          />
         </InfiniteScroll>
       ) : (
         !isLoading && (
           <>
-            <SearchResultGrid articles={displayArticles} />
+            <SearchResultGrid
+              articles={displayArticles}
+              keyboardSelectedId={keyboardSelectedId}
+              keyboardNavigation
+            />
             {totalPages > 1 && (
               <div className={styles.pagination}>
                 <button

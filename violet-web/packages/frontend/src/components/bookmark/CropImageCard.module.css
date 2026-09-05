@@ -15,6 +15,12 @@
   opacity: 1;
 }
 
+.keyboardSelected {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
+  box-shadow: var(--shadow-md);
+}
+
 .imageWrapper {
   position: relative;
   width: 100%;

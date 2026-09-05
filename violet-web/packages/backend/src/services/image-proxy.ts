@@ -1,3 +1,5 @@
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import type { Response } from 'express';
 
 /**
@@ -24,37 +26,36 @@ export async function proxyImage(
     (_, proto, sub) => `${proto}${sub}.gold-usergeneratedcontent.net/`,
   );
 
-  const upstream = await fetch(rewritten, { headers });
+  const controller = new AbortController();
+  const onClose = () => controller.abort();
+  res.once('close', onClose);
+  try {
+    const upstream = await fetch(rewritten, { headers, signal: controller.signal });
 
-  if (!upstream.ok) {
-    res.status(upstream.status).json({ error: `Upstream returned ${upstream.status}` });
-    return;
-  }
+    if (!upstream.ok) {
+      await upstream.body?.cancel();
+      res.status(upstream.status).json({ error: `Upstream returned ${upstream.status}` });
+      return;
+    }
 
-  const contentType = upstream.headers.get('content-type');
-  if (contentType) {
-    res.setHeader('Content-Type', contentType);
-  }
+    const contentType = upstream.headers.get('content-type');
+    if (contentType) {
+      res.setHeader('Content-Type', contentType);
+    }
 
-  const contentLength = upstream.headers.get('content-length');
-  if (contentLength) {
-    res.setHeader('Content-Length', contentLength);
-  }
+    const contentLength = upstream.headers.get('content-length');
+    if (contentLength) {
+      res.setHeader('Content-Length', contentLength);
+    }
 
-  res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
 
-  if (upstream.body) {
-    const reader = upstream.body.getReader();
-    const pump = async (): Promise<void> => {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        res.write(value);
-      }
+    if (upstream.body) {
+      await pipeline(Readable.fromWeb(upstream.body as Parameters<typeof Readable.fromWeb>[0]), res);
+    } else {
       res.end();
-    };
-    await pump();
-  } else {
-    res.end();
+    }
+  } finally {
+    res.off('close', onClose);
   }
 }

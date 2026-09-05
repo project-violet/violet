@@ -11,6 +11,13 @@
   box-shadow: var(--shadow-md);
 }
 
+.keyboardSelected {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
 .imageWrapper {
   position: relative;
   aspect-ratio: 3 / 4;

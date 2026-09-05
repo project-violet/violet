@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Download, Trash2, RotateCw } from 'lucide-react';
@@ -27,6 +27,7 @@ interface ArticleCardProps {
   aiDescription?: string;
   rank?: number;
   viewCount?: number;
+  keyboardSelected?: boolean;
 }
 
 const TAG_ORDER: Record<string, number> = { female: 0, male: 1, tag: 2, '': 2 };
@@ -35,7 +36,7 @@ function getTagOrder(ns: string): number {
   return TAG_ORDER[ns] ?? 3;
 }
 
-export function ArticleCard({ article, viewMode = 'grid', aiScore, aiDescription, rank, viewCount }: ArticleCardProps) {
+export const ArticleCard = memo(function ArticleCard({ article, viewMode = 'grid', aiScore, aiDescription, rank, viewCount, keyboardSelected = false }: ArticleCardProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { src: thumbnailSrc, onLoadSuccess: onThumbnailLoad } = useCachedThumbnail(article.Id);
@@ -52,6 +53,13 @@ export function ArticleCard({ article, viewMode = 'grid', aiScore, aiDescription
   const [showInfoDialog, setShowInfoDialog] = useState(false);
   const [showPageThumbnails, setShowPageThumbnails] = useState(false);
   const { data: imageList } = useImageList(showPageThumbnails ? article.Id : 0);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (keyboardSelected) {
+      cardRef.current?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
+  }, [keyboardSelected]);
 
   const artists = parsePipeTags(article.Artists);
   const language = article.Language ?? '';
@@ -119,7 +127,9 @@ export function ArticleCard({ article, viewMode = 'grid', aiScore, aiDescription
   return (
     <>
       <div
-        className={`${styles.card} bookmark-hover-scope ${isDetail ? styles.detailCard : ''}`}
+        ref={cardRef}
+        className={`${styles.card} bookmark-hover-scope ${isDetail ? styles.detailCard : ''} ${keyboardSelected ? styles.keyboardSelected : ''}`}
+        aria-current={keyboardSelected ? 'true' : undefined}
         onClick={(e) => {
           if (e.shiftKey) { e.preventDefault(); setShowPageThumbnails(true); }
           else navigate(`/viewer/${article.Id}`);
@@ -314,4 +324,4 @@ export function ArticleCard({ article, viewMode = 'grid', aiScore, aiDescription
       )}
     </>
   );
-}
+});

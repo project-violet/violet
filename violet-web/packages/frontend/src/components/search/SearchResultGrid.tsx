@@ -7,9 +7,16 @@ import styles from './SearchResultGrid.module.css';
 interface SearchResultGridProps {
   articles: Article[];
   rankInfo?: Map<number, { rank: number; viewCount: number }>;
+  keyboardSelectedId?: number;
+  keyboardNavigation?: boolean;
 }
 
-export function SearchResultGrid({ articles, rankInfo }: SearchResultGridProps) {
+export function SearchResultGrid({
+  articles,
+  rankInfo,
+  keyboardSelectedId,
+  keyboardNavigation = false,
+}: SearchResultGridProps) {
   const { t } = useTranslation();
   const viewMode = useAppStore((s) => s.viewMode);
   const cardMinWidth = useAppStore((s) => s.cardMinWidth);
@@ -21,6 +28,7 @@ export function SearchResultGrid({ articles, rankInfo }: SearchResultGridProps) 
   return (
     <div
       className={styles.grid}
+      data-keyboard-result-grid={keyboardNavigation ? 'true' : undefined}
       style={{ '--card-min-width': `${cardMinWidth}px` } as React.CSSProperties}
     >
       {articles.map((article) => {
@@ -32,6 +40,7 @@ export function SearchResultGrid({ articles, rankInfo }: SearchResultGridProps) 
             viewMode={viewMode}
             rank={ri?.rank}
             viewCount={ri?.viewCount}
+            keyboardSelected={article.Id === keyboardSelectedId}
           />
         );
       })}

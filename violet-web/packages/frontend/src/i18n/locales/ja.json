@@ -314,6 +314,11 @@
     "historyCount": "{{count}}回"
   },
   "messageSearch": {
+    "idMin": "開始番号",
+    "idMax": "終了番号",
+    "noBound": "制限なし",
+    "resetRange": "範囲をリセット",
+    "dateRangeHint": "期間を作品番号の範囲に変換します。番号と日付の順序が異なる場合、期間外の作品が含まれることがあります。",
     "heading": "メッセージ検索",
     "placeholder": "メッセージテキストを検索...",
     "mode": {
@@ -338,5 +343,25 @@
     "searchHistory": "検索履歴",
     "historyCount": "{{count}}回",
     "scrollToTop": "先頭へ"
+  },
+  "dateRange": {
+    "label": "作品の日付範囲",
+    "loading": "読み込み中…",
+    "error": "日付分布を読み込めません",
+    "retry": "再試行",
+    "reset": "リセット",
+    "count": "{{formattedCount}}作品",
+    "to": "終了日",
+    "from": "開始日"
+  },
+  "scopedMessageSearch": {
+    "open": "セリフ検索",
+    "title": "{{scope}}内のセリフ検索",
+    "scopeCount": "現在の絞り込み対象 {{formattedCount}}作品 · 作品全体のセリフ",
+    "emptyScope": "検索対象の作品がありません。絞り込み条件を確認してください。",
+    "close": "閉じる",
+    "preparing": "対象を確認中…",
+    "loadError": "検索対象を読み込めませんでした。再試行してください。",
+    "tooLarge": "一度に検索できるのは50,000作品までです。条件を絞り込んでください。"
   }
 }

@@ -314,6 +314,11 @@
     "historyCount": "{{count}}次"
   },
   "messageSearch": {
+    "idMin": "起始编号",
+    "idMax": "结束编号",
+    "noBound": "不限",
+    "resetRange": "重置范围",
+    "dateRangeHint": "日期会转换为作品编号范围。编号与日期顺序不一致时，可能包含所选期间以外的作品。",
     "heading": "消息搜索",
     "placeholder": "搜索消息文本...",
     "mode": {
@@ -338,5 +343,25 @@
     "searchHistory": "搜索记录",
     "historyCount": "{{count}}次",
     "scrollToTop": "返回顶部"
+  },
+  "dateRange": {
+    "label": "作品日期范围",
+    "loading": "加载中…",
+    "error": "日期分布加载失败",
+    "retry": "重试",
+    "reset": "重置",
+    "count": "{{formattedCount}}部作品",
+    "to": "结束日期",
+    "from": "开始日期"
+  },
+  "scopedMessageSearch": {
+    "open": "搜索台词",
+    "title": "在{{scope}}中搜索台词",
+    "scopeCount": "当前筛选包含 {{formattedCount}} 部作品 · 搜索作品全部台词",
+    "emptyScope": "没有可搜索的作品，请检查列表筛选条件。",
+    "close": "关闭",
+    "preparing": "正在确认范围…",
+    "loadError": "无法加载搜索范围，请重试。",
+    "tooLarge": "每次最多搜索50,000部作品，请缩小筛选范围。"
   }
 }

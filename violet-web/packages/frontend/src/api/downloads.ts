@@ -1,3 +1,4 @@
+import { createStatusBatcher } from './batch-status';
 import type { DownloadRecord } from '@violet-web/shared';
 import { api } from './client';
 
@@ -6,6 +7,11 @@ export interface DownloadsResponse {
   totalCount: number;
   page: number;
   pageSize: number;
+}
+
+export async function getCompletedDownloadIds(): Promise<number[]> {
+  const { data } = await api.get<{ ids: number[] }>('/downloads/completed-ids');
+  return data.ids;
 }
 
 export async function getDownloads(page = 0, pageSize = 30): Promise<DownloadsResponse> {
@@ -44,9 +50,7 @@ export async function deleteDownload(id: number): Promise<void> {
   await api.delete(`/downloads/${id}`);
 }
 
-export async function checkDownloaded(articleId: string): Promise<boolean> {
-  const { data } = await api.get<{ downloaded: boolean }>(
-    `/downloads/check/${articleId}`,
-  );
-  return data.downloaded;
-}
+export const checkDownloaded = createStatusBatcher(async (ids) => {
+  const { data } = await api.post<Record<string, boolean>>('/downloads/check', { ids });
+  return data;
+});

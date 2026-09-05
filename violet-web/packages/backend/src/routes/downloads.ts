@@ -1,9 +1,12 @@
+import { articleStatusHandler } from '../services/article-status.js';
 import { Router } from 'express';
 import { getUserDb } from '../services/user-db.js';
 import { startDownload, retryDownload } from '../services/download-service.js';
 import { getLatestDownloadEntries } from '../services/user-date.js';
 
 export const downloadsRouter = Router();
+
+downloadsRouter.post('/check', articleStatusHandler(getUserDb, 'download'));
 
 downloadsRouter.post('/', async (req, res) => {
   const { articleId } = req.body;
@@ -27,6 +30,11 @@ downloadsRouter.get('/ids', (_req, res) => {
   const db = getUserDb();
   const entries = getLatestDownloadEntries(db);
   res.json({ articleIds: entries.map((entry) => entry.articleId), entries });
+});
+
+downloadsRouter.get('/completed-ids', (_req, res) => {
+  const rows = getUserDb().prepare("SELECT DISTINCT Article FROM Download WHERE Status='completed'").all() as Array<{ Article: string }>;
+  res.json({ ids: rows.map((row) => Number(row.Article)).filter((id) => Number.isInteger(id) && id >= 0 && id <= 0xffffffff) });
 });
 
 downloadsRouter.get('/', (req, res) => {

@@ -65,7 +65,7 @@ services:
       - "--data-paths"
       - "/data/merged-0.fscm"
     ports:
-      - "12332:12332"
+      - "22332:12332"
     volumes:
       - ${VIOLET_MESSAGE_SEARCH_DATA:-./violet-message-search/data/merged-0.fscm}:/data/merged-0.fscm:ro
     restart: unless-stopped

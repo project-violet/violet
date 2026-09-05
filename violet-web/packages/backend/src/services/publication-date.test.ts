@@ -7,6 +7,29 @@ import {
   getDateDistribution,
 } from './publication-date.js';
 
+test('distribution preserves day/year buckets, empty counts, and connection/write isolation', () => {
+  const db = new Database(':memory:');
+  const other = new Database(':memory:');
+  for (const connection of [db, other]) connection.exec('CREATE TABLE HitomiColumnModel (Published)');
+  try {
+    db.exec("INSERT INTO HitomiColumnModel VALUES ('2024-02-28'), ('2024-03-01'), (NULL)");
+    const days = getDateDistribution(db, '1', 'same');
+    assert.equal(days.unit, 'day');
+    assert.deepEqual(days.buckets.map((bucket) => bucket.count), [1, 0, 1]);
+    assert.equal(days.invalidCount, 1);
+    assert.equal(getDateDistribution(other, '1', 'same').totalCount, 0);
+    db.exec("INSERT INTO HitomiColumnModel VALUES ('2010-01-01')");
+    const years = getDateDistribution(db, '1', 'same');
+    assert.equal(years.unit, 'year');
+    assert.equal(years.buckets.length, 15);
+    assert.equal(years.totalCount, 3);
+    db.exec('BEGIN; DELETE FROM HitomiColumnModel');
+    assert.equal(getDateDistribution(db, '1', 'same').totalCount, 0);
+    db.exec('ROLLBACK');
+    assert.equal(getDateDistribution(db, '1', 'same').totalCount, 3);
+  } finally { db.close(); other.close(); }
+});
+
 test('normalizes ticks and text while excluding invalid integers', () => {
   const db = new Database(':memory:');
   db.exec('CREATE TABLE works (Published);');

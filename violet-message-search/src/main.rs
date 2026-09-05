@@ -4,8 +4,10 @@ use chrono::Local;
 use lazy_static::lazy_static;
 use message::{
     article_lists, load_messages, search_article, search_partial_contains,
-    search_partial_contains_many, search_similar, search_similar_many, MessageResult,
+    search_partial_contains_many, search_partial_contains_range, search_similar,
+    search_similar_many, search_similar_range, MessageResult,
 };
+use rocket::http::Status;
 use rocket::serde::json::Json;
 use serde::Deserialize;
 use structopt::StructOpt;
@@ -50,6 +52,23 @@ fn normalize_take(limit: Option<usize>) -> usize {
     limit.unwrap_or(DEFAULT_TAKE).clamp(1, MAX_TAKE)
 }
 
+fn parse_id_range(min: Option<&str>, max: Option<&str>) -> Result<(u32, u32), Status> {
+    let parse = |value: &str| {
+        if value.is_empty() || !value.bytes().all(|byte| byte.is_ascii_digit()) {
+            return Err(Status::BadRequest);
+        }
+        value.parse::<u32>().map_err(|_| Status::BadRequest)
+    };
+    let bounds = (
+        min.map(parse).transpose()?.unwrap_or(0),
+        max.map(parse).transpose()?.unwrap_or(u32::MAX),
+    );
+    if bounds.0 > bounds.1 {
+        return Err(Status::BadRequest);
+    }
+    Ok(bounds)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -61,10 +80,46 @@ mod tests {
         assert_eq!(normalize_take(Some(25)), 25);
         assert_eq!(normalize_take(Some(5000)), 1000);
     }
+
+    #[test]
+    fn invalid_http_bounds_are_rejected() {
+        let client = rocket::local::blocking::Client::tracked(
+            rocket::build()
+                .mount("/contains", routes![contains])
+                .mount("/similar", routes![similar]),
+        )
+        .unwrap();
+        for mode in ["contains", "similar"] {
+            assert_eq!(
+                client
+                    .get(format!("/{mode}/test?id_min=20&id_max=10"))
+                    .dispatch()
+                    .status(),
+                Status::BadRequest
+            );
+            assert!(!client
+                .get(format!("/{mode}/test?id_min=abc"))
+                .dispatch()
+                .status()
+                .class()
+                .is_success());
+            assert!(!client
+                .get(format!("/{mode}/test?id_max=4294967296"))
+                .dispatch()
+                .status()
+                .class()
+                .is_success());
+        }
+    }
 }
 
-#[get("/<query>?<limit>")]
-fn similar(query: &str, limit: Option<usize>) -> Json<Vec<MessageResult>> {
+#[get("/<query>?<limit>&<id_min>&<id_max>")]
+fn similar(
+    query: &str,
+    limit: Option<usize>,
+    id_min: Option<&str>,
+    id_max: Option<&str>,
+) -> Result<Json<Vec<MessageResult>>, Status> {
     let take = normalize_take(limit);
     println!(
         "({}) similar: {} (take={})",
@@ -72,11 +127,21 @@ fn similar(query: &str, limit: Option<usize>) -> Json<Vec<MessageResult>> {
         query,
         take
     );
-    Json(search_similar(None, query, take))
+    let (min, max) = parse_id_range(id_min, id_max)?;
+    Ok(Json(if id_min.is_some() || id_max.is_some() {
+        search_similar_range(min, max, query, take)
+    } else {
+        search_similar(None, query, take)
+    }))
 }
 
-#[get("/<query>?<limit>")]
-fn contains(query: &str, limit: Option<usize>) -> Json<Vec<MessageResult>> {
+#[get("/<query>?<limit>&<id_min>&<id_max>")]
+fn contains(
+    query: &str,
+    limit: Option<usize>,
+    id_min: Option<&str>,
+    id_max: Option<&str>,
+) -> Result<Json<Vec<MessageResult>>, Status> {
     let take = normalize_take(limit);
     println!(
         "({}) contains: {} (take={})",
@@ -84,7 +149,12 @@ fn contains(query: &str, limit: Option<usize>) -> Json<Vec<MessageResult>> {
         query,
         take
     );
-    Json(search_partial_contains(None, query, take))
+    let (min, max) = parse_id_range(id_min, id_max)?;
+    Ok(Json(if id_min.is_some() || id_max.is_some() {
+        search_partial_contains_range(min, max, query, take)
+    } else {
+        search_partial_contains(None, query, take)
+    }))
 }
 
 #[get("/<id>/<query>?<limit>")]

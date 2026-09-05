@@ -26,6 +26,8 @@ const USER_AGENT =
 
 let scriptCache: string | null = null;
 let latestUpdate = 0;
+let scriptRefresh: Promise<void> | null = null;
+const pendingGalleries = new Map<number, Promise<ImageList>>();
 
 async function fetchText(url: string, headers?: Record<string, string>): Promise<string> {
   const res = await fetch(url, {
@@ -92,14 +94,33 @@ async function ensureScript(): Promise<void> {
     return;
   }
 
-  // Try V4 first, then V3 model as fallback
-  if (await tryRefreshV4()) return;
-  if (await tryRefreshV3Model()) return;
-
-  throw new Error('Failed to load both V4 and V3 scripts');
+  if (!scriptRefresh) {
+    scriptRefresh = (async () => {
+      // Keep the existing V4 -> V3 fallback and cache expiry.
+      if (await tryRefreshV4()) return;
+      if (await tryRefreshV3Model()) return;
+      throw new Error('Failed to load both V4 and V3 scripts');
+    })().finally(() => { scriptRefresh = null; });
+  }
+  await scriptRefresh;
 }
 
 export async function resolveGallery(id: number): Promise<ImageList> {
+  let pending = pendingGalleries.get(id);
+  if (!pending) {
+    pending = resolveGalleryUncached(id).finally(() => { pendingGalleries.delete(id); });
+    pendingGalleries.set(id, pending);
+  }
+  // Do not let one caller mutate the list received by another concurrent caller.
+  const result = await pending;
+  return {
+    urls: [...result.urls],
+    bigThumbnails: [...result.bigThumbnails],
+    smallThumbnails: [...result.smallThumbnails],
+  };
+}
+
+async function resolveGalleryUncached(id: number): Promise<ImageList> {
   await ensureScript();
   if (!scriptCache) throw new Error('Script not available');
 
