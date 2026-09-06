@@ -17,7 +17,10 @@ fn main() {
         .build();
 
     // Inform cargo to link the C++ library
-    println!("cargo:rustc-link-search=native={}", dst.join("build").display());
+    println!(
+        "cargo:rustc-link-search=native={}",
+        dst.join("build").display()
+    );
 
     println!("cargo:rustc-link-lib=static=binding");
     let target = env::var("TARGET").unwrap_or_default();
@@ -43,6 +46,7 @@ fn main() {
         .opaque_type("rapidfuzz::.*")
         .opaque_type("binding::.*")
         .allowlist_item("binding::create.*")
+        .allowlist_item("binding::destroy.*")
         .allowlist_item("binding::similarity.*")
         .generate()
         .expect("Unable to generate bindings");

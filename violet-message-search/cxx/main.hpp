@@ -16,6 +16,7 @@ public:
 };
 
 extern "C" struct CachedRatioBinding *create(const char *query);
+extern "C" void destroy(struct CachedRatioBinding *binding);
 
 extern "C" double similarity(struct CachedRatioBinding *binding,
                              const char *message, size_t message_len,
@@ -29,6 +30,7 @@ public:
 };
 
 extern "C" struct CachedPartialRatioBinding *create_partial(const char *query);
+extern "C" void destroy_partial(struct CachedPartialRatioBinding *binding);
 
 extern "C" double similarity_partial(struct CachedPartialRatioBinding *binding,
                                      const char *message, size_t message_len,

@@ -16,6 +16,8 @@ use crate::binding::{CachedPartialRatio, CachedRatio, SimilarityMethod};
 use crate::cache::{with_cache_status, CacheStatus};
 use crate::displant::HangulConverter;
 
+pub mod mobile;
+
 static MESSAGES: LazyLock<RwLock<MessageStore>> =
     LazyLock::new(|| RwLock::new(MessageStore::default()));
 
@@ -1129,7 +1131,25 @@ where
     F: for<'m> Fn(&StoredMessage<'m>) -> bool + Sync + Send,
     I: ParallelIterator<Item = MessageIndex>,
 {
+    collect_fuzzy_results_with_cutoff(store, candidates, scorer, filter, take, skip_exact, 0.0)
+}
+
+fn collect_fuzzy_results_with_cutoff<S, F, I>(
+    store: &MessageStore,
+    candidates: I,
+    scorer: &S,
+    filter: &F,
+    take: usize,
+    skip_exact: bool,
+    initial_cutoff: f64,
+) -> TopScoredMessages
+where
+    S: SimilarityMethod,
+    F: for<'m> Fn(&StoredMessage<'m>) -> bool + Sync + Send,
+    I: ParallelIterator<Item = MessageIndex>,
+{
     let global_cutoff = GlobalScoreCutoff::default();
+    global_cutoff.publish(initial_cutoff);
 
     // Rayon splits the slice into worker-local chunks. Each fold builds a
     // local top-k heap, then reduce merges those local heaps into the final
