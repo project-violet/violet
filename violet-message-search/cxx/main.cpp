@@ -4,6 +4,9 @@
 
 using namespace binding;
 
+extern "C" void destroy(struct CachedRatioBinding *binding) { delete binding; }
+extern "C" void destroy_partial(struct CachedPartialRatioBinding *binding) { delete binding; }
+
 extern "C" struct CachedRatioBinding *create(const char *query) {
   return new CachedRatioBinding(std::string(query));
 }

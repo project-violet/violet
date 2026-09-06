@@ -38,6 +38,12 @@ pub struct CachedRatio {
 
 unsafe impl Sync for CachedRatio {}
 
+impl Drop for CachedRatio {
+    fn drop(&mut self) {
+        unsafe { binding_destroy(self.scorer) };
+    }
+}
+
 impl CachedRatio {
     pub fn from(query: &str) -> Self {
         let c_query = CString::new(query).unwrap();
@@ -59,6 +65,12 @@ pub struct CachedPartialRatio {
 }
 
 unsafe impl Sync for CachedPartialRatio {}
+
+impl Drop for CachedPartialRatio {
+    fn drop(&mut self) {
+        unsafe { binding_destroy_partial(self.scorer) };
+    }
+}
 
 impl CachedPartialRatio {
     pub fn from(query: &str) -> Self {

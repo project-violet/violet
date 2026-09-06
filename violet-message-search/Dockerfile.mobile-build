@@ -1,0 +1,20 @@
+# Build an ARM64 Debian/proot executable on an x86-64 Docker host.
+# docker build -f Dockerfile.mobile-build --output type=local,dest=./mobile-dist .
+FROM --platform=$BUILDPLATFORM rust:1.85-bookworm AS builder
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    clang cmake ninja-build gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
+    && rm -rf /var/lib/apt/lists/*
+ENV RUSTUP_TOOLCHAIN=1.85.0
+RUN rustup target add aarch64-unknown-linux-gnu
+ENV CC_aarch64_unknown_linux_gnu=aarch64-linux-gnu-gcc \
+    CXX_aarch64_unknown_linux_gnu=aarch64-linux-gnu-g++ \
+    CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-g++ \
+    BINDGEN_EXTRA_CLANG_ARGS_aarch64_unknown_linux_gnu="--sysroot=/usr/aarch64-linux-gnu -I/usr/aarch64-linux-gnu/include/c++/12 -I/usr/aarch64-linux-gnu/include/c++/12/aarch64-linux-gnu"
+WORKDIR /src
+COPY . .
+RUN --mount=type=cache,id=fscm-cross-registry,target=/usr/local/cargo/registry \
+    --mount=type=cache,id=fscm-cross-arm64-target,target=/src/target \
+    cargo build --release --features raw --bin fast-search-rs --target aarch64-unknown-linux-gnu \
+    && cp target/aarch64-unknown-linux-gnu/release/fast-search-rs /tmp/fast-search-rs-mobile
+FROM scratch AS artifact
+COPY --from=builder /tmp/fast-search-rs-mobile /fast-search-rs-mobile

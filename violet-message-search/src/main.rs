@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use chrono::Local;
 use lazy_static::lazy_static;
+use message::mobile::{self, Scope};
 use message::{
     article_lists, load_messages, search_article, search_partial_contains,
     search_partial_contains_many, search_partial_contains_range, search_similar,
@@ -28,6 +29,16 @@ struct Opt {
 
     #[structopt(long, parse(from_os_str), default_value = "./merged-0.fscm")]
     data_paths: Vec<PathBuf>,
+
+    /// Scan FSCM files with bounded buffers instead of loading the entire corpus.
+    #[structopt(long)]
+    mobile: bool,
+    /// Mobile allocation budget (MiB), not an OS-enforced RSS limit.
+    #[structopt(long, default_value = "512")]
+    memory_budget_mb: usize,
+    /// Rayon workers in mobile mode.
+    #[structopt(long, default_value = "4")]
+    search_threads: usize,
 }
 
 #[derive(Debug, Deserialize)]
@@ -114,7 +125,7 @@ mod tests {
 }
 
 #[get("/<query>?<limit>&<id_min>&<id_max>")]
-fn similar(
+async fn similar(
     query: &str,
     limit: Option<usize>,
     id_min: Option<&str>,
@@ -128,6 +139,14 @@ fn similar(
         take
     );
     let (min, max) = parse_id_range(id_min, id_max)?;
+    if mobile::enabled() {
+        let scope = if id_min.is_none() && id_max.is_none() {
+            Scope::All
+        } else {
+            Scope::Range(min, max)
+        };
+        return mobile_search(scope, query, false, take).await;
+    }
     Ok(Json(if id_min.is_some() || id_max.is_some() {
         search_similar_range(min, max, query, take)
     } else {
@@ -136,7 +155,7 @@ fn similar(
 }
 
 #[get("/<query>?<limit>&<id_min>&<id_max>")]
-fn contains(
+async fn contains(
     query: &str,
     limit: Option<usize>,
     id_min: Option<&str>,
@@ -150,6 +169,14 @@ fn contains(
         take
     );
     let (min, max) = parse_id_range(id_min, id_max)?;
+    if mobile::enabled() {
+        let scope = if id_min.is_none() && id_max.is_none() {
+            Scope::All
+        } else {
+            Scope::Range(min, max)
+        };
+        return mobile_search(scope, query, true, take).await;
+    }
     Ok(Json(if id_min.is_some() || id_max.is_some() {
         search_partial_contains_range(min, max, query, take)
     } else {
@@ -158,8 +185,15 @@ fn contains(
 }
 
 #[get("/<id>/<query>?<limit>")]
-fn wsimilar(id: u32, query: &str, limit: Option<usize>) -> Json<Vec<MessageResult>> {
+async fn wsimilar(
+    id: u32,
+    query: &str,
+    limit: Option<usize>,
+) -> Result<Json<Vec<MessageResult>>, Status> {
     let take = normalize_take(limit);
+    if mobile::enabled() {
+        return mobile_search(Scope::Article(id), query, false, take).await;
+    }
     println!(
         "({}) wsimilar: {} - {} (take={})",
         current_date_time(),
@@ -167,12 +201,23 @@ fn wsimilar(id: u32, query: &str, limit: Option<usize>) -> Json<Vec<MessageResul
         query,
         take
     );
-    Json(search_similar(Some(id), query, take))
+    Ok(Json(search_similar(Some(id), query, take)))
 }
 
 #[post("/", format = "json", data = "<request>")]
-fn wsimilar_many(request: Json<WorkSearchRequest>) -> Json<Vec<MessageResult>> {
+async fn wsimilar_many(
+    request: Json<WorkSearchRequest>,
+) -> Result<Json<Vec<MessageResult>>, Status> {
     let take = normalize_take(request.limit);
+    if mobile::enabled() {
+        return mobile_search(
+            Scope::Many(request.ids.clone()),
+            &request.query,
+            false,
+            take,
+        )
+        .await;
+    }
     println!(
         "({}) wsimilar-many: {} works - {} (take={})",
         current_date_time(),
@@ -180,12 +225,23 @@ fn wsimilar_many(request: Json<WorkSearchRequest>) -> Json<Vec<MessageResult>> {
         request.query,
         take
     );
-    Json(search_similar_many(&request.ids, &request.query, take))
+    Ok(Json(search_similar_many(
+        &request.ids,
+        &request.query,
+        take,
+    )))
 }
 
 #[get("/<id>/<query>?<limit>")]
-fn wcontains(id: u32, query: &str, limit: Option<usize>) -> Json<Vec<MessageResult>> {
+async fn wcontains(
+    id: u32,
+    query: &str,
+    limit: Option<usize>,
+) -> Result<Json<Vec<MessageResult>>, Status> {
     let take = normalize_take(limit);
+    if mobile::enabled() {
+        return mobile_search(Scope::Article(id), query, true, take).await;
+    }
     println!(
         "({}) wcontains: {} - {} (take={})",
         current_date_time(),
@@ -193,12 +249,17 @@ fn wcontains(id: u32, query: &str, limit: Option<usize>) -> Json<Vec<MessageResu
         query,
         take
     );
-    Json(search_partial_contains(Some(id), query, take))
+    Ok(Json(search_partial_contains(Some(id), query, take)))
 }
 
 #[post("/", format = "json", data = "<request>")]
-fn wcontains_many(request: Json<WorkSearchRequest>) -> Json<Vec<MessageResult>> {
+async fn wcontains_many(
+    request: Json<WorkSearchRequest>,
+) -> Result<Json<Vec<MessageResult>>, Status> {
     let take = normalize_take(request.limit);
+    if mobile::enabled() {
+        return mobile_search(Scope::Many(request.ids.clone()), &request.query, true, take).await;
+    }
     println!(
         "({}) wcontains-many: {} works - {} (take={})",
         current_date_time(),
@@ -206,30 +267,93 @@ fn wcontains_many(request: Json<WorkSearchRequest>) -> Json<Vec<MessageResult>> 
         request.query,
         take
     );
-    Json(search_partial_contains_many(
+    Ok(Json(search_partial_contains_many(
         &request.ids,
         &request.query,
         take,
-    ))
+    )))
 }
 
 #[get("/<id>")]
-fn article(id: u32) -> Json<Vec<MessageResult>> {
+async fn article(id: u32) -> Result<Json<Vec<MessageResult>>, Status> {
+    if mobile::enabled() {
+        return mobile_task(move || mobile::article(id)).await;
+    }
     println!("({}) article: {}", current_date_time(), id);
-    Json(search_article(id))
+    Ok(Json(search_article(id)))
 }
 
 #[get("/")]
-fn lists() -> Json<Vec<u32>> {
+async fn lists() -> Result<Json<Vec<u32>>, Status> {
+    if mobile::enabled() {
+        return mobile_task(mobile::lists).await;
+    }
     println!("({}) lists", current_date_time());
-    Json(article_lists())
+    Ok(Json(article_lists()))
+}
+
+fn mobile_response<T>(result: std::io::Result<T>) -> Result<Json<T>, Status> {
+    result.map(Json).map_err(|error| {
+        eprintln!("[mobile] {error}");
+        match error.kind() {
+            std::io::ErrorKind::WouldBlock => Status::ServiceUnavailable,
+            std::io::ErrorKind::Interrupted => Status::Conflict,
+            std::io::ErrorKind::InvalidInput => Status::BadRequest,
+            _ => Status::InternalServerError,
+        }
+    })
+}
+
+async fn mobile_task<T: Send + 'static>(
+    task: impl FnOnce() -> std::io::Result<T> + Send + 'static,
+) -> Result<Json<T>, Status> {
+    let result = rocket::tokio::task::spawn_blocking(task)
+        .await
+        .map_err(|_| Status::InternalServerError)?;
+    mobile_response(result)
+}
+
+async fn mobile_search(
+    scope: Scope,
+    query: &str,
+    contains: bool,
+    take: usize,
+) -> Result<Json<Vec<MessageResult>>, Status> {
+    if query.len() > 4096 {
+        return Err(Status::BadRequest);
+    }
+    let query = query.to_owned();
+    mobile_task(move || mobile::search(scope, &query, contains, take)).await
+}
+
+#[get("/status")]
+fn mobile_status() -> Json<Option<mobile::Progress>> {
+    Json(mobile::progress())
+}
+
+#[post("/cancel")]
+fn mobile_cancel() -> Json<bool> {
+    Json(mobile::cancel())
 }
 
 #[launch]
 fn rocket() -> _ {
-    OPT.data_paths
-        .iter()
-        .for_each(|path| load_messages(path.clone()));
+    if OPT.mobile {
+        assert!(
+            (1..=8).contains(&OPT.search_threads),
+            "search threads must be 1..8"
+        );
+        rayon::ThreadPoolBuilder::new()
+            .num_threads(OPT.search_threads)
+            .build_global()
+            .expect("Rayon initialization failed");
+        mobile::initialize(&OPT.data_paths, OPT.memory_budget_mb)
+            .expect("mobile initialization failed");
+    } else {
+        OPT.data_paths
+            .iter()
+            .for_each(|path| load_messages(path.clone()));
+    }
 
     println!("fscm has launched from http://{}:{}", OPT.host, OPT.port);
 
@@ -247,4 +371,5 @@ fn rocket() -> _ {
         .mount("/wcontains", routes![wcontains, wcontains_many])
         .mount("/article", routes![article])
         .mount("/lists", routes![lists])
+        .mount("/mobile", routes![mobile_status, mobile_cancel])
 }
