@@ -3,6 +3,45 @@ import { test } from 'node:test';
 import express from 'express';
 import { messageSearchRouter, buildFscmSearchUrl } from './message-search.js';
 
+test('mobile status never searches, including while busy; legacy fallback is limited to null or 404', async () => {
+  const app = express();
+  app.use('/search', messageSearchRouter);
+  const server = app.listen(0, '127.0.0.1');
+  await new Promise<void>((resolve) => server.once('listening', resolve));
+  const { port } = server.address() as { port: number };
+  const originalFetch = globalThis.fetch;
+  const paths: string[] = [];
+  let code = 200;
+  let body: unknown = { enabled: true, active: true };
+  globalThis.fetch = async (input, options) => {
+    const url = new URL(String(input));
+    if (url.port === String(port)) return originalFetch(input, options);
+    paths.push(url.pathname);
+    return url.pathname === '/mobile/status'
+      ? new Response(JSON.stringify(body), { status: code }) : new Response('[]');
+  };
+  try {
+    const check = () => fetch(`http://127.0.0.1:${port}/search/status`);
+    assert.equal((await check()).status, 200);
+    assert.deepEqual(paths.splice(0), ['/mobile/status']);
+    for (const legacyCode of [200, 404]) {
+      code = legacyCode;
+      body = null;
+      assert.equal((await check()).status, 200);
+      assert.deepEqual(paths.splice(0), ['/mobile/status', '/contains/test']);
+    }
+    for (const invalidCode of [200, 503]) {
+      code = invalidCode;
+      body = {};
+      assert.equal((await check()).status, 502);
+      assert.deepEqual(paths.splice(0), ['/mobile/status']);
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
+    await new Promise<void>((resolve) => server.close(() => resolve()));
+  }
+});
+
 test('scoped proxy posts exact deduplicated IDs, handles empty scope, and fails closed', async () => {
   const app = express();
   app.use(express.json({ limit: '1mb' }));

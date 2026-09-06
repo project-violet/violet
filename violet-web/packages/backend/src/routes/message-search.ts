@@ -315,6 +315,20 @@ messageSearchRouter.post('/scoped', async (req, res) => {
   }
 });
 
+// Mobile status is independent of search admission and does not scan the corpus.
+// Older servers return 404; non-mobile servers return null. Keep their legacy probe.
+async function isMobileServerReady(baseUrl: string): Promise<boolean> {
+  const response = await fetch(`${baseUrl}/mobile/status`, {
+    signal: AbortSignal.timeout(STATUS_TIMEOUT_MS),
+  });
+  if (response.status === 404) return false;
+  if (!response.ok) throw new Error(`fscm returned ${response.status}`);
+  const status: unknown = await response.json();
+  if (status === null) return false;
+  if (typeof status === 'object' && 'enabled' in status && status.enabled === true) return true;
+  throw new Error('fscm returned an invalid status response.');
+}
+
 messageSearchRouter.get('/status', async (req, res) => {
   const baseUrl = normalizeBaseUrl(req.query.baseUrl);
 
@@ -324,6 +338,11 @@ messageSearchRouter.get('/status', async (req, res) => {
   }
 
   try {
+    if (await isMobileServerReady(baseUrl)) {
+      const response: MessageSearchStatusResponse = { ok: true, baseUrl };
+      res.json(response);
+      return;
+    }
     const raw = await fetchFscm(baseUrl, 'contains', 'test', null, { statusCheck: true });
     if (!Array.isArray(raw)) {
       const response: MessageSearchStatusResponse = {
