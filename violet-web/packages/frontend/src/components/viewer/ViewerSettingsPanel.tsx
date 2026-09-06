@@ -21,6 +21,8 @@ export function ViewerSettingsPanel() {
     setCoverPageMode,
     setPadding,
     toggleSettings,
+    mobileFullscreenEnabled,
+    setMobileFullscreenEnabled,
   } = useViewerStore();
 
   return (
@@ -61,6 +63,23 @@ export function ViewerSettingsPanel() {
                 profile: t(`viewer.settingsPanel.profile.${activeProfile}`),
               })}
             </span>
+          </div>
+
+          <div className={styles.section}>
+            <label className={styles.label}>{t('viewer.mobileFullscreen')}</label>
+            <div className={styles.buttons} role="group" aria-label={t('viewer.mobileFullscreen')}>
+              <button type="button" aria-pressed={!mobileFullscreenEnabled}
+                className={`${styles.btn} ${!mobileFullscreenEnabled ? styles.active : ''}`}
+                onClick={() => setMobileFullscreenEnabled(false)}>
+                {t('viewer.settingsPanel.twoPageMode.disabled')}
+              </button>
+              <button type="button" aria-pressed={mobileFullscreenEnabled}
+                className={`${styles.btn} ${mobileFullscreenEnabled ? styles.active : ''}`}
+                onClick={() => setMobileFullscreenEnabled(true)}>
+                {t('viewer.settingsPanel.twoPageMode.enabled')}
+              </button>
+            </div>
+            <span className={styles.profileStatus}>{t('viewer.mobileFullscreenHint')}</span>
           </div>
 
           {/* Page Mode */}

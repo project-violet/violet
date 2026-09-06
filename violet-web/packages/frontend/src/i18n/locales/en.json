@@ -269,6 +269,8 @@
     }
   },
   "viewer": {
+    "mobileFullscreen": "Mobile fullscreen",
+    "mobileFullscreenHint": "Enter fullscreen when opening the viewer. If it does not start automatically, tap the screen once.",
     "noImages": "No images found for this gallery.",
     "back": "Back",
     "settings": "Settings",
