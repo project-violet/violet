@@ -14,8 +14,10 @@ import { cleanupExpired } from '../services/image-cache';
 import { useIntensityTimeline } from '../hooks/useIntensityTimeline';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useEffect, useRef, useState } from 'react';
+import { useViewerFullscreen } from '../hooks/useViewerFullscreen';
 
 export function ViewerPage() {
+  useViewerFullscreen();
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();

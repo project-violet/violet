@@ -241,6 +241,8 @@
     }
   },
   "viewer": {
+    "mobileFullscreen": "移动端全屏阅读",
+    "mobileFullscreenHint": "打开阅读器时进入全屏。如果没有自动切换，请轻触一次屏幕。",
     "noImages": "未找到该图库的图片。",
     "back": "返回",
     "settings": "设置",

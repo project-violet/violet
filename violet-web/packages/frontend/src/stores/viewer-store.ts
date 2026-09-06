@@ -25,6 +25,8 @@ interface ViewerState extends ViewerProfileSettings {
   showOverlay: boolean;
   showSettings: boolean;
   resumePromptEnabled: boolean;
+  mobileFullscreenEnabled: boolean;
+  setMobileFullscreenEnabled: (enabled: boolean) => void;
 
   setProfilePreference: (preference: ViewerProfilePreference) => void;
   setDetectedProfile: (profile: ViewerProfileName) => void;
@@ -82,6 +84,8 @@ export const useViewerStore = create<ViewerState>()(
       showOverlay: false,
       showSettings: false,
       resumePromptEnabled: true,
+      mobileFullscreenEnabled: true,
+      setMobileFullscreenEnabled: (mobileFullscreenEnabled) => set({ mobileFullscreenEnabled }),
 
       setProfilePreference: (profilePreference) =>
         set((state) => {

@@ -241,6 +241,8 @@
     }
   },
   "viewer": {
+    "mobileFullscreen": "モバイルで全画面表示",
+    "mobileFullscreenHint": "ビューアを開くと全画面に切り替えます。自動で切り替わらない場合は画面を一度タップしてください。",
     "noImages": "このギャラリーの画像が見つかりませんでした。",
     "back": "戻る",
     "settings": "設定",
