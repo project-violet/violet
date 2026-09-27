@@ -3,13 +3,19 @@ import test from 'node:test';
 import { createViewerFullscreen } from './fullscreen';
 
 function viewportFixture() {
-  const viewport = { content: 'width=device-width, initial-scale=1.0' };
-  const doc = { querySelector: () => viewport } as unknown as Document;
-  return { viewport, doc };
+  let content = 'width=device-width, initial-scale=1.0';
+  const writes: string[] = [];
+  const viewport = {
+    get content() { return content; },
+    set content(value: string) { content = value; writes.push(value); },
+  };
+  const dataset: Record<string, string> = {};
+  const doc = { querySelector: () => viewport, documentElement: { dataset } } as unknown as Document;
+  return { viewport, doc, writes, dataset };
 }
 
-test('serializes delayed native enter/exit and restores viewport on exit', async () => {
-  const { viewport, doc } = viewportFixture();
+test('serializes delayed native enter/exit without resizing the viewport again', async () => {
+  const { viewport, doc, writes, dataset } = viewportFixture();
   const original = viewport.content;
   const calls: boolean[] = [];
   let release!: () => void;
@@ -27,14 +33,57 @@ test('serializes delayed native enter/exit and restores viewport on exit', async
   assert.deepEqual(calls, [true, false, true]);
   assert.equal(viewport.content, `${original}, viewport-fit=cover`);
   await setFullscreen(false);
-  assert.equal(viewport.content, original);
+  assert.deepEqual(writes, [`${original}, viewport-fit=cover`]);
+  assert.equal(dataset.nativeIos, 'true');
+});
+
+test('initial non-viewer route establishes the same viewport used by the reader', async () => {
+  const { viewport, doc, writes } = viewportFixture();
+  const setFullscreen = createViewerFullscreen(async () => true, doc);
+  await setFullscreen(false);
+  const initialViewport = viewport.content;
+  await setFullscreen(true);
+  await setFullscreen(false);
+  assert.match(initialViewport, /viewport-fit=cover/);
+  assert.deepEqual(writes, [initialViewport]);
 });
 
 test('unsupported platforms keep their original viewport', async () => {
-  const { viewport, doc } = viewportFixture();
+  const { viewport, doc, writes, dataset } = viewportFixture();
   const original = viewport.content;
   await createViewerFullscreen(async () => false, doc)(true);
   assert.equal(viewport.content, original);
+  assert.deepEqual(writes, []);
+  assert.deepEqual(dataset, {});
+});
+
+test('theme changes keep the requested reader mode and leave the viewport stable', async () => {
+  const { doc, dataset, writes } = viewportFixture();
+  let themeChanged!: () => void;
+  Object.defineProperty(doc, 'defaultView', { value: {
+    MutationObserver: class {
+      constructor(callback: () => void) { themeChanged = callback; }
+      observe() {}
+    },
+  } });
+  const calls: { enabled: boolean; dark: boolean }[] = [];
+  const setFullscreen = createViewerFullscreen(async (_command, args) => {
+    calls.push(args);
+    return true;
+  }, doc);
+  await setFullscreen(false);
+  await setFullscreen(true);
+  dataset.theme = 'light';
+  themeChanged();
+  // A subsequent exit must run after the queued appearance update.
+  await setFullscreen(false);
+  assert.deepEqual(calls, [
+    { enabled: false, dark: true },
+    { enabled: true, dark: true },
+    { enabled: true, dark: false },
+    { enabled: false, dark: false },
+  ]);
+  assert.equal(writes.length, 1);
 });
 
 test('a failed native transition does not block the next transition', async () => {

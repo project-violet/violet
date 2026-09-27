@@ -14,13 +14,14 @@ import '../../violet-web/packages/frontend/src/styles/globals.css';
 
 const mediaUrl = (params: Record<string, string>) => `${convertFileSrc('image', 'violet-media')}?${new URLSearchParams(params)}`;
 const availableRoutes = new Set(['/', '/bookmarks', '/crop-bookmarks', '/history', '/downloads', '/settings']);
+const viewerFullscreen = createViewerFullscreen(invoke, document);
 configurePlatform({
   adapter: createAdapter(createBackend(invoke, mediaUrl)),
   imageUrl: (url, referer) => url.startsWith('violet-media:') || url.startsWith('http://violet-media.localhost')
     ? url : mediaUrl({ url, ...(referer ? { referer } : {}) }),
   availableRoute: path => availableRoutes.has(path),
   browserFullscreen: false,
-  viewerFullscreen: createViewerFullscreen(invoke, document),
+  viewerFullscreen,
 });
 
 // Keep the shared SPA's BrowserRouter and URL state semantics. External links
@@ -44,7 +45,10 @@ function NativeRoot() {
   const [ready, setReady] = useState<boolean>();
   const [error, setError] = useState('');
   useEffect(() => {
-    invoke<Status>('native_status').then(status => setReady(status.dbExists)).catch(e => setError(String(e)));
+    // Establish the iOS edge-to-edge viewport before rendering the first route,
+    // including setup. Subsequent reader transitions only change system chrome.
+    Promise.all([viewerFullscreen(false), invoke<Status>('native_status')])
+      .then(([, status]) => setReady(status.dbExists)).catch(e => setError(String(e)));
   }, []);
   if (error) return <main className="native-setup"><section className="native-card" role="alert"><h1>{t('startupError')}</h1><pre>{error}</pre><button onClick={() => location.reload()}>{t('retry')}</button></section></main>;
   if (ready === undefined) return null;

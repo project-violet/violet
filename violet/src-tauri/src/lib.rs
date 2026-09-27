@@ -26,19 +26,19 @@ pub struct NativeState {
 }
 
 #[tauri::command]
-async fn native_viewer_fullscreen(window: tauri::WebviewWindow, enabled: bool) -> db::Result<bool> {
+async fn native_viewer_fullscreen(window: tauri::WebviewWindow, enabled: bool, dark: bool) -> db::Result<bool> {
     #[cfg(target_os = "ios")]
     {
         let (sender, receiver) = tokio::sync::oneshot::channel();
         window.with_webview(move |webview| {
-            let _ = sender.send(ios::viewer_fullscreen(webview, enabled));
+            let _ = sender.send(ios::viewer_fullscreen(webview, enabled, dark));
         }).map_err(|e| e.to_string())?;
         receiver.await.map_err(|e| e.to_string())??;
         Ok(true)
     }
     #[cfg(not(target_os = "ios"))]
     {
-        let _ = (window, enabled);
+        let _ = (window, enabled, dark);
         Ok(false)
     }
 }
