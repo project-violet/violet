@@ -47,13 +47,13 @@ const navItems: NavItem[] = [
 const tabletItems: NavItem[] = [
   { to: '/crop-bookmarks', labelKey: 'nav.cropBookmarks', icon: Scissors },
   { to: '/downloads', labelKey: 'nav.downloads', icon: Download },
+  { to: '/message-search', labelKey: 'nav.messageSearch', icon: MessageSquare, feature: 'message' },
 ];
 
 const moreItems: NavItem[] = [
   { to: '/hot', labelKey: 'nav.hot', icon: Flame },
   ...tabletItems,
   { to: '/ai-search', labelKey: 'nav.aiSearch', icon: Sparkles, feature: 'ai' },
-  { to: '/message-search', labelKey: 'nav.messageSearch', icon: MessageSquare, feature: 'message' },
   { to: '/llm-search', labelKey: 'nav.llmSearch', icon: BrainCircuit, feature: 'llm' },
   { to: '/keyword-graph', labelKey: 'nav.keywordGraph', icon: Network },
   { to: '/work-experiment', labelKey: 'nav.workExperiment', icon: Beaker },
@@ -66,9 +66,6 @@ export function BottomNav() {
   const location = useLocation();
   const hasRoomForShortcuts = useMediaQuery('(min-width: 600px)');
   const [isMoreOpen, setIsMoreOpen] = useState(false);
-  const visibleNavItems = (hasRoomForShortcuts
-    ? [...navItems.slice(0, -1), ...tabletItems, navItems[navItems.length - 1]]
-    : navItems).filter((item) => isRouteAvailable(item.to));
   const {
     aiSearchEnabled,
     messageSearchEnabled,
@@ -76,6 +73,10 @@ export function BottomNav() {
     themeMode,
     setThemeMode,
   } = useAppStore();
+  const visibleNavItems = (hasRoomForShortcuts
+    ? [...navItems.slice(0, -1), ...tabletItems, navItems[navItems.length - 1]]
+    : navItems).filter((item) => isRouteAvailable(item.to)
+      && (item.feature !== 'message' || messageSearchEnabled));
   const visibleMoreItems = useMemo(
     () => moreItems.filter((item) =>
       isRouteAvailable(item.to)

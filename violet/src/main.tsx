@@ -13,7 +13,7 @@ import { t } from './i18n';
 import '../../violet-web/packages/frontend/src/styles/globals.css';
 
 const mediaUrl = (params: Record<string, string>) => `${convertFileSrc('image', 'violet-media')}?${new URLSearchParams(params)}`;
-const availableRoutes = new Set(['/', '/bookmarks', '/crop-bookmarks', '/history', '/downloads', '/settings']);
+const availableRoutes = new Set(['/', '/bookmarks', '/crop-bookmarks', '/history', '/downloads', '/message-search', '/settings']);
 const viewerFullscreen = createViewerFullscreen(invoke, document);
 configurePlatform({
   adapter: createAdapter(createBackend(invoke, mediaUrl)),

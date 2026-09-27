@@ -3,12 +3,14 @@ import { normalizedPublishedSql } from '../../../violet-web/packages/backend/src
 import type { Article, ImageList, TagEntry } from '@violet-web/shared';
 import { BackendError, type Request } from './adapter';
 import { dateDistribution } from './dates';
+import { createMessageSearch } from './message-search';
 
 export type Invoke = <T>(command: string, args?: Record<string, unknown>) => Promise<T>;
 type Row = Record<string, any>;
 type Scalar = string | number | boolean | null;
 
 export function createBackend(invoke: Invoke, mediaUrl: (params: Record<string, string>) => string) {
+  const messageSearch = createMessageSearch(invoke);
   const query = <T = Row>(database: 'content' | 'user', sql: string, params: Scalar[] = []) =>
     invoke<T[]>('native_query', { database, sql, params });
   const mutate = (sql: string, params: Scalar[] = []) =>
@@ -34,6 +36,9 @@ export function createBackend(invoke: Invoke, mediaUrl: (params: Record<string, 
   };
 
   return async function dispatch({ method, path, params: p, body: b }: Request): Promise<unknown> {
+    if (path === '/message-search' || path.startsWith('/message-search/')) {
+      return messageSearch({ method, path, params: p, body: b });
+    }
     const page = positive(p.page, 0);
     const pageSize = Math.max(1, positive(p.pageSize, 30, 100));
     const limit = Math.max(1, positive(p.limit, 20, 100));

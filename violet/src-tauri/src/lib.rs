@@ -51,6 +51,34 @@ async fn blocking<T: Send + 'static>(
         .map_err(|e| e.to_string())?
 }
 
+// The configured FSCM server is contacted natively so a WKWebView origin does
+// not require browser CORS support from the user's search server.
+#[tauri::command]
+async fn native_message_request(
+    state: tauri::State<'_, Arc<NativeState>>,
+    url: String,
+    body: Option<Value>,
+    timeout_ms: u64,
+) -> db::Result<Value> {
+    let url = url::Url::parse(&url).map_err(|e| e.to_string())?;
+    if !matches!(url.scheme(), "http" | "https") || url.host_str().is_none() {
+        return Err("Invalid message search server URL".into());
+    }
+    let client = state.client.clone();
+    blocking(move || {
+        let request = if let Some(body) = body { client.post(url).json(&body) } else { client.get(url) };
+        let response = request.timeout(Duration::from_millis(timeout_ms.clamp(1, 30_000)))
+            .send().map_err(|e| e.to_string())?;
+        let status = response.status().as_u16();
+        // Legacy servers may return an HTML 404 for /mobile/status.
+        let body = response.json::<Value>().map_err(|e| {
+            format!("Message search server returned {status}: {e}")
+        });
+        if status == 404 { return Ok(json!({"status": status, "body": null})); }
+        Ok(json!({"status": status, "body": body?}))
+    }).await
+}
+
 #[tauri::command]
 async fn native_query(
     state: tauri::State<'_, Arc<NativeState>>,
@@ -206,7 +234,7 @@ pub fn run() {
                 responder.respond(response);
             });
         })
-        .invoke_handler(tauri::generate_handler![native_query, native_execute, native_status, native_sync, native_import, native_tags, native_gallery, native_download, native_delete_download, native_viewer_fullscreen])
+        .invoke_handler(tauri::generate_handler![native_query, native_execute, native_status, native_sync, native_import, native_tags, native_gallery, native_download, native_delete_download, native_viewer_fullscreen, native_message_request])
         .run(tauri::generate_context!())
         .expect("Unable to start Violet");
 }
