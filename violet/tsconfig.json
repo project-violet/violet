@@ -1,0 +1,16 @@
+{
+  "extends": "../violet-web/tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "types": ["vite/client", "node"],
+    "baseUrl": ".",
+    "paths": {
+      "axios": ["node_modules/axios"],
+      "@violet-web/shared": ["../violet-web/packages/shared/src/index.ts"],
+      "@/*": ["../violet-web/packages/frontend/src/*"]
+    }
+  },
+  "include": ["src", "vite.config.ts"],
+  "exclude": ["src/**/*.test.ts"]
+}

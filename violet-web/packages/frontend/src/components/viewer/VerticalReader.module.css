@@ -8,9 +8,12 @@
   flex-direction: column;
   align-items: center;
   background: #000;
+  /* Position is maintained explicitly, including Safari without scroll anchoring. */
+  overflow-anchor: none;
 }
 
 .page {
+  flex: 0 0 auto;
   width: 100%;
   display: flex;
   justify-content: center;

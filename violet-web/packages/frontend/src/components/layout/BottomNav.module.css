@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   height: calc(var(--bottomnav-height) + env(safe-area-inset-bottom, 0px));
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
   background: color-mix(in srgb, var(--color-bg-elevated) 92%, transparent);
   border-top: 1px solid var(--color-border);
   backdrop-filter: blur(18px);
@@ -17,8 +17,15 @@
   height: var(--bottomnav-height);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   padding: 5px 8px 4px;
+}
+
+@media (min-width: 600px) {
+  .navInner {
+    width: min(100%, 720px);
+  }
 }
 
 .link {

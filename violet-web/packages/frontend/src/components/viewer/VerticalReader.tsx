@@ -1,11 +1,14 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useLayoutEffect, useCallback, useState } from 'react';
+import type { ImageDimensions } from '@violet-web/shared';
 import { ViewerImage } from './ViewerImage';
+import { captureAnchor, pageAtOffset, restoreAnchor, validDimensions, type ReadingAnchor } from './scroll-layout';
 import styles from './VerticalReader.module.css';
 
 const PREFETCH_RANGE = 5;
 
 interface VerticalReaderProps {
   imageUrls: string[];
+  imageDimensions?: (ImageDimensions | null)[];
   currentPage: number;
   onPageChange: (page: number) => void;
   onTap: () => void;
@@ -13,99 +16,95 @@ interface VerticalReaderProps {
   galleryId: number;
 }
 
-export function VerticalReader({
-  imageUrls,
-  currentPage,
-  onPageChange,
-  onTap,
-  padding,
-  galleryId,
-}: VerticalReaderProps) {
+export function VerticalReader({ imageUrls, imageDimensions, currentPage, onPageChange, onTap, padding, galleryId }: VerticalReaderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const isScrolling = useRef(false);
   const observedPageChange = useRef<number | null>(null);
+  const pendingAnchor = useRef<ReadingAnchor | null>(null);
+  const [measuredSizes, setMeasuredSizes] = useState<Record<number, ImageDimensions>>({});
 
-  // Track current page via IntersectionObserver
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (isScrolling.current) return;
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            const idx = Number(entry.target.getAttribute('data-page'));
-            if (!isNaN(idx)) {
-              observedPageChange.current = idx;
-              onPageChange(idx);
-            }
-            break;
-          }
-        }
-      },
-      {
-        root: container,
-        threshold: 0.5,
-      },
-    );
-
-    imageRefs.current.forEach((el) => {
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [imageUrls.length, onPageChange]);
-
-  const scrollToPage = useCallback((page: number) => {
-    const el = imageRefs.current[page];
-    if (el) {
-      isScrolling.current = true;
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setTimeout(() => {
-        isScrolling.current = false;
-      }, 500);
-    }
+  const pageBox = useCallback((page: number) => {
+    const container = containerRef.current!;
+    const rect = imageRefs.current[page]!.getBoundingClientRect();
+    return { top: rect.top - container.getBoundingClientRect().top + container.scrollTop, height: rect.height };
   }, []);
 
-  // Scroll to page when currentPage changes externally (e.g., slider)
-  useEffect(() => {
+  const sizeForPage = (page: number) => {
+    const size = measuredSizes[page] ?? imageDimensions?.[page];
+    return validDimensions(size) ? size : null;
+  };
+
+  const handleDimensions = (page: number, size: ImageDimensions) => {
+    const previous = sizeForPage(page);
+    if (!validDimensions(size) || (previous?.width === size.width && previous.height === size.height)) return;
+    const container = containerRef.current;
+    if (container && !pendingAnchor.current) {
+      // Capture once per React commit, before any unknown page changes size.
+      pendingAnchor.current = captureAnchor(imageUrls.length, pageBox,
+        container.scrollTop, container.clientHeight, container.scrollHeight);
+    }
+    setMeasuredSizes(previousSizes => ({ ...previousSizes, [page]: size }));
+  };
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    const anchor = pendingAnchor.current;
+    pendingAnchor.current = null;
+    if (container && anchor) {
+      container.scrollTop = restoreAnchor(anchor, pageBox, container.clientHeight, container.scrollHeight);
+    }
+  }, [measuredSizes, pageBox]);
+
+  // Slider/keyboard/resume jumps go directly to their target. Sweeping smoothly
+  // through hundreds of unloaded pages causes unnecessary loads and page updates.
+  useLayoutEffect(() => {
     if (observedPageChange.current === currentPage) {
       observedPageChange.current = null;
       return;
     }
-    scrollToPage(currentPage);
-  }, [currentPage, scrollToPage]);
+    observedPageChange.current = null;
+    const container = containerRef.current;
+    if (container && imageRefs.current[currentPage]) container.scrollTop = pageBox(currentPage).top;
+  }, [currentPage, pageBox]);
 
-  // Check if a page should be actively loaded (within prefetch range)
-  const isPageActive = useCallback(
-    (pageIndex: number) => {
-      return Math.abs(pageIndex - currentPage) <= PREFETCH_RANGE;
-    },
-    [currentPage]
-  );
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !imageUrls.length) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const atEnd = container.scrollHeight - container.clientHeight - container.scrollTop <= 2;
+      const page = atEnd ? imageUrls.length - 1 : pageAtOffset(imageUrls.length, pageBox,
+        container.scrollTop + container.clientHeight * 0.35);
+      if (page !== currentPage) {
+        observedPageChange.current = page;
+        onPageChange(page);
+      }
+    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    container.addEventListener('scroll', schedule, { passive: true });
+    const resize = new ResizeObserver(schedule);
+    resize.observe(container);
+    return () => {
+      container.removeEventListener('scroll', schedule);
+      resize.disconnect();
+      cancelAnimationFrame(frame);
+    };
+  }, [imageUrls.length, currentPage, onPageChange, pageBox]);
 
-  const handleClick = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      const target = event.target as HTMLElement;
-      if (target.closest('button, a, input')) return;
-      onTap();
-    },
-    [onTap],
-  );
+  const handleClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+    if ((event.target as HTMLElement).closest('button, a, input')) return;
+    onTap();
+  }, [onTap]);
 
   return (
     <div ref={containerRef} className={styles.container} onClick={handleClick}>
       {imageUrls.map((url, i) => (
-        <div
-          key={i}
-          ref={(el) => { imageRefs.current[i] = el; }}
-          data-page={i}
-          className={styles.page}
-          style={{ padding: `${padding}px 0` }}
-        >
-          <ViewerImage src={url} alt={`Page ${i + 1}`} active={isPageActive(i)} cacheKey={{ galleryId, page: i }} />
+        <div key={i} ref={(el) => { imageRefs.current[i] = el; }} data-page={i}
+          className={styles.page} style={{ padding: `${padding}px 0` }}>
+          <ViewerImage src={url} alt={`Page ${i + 1}`} active={Math.abs(i - currentPage) <= PREFETCH_RANGE}
+            cacheKey={{ galleryId, page: i }} reserveSpace dimensions={sizeForPage(i)}
+            onDimensions={size => handleDimensions(i, size)} />
         </div>
       ))}
     </div>

@@ -1,10 +1,8 @@
 import type { ImageList } from '@violet-web/shared';
-import { api } from './client';
+import { api, getPlatformImageUrl } from './client';
 
 export function getProxyImageUrl(url: string, referer?: string): string {
-  const params = new URLSearchParams({ url });
-  if (referer) params.set('referer', referer);
-  return `/api/proxy/image?${params.toString()}`;
+  return getPlatformImageUrl(url, referer);
 }
 
 export async function resolveGallery(id: number): Promise<ImageList> {

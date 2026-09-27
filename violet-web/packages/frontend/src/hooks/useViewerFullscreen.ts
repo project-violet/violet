@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useViewerStore } from '../stores/viewer-store';
 import { useMediaQuery } from './useMediaQuery';
+import { getPlatformViewerFullscreen, usesBrowserFullscreen } from '../api/client';
 
 export function useViewerFullscreen() {
   const enabled = useViewerStore((state) => state.mobileFullscreenEnabled);
@@ -9,7 +10,13 @@ export function useViewerFullscreen() {
   const installedApp = useMediaQuery('(display-mode: standalone), (display-mode: fullscreen), (display-mode: minimal-ui)');
 
   useEffect(() => {
-    if (installedApp || !enabled || !mobile || !document.fullscreenEnabled || document.fullscreenElement) return;
+    const nativeFullscreen = getPlatformViewerFullscreen();
+    if (nativeFullscreen) {
+      void nativeFullscreen(enabled).catch(console.error);
+      return () => { void nativeFullscreen(false).catch(console.error); };
+    }
+    // DOM fullscreen is only for browsers. Native apps control their own chrome.
+    if (!usesBrowserFullscreen() || installedApp || !enabled || !mobile || !document.fullscreenEnabled || document.fullscreenElement) return;
     let disposed = false;
     let pending = false;
     let entered = false;

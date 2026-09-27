@@ -1,0 +1,24 @@
+/* Only the route's own content should scroll; never the outer WKWebView page. */
+html[data-native-ios='true'],
+html[data-native-ios='true'] body,
+html[data-native-ios='true'] #root {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--color-bg);
+}
+.native-setup { height: 100dvh; overflow-y: auto; display: grid; place-items: center; padding: calc(32px + env(safe-area-inset-top, 0px)) calc(20px + env(safe-area-inset-right, 0px)) calc(32px + env(safe-area-inset-bottom, 0px)) calc(20px + env(safe-area-inset-left, 0px)); background: var(--color-bg); color: var(--color-text); }
+.native-card { width: min(100%, 560px); padding: 32px; border: 1px solid var(--color-border); border-radius: 20px; background: var(--color-bg-elevated); }
+.native-card h1 { margin: 20px 0 12px; font-size: 26px; }
+.native-card p { margin: 12px 0; line-height: 1.6; }
+.native-card label { display: block; margin: 24px 0 8px; }
+.native-card select, .native-card button { font: inherit; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-bg); color: var(--color-text); padding: 11px 16px; }
+.native-card select { width: 100%; }
+.native-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 24px; }
+.native-card button { cursor: pointer; }
+.native-card button:disabled { opacity: .5; cursor: wait; }
+.native-card .native-primary { background: var(--color-primary); color: var(--color-on-primary); }
+.native-card .native-note { font-size: 13px; color: var(--color-text-secondary); }
+.native-card progress { width: 100%; accent-color: var(--color-primary); }
+.native-card pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 140px; overflow-y: auto; font-size: 12px; }
+.native-card [role=alert] { color: var(--color-danger); margin: 16px 0; }
