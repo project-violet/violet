@@ -25,21 +25,33 @@ import {
 import { useLocation } from 'react-router';
 import { useAppStore } from '../../stores/app-store';
 import { isRouteAvailable } from '../../api/client';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { DiscordIcon } from '../icons/DiscordIcon';
 import { GithubIcon } from '../icons/GithubIcon';
 import styles from './BottomNav.module.css';
 
-const navItems = [
+interface NavItem {
+  to: string;
+  labelKey: string;
+  icon: typeof Home;
+  feature?: 'ai' | 'message' | 'llm';
+}
+
+const navItems: NavItem[] = [
   { to: '/', labelKey: 'nav.home', icon: Home },
   { to: '/history', labelKey: 'nav.history', icon: Clock3 },
   { to: '/bookmarks', labelKey: 'nav.bookmarks', icon: Bookmark },
   { to: '/settings', labelKey: 'nav.settings', icon: Settings },
 ];
 
-const moreItems = [
-  { to: '/hot', labelKey: 'nav.hot', icon: Flame },
+const tabletItems: NavItem[] = [
   { to: '/crop-bookmarks', labelKey: 'nav.cropBookmarks', icon: Scissors },
   { to: '/downloads', labelKey: 'nav.downloads', icon: Download },
+];
+
+const moreItems: NavItem[] = [
+  { to: '/hot', labelKey: 'nav.hot', icon: Flame },
+  ...tabletItems,
   { to: '/ai-search', labelKey: 'nav.aiSearch', icon: Sparkles, feature: 'ai' },
   { to: '/message-search', labelKey: 'nav.messageSearch', icon: MessageSquare, feature: 'message' },
   { to: '/llm-search', labelKey: 'nav.llmSearch', icon: BrainCircuit, feature: 'llm' },
@@ -52,7 +64,11 @@ const moreItems = [
 export function BottomNav() {
   const { t } = useTranslation();
   const location = useLocation();
+  const hasRoomForShortcuts = useMediaQuery('(min-width: 600px)');
   const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const visibleNavItems = (hasRoomForShortcuts
+    ? [...navItems.slice(0, -1), ...tabletItems, navItems[navItems.length - 1]]
+    : navItems).filter((item) => isRouteAvailable(item.to));
   const {
     aiSearchEnabled,
     messageSearchEnabled,
@@ -63,11 +79,12 @@ export function BottomNav() {
   const visibleMoreItems = useMemo(
     () => moreItems.filter((item) =>
       isRouteAvailable(item.to)
+      && (!hasRoomForShortcuts || !tabletItems.some((shortcut) => shortcut.to === item.to))
       && (item.feature !== 'ai' || aiSearchEnabled)
       && (item.feature !== 'message' || messageSearchEnabled)
       && (item.feature !== 'llm' || llmSearchEnabled)
     ),
-    [aiSearchEnabled, llmSearchEnabled, messageSearchEnabled],
+    [aiSearchEnabled, llmSearchEnabled, messageSearchEnabled, hasRoomForShortcuts],
   );
   const isMoreActive = visibleMoreItems.some((item) => item.to === location.pathname);
 
@@ -167,7 +184,7 @@ export function BottomNav() {
       )}
       <nav className={styles.nav} aria-label={t('app.name')}>
         <div className={styles.navInner}>
-          {navItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const Icon = item.icon;
             return (
               <NavLink
