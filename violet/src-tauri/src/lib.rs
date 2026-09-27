@@ -2,6 +2,8 @@ mod db;
 mod gallery;
 mod media;
 mod sync;
+#[cfg(target_os = "ios")]
+mod ios;
 
 use serde_json::{json, Value};
 use std::{
@@ -21,6 +23,24 @@ pub struct NativeState {
     tags: Mutex<Option<Vec<db::Tag>>>,
     galleries: Mutex<gallery::GalleryCache>,
     downloads: Mutex<HashSet<u64>>,
+}
+
+#[tauri::command]
+async fn native_viewer_fullscreen(window: tauri::WebviewWindow, enabled: bool) -> db::Result<bool> {
+    #[cfg(target_os = "ios")]
+    {
+        let (sender, receiver) = tokio::sync::oneshot::channel();
+        window.with_webview(move |webview| {
+            let _ = sender.send(ios::viewer_fullscreen(webview, enabled));
+        }).map_err(|e| e.to_string())?;
+        receiver.await.map_err(|e| e.to_string())??;
+        Ok(true)
+    }
+    #[cfg(not(target_os = "ios"))]
+    {
+        let _ = (window, enabled);
+        Ok(false)
+    }
 }
 
 async fn blocking<T: Send + 'static>(
@@ -186,7 +206,7 @@ pub fn run() {
                 responder.respond(response);
             });
         })
-        .invoke_handler(tauri::generate_handler![native_query, native_execute, native_status, native_sync, native_import, native_tags, native_gallery, native_download, native_delete_download])
+        .invoke_handler(tauri::generate_handler![native_query, native_execute, native_status, native_sync, native_import, native_tags, native_gallery, native_download, native_delete_download, native_viewer_fullscreen])
         .run(tauri::generate_context!())
         .expect("Unable to start Violet");
 }

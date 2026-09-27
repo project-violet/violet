@@ -14,15 +14,21 @@ let imageUrl = (url: string, referer?: string) => {
   return `/api/proxy/image?${params.toString()}`;
 };
 let availableRoute = (_path: string) => true;
+let browserFullscreen = true;
+let viewerFullscreen: ((enabled: boolean) => Promise<void>) | undefined;
 
 export function configurePlatform(platform: {
   adapter: AxiosAdapter;
   imageUrl: typeof imageUrl;
   availableRoute?: typeof availableRoute;
+  browserFullscreen?: boolean;
+  viewerFullscreen?: (enabled: boolean) => Promise<void>;
 }) {
   api.defaults.adapter = platform.adapter;
   imageUrl = platform.imageUrl;
   availableRoute = platform.availableRoute ?? (() => true);
+  browserFullscreen = platform.browserFullscreen ?? true;
+  viewerFullscreen = platform.viewerFullscreen;
 }
 
 export function getPlatformImageUrl(url: string, referer?: string): string {
@@ -31,4 +37,12 @@ export function getPlatformImageUrl(url: string, referer?: string): string {
 
 export function isRouteAvailable(path: string): boolean {
   return availableRoute(path);
+}
+
+export function usesBrowserFullscreen(): boolean {
+  return browserFullscreen;
+}
+
+export function getPlatformViewerFullscreen() {
+  return viewerFullscreen;
 }

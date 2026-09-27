@@ -8,6 +8,7 @@ import { configurePlatform } from '../../violet-web/packages/frontend/src/api/cl
 import { NativeSetup, type Status } from './NativeSetup';
 import { createAdapter } from './platform/adapter';
 import { createBackend } from './platform/backend';
+import { createViewerFullscreen } from './platform/fullscreen';
 import { t } from './i18n';
 import '../../violet-web/packages/frontend/src/styles/globals.css';
 
@@ -18,6 +19,8 @@ configurePlatform({
   imageUrl: (url, referer) => url.startsWith('violet-media:') || url.startsWith('http://violet-media.localhost')
     ? url : mediaUrl({ url, ...(referer ? { referer } : {}) }),
   availableRoute: path => availableRoutes.has(path),
+  browserFullscreen: false,
+  viewerFullscreen: createViewerFullscreen(invoke, document),
 });
 
 // Keep the shared SPA's BrowserRouter and URL state semantics. External links
