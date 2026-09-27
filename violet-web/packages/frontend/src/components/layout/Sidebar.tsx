@@ -4,6 +4,7 @@ import { Home, Bookmark, Crop, History, Download, Settings, ChevronLeft, Chevron
 import { DiscordIcon } from '../icons/DiscordIcon';
 import { GithubIcon } from '../icons/GithubIcon';
 import { useAppStore } from '../../stores/app-store';
+import { isRouteAvailable } from '../../api/client';
 import styles from './Sidebar.module.css';
 
 const navItems = [
@@ -41,7 +42,8 @@ export function Sidebar() {
 
       <div className={styles.navLinks}>
         {navItems.filter((item) =>
-          (item.to !== '/ai-search' || aiSearchEnabled)
+          isRouteAvailable(item.to)
+          && (item.to !== '/ai-search' || aiSearchEnabled)
           && (item.to !== '/message-search' || messageSearchEnabled)
           && (item.to !== '/llm-search' || llmSearchEnabled)
         ).map((item) => {

@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { useLocation } from 'react-router';
 import { useAppStore } from '../../stores/app-store';
+import { isRouteAvailable } from '../../api/client';
 import { DiscordIcon } from '../icons/DiscordIcon';
 import { GithubIcon } from '../icons/GithubIcon';
 import styles from './BottomNav.module.css';
@@ -61,7 +62,8 @@ export function BottomNav() {
   } = useAppStore();
   const visibleMoreItems = useMemo(
     () => moreItems.filter((item) =>
-      (item.feature !== 'ai' || aiSearchEnabled)
+      isRouteAvailable(item.to)
+      && (item.feature !== 'ai' || aiSearchEnabled)
       && (item.feature !== 'message' || messageSearchEnabled)
       && (item.feature !== 'llm' || llmSearchEnabled)
     ),
