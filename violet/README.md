@@ -1,6 +1,6 @@
 # Violet 앱 (Tauri 2)
 
-`violet-web`의 React 화면을 소스 그대로 사용하고, 앱 내부 기능은 Rust + SQLite로 실행한다. Express·Node 서버를 실행하거나 포트를 열지 않는다. 현재 macOS Apple Silicon `.app` 빌드와 실행을 확인했다.
+`violet-web`의 React 화면을 소스 그대로 사용하고, 앱 내부 기능은 Rust + SQLite로 실행한다. Express·Node 서버를 실행하거나 포트를 열지 않는다. macOS Apple Silicon 앱과 iOS/iPadOS Apple Silicon 시뮬레이터용 `.app` 빌드를 확인했다.
 
 ## 구조
 
@@ -21,6 +21,13 @@ violet/                       # 저장소 루트
 웹은 기존 `/api` HTTP 경로를 계속 사용한다. 앱은 공유 Axios 인스턴스에 어댑터를 주입해 Rust 명령을 호출한다. 검색 DSL → SQL 변환도 기존 웹 백엔드의 순수 함수를 공유한다. 앱 전용 코드는 웹의 빌드 의존성에 들어가지 않는다.
 
 공통 화면 수정은 `violet-web/packages/frontend`에서, OS·파일·앱 기능은 이 디렉터리에서 한다. 앱이 지원하는 메뉴는 플랫폼 설정으로 걸러낸다. 기존 웹 서버와 앱의 사용자 데이터는 별개다.
+
+앱의 뷰어는 브라우저의 DOM Fullscreen API 대신 iOS 네이티브 몰입 모드를
+사용한다. 기본으로 켜진 뷰어 전체화면 설정에 따라 상태바를 숨기고 홈
+인디케이터 자동 숨김을 요청하며 이미지가 화면 가장자리까지 표시되게 한다.
+홈 인디케이터의 실제 표시 시점은 iOS가 결정한다. 뷰어를 나가면 상태바와
+일반 화면의 여백을 복원한다. WebKit의 출처 안내 배너는 요청하지 않으며
+일반 웹의 전체화면 동작은 유지한다. 현재 네이티브 몰입 모드는 iOS만 지원한다.
 
 ## macOS 실행과 빌드
 
@@ -67,18 +74,62 @@ macOS 저장 위치: `~/Library/Application Support/dev.violet.app/`. 콘텐츠 
 
 AI/LLM, 대사 검색, 그래프·분석, 외부 사용자 북마크 집계는 아직 앱에 이식하지 않았다. 해당 메뉴는 숨기며 미지원 API는 명시적인 오류를 반환한다. 일부 공유 설정/버튼은 남아 있으므로 웹의 모든 기능이 동작하는 버전은 아니다. 다운로드 도중 앱을 종료하면 다음 실행에서 실패로 표시하고 재시도할 수 있다. 모바일 백그라운드 다운로드는 별도 구현이 필요하다.
 
+## iOS / iPadOS 시뮬레이터 빌드
+
+필요한 도구: macOS의 정식 Xcode와 iOS 시뮬레이터 런타임, XcodeGen,
+CocoaPods, libimobiledevice. iPhone과 iPad는 같은 iOS 런타임을 사용하며
+watchOS·tvOS·visionOS 런타임은 필요 없다. 시뮬레이터는 개발자 계정이나
+배포용 서명 없이 빌드할 수 있다.
+
+```sh
+# 이 Mac에 설치한 사용자 로컬 도구를 사용할 때만 실행
+source "$HOME/.local/share/violet-ios-tools/env.sh"
+
+rustup target add --toolchain stable aarch64-apple-ios-sim aarch64-apple-ios
+npm run ios:init       # 최초 1회: src-tauri/gen/apple 생성 (Git 제외)
+npm run build:ios:sim  # Apple Silicon iPhone/iPad 시뮬레이터용 릴리스
+```
+
+결과: `src-tauri/gen/apple/build/arm64-sim/Violet.app`.
+실기기용 IPA와는 다르며 Mac에서 일반 macOS 앱처럼 열 수 없다.
+
+```sh
+xcrun simctl list devices available
+# 위 목록에서 원하는 iPad UUID 선택. 이미 부팅했으면 boot 생략.
+xcrun simctl boot <IPAD_UUID>
+xcrun simctl bootstatus <IPAD_UUID> -b
+xcrun simctl install <IPAD_UUID> src-tauri/gen/apple/build/arm64-sim/Violet.app
+xcrun simctl launch <IPAD_UUID> dev.violet.app
+```
+
+Xcode 27.0 / iOS 27.0 SDK에서 빌드했다. 설정상 최소 iOS 버전은 15.0이며,
+낮은 버전 런타임과 실기기는 아직 검증하지 않았다. DB는 시뮬레이터 앱의
+별도 샌드박스에 저장되며 Mac 앱의 DB와 자동 공유하지 않는다.
+
+iPad Air 11형(M4) / iOS 27.0 시뮬레이터에서 설치, 프로세스 실행 유지,
+사용자 DB 생성과 WebView 리소스 로드를 확인했다. Device Hub UI 자동화가
+시간 초과되어 화면 표시와 터치 동작은 아직 검증하지 못했다. 시뮬레이터의
+콘텐츠 DB 다운로드/가져오기도 아직 실행하지 않았다.
+
+iOS 빌드를 위해 QuickJS 바인딩을 생성하고 `.cargo/config.toml`에서
+Apple Silicon 시뮬레이터의 Clang 타깃 표기를 보정한다. Xcode 27의 Swift
+브리지 심벌 연결 문제는 `vendor/swift-rs`의 작은 패치로 해결했다.
+`rust-toolchain.toml`의 `llvm-tools`가 이 패치에 필요하다. 패치 이유와
+제거 조건은 `vendor/swift-rs/VIOLET-PATCH.md`를 참고한다.
+
+실제 iPhone/iPad 설치는 `aarch64` 타깃으로 별도 빌드하고 Apple 개발 팀과
+기기 서명을 구성해야 한다.
+
 ## 다른 플랫폼
 
-Tauri 2의 모바일 진입점과 공통 Rust 코드를 사용한다. Windows·Linux·Android·iOS는 아직 빌드/실기기 검증하지 않았다. 각 OS의 WebView, 파일 선택, 저장소와 외부 링크 동작을 검증해야 한다.
+Tauri 2의 모바일 진입점과 공통 Rust 코드를 사용한다. Windows·Linux·Android는 아직 빌드/실기기 검증하지 않았다. 각 OS의 WebView, 파일 선택, 저장소와 외부 링크 동작을 검증해야 한다.
 
 ```sh
 npm run tauri -- android init
 npm run tauri -- android dev
-npm run tauri -- ios init
-npm run tauri -- ios dev
 ```
 
-Android는 Android SDK/NDK와 JDK, iOS는 macOS의 정식 Xcode 및 서명 구성이 필요하다. 데스크톱 패키지는 해당 OS의 툴체인으로 빌드한다. 이 초기화 명령은 아직 실행하지 않았으며 모바일 생성 프로젝트는 Git에서 제외한다.
+Android는 Android SDK/NDK와 JDK가 필요하다. 데스크톱 패키지는 해당 OS의 툴체인으로 빌드한다. Android 초기화는 아직 실행하지 않았으며 모바일 생성 프로젝트는 Git에서 제외한다.
 
 실제 DB 회귀 검사(임시 디렉터리에 가져온 뒤 자동 제거):
 
