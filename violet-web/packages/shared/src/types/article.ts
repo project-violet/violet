@@ -46,10 +46,17 @@ export interface DateDistributionResponse {
   buckets: DateDistributionBucket[];
 }
 
+export interface ImageDimensions {
+  width: number;
+  height: number;
+}
+
 export interface ImageList {
   urls: string[];
   bigThumbnails: string[];
   smallThumbnails: string[];
+  // Index-aligned; older/offline sources may not have image metadata.
+  dimensions?: (ImageDimensions | null)[];
 }
 
 export type SuggestionCategory =

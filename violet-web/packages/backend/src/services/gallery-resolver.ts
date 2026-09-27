@@ -17,6 +17,7 @@ import type { ImageList } from '@violet-web/shared';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SCRIPT_V3_MODEL_PATH = path.resolve(__dirname, '../../scripts/hitomi_get_image_list_v3_model.js');
+const IMAGE_LIST_EXPRESSION = fs.readFileSync(path.resolve(__dirname, '../../scripts/gallery_image_list_with_dimensions.js'), 'utf-8');
 const SCRIPT_V4_URL =
   'https://github.com/project-violet/scripts/raw/main/hitomi_get_image_list_v4_model.js';
 const GG_JS_URL = 'https://ltn.gold-usergeneratedcontent.net/gg.js';
@@ -117,6 +118,7 @@ export async function resolveGallery(id: number): Promise<ImageList> {
     urls: [...result.urls],
     bigThumbnails: [...result.bigThumbnails],
     smallThumbnails: [...result.smallThumbnails],
+    dimensions: result.dimensions?.map(size => size ? { ...size } : null),
   };
 }
 
@@ -150,17 +152,19 @@ async function resolveGalleryUncached(id: number): Promise<ImageList> {
 
   // Evaluate gallery info and extract image list
   vm.runInContext(galleryInfo, context);
-  const resultJson = vm.runInContext('hitomi_get_image_list()', context) as string;
+  const resultJson = vm.runInContext(IMAGE_LIST_EXPRESSION, context) as string;
   const result = JSON.parse(resultJson) as {
     result: string[];
     btresult: string[];
     stresult: string[];
+    dimensions: ImageList['dimensions'];
   };
 
   return {
     urls: result.result,
     bigThumbnails: result.btresult,
     smallThumbnails: result.stresult,
+    dimensions: result.dimensions,
   };
 }
 

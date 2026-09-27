@@ -4,11 +4,12 @@ import { HorizontalReader } from './HorizontalReader';
 import { PagedReader } from './PagedReader';
 import { ViewerOverlay } from './ViewerOverlay';
 import styles from './ViewerContainer.module.css';
-import type { IntensityTimeline } from '@violet-web/shared';
+import type { ImageDimensions, IntensityTimeline } from '@violet-web/shared';
 
 interface ViewerContainerProps {
   galleryId: number;
   imageUrls: string[];
+  imageDimensions?: (ImageDimensions | null)[];
   thumbnailUrls: string[];
   currentPage: number;
   totalPages: number;
@@ -20,6 +21,7 @@ interface ViewerContainerProps {
 export function ViewerContainer({
   galleryId,
   imageUrls,
+  imageDimensions,
   thumbnailUrls,
   currentPage,
   totalPages,
@@ -46,7 +48,9 @@ export function ViewerContainer({
         />
       ) : viewMode === 'vertical' ? (
         <VerticalReader
+          key={galleryId}
           imageUrls={imageUrls}
+          imageDimensions={imageDimensions}
           currentPage={currentPage}
           onPageChange={onPageChange}
           onTap={toggleOverlay}

@@ -12,6 +12,14 @@ const GG_URL: &str = "https://ltn.gold-usergeneratedcontent.net/gg.js";
 const MODEL_URL: &str = "https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v4_model.js";
 const FALLBACK: &str =
     include_str!("../../../violet-web/packages/backend/scripts/hitomi_get_image_list_v3_model.js");
+const IMAGE_LIST_EXPRESSION: &str =
+    include_str!("../../../violet-web/packages/backend/scripts/gallery_image_list_with_dimensions.js");
+
+#[derive(Clone, Deserialize, Serialize)]
+pub struct ImageDimensions {
+    pub width: f64,
+    pub height: f64,
+}
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -19,6 +27,7 @@ pub struct Images {
     pub urls: Vec<String>,
     pub big_thumbnails: Vec<String>,
     pub small_thumbnails: Vec<String>,
+    pub dimensions: Vec<Option<ImageDimensions>>,
 }
 
 #[derive(Default)]
@@ -102,18 +111,20 @@ pub fn resolve(client: &Client, cache_store: &Mutex<GalleryCache>, id: u64) -> R
     let url = evaluate(&script, &format!("create_download_url('{id}')"))?;
     let info = text(client, &url)?;
     let source = format!("{script}\n{info}");
-    let result = evaluate(&source, "hitomi_get_image_list()")?;
+    let result = evaluate(&source, IMAGE_LIST_EXPRESSION)?;
     #[derive(Deserialize)]
     struct Raw {
         result: Vec<String>,
         btresult: Vec<String>,
         stresult: Vec<String>,
+        dimensions: Vec<Option<ImageDimensions>>,
     }
     let result: Raw = serde_json::from_str(&result).map_err(|e| e.to_string())?;
     let images = Images {
         urls: result.result,
         big_thumbnails: result.btresult,
         small_thumbnails: result.stresult,
+        dimensions: result.dimensions,
     };
     let mut cache = cache_store.lock().map_err(|e| e.to_string())?;
     cache.images.retain(|_, (at, _)| at.elapsed() < ttl);
@@ -127,6 +138,20 @@ pub fn resolve(client: &Client, cache_store: &Mutex<GalleryCache>, id: u64) -> R
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn image_dimensions_are_aligned_and_optional() {
+        let source = r#"
+          var galleryinfo = {files:[{width:'800',height:1200},{width:0,height:20}]};
+          function hitomi_get_image_list() {
+            return JSON.stringify({result:['a','b','c'],btresult:[],stresult:[]});
+          }
+        "#;
+        let value: serde_json::Value = serde_json::from_str(
+            &evaluate(source, IMAGE_LIST_EXPRESSION).unwrap()).unwrap();
+        assert_eq!(value["dimensions"], serde_json::json!([
+            {"width":800,"height":1200}, null, null
+        ]));
+    }
     #[test]
     #[ignore = "requires network and VIOLET_TEST_GALLERY; fetches metadata only"]
     fn resolve_live_metadata() {
