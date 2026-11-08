@@ -11,6 +11,7 @@ export interface MessageSearchResult {
 }
 
 export interface MessageSearchResponse {
+  articleQuery?: string;
   query: string;
   mode: MessageSearchMode;
   total: number;
@@ -34,6 +35,7 @@ export interface MessageSearchHistoryResponse {
   items: MessageSearchHistoryEntry[];
 }
 export interface MessageSearchFilters {
+  articleQuery?: string;
   from?: string;
   to?: string;
   idMin?: number;

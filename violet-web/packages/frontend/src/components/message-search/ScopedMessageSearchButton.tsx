@@ -63,7 +63,6 @@ export function ScopedMessageSearchButton({ articleIds, label, disabled, complet
         const completed = new Set(await getCompletedDownloadIds());
         ids = ids.filter((id) => completed.has(id));
       }
-      if (ids.length > 50_000) { setError(t('scopedMessageSearch.tooLarge')); return; }
       setScope({ ids, label: scopeLabel, query: '', mode: 'contains' });
     } catch { setError(t('scopedMessageSearch.loadError')); }
     finally { setBusy(false); }

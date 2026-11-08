@@ -5,23 +5,30 @@ import { ArrowUp, Search } from 'lucide-react';
 import { useAppStore } from '../../stores/app-store';
 import { useMessageSearch } from '../../hooks/useMessageSearch';
 import { useMessageSearchHistory, useRecordMessageSearchHistory } from '../../hooks/useMessageSearchHistory';
+import { MessageArticleConditions } from './MessageArticleConditions';
 import { MessageSearchGrid } from './MessageSearchGrid';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import styles from '../../pages/MessageSearchPage.module.css';
 
 const MODES: MessageSearchMode[] = ['contains', 'similar', 'lcs'];
 const RESULT_LIMITS = [25, 50, 100, 200, 500];
+const FILTER_ERRORS: Record<string, string> = {
+  INVALID_ARTICLE_QUERY: 'messageSearch.invalidConditions',
+  UNSUPPORTED_FILTER_MODE: 'messageSearch.conditionsModeError',
+  FILTER_UNSUPPORTED: 'messageSearch.conditionsBackendRequired',
+};
 
 interface MessageSearchPanelProps {
   query: string;
   mode: MessageSearchMode;
-  onSearch: (query: string, mode: MessageSearchMode) => void;
+  onSearch: (query: string, mode: MessageSearchMode, articleQuery?: string) => void;
   filters?: MessageSearchFilters;
   articleIds?: number[];
   dateRange?: ReactNode;
+  showArticleConditions?: boolean;
 }
 
-export function MessageSearchPanel({ query: queryFromUrl, mode, onSearch, filters = {}, articleIds, dateRange }: MessageSearchPanelProps) {
+export function MessageSearchPanel({ query: queryFromUrl, mode, onSearch, filters = {}, articleIds, dateRange, showArticleConditions = false }: MessageSearchPanelProps) {
   const { t } = useTranslation();
   const pageRef = useRef<HTMLDivElement>(null);
   const historyId = useId();
@@ -35,12 +42,13 @@ export function MessageSearchPanel({ query: queryFromUrl, mode, onSearch, filter
   } = useAppStore();
 
   const [inputValue, setInputValue] = useState(queryFromUrl);
+  const [articleInput, setArticleInput] = useState(filters.articleQuery || '');
   const [selectedMode, setSelectedMode] = useState<MessageSearchMode>(mode);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [highlightedHistoryIndex, setHighlightedHistoryIndex] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  const { data, isLoading, isError, refetch } = useMessageSearch(
+  const { data, isLoading, isError, error, refetch } = useMessageSearch(
     queryFromUrl,
     mode,
     messageSearchResultLimit,
@@ -49,6 +57,8 @@ export function MessageSearchPanel({ query: queryFromUrl, mode, onSearch, filter
     articleIds,
     messageSearchEnabled,
   );
+  const searchError = error as { response?: { data?: { code?: string } }; code?: string } | null;
+  const errorCode = searchError?.response?.data?.code || searchError?.code || '';
   const { data: historyData } = useMessageSearchHistory(inputValue);
   const recordHistory = useRecordMessageSearchHistory();
   const historyItems = historyData?.items ?? [];
@@ -83,13 +93,20 @@ export function MessageSearchPanel({ query: queryFromUrl, mode, onSearch, filter
     return () => scrollContainer.removeEventListener('scroll', handleScroll);
   }, [getScrollContainer]);
 
+  useEffect(() => { setArticleInput(filters.articleQuery || ''); }, [filters.articleQuery]);
+
   const executeSearch = (query: string) => {
     const q = query.trim();
     if (!q) return;
 
     if (articleIds?.length === 0) return;
     recordHistory.mutate(q);
-    onSearch(q, selectedMode);
+    const conditions = showArticleConditions ? articleInput.trim() : undefined;
+    const nextMode = conditions && selectedMode === 'lcs' ? 'contains' : selectedMode;
+    if (q === queryFromUrl && nextMode === mode && (conditions || '') === (filters.articleQuery?.trim() || '')) {
+      void refetch();
+    }
+    onSearch(q, nextMode, conditions);
     setIsHistoryOpen(false);
   };
 
@@ -220,10 +237,15 @@ export function MessageSearchPanel({ query: queryFromUrl, mode, onSearch, filter
               )}
             </div>
 
+            {showArticleConditions && <MessageArticleConditions value={articleInput} onChange={(value) => {
+              setArticleInput(value);
+              if (value.trim() && selectedMode === 'lcs') setSelectedMode('contains');
+            }} />}
+
             {dateRange}
 
             <div className={styles.segmented}>
-              {MODES.filter((item) => articleIds === undefined || item !== 'lcs').map((item) => (
+              {MODES.filter((item) => (articleIds === undefined && !articleInput.trim()) || item !== 'lcs').map((item) => (
                 <button
                   key={item}
                   type="button"
@@ -278,7 +300,7 @@ export function MessageSearchPanel({ query: queryFromUrl, mode, onSearch, filter
 
       {isError && (
         <div className={styles.error}>
-          <span>{t('messageSearch.error')}</span>
+          <span>{t(FILTER_ERRORS[errorCode] || 'messageSearch.error')}</span>
           <button type="button" className={styles.retryBtn} onClick={() => refetch()}>
             {t('messageSearch.retry')}
           </button>

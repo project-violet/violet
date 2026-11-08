@@ -10,12 +10,13 @@ import { getUserDb } from '../services/user-db.js';
 import { getContentDb, isContentDbReady } from '../services/content-db.js';
 import { parseDateBounds } from '../services/publication-date.js';
 import { parseArticleIdBound, resolveMessageSearchRange, type ArticleIdRange } from '../services/message-search-range.js';
+import { resolveMessageSearchIds } from '../services/message-search-scope.js';
 
 export const messageSearchRouter = Router();
 
 const MODES = new Set<MessageSearchMode>(['contains', 'similar', 'lcs']);
 const DEFAULT_FSCM_BASE_URL = 'http://127.0.0.1:12332';
-const DEFAULT_TIMEOUT_MS = 30_000;
+const DEFAULT_TIMEOUT_MS = 120_000;
 const STATUS_TIMEOUT_MS = 5_000;
 
 interface FscmRawResult {
@@ -232,6 +233,16 @@ messageSearchRouter.get('/', async (req, res) => {
     return;
   }
 
+  if (req.query.articleQuery !== undefined && (typeof req.query.articleQuery !== 'string' || req.query.articleQuery.length > 2000)) {
+    res.status(400).json({ error: 'Invalid article query.', code: 'INVALID_ARTICLE_QUERY' });
+    return;
+  }
+  const articleQuery = ((req.query.articleQuery as string) || '').trim();
+  if (articleQuery && mode === 'lcs') {
+    res.status(400).json({ error: 'Work conditions support contains or similar mode.', code: 'UNSUPPORTED_FILTER_MODE' });
+    return;
+  }
+  let ids: number[] | undefined;
   let range: ArticleIdRange | null;
   try {
     for (const date of [req.query.from, req.query.to]) {
@@ -242,13 +253,25 @@ messageSearchRouter.get('/', async (req, res) => {
     parseDateBounds(from, to);
     const bounds = { idMin: parseArticleIdBound(req.query.idMin), idMax: parseArticleIdBound(req.query.idMax) };
     if ((bounds.idMin ?? 0) > (bounds.idMax ?? 0xffffffff)) throw new Error('Reversed article ID range');
-    if ((from || to) && !isContentDbReady()) {
+    if ((from || to || articleQuery) && !isContentDbReady()) {
       res.status(503).json({ error: 'Database syncing, please wait.' });
       return;
     }
-    range = resolveMessageSearchRange(from || to ? getContentDb() : undefined, from, to, bounds);
+    if (articleQuery) {
+      ids = resolveMessageSearchIds(getContentDb(), articleQuery, { from, to, ...bounds }, articleId ? Number(articleId) : undefined);
+      range = bounds;
+    } else {
+      range = resolveMessageSearchRange(from || to ? getContentDb() : undefined, from, to, bounds);
+    }
   } catch (error) {
-    res.status(400).json({ error: error instanceof Error ? error.message : 'Invalid search range.' });
+    res.status(400).json({
+      error: error instanceof Error ? error.message : 'Invalid search range.',
+      ...(articleQuery ? { code: 'INVALID_ARTICLE_QUERY' } : {}),
+    });
+    return;
+  }
+  if (ids?.length === 0) {
+    res.json({ query: q, mode, total: 0, results: [], articleQuery });
     return;
   }
   if (!range || (articleId && (Number(articleId) < (range.idMin ?? 0) || Number(articleId) > (range.idMax ?? 0xffffffff)))) {
@@ -257,7 +280,7 @@ messageSearchRouter.get('/', async (req, res) => {
   }
 
   try {
-    const raw = await fetchFscm(baseUrl, mode, q, articleId, { limit, range });
+    const raw = await fetchFscm(baseUrl, mode, q, articleId, { limit, range, ids });
 
     if (!Array.isArray(raw)) {
       res.status(502).json({ error: 'fscm returned an invalid response.' });
@@ -268,7 +291,12 @@ messageSearchRouter.get('/', async (req, res) => {
       .map((item) => normalizeResult(item as FscmRawResult))
       .filter((item): item is MessageSearchResult => item !== null);
 
+    if (ids) {
+      const allowed = new Set(ids);
+      if (results.some((item) => !allowed.has(item.articleId))) throw new Error('FSCM ignored article scope');
+    }
     const response: MessageSearchResponse = {
+      ...(articleQuery ? { articleQuery } : {}),
       query: q,
       mode,
       total: results.length,
@@ -290,9 +318,9 @@ messageSearchRouter.post('/scoped', async (req, res) => {
   const rawLimit = req.body?.limit ?? 100;
   if (!q || !['contains', 'similar'].includes(mode) || !baseUrl
     || !Number.isInteger(rawLimit) || rawLimit < 1 || rawLimit > 500
-    || !Array.isArray(ids) || ids.length > 50_000
+    || !Array.isArray(ids)
     || ids.some((id) => !Number.isInteger(id) || id < 0 || id > 0xffffffff)) {
-    res.status(400).json({ error: 'Expected a query, contains/similar mode, limit 1–500 and at most 50000 unsigned article IDs.' });
+    res.status(400).json({ error: 'Expected a query, contains/similar mode, limit 1–500 and unsigned article IDs.' });
     return;
   }
   const scope = [...new Set(ids as number[])].sort((a, b) => a - b);

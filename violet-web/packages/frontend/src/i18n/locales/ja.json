@@ -316,6 +316,12 @@
     "historyCount": "{{count}}回"
   },
   "messageSearch": {
+    "articleConditions": "作品条件",
+    "articleConditionsPlaceholder": "作品条件（タグ・作家など）",
+    "clearConditions": "解除",
+    "invalidConditions": "作品条件が無効です。検索構文を確認してください。",
+    "conditionsModeError": "作品条件は部分一致・類似検索に対応しています。",
+    "conditionsBackendRequired": "サーバーで作品条件の適用を確認できませんでした。検索ボタンで再試行してください。",
     "idMin": "開始番号",
     "idMax": "終了番号",
     "noBound": "制限なし",
@@ -363,7 +369,6 @@
     "emptyScope": "検索対象の作品がありません。絞り込み条件を確認してください。",
     "close": "閉じる",
     "preparing": "対象を確認中…",
-    "loadError": "検索対象を読み込めませんでした。再試行してください。",
-    "tooLarge": "一度に検索できるのは50,000作品までです。条件を絞り込んでください。"
+    "loadError": "検索対象を読み込めませんでした。再試行してください。"
   }
 }

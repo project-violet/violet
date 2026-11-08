@@ -316,6 +316,12 @@
     "historyCount": "{{count}}次"
   },
   "messageSearch": {
+    "articleConditions": "作品条件",
+    "articleConditionsPlaceholder": "作品条件（标签、作者等）",
+    "clearConditions": "清除",
+    "invalidConditions": "作品条件无效，请检查搜索语法。",
+    "conditionsModeError": "作品条件支持包含和相似搜索。",
+    "conditionsBackendRequired": "服务器未确认作品条件，请点击搜索重试。",
     "idMin": "起始编号",
     "idMax": "结束编号",
     "noBound": "不限",
@@ -363,7 +369,6 @@
     "emptyScope": "没有可搜索的作品，请检查列表筛选条件。",
     "close": "关闭",
     "preparing": "正在确认范围…",
-    "loadError": "无法加载搜索范围，请重试。",
-    "tooLarge": "每次最多搜索50,000部作品，请缩小筛选范围。"
+    "loadError": "无法加载搜索范围，请重试。"
   }
 }

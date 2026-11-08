@@ -22,7 +22,7 @@ export function createApp() {
   const app = express();
 
   app.use(cors());
-  app.use('/api/message-search/scoped', express.json({ limit: '1mb' }));
+  app.use('/api/message-search/scoped', express.json({ limit: '64mb' }));
   app.use(express.json());
   app.use(requestLogger);
 

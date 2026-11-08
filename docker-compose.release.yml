@@ -58,6 +58,8 @@ services:
       - "12332"
       - "--data-paths"
       - "/data/merged-0.fscm"
+    environment:
+      ROCKET_LIMITS: "{json=64MiB}"
     ports:
       - "22332:12332"
     volumes:

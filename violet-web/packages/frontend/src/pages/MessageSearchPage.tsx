@@ -10,8 +10,9 @@ export function MessageSearchPage() {
   const { t } = useTranslation();
   const [params, setParams] = useSearchParams();
   const query = params.get('q') || '';
+  const articleQuery = params.get('articleQuery') || '';
   const rawMode = params.get('mode') || 'contains';
-  const mode: MessageSearchMode = rawMode === 'similar' || rawMode === 'lcs' ? rawMode : 'contains';
+  const mode: MessageSearchMode = rawMode === 'similar' ? 'similar' : rawMode === 'lcs' && !articleQuery.trim() ? 'lcs' : 'contains';
   const from = params.get('from') || undefined;
   const to = params.get('to') || undefined;
   const idMin = params.get('idMin');
@@ -21,15 +22,17 @@ export function MessageSearchPage() {
     return () => { document.title = 'Violet'; };
   }, [query, t]);
   return <MessageSearchPanel query={query} mode={mode}
-    filters={{ from, to, idMin: idMin ? Number(idMin) : undefined, idMax: idMax ? Number(idMax) : undefined }}
-    onSearch={(q, nextMode) => {
+    filters={{ articleQuery, from, to, idMin: idMin ? Number(idMin) : undefined, idMax: idMax ? Number(idMax) : undefined }}
+    showArticleConditions
+    onSearch={(q, nextMode, conditions) => {
       const next = new URLSearchParams(params);
       next.set('q', q);
+      if (conditions) next.set('articleQuery', conditions); else next.delete('articleQuery');
       if (nextMode === 'contains') next.delete('mode'); else next.set('mode', nextMode);
       setParams(next);
     }}
     dateRange={<div className={styles.dateRange} title={t('messageSearch.dateRangeHint')}>
-      <DateRangeFilter query="lang:korean" from={from} to={to} compact onCommit={(nextFrom, nextTo) => {
+      <DateRangeFilter query={articleQuery || 'lang:korean'} from={from} to={to} compact onCommit={(nextFrom, nextTo) => {
         const next = new URLSearchParams(params);
         if (nextFrom) next.set('from', nextFrom); else next.delete('from');
         if (nextTo) next.set('to', nextTo); else next.delete('to');
