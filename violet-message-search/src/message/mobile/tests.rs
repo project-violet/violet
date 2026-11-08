@@ -192,3 +192,20 @@ fn pipeline_joins_reader_on_consumer_failure_or_mid_scan_cancel() {
     assert_eq!(error.kind(), io::ErrorKind::Interrupted);
     assert_eq!(blocks, 1);
 }
+
+#[test]
+#[cfg(feature = "raw")]
+fn mobile_restores_missing_raw_text_and_checks_expanded_budget() {
+    let f = Fixture::new();
+    let mut writer = FlatMessageWriter::default();
+    let mut message = f.messages[0].clone();
+    message.message = "dkssudgktpdy!".into();
+    message.raw = None;
+    writer.push(&message);
+    writer.write_to(&mut File::create(&f.paths[0]).unwrap()).unwrap();
+    let mut store = f.store();
+    let hit = || vec![ScoredMessage { index: 0, correct: 1.0, score: 100.0 }];
+    assert_eq!(store.materialize(hit()).unwrap()[0].raw, "안녕하세요!");
+    store.budget = 16;
+    assert!(store.materialize(hit()).is_err());
+}

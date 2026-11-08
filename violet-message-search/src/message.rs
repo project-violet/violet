@@ -654,6 +654,14 @@ pub struct MessageResult {
     raw: String,
 }
 
+/// Prefer the original OCR text; old FSCM files only contain keyboard text.
+#[cfg(feature = "raw")]
+fn response_text(raw: Option<&str>, keyboard: &str) -> String {
+    raw.filter(|text| !text.is_empty())
+        .map(str::to_owned)
+        .unwrap_or_else(|| HangulConverter::keyboard_to_hangul(keyboard))
+}
+
 impl From<&StoredMessage<'_>> for MessageResult {
     fn from(msg: &StoredMessage<'_>) -> Self {
         MessageResult {
@@ -662,7 +670,7 @@ impl From<&StoredMessage<'_>> for MessageResult {
             correct: msg.correct,
             rects: msg.rects,
             #[cfg(feature = "raw")]
-            raw: msg.raw.unwrap_or_default().to_string(),
+            raw: response_text(msg.raw, msg.message),
             score: Default::default(),
         }
     }
@@ -1308,6 +1316,14 @@ mod tests {
     use super::*;
 
     static TEST_LOCK: LazyLock<Mutex<()>> = LazyLock::new(|| Mutex::new(()));
+
+    #[test]
+    #[cfg(feature = "raw")]
+    fn raw_response_preserves_original_or_restores_keyboard_text() {
+        assert_eq!(response_text(Some("안녕 하세요! English"), "ignored"), "안녕 하세요! English");
+        assert_eq!(response_text(None, "dkssudgktpdy!"), "안녕하세요!");
+        assert_eq!(response_text(Some(""), "dkssud!"), "안녕!");
+    }
 
     fn test_message(article_id: u32, message: &str) -> Message {
         Message {

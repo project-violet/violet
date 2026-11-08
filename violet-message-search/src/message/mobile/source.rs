@@ -56,10 +56,20 @@ impl Source {
     // Called only after materialize has checked the combined response allowance.
     #[cfg(feature = "raw")]
     fn read_raw_text(&self, file: &mut File, record: &FlatRecord) -> io::Result<String> {
-        let mut bytes = vec![0; record.raw_len as usize];
-        file.seek(SeekFrom::Start(self.text_start + record.raw_offset))?;
+        let (offset, len) = if record.raw_len > 0 {
+            (record.raw_offset, record.raw_len)
+        } else {
+            (record.message_offset, record.message_len)
+        };
+        let mut bytes = vec![0; len as usize];
+        file.seek(SeekFrom::Start(self.text_start + offset))?;
         file.read_exact(&mut bytes)?;
-        String::from_utf8(bytes).map_err(|_| invalid_data("invalid raw UTF-8"))
+        let text = String::from_utf8(bytes).map_err(|_| invalid_data("invalid raw UTF-8"))?;
+        Ok(if record.raw_len > 0 {
+            text
+        } else {
+            super::super::response_text(None, &text)
+        })
     }
 }
 
@@ -92,13 +102,22 @@ impl MobileStore {
             let record = source.read_record(file, record_index)?;
             #[cfg(feature = "raw")]
             let raw = {
-                raw_total = raw_total
-                    .checked_add(record.raw_len as usize)
+                // Reconstructed UTF-8 can use three bytes per ASCII input key.
+                let allowance = if record.raw_len > 0 {
+                    record.raw_len as usize
+                } else {
+                    (record.message_len as usize).checked_mul(3)
+                        .ok_or_else(|| invalid_data("raw response overflow"))?
+                };
+                let upper_bound = raw_total
+                    .checked_add(allowance)
                     .ok_or_else(|| invalid_data("raw response overflow"))?;
-                if raw_total > self.budget / 16 {
+                if upper_bound > self.budget / 16 {
                     return Err(invalid_data("raw response exceeds mobile allowance"));
                 }
-                source.read_raw_text(file, &record)?
+                let text = source.read_raw_text(file, &record)?;
+                raw_total += text.len();
+                text
             };
             results.push(MessageResult {
                 id: record.article_id,

@@ -97,3 +97,13 @@ to a minimum/maximum Hitomi ID and intersects this with any explicit ID bounds.
 This is an ID envelope: publication dates do not always follow ID order, so it
 is not a strict per-result publication-date filter. No dated works produces
 empty results, not an unrestricted search.
+
+### Restored dialogue text
+
+Run the server with `cargo run --features raw --bin fast-search-rs -- 127.0.0.1 12332 --data-paths /path/to/merged-0.fscm`
+to include `Raw` in article and search responses. Stored original text is preserved.
+If original text is absent, both resident and mobile modes reconstruct Korean from
+the stored two-set keyboard text. This is best effort: removed spaces, literal
+English versus keyboard input, ambiguous syllable boundaries, and characters lost
+by the legacy encoder (notably final ㅊ) cannot be recovered exactly. The FSCM file
+and search keys are not modified.
