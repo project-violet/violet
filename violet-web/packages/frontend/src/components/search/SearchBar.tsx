@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, forwardRef, useImperativeHandle, type FormEvent, type KeyboardEvent } from 'react';
+import { useState, useId, useRef, useEffect, useMemo, forwardRef, useImperativeHandle, type FormEvent, type KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -19,15 +19,29 @@ export interface SearchBarRef {
 export interface SearchBarProps {
   getSuggestions?: (input: string) => TagEntry[]; // Function to get local suggestions based on input
   basePath?: string; // Base path for navigation (default: '/')
+  value?: string;
+  onChange?: (value: string) => void;
+  placeholder?: string;
+  ariaLabel?: string;
+  inputClassName?: string;
+  embedded?: boolean; // Use the parent's search form without navigating on selection.
+  contextQuery?: string;
 }
 
 export const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(function SearchBar(props, ref) {
-  const { getSuggestions, basePath = '/' } = props;
+  const { getSuggestions, basePath = '/', embedded = false } = props;
+  const dropdownId = useId();
+  const InputContainer = embedded ? 'div' : 'form';
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const queryFromUrl = searchParams.get('q') || '';
 
-  const [value, setValue] = useState(queryFromUrl);
+  const [internalValue, setInternalValue] = useState(queryFromUrl);
+  const value = props.value ?? internalValue;
+  const setValue = (next: string) => {
+    if (props.value === undefined) setInternalValue(next);
+    props.onChange?.(next);
+  };
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
@@ -40,7 +54,7 @@ export const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(function Searc
   const { recentSearches, addRecentSearch, clearRecentSearches } = useSearchStore();
   const contentLanguage = useAppStore((s) => s.contentLanguage);
   const contextualSuggestionCounts = useAppStore((s) => s.contextualSuggestionCounts);
-  const languageContext = contentLanguage !== 'all' ? `lang:${contentLanguage}` : '';
+  const languageContext = props.contextQuery ?? (contentLanguage !== 'all' ? `lang:${contentLanguage}` : '');
   const { data: apiSuggestions, isLoading } = useContextualSuggestions(
     value,
     languageContext,
@@ -58,8 +72,8 @@ export const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(function Searc
 
   // Sync input value with URL query parameter
   useEffect(() => {
-    setValue(queryFromUrl);
-  }, [queryFromUrl]);
+    if (props.value === undefined) setInternalValue(queryFromUrl);
+  }, [queryFromUrl, props.value]);
 
   // Extract last token to determine if we're in suggestion mode
   const lastToken = useMemo(() => {
@@ -139,6 +153,7 @@ export const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(function Searc
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.nativeEvent.isComposing) return;
     if (!isOpen) {
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         setIsOpen(true);
@@ -178,8 +193,12 @@ export const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(function Searc
     if (typeof item === 'string') {
       // Recent search - execute search immediately
       setValue(item);
-      addRecentSearch(item);
-      navigate(`${basePath}?q=${encodeURIComponent(item)}`);
+      if (!embedded) {
+        addRecentSearch(item);
+        navigate(`${basePath}?q=${encodeURIComponent(item)}`);
+      } else {
+        inputRef.current?.focus();
+      }
       setIsOpen(false);
     } else {
       // TagEntry - replace the last token with the selected suggestion
@@ -208,31 +227,33 @@ export const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(function Searc
 
   return (
     <div className={styles.container} ref={containerRef}>
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <InputContainer className={styles.form} onSubmit={embedded ? undefined : handleSubmit}>
         <input
           ref={inputRef}
-          className={styles.input}
+          className={`${styles.input} ${props.inputClassName || ''}`}
+          aria-label={props.ariaLabel}
+          maxLength={embedded ? 2000 : undefined}
           type="text"
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => { setValue(e.target.value); setIsOpen(true); }}
           onFocus={handleFocus}
           onKeyDown={handleKeyDown}
-          placeholder={t('search.placeholder')}
+          placeholder={props.placeholder ?? t('search.placeholder')}
           role="combobox"
-          aria-expanded={isOpen}
+          aria-expanded={showDropdown}
           aria-autocomplete="list"
-          aria-controls="search-dropdown"
+          aria-controls={dropdownId}
           aria-activedescendant={
-            showDropdown ? `search-item-${highlightedIndex}` : undefined
+            showDropdown ? `${dropdownId}-item-${highlightedIndex}` : undefined
           }
         />
-      </form>
+      </InputContainer>
 
       {showDropdown &&
         createPortal(
           <div
             ref={dropdownRef}
-            id="search-dropdown"
+            id={dropdownId}
             className={styles.dropdown}
             style={{
               position: 'fixed',
@@ -260,7 +281,7 @@ export const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(function Searc
             {dropdownItems.map((item, index) => (
               <button
                 key={typeof item === 'string' ? `${item}-${index}` : `${item.display}-${index}`}
-                id={`search-item-${index}`}
+                id={`${dropdownId}-item-${index}`}
                 type="button"
                 className={`${styles.dropdownItem} ${
                   index === highlightedIndex ? styles.highlighted : ''

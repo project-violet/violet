@@ -365,6 +365,12 @@
     "historyCount": "{{count}}x"
   },
   "messageSearch": {
+    "articleConditions": "Work conditions",
+    "articleConditionsPlaceholder": "Work conditions (tags, artist…)",
+    "clearConditions": "Clear",
+    "invalidConditions": "Invalid work conditions. Check the search syntax.",
+    "conditionsModeError": "Work conditions support contains or similar mode.",
+    "conditionsBackendRequired": "The server did not confirm the work conditions. Press Search to try again.",
     "idMin": "Minimum ID",
     "idMax": "Maximum ID",
     "noBound": "No limit",
@@ -412,7 +418,6 @@
     "emptyScope": "No works to search. Check the list filters.",
     "close": "Close",
     "preparing": "Preparing…",
-    "loadError": "Could not load search targets. Please try again.",
-    "tooLarge": "Search up to 50,000 works at a time. Narrow the list filters."
+    "loadError": "Could not load search targets. Please try again."
   }
 }

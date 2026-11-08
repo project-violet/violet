@@ -20,6 +20,8 @@ WORKDIR /app
 
 COPY --from=builder /src/target/release/fast-search-rs /usr/local/bin/fast-search-rs
 
+ENV ROCKET_LIMITS="{json=64MiB}"
+
 EXPOSE 12332
 
 ENTRYPOINT ["fast-search-rs"]

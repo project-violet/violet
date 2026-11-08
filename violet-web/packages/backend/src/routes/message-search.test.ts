@@ -44,7 +44,7 @@ test('mobile status never searches, including while busy; legacy fallback is lim
 
 test('scoped proxy posts exact deduplicated IDs, handles empty scope, and fails closed', async () => {
   const app = express();
-  app.use(express.json({ limit: '1mb' }));
+  app.use(express.json({ limit: '64mb' }));
   app.use('/search', messageSearchRouter);
   const server = app.listen(0, '127.0.0.1');
   await new Promise<void>((resolve) => server.once('listening', resolve));
@@ -72,13 +72,17 @@ test('scoped proxy posts exact deduplicated IDs, handles empty scope, and fails 
     }
     const calls = upstream.length;
     assert.deepEqual(await (await post({ q: 'needle', ids: [] })).json(), { query: 'needle', mode: 'contains', total: 0, results: [] });
-    for (const ids of [undefined, null, ['20'], [-1], [1.5], [4294967296], Array(50_001).fill(20)]) {
+    for (const ids of [undefined, null, ['20'], [-1], [1.5], [4294967296]]) {
       assert.equal((await post({ q: 'needle', ids })).status, 400);
     }
     assert.equal((await post({ q: 'needle', ids: [20], mode: 'lcs' })).status, 400);
     assert.equal(upstream.length, calls);
     wrongScope = true;
     assert.equal((await post({ q: 'needle', ids: [20] })).status, 502);
+    wrongScope = false;
+    const largeIds = [20, ...Array.from({ length: 150_000 }, (_, i) => 1_000_000 + i)];
+    assert.equal((await post({ q: 'needle', ids: largeIds })).status, 200);
+    assert.equal((upstream.at(-1)!.body.ids as number[]).length, largeIds.length);
   } finally {
     globalThis.fetch = originalFetch;
     await new Promise<void>((resolve) => server.close(() => resolve()));
