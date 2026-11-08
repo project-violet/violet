@@ -25,7 +25,10 @@ fn main() {
     println!("cargo:rustc-link-lib=static=binding");
     let target = env::var("TARGET").unwrap_or_default();
     let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_default();
-    if target_os != "windows" && !target.contains("windows") {
+    if target_os == "macos" {
+        println!("cargo:rustc-link-lib=dylib=c++");
+        println!("cargo:rustc-link-arg=-lc++");
+    } else if target_os != "windows" && !target.contains("windows") {
         println!("cargo:rustc-link-lib=dylib=stdc++");
         println!("cargo:rustc-link-arg=-lstdc++");
     }

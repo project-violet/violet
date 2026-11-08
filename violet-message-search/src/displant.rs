@@ -130,6 +130,53 @@ impl HangulConverter {
         }
     }
 
+    /// Best-effort inverse of two-set keyboard text. Removed whitespace, literal
+    /// English, and characters omitted by legacy encoding cannot be recovered.
+    pub fn keyboard_to_hangul(text: &str) -> String {
+        const FINALS: &[&str] = &[
+            "", "r", "R", "rt", "s", "sw", "sg", "e", "f", "fr", "fa", "fq",
+            "ft", "fx", "fv", "fg", "a", "q", "qt", "t", "T", "d", "w", "c",
+            "z", "x", "v", "g",
+        ];
+        const INITIAL_JAMO: &str = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
+        fn longest(text: &str, table: &[&str]) -> Option<(usize, usize)> {
+            table.iter().enumerate()
+                .filter(|(_, key)| !key.is_empty() && text.starts_with(**key))
+                .map(|(index, key)| (index, key.len()))
+                .max_by_key(|(_, len)| *len)
+        }
+        let mut output = String::with_capacity(text.len());
+        let mut rest = text;
+        while !rest.is_empty() {
+            if let Some((initial, initial_len)) = longest(rest, INDEX_INITIAL_2) {
+                if let Some((medial, medial_len)) = longest(&rest[initial_len..], INDEX_MEDIAL_2) {
+                    let tail = &rest[initial_len + medial_len..];
+                    // A consonant followed by a vowel starts the next syllable.
+                    // For a compound final this leaves its last consonant there.
+                    let (final_, final_len) = FINALS.iter().enumerate()
+                        .filter(|(_, key)| !key.is_empty() && tail.starts_with(**key))
+                        .filter(|(_, key)| longest(&tail[key.len()..], INDEX_MEDIAL_2).is_none())
+                        .map(|(index, key)| (index, key.len()))
+                        .max_by_key(|(_, len)| *len)
+                        .unwrap_or((0, 0));
+                    output.push(char::from_u32(0xAC00 + ((initial * 21 + medial) * 28 + final_) as u32).unwrap());
+                    rest = &tail[final_len..];
+                } else {
+                    output.push(INITIAL_JAMO.chars().nth(initial).unwrap());
+                    rest = &rest[initial_len..];
+                }
+            } else if let Some((medial, len)) = longest(rest, INDEX_MEDIAL_2) {
+                output.push(char::from_u32(0x314F + medial as u32).unwrap());
+                rest = &rest[len..];
+            } else {
+                let ch = rest.chars().next().unwrap();
+                output.push(ch);
+                rest = &rest[ch.len_utf8()..];
+            }
+        }
+        output
+    }
+
     pub fn total_disassembly(what: &str) -> String {
         let mut buffer = String::with_capacity(what.len());
         for ch in what.chars() {
@@ -144,6 +191,30 @@ impl HangulConverter {
 #[cfg(test)]
 mod tests {
     use crate::displant::HangulConverter;
+
+    #[test]
+    fn restores_keyboard_text_and_syllable_boundaries() {
+        for text in ["안녕하세요", "값이", "읽고", "읽어", "앉아", "없다", "괜찮아",
+                     "까꿍", "쐐기", "의외", "각사", "가나", "안녕! 123🙂", "ㄱㅏ"] {
+            let encoded = HangulConverter::total_disassembly(text);
+            let expected = if text == "ㄱㅏ" { "가" } else { text };
+            assert_eq!(HangulConverter::keyboard_to_hangul(&encoded), expected, "{encoded}");
+        }
+        assert_eq!(HangulConverter::keyboard_to_hangul(""), "");
+        assert_eq!(HangulConverter::keyboard_to_hangul("rkcl"), "가치");
+        assert_eq!(HangulConverter::keyboard_to_hangul("rkc!"), "갗!");
+    }
+
+    #[test]
+    fn restores_all_losslessly_encoded_individual_syllables() {
+        for code in 0xAC00..=0xD7A3 {
+            // The existing encoder drops final ㅊ (index 23).
+            if (code - 0xAC00) % 28 == 23 { continue; }
+            let text = char::from_u32(code).unwrap().to_string();
+            assert_eq!(HangulConverter::keyboard_to_hangul(
+                &HangulConverter::total_disassembly(&text)), text);
+        }
+    }
 
     #[test]
     fn unittest_displant() {
