@@ -1,6 +1,10 @@
 .shell {
+  --shell-bottom-clearance: env(safe-area-inset-bottom, 0px);
   display: flex;
   height: 100vh;
+  height: 100dvh;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) var(--shell-bottom-clearance) env(safe-area-inset-left, 0px);
+  background: var(--color-bg);
   overflow: hidden;
 }
 
@@ -8,6 +12,7 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -141,7 +146,9 @@
 
 .content {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
   padding: var(--spacing-md);
 }
 
@@ -155,6 +162,12 @@
 }
 
 @media (max-width: 1024px) {
+  .shell {
+    /* Reserve the fixed nav outside the scrollport so sticky controls cannot
+       slide behind it as the content's bottom padding scrolls away. */
+    --shell-bottom-clearance: calc(var(--bottomnav-height) + env(safe-area-inset-bottom, 0px));
+  }
+
   .mainArea {
     min-width: 0;
   }
@@ -241,7 +254,7 @@
 
   .content {
     padding: 12px;
-    padding-bottom: calc(var(--bottomnav-height) + env(safe-area-inset-bottom, 0px) + 20px);
+    padding-bottom: 20px;
     overflow-x: hidden;
   }
 }

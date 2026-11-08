@@ -5,7 +5,7 @@
   gap: var(--spacing-md);
   padding: 10px 16px;
   position: sticky;
-  bottom: 0px;
+  bottom: 12px;
   width: fit-content;
   margin-top: auto;
   margin-left: auto;

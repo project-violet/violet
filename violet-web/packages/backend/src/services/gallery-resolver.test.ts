@@ -27,7 +27,7 @@ test('concurrent galleries share script refresh and same-ID fetches; failures ca
     assert.equal([...counts.keys()].filter((key) => key.includes('v4_model')).reduce((n, key) => n + counts.get(key)!, 0), 1);
     assert.equal(counts.get('https://gallery.test/10'), 1);
     assert.equal(counts.get('https://gallery.test/20'), 1);
-    assert.deepEqual(results[0], { urls: ['image-10'], bigThumbnails: [], smallThumbnails: [] });
+    assert.deepEqual(results[0], { urls: ['image-10'], bigThumbnails: [], smallThumbnails: [], dimensions: [null] });
     results[0].urls.push('caller-only');
     assert.deepEqual(results[1].urls, ['image-10']);
     failGallery = true;

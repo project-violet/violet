@@ -164,6 +164,7 @@ export function ViewerPage() {
       <ViewerContainer
         galleryId={galleryId}
         imageUrls={proxyUrls}
+        imageDimensions={imageList.dimensions}
         thumbnailUrls={thumbnailUrls}
         currentPage={currentPage}
         totalPages={totalPages}

@@ -1,0 +1,4 @@
+[env]
+# rquickjs 0.9 passes Rust's target spelling directly to Clang. Clang needs
+# "simulator" and an explicit iOS version for the Apple Silicon simulator.
+BINDGEN_EXTRA_CLANG_ARGS_aarch64_apple_ios_sim = "--target=arm64-apple-ios15.0-simulator"
