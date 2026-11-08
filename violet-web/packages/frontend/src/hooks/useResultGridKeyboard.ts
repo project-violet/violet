@@ -21,13 +21,11 @@ export function useResultGridKeyboard(articles: Article[], resetKey: string) {
       if (articles.length === 0) return;
 
       const target = e.target as HTMLElement;
-      const isSearchInput = target.matches('input[role="combobox"]');
-      const searchDropdownOpen = isSearchInput && target.getAttribute('aria-expanded') === 'true';
-      const isTypingTarget = target.tagName === 'TEXTAREA'
-        || target.isContentEditable
-        || (target.tagName === 'INPUT' && !isSearchInput);
+      const isTypingTarget = target.tagName === 'INPUT'
+        || target.tagName === 'TEXTAREA'
+        || target.isContentEditable;
 
-      if (searchDropdownOpen || isTypingTarget || target.closest('[role="dialog"]')) return;
+      if (isTypingTarget || target.closest('[role="dialog"]')) return;
 
       if (e.key === 'Enter' && selectedIndex != null) {
         e.preventDefault();
